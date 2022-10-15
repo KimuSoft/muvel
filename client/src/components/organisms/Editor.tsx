@@ -18,9 +18,9 @@ const EditorBlock = styled.div`
   height: 100%;
 `
 
-const DummyBlock = styled.div`
+const DummyBlock = styled.div<{ height: string }>`
   width: 100%;
-  height: 500px;
+  height: ${(props) => props.height};
 `
 
 const EditorHeader = styled.div`
@@ -148,6 +148,7 @@ const Editor: React.FC<{
   return (
     <EditorBlock>
       <ContentsBlock>
+        <DummyBlock height={"100px"} />
         {appliedBlockData.map((b) => (
           <ContentBlock
             block={b}
@@ -160,7 +161,7 @@ const Editor: React.FC<{
             onMoveNext={onMoveNext}
           />
         ))}
-        <DummyBlock />
+        <DummyBlock height={"500px"} />
       </ContentsBlock>
     </EditorBlock>
   )

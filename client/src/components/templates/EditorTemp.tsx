@@ -45,7 +45,7 @@ const Body = styled.div`
 
   height: 100vh;
 
-  padding: 100px 30px 90px;
+  padding: 80px 30px 90px;
 `
 
 const Widgets = styled.div`
@@ -62,8 +62,7 @@ const Widgets = styled.div`
   width: 400px;
   height: 100vh;
 
-  // width가 1000px 이하일 경우
-  @media (max-width: 1000px) {
+  @media (max-width: 1600px) {
     display: none;
   }
 `

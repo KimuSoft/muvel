@@ -10,20 +10,23 @@ const TitleBlock = styled.div`
   padding: 0 0;
   gap: 15px;
 
-  // if 1000px or less
+  width: 100%;
+  height: 80px;
+
   @media (max-width: 1000px) {
     flex-direction: column;
     gap: 5px;
   }
-
-  width: 100%;
-  height: 100px;
 `
 
 const Title = styled.h1`
   font-size: 24px;
   font-weight: 500;
   color: #fff;
+
+  @media (max-width: 1000px) {
+    font-size: 20px;
+  }
 
   margin: 0 0;
 `
@@ -33,6 +36,10 @@ const SubTitle = styled.h2`
   font-size: 18px;
   color: #71717a;
   margin: 0 0;
+
+  @media (max-width: 1000px) {
+    font-size: 16px;
+  }
 `
 const HeaderStyle = styled.div`
   display: flex;
@@ -47,6 +54,10 @@ const HeaderStyle = styled.div`
 
   background-color: #27272a;
   width: 100%;
+
+  @media (max-width: 1000px) {
+    height: 90px;
+  }
 `
 
 const Header: React.FC = () => {

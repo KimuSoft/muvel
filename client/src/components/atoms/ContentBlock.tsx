@@ -32,8 +32,9 @@ const DescStyle = styled.textarea<BlockStyleProps>`
 
   font-style: normal;
   font-weight: 50;
-  font-size: 16px;
-  line-height: 30px;
+  font-size: 18px;
+  line-height: 34px;
+  text-align: justify;
 
   font-family: "KoPubWorldBatang", "Noto Serif KR", serif; // "KoPubWorldBatang"
   color: #ffffff;
