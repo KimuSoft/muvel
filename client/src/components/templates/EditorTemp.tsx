@@ -5,11 +5,14 @@ import Header from "../molecules/Header"
 import Editor from "../organisms/Editor"
 import { Block, sampleNovelContents } from "../../types"
 import GoalWidget from "../molecules/GoalWidget"
+import sample from "../../utils/sample"
+import stringToBlock from "../../utils/stringToBlock"
 
 const EditorTemp: React.FC = () => {
   // const navigate = useNavigate()
 
-  const [blocks, setBlocks] = React.useState(sampleNovelContents)
+  // default value is example.txt file form assets
+  const [blocks, setBlocks] = React.useState(stringToBlock(sample))
 
   const onChange = async (blocks: Block[]) => {
     setBlocks(blocks)

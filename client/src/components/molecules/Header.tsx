@@ -53,8 +53,8 @@ const Header: React.FC = () => {
   return (
     <HeaderStyle>
       <TitleBlock>
-        <Title>허클베리 핀의 모험</Title>
-        <SubTitle>4편: 핀과 제이크의 어드벤처 타임</SubTitle>
+        <Title>여신이 되어버린 이야기!</Title>
+        <SubTitle>EP.01 여신이라 부르지 말아주세요!</SubTitle>
       </TitleBlock>
     </HeaderStyle>
   )
