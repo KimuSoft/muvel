@@ -59,7 +59,7 @@ const GoalWidget: React.FC<{ blocks: Block[] }> = ({ blocks }) => {
     0
   )
 
-  const getPercentage = () => Math.ceil((current * 100) / goal)
+  const getPercentage = () => Math.floor((current * 100) / goal)
 
   const getCheeringText = () => {
     const p = getPercentage()
