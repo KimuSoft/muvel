@@ -1,0 +1,27 @@
+version: '3'
+services:
+  mdictionary:
+    ports:
+      - "127.0.0.1:8080:8080"
+    build:
+      context: .
+#    deploy:
+#      replicas: $TOTAL_REPLICAS
+    depends_on:
+      - db
+#    volumes:
+#      - /run/docker.sock:/run/docker.sock:ro
+#      - ../config.deploy.json:/app/config.json:ro
+#      - ./logs:/app/logs:rw
+    restart: unless-stopped
+
+  db:
+    image: mongo
+    volumes:
+      - mongo:/data/db
+    ports:
+      - "127.0.0.1:27018:27017"
+    restart: unless-stopped
+
+volumes:
+  mongo:

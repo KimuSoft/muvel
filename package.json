@@ -1,0 +1,14 @@
+{
+  "name": "muvel",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^2.7.1"
+  },
+  "packageManager": "yarn@3.2.4",
+  "dependencies": {
+    "@types/xml2js": "^0.4.11",
+    "xml2js": "^0.4.23"
+  }
+}

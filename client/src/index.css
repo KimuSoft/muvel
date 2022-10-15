@@ -1,0 +1,19 @@
+
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.5/dist/web/static/pretendard.css");
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;600;700;900&display=swap');
+
+
+body {
+  padding: 0;
+  margin: 0;
+  color: #fff;
+}
+
+* {
+  font-family: 'Pretendard', 'Inter', 'Noto Sans KR', sans-serif;
+  box-sizing: border-box;
+}
+
+:root {
+  background-color: #27272A;
+}
