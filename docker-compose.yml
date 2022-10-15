@@ -1,6 +1,6 @@
 version: '3'
 services:
-  mdictionary:
+  muvel:
     ports:
       - "127.0.0.1:8080:8080"
     build:
