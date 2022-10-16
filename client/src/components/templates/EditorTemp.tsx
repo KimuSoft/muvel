@@ -20,7 +20,7 @@ const EditorTemp: React.FC = () => {
 
   return (
     <MainStyle>
-      <Header />
+      <Header blocks={blocks} />
       <Body>
         <Editor defaultBlocks={blocks} onChange={onChange} />
         <Widgets>
