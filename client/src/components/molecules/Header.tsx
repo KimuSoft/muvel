@@ -1,5 +1,7 @@
 import React from "react"
 import styled from "styled-components"
+import ExportButton from "../atoms/ExportButton"
+import { Block } from "../../types"
 
 const TitleBlock = styled.div`
   display: flex;
@@ -31,6 +33,10 @@ const Title = styled.h1`
   margin: 0 0;
 `
 
+const SideBlock = styled.div`
+  width: 100%;
+`
+
 const SubTitle = styled.h2`
   font-weight: 300;
   font-size: 18px;
@@ -60,13 +66,14 @@ const HeaderStyle = styled.div`
   }
 `
 
-const Header: React.FC = () => {
+const Header: React.FC<{ blocks: Block[] }> = ({ blocks }) => {
   return (
     <HeaderStyle>
       <TitleBlock>
         <Title>여신이 되어버린 이야기!</Title>
         <SubTitle>EP.01 여신이라 부르지 말아주세요!</SubTitle>
       </TitleBlock>
+      <ExportButton blocks={blocks} />
     </HeaderStyle>
   )
 }

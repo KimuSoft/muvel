@@ -38,6 +38,10 @@ const DescStyle = styled.textarea<BlockStyleProps>`
 
   font-family: "KoPubWorldBatang", "Noto Serif KR", serif; // "KoPubWorldBatang"
   color: #ffffff;
+
+  @media (max-width: 1000px) {
+    font-size: 16px;
+  }
 `
 
 // background-color: ${(props) =>
