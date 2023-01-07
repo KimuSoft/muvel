@@ -1,7 +1,7 @@
 import React from "react"
 import styled from "styled-components"
-import ExportButton from "../atoms/ExportButton"
-import { Block } from "../../types"
+import ExportButton from "../componentsDeprecated/atoms/ExportButton"
+import { IBlock } from "../types"
 
 const TitleBlock = styled.div`
   display: flex;
@@ -66,7 +66,7 @@ const HeaderStyle = styled.div`
   }
 `
 
-const Header: React.FC<{ blocks: Block[] }> = ({ blocks }) => {
+const Header: React.FC<{ blocks: IBlock[] }> = ({ blocks }) => {
   return (
     <HeaderStyle>
       <TitleBlock>

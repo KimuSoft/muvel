@@ -1,6 +1,7 @@
-import { Block } from "../../types"
 import styled from "styled-components"
-import ProgressBar from "../atoms/ProgressBar"
+import React from "react";
+import {IBlock} from "../types";
+import ProgressBar from "./ProgressBar";
 
 const WidgetBlock = styled.div`
   display: flex;
@@ -52,7 +53,7 @@ const GoalPercent = styled.h3`
   width: 70px;
 `
 
-const GoalWidget: React.FC<{ blocks: Block[] }> = ({ blocks }) => {
+const GoalWidget: React.FC<{ blocks: IBlock[] }> = ({ blocks }) => {
   const goal = 3000
   const current = blocks.reduce(
     (acc, cur) => acc + cur.content.replace(/[\s\n]/g, "").length,

@@ -5,15 +5,15 @@ import React, {
   useRef,
 } from "react"
 import styled from "styled-components"
-import { Block, BlockType } from "../../types"
+import { Block, BlockType } from "../../deprecated/types"
 
-interface BlockStyleProps {
+const DescStyle = styled.textarea<{
+  bottomPadding: boolean
   blockType: BlockType
-}
-
-const DescStyle = styled.textarea<BlockStyleProps>`
+}>`
   text-indent: 1em;
-  background-color: transparent;
+  background-color: ${(props) =>
+    props.bottomPadding ? "#447854" : "transparent"};
   border: none;
   outline: none;
   -webkit-box-shadow: none;
@@ -25,8 +25,7 @@ const DescStyle = styled.textarea<BlockStyleProps>`
   overflow-y: hidden;
 
   margin: 0 0;
-  padding: ${(props) =>
-    props.blockType === BlockType.Script ? "26px 0" : "8px 0"};
+  padding: ${(props) => (props.bottomPadding ? "8px 0 26px" : "8px 0")};
 
   width: 100%;
 
@@ -57,6 +56,7 @@ const ContentBlock: React.FC<{
   onDelete(id: string): Promise<void>
   onMovePrev(id: string): Promise<void>
   onMoveNext(id: string): Promise<void>
+  bottomPadding: boolean
 }> = ({
   block,
   isNew,
@@ -65,7 +65,9 @@ const ContentBlock: React.FC<{
   onDelete,
   onMovePrev,
   onMoveNext,
+  bottomPadding = false,
 }) => {
+  /* states */
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const [content, setContent] = React.useState(
@@ -73,13 +75,16 @@ const ContentBlock: React.FC<{
   )
   const [blockType, setBlockType] = React.useState(block.blockType)
 
+  /* event */
   const _onChange = () => {
     setContent(textareaRef.current?.value || "")
     handleResizeHeight()
   }
 
+  /* auto-resize */
   const handleResizeHeight = useCallback(() => {
     if (!textareaRef.current) return
+    // 1px로 만들어 초기화한 후
     textareaRef.current.style.height = "1px"
     textareaRef.current.style.height = textareaRef.current.scrollHeight + "px"
   }, [])
@@ -110,12 +115,14 @@ const ContentBlock: React.FC<{
       .replace(/^["“”](.*)["“”]$/, "“$1”")
 
     setContent(_content)
-    onChange({ ...block, blockType: blockType, content: content }).then()
-    setBlockType(
+
+    const newBlockType =
       _content.startsWith("“") && _content.endsWith("”")
         ? BlockType.Script
         : BlockType.Description
-    )
+
+    onChange({ ...block, blockType: newBlockType, content: content }).then()
+    setBlockType(newBlockType)
   }, [content])
 
   // isNew가 바뀔 떄의 이벤트
@@ -158,6 +165,7 @@ const ContentBlock: React.FC<{
       onKeyDown={onKeyDown}
       rows={1}
       autoFocus
+      bottomPadding={bottomPadding}
       blockType={blockType}
       placeholder="내용을 입력하세요."
     />

@@ -1,7 +1,11 @@
 import React, { useEffect } from "react"
 import styled from "styled-components"
-import { Block, BlockType } from "../../types"
-import ContentBlock from "../atoms/ContentBlock"
+import { Block, BlockType } from "./types"
+import ContentBlockV2, {
+  AddBlockEvent,
+  ContentBlockMoveEvent,
+  DeleteBlockEvent,
+} from "./ContentBlockV2"
 
 const EditorBlock = styled.div`
   display: flex;
@@ -81,20 +85,25 @@ const Editor: React.FC<{
     onChange(blockData).then()
   }, [blockData])
 
-  const onEnter = async (id: string) => {
-    console.log("onEnter", id)
+  const onAddBlock = async (e: AddBlockEvent) => {
+    console.log("onEnter", e.currentId)
 
     const _blockData = blockData.map((block) => ({ ...block, isNew: false }))
-    _blockData.splice(_blockData.findIndex((b) => b.id === id) + 1, 0, {
-      id: Math.random().toString(),
-      blockType: BlockType.Description,
-      content: "",
-      isNew: true,
-    })
+    _blockData.splice(
+      _blockData.findIndex((b) => b.id === e.currentId) + 1,
+      0,
+      {
+        id: Math.random().toString(),
+        blockType: BlockType.Description,
+        content: e.defaultContent || "",
+        isNew: true,
+      }
+    )
 
     setBlockData(_blockData)
 
     console.log(_blockData, "blockData")
+
     setAppliedBlockData(_blockData)
     console.log(appliedBlockData)
   }
@@ -108,39 +117,52 @@ const Editor: React.FC<{
     setBlockData(blockData.map((b) => (b.id === block.id ? block : b)))
   }
 
-  const onDelete = async (id: string) => {
-    console.log("onDelete", id)
+  const onDelete = async (e: DeleteBlockEvent) => {
+    console.log("onDelete", e.currentId)
 
     let _blockData: Block[] = blockData.map((block) => ({
       ...block,
       isNew: false,
     }))
 
-    _blockData[_blockData.findIndex((b) => b.id === id) - 1].isNew = true
+    _blockData[_blockData.findIndex((b) => b.id === e.currentId) - 1].isNew =
+      true
     console.log(_blockData, "mi")
-    _blockData = _blockData.filter((b) => b.id !== id)
+    _blockData = _blockData.filter((b) => b.id !== e.currentId)
 
     console.log(_blockData)
     setBlockData(_blockData)
     setAppliedBlockData(_blockData)
   }
 
-  const onMovePrev = async (id: string) => {
-    console.log("onMovePrev", id)
+  const onMovePrev = async (e: ContentBlockMoveEvent) => {
+    console.log("onMovePrev", e.currentId)
 
     const _blockData = blockData.map((block) => ({ ...block, isNew: false }))
-    const index = _blockData.findIndex((b) => b.id === id)
+    const index = _blockData.findIndex((b) => b.id === e.currentId)
     _blockData[index - 1].isNew = true
     setBlockData(_blockData)
     setAppliedBlockData(_blockData)
   }
 
-  const onMoveNext = async (id: string) => {
-    console.log("onMovePrev", id)
+  const onMoveNext = async (e: ContentBlockMoveEvent) => {
+    console.log("onMovePrev", e.currentId)
 
     const _blockData = blockData.map((block) => ({ ...block, isNew: false }))
-    const index = _blockData.findIndex((b) => b.id === id)
+    const index = _blockData.findIndex((b) => b.id === e.currentId)
     _blockData[index + 1].isNew = true
+    setBlockData(_blockData)
+    setAppliedBlockData(_blockData)
+  }
+
+  const onMoveFocus = async (e: ContentBlockMoveEvent) => {
+    console.log("onMoveFocus", e.currentId, e.caretPos)
+
+    const _blockData = blockData.map((block) => ({ ...block, isNew: false }))
+    const index = _blockData.findIndex((b) => b.id === e.currentId)
+    _blockData[index + e.direction].isNew = true
+    _blockData[index + e.direction].focusPos = e.caretPos
+
     setBlockData(_blockData)
     setAppliedBlockData(_blockData)
   }
@@ -149,16 +171,18 @@ const Editor: React.FC<{
     <EditorBlock>
       <ContentsBlock>
         <DummyBlock height={"100px"} />
-        {appliedBlockData.map((b) => (
-          <ContentBlock
+        {appliedBlockData.map((b, idx) => (
+          <ContentBlockV2
             block={b}
             key={b.id}
-            isNew={b.isNew}
-            onEnter={onEnter}
+            autoFocus={b.isNew}
+            focusPos={b.focusPos}
             onChange={_onChange}
-            onDelete={onDelete}
-            onMovePrev={onMovePrev}
-            onMoveNext={onMoveNext}
+            onAddBlock={onAddBlock}
+            onDeleteBlock={onDelete}
+            onMoveFocus={onMoveFocus}
+            // 아래 블록타입이 위 블록타입과 다르면 패딩 추가
+            bottomPadding={appliedBlockData[idx + 1].blockType !== b.blockType}
           />
         ))}
         <DummyBlock height={"500px"} />

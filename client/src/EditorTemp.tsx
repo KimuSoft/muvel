@@ -1,20 +1,19 @@
 import React from "react"
 import styled from "styled-components"
-import Header from "../molecules/Header"
-// import { useNavigate } from "react-router-dom"
-import Editor from "../organisms/Editor"
-import { Block, sampleNovelContents } from "../../types"
-import GoalWidget from "../molecules/GoalWidget"
-import sample from "../../utils/sample"
-import stringToBlock from "../../utils/stringToBlock"
+import stringToBlock from "./utils/stringToBlock"
+import {IBlock} from "./types";
+import Header from "./components/Header";
+import Editor from "./components/editor";
+import GoalWidget from "./components/GoalWidget";
 
 const EditorTemp: React.FC = () => {
   // const navigate = useNavigate()
 
   // default value is example.txt file form assets
-  const [blocks, setBlocks] = React.useState(stringToBlock(sample))
+  // stringToBlock(sample)
+  const [blocks, setBlocks] = React.useState(stringToBlock("가을"))
 
-  const onChange = async (blocks: Block[]) => {
+  const changeHandler = async (blocks: IBlock[]) => {
     setBlocks(blocks)
   }
 
@@ -22,7 +21,8 @@ const EditorTemp: React.FC = () => {
     <MainStyle>
       <Header blocks={blocks} />
       <Body>
-        <Editor defaultBlocks={blocks} onChange={onChange} />
+        {/*<Editor defaultBlocks={blocks} onChange={onChange} />*/}
+        <Editor onChange={changeHandler}/>
         <Widgets>
           <GoalWidget blocks={blocks} />
         </Widgets>

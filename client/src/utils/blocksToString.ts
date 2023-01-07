@@ -1,6 +1,7 @@
-import { Block } from "../types"
 
-const blocksToString = (blocks: Block[]): string => {
+import {IBlock} from "../types";
+
+const blocksToString = (blocks: IBlock[]): string => {
   let content = ""
 
   let index = 0

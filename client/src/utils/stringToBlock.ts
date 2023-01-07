@@ -1,14 +1,15 @@
-import { Block, BlockType } from "../types"
+import {BlockType, IBlock} from "../types";
 
-const stringToBlock = (content: string): Block[] => {
-  const blocks: Block[] = []
+
+const stringToBlock = (content: string): IBlock[] => {
+  const blocks: IBlock[] = []
   const lines = content.split("\n")
   for (const line of lines) {
     if (!line) continue
 
     const blockType = /^["“”].*["“”]/.test(line.trim())
-      ? BlockType.Script
-      : BlockType.Description
+      ? BlockType.DoubleQuote
+      : BlockType.Describe
 
     blocks.push({
       blockType: blockType,
