@@ -4,6 +4,8 @@ import Block from "../block"
 import usePrevious from "../../hooks/usePrevious"
 import setCaretToEnd from "../../utils/setCaretToEnd"
 import { ContentsBlock, DummyBlock, EditorBlock } from "./styles"
+import sample from "../../utils/sample"
+import stringToBlock from "../../utils/stringToBlock"
 
 const defaultBlocks: IBlock[] = [
   {
@@ -13,8 +15,10 @@ const defaultBlocks: IBlock[] = [
   },
 ]
 
-const Editor: React.FC<{ onChange?(block: IBlock[]): void }> = ({onChange}) => {
-  const [blocks, setBlocks] = useState<IBlock[]>(defaultBlocks)
+const Editor: React.FC<{ onChange?(block: IBlock[]): void }> = ({
+  onChange,
+}) => {
+  const [blocks, setBlocks] = useState<IBlock[]>(stringToBlock(sample))
   const [currentBlockId, setCurrentBlockId] = useState<string>("1")
 
   const prevBlocks = usePrevious<IBlock[]>(blocks)
@@ -68,9 +72,8 @@ const Editor: React.FC<{ onChange?(block: IBlock[]): void }> = ({onChange}) => {
     setCurrentBlockId(id)
     const index = blocks.findIndex((b) => b.id === id)
 
-    if (!index) return console.log("첫 번째 블록은 지울 수 없어요!")
-
-    console.log("backspace")
+    // 첫 블록은 지울 수 없음
+    if (!index) return
     setBlocks((b) => b.filter((b) => b.id !== id))
   }
 
@@ -78,6 +81,20 @@ const Editor: React.FC<{ onChange?(block: IBlock[]): void }> = ({onChange}) => {
     setBlocks((b) => {
       return b.map((b) => (b.id === block.id ? block : b))
     })
+  }
+
+  const moveToRelativeBlockHandler = (
+    currentPos: number,
+    direction: -1 | 1
+  ) => {
+    const lastBlock = document.querySelector(
+      `[data-position="${currentPos + direction}"]`
+    ) as HTMLElement
+
+    if (lastBlock) {
+      if (direction === -1) setCaretToEnd(lastBlock)
+      if (direction === 1) lastBlock.focus()
+    }
   }
 
   return (
@@ -94,6 +111,8 @@ const Editor: React.FC<{ onChange?(block: IBlock[]): void }> = ({onChange}) => {
             addBlock={addBlockHandler}
             deleteBlock={deleteBlockHandler}
             updateBlock={updateBlockHandler}
+            moveToRelativeBlock={moveToRelativeBlockHandler}
+            bottomSpacing={blocks[index + 1]?.blockType !== b.blockType}
             key={b.id}
           />
         ))}

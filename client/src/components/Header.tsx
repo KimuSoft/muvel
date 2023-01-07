@@ -1,6 +1,5 @@
 import React from "react"
 import styled from "styled-components"
-import ExportButton from "../componentsDeprecated/atoms/ExportButton"
 import { IBlock } from "../types"
 
 const TitleBlock = styled.div`
@@ -73,7 +72,7 @@ const Header: React.FC<{ blocks: IBlock[] }> = ({ blocks }) => {
         <Title>여신이 되어버린 이야기!</Title>
         <SubTitle>EP.01 여신이라 부르지 말아주세요!</SubTitle>
       </TitleBlock>
-      <ExportButton blocks={blocks} />
+      {/*<ExportButton blocks={blocks} />*/}
     </HeaderStyle>
   )
 }

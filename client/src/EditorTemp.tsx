@@ -1,10 +1,10 @@
 import React from "react"
 import styled from "styled-components"
 import stringToBlock from "./utils/stringToBlock"
-import {IBlock} from "./types";
-import Header from "./components/Header";
-import Editor from "./components/editor";
-import GoalWidget from "./components/GoalWidget";
+import { IBlock } from "./types"
+import Header from "./components/Header"
+import Editor from "./components/editor"
+import GoalWidget from "./components/GoalWidget"
 
 const EditorTemp: React.FC = () => {
   // const navigate = useNavigate()
@@ -22,7 +22,7 @@ const EditorTemp: React.FC = () => {
       <Header blocks={blocks} />
       <Body>
         {/*<Editor defaultBlocks={blocks} onChange={onChange} />*/}
-        <Editor onChange={changeHandler}/>
+        <Editor onChange={changeHandler} />
         <Widgets>
           <GoalWidget blocks={blocks} />
         </Widgets>

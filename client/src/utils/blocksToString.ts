@@ -1,5 +1,4 @@
-
-import {IBlock} from "../types";
+import { IBlock } from "../types"
 
 const blocksToString = (blocks: IBlock[]): string => {
   let content = ""
