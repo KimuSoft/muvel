@@ -1,3 +1,11 @@
+
+
+export interface IEpisode {
+  blocks : IBlock[]
+  title: string
+  chapter: string
+}
+
 export interface IBlock {
   id: string
   content: string

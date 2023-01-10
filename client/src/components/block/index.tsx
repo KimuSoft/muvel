@@ -1,7 +1,9 @@
 import React, { useRef, useState } from "react"
 import { ContentEditableEvent } from "react-contenteditable"
 import { BlockType, IBlock } from "../../types"
-import { StyledContentEditable } from "./styles"
+import { BlockWrapper, StyledContentEditable, TypeMark } from "./styles"
+import keySound from "./keySound.mp3"
+import styled from "styled-components"
 
 const Block: React.FC<{
   block: IBlock
@@ -36,11 +38,15 @@ const Block: React.FC<{
   }
 
   const handleChange = (e: ContentEditableEvent) => {
+    setBlockType(getBlockType(e.target.value))
     content.current = e.target.value
     updateBlock?.({ id: block.id, blockType, content: e.target.value })
   }
 
   const keyDownHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const audio = new Audio(keySound)
+    audio.play().then()
+
     // 새로운 블록 생성
     if (e.key === "Enter") {
       e.preventDefault()
@@ -101,38 +107,27 @@ const Block: React.FC<{
       sel?.addRange(range)
       contenteditable.current.focus()
     }
-
-    // 따옴표 블록 생성
-    else if (e.key === "'" && content.current === "") {
-      console.log("따옴표 블록 생성")
-      e.preventDefault()
-      if (!contenteditable.current) return
-      contenteditable.current.innerText = "‘’"
-
-      // set caret to 1
-      const range = document.createRange()
-      const sel = window.getSelection()
-      range.setStart(contenteditable.current.childNodes[0], 1)
-      range.collapse(true)
-      sel?.removeAllRanges()
-      sel?.addRange(range)
-      contenteditable.current.focus()
-    }
   }
 
   return (
+    /*<TypeMark blockType={blockType} />*/
     <>
       <StyledContentEditable
         innerRef={contenteditable}
         onChange={handleChange}
         onKeyDown={keyDownHandler}
         html={content.current}
-        blockType={block.blockType}
-        bottomSpacing={bottomSpacing}
         data-position={position}
+        placeholder={"내용을 입력해 주세요."}
       />
+      <PaddingBlock height={bottomSpacing ? 20 : 0} />
     </>
   )
 }
+
+export const PaddingBlock = styled.div<{ height: number }>`
+  height: ${({ height }) => height}px;
+  transition: height 0.5s ease;
+`
 
 export default Block

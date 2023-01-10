@@ -6,6 +6,7 @@ import setCaretToEnd from "../../utils/setCaretToEnd"
 import { ContentsBlock, DummyBlock, EditorBlock } from "./styles"
 import sample from "../../utils/sample"
 import stringToBlock from "../../utils/stringToBlock"
+import styled from "styled-components"
 
 const defaultBlocks: IBlock[] = [
   {
@@ -100,22 +101,26 @@ const Editor: React.FC<{ onChange?(block: IBlock[]): void }> = ({
   return (
     <EditorBlock>
       <ContentsBlock>
-        <b>{window.getSelection()?.focusOffset || 0}</b>
-        <br />
-        <b>{JSON.stringify(blocks)}</b>
+        {/*<b>{window.getSelection()?.focusOffset || 0}</b>*/}
+        {/*<br />*/}
+        {/*<b>{JSON.stringify(blocks)}</b>*/}
         <DummyBlock height={"100px"} />
-        {blocks.map((b, index) => (
-          <Block
-            block={b}
-            position={index + 1}
-            addBlock={addBlockHandler}
-            deleteBlock={deleteBlockHandler}
-            updateBlock={updateBlockHandler}
-            moveToRelativeBlock={moveToRelativeBlockHandler}
-            bottomSpacing={blocks[index + 1]?.blockType !== b.blockType}
-            key={b.id}
-          />
-        ))}
+        {blocks.map((b, index) => {
+          const bp = blocks[index + 1]?.blockType !== b.blockType
+
+          return (
+            <Block
+              block={b}
+              position={index + 1}
+              addBlock={addBlockHandler}
+              deleteBlock={deleteBlockHandler}
+              updateBlock={updateBlockHandler}
+              moveToRelativeBlock={moveToRelativeBlockHandler}
+              key={b.id}
+              bottomSpacing={bp}
+            />
+          )
+        })}
         <DummyBlock height={"500px"} />
       </ContentsBlock>
     </EditorBlock>

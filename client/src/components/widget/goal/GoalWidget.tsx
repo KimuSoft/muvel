@@ -1,6 +1,6 @@
 import styled from "styled-components"
 import React from "react"
-import { IBlock } from "../types"
+import { IBlock } from "../../../types"
 import ProgressBar from "./ProgressBar"
 
 const WidgetBlock = styled.div`

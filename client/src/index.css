@@ -12,6 +12,10 @@ body {
   box-sizing: border-box;
 }
 
+script {
+  background-color: #ffffff;
+}
+
 :root {
   background-color: #27272a;
 }

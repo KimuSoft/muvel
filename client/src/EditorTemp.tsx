@@ -2,9 +2,9 @@ import React from "react"
 import styled from "styled-components"
 import stringToBlock from "./utils/stringToBlock"
 import { IBlock } from "./types"
-import Header from "./components/Header"
+import Header from "./components/header/Header"
 import Editor from "./components/editor"
-import GoalWidget from "./components/GoalWidget"
+import GoalWidget from "./components/widget/goal/GoalWidget"
 
 const EditorTemp: React.FC = () => {
   // const navigate = useNavigate()

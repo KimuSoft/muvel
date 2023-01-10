@@ -1,6 +1,6 @@
 import React from "react"
 import styled from "styled-components"
-import { IBlock } from "../types"
+import { IBlock } from "../../types"
 
 const TitleBlock = styled.div`
   display: flex;
