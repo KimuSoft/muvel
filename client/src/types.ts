@@ -1,7 +1,10 @@
-
+export interface INovel {
+  name: string
+  episodes: IEpisode[]
+}
 
 export interface IEpisode {
-  blocks : IBlock[]
+  blocks: IBlock[]
   title: string
   chapter: string
 }
