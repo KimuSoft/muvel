@@ -4,7 +4,8 @@
   "info": {
     "singularName": "novel",
     "pluralName": "novels",
-    "displayName": "Novel"
+    "displayName": "Novel",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -18,6 +19,18 @@
     },
     "description": {
       "type": "text"
+    },
+    "episodes": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::episode.episode",
+      "mappedBy": "novel"
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "novels"
     }
   }
 }
