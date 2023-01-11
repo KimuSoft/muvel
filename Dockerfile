@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:17
 
 ENV TZ=Asia/Seoul
 
@@ -8,12 +8,12 @@ WORKDIR /app
 
 COPY . .
 
-WORKDIR /app/client
+RUN corepack enable && yarn install --immutable
 
-RUN yarn && yarn build
+ENV VITE_API_BASE=/api
 
-WORKDIR /app/server
+RUN yarn workspace client build && \
+    cp -r client/dist/* server/public && \
+    yarn workspace server build
 
-RUN yarn && yarn build
-
-CMD yarn prod
+CMD yarn workspace server start
