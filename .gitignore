@@ -23,7 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 
-*/.yarn/cache
+*.yarn/cache
 node_modules
 convertedWords.json
 words.json

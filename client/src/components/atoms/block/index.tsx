@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react"
 import { ContentEditableEvent } from "react-contenteditable"
 import { BlockType, IBlock } from "../../../types"
-import { BlockWrapper, StyledContentEditable, TypeMark } from "./styles"
+import { StyledContentEditable } from "./styles"
 import keySoundFile from "./keySound.mp3"
 import styled from "styled-components"
 import { Howl } from "howler"

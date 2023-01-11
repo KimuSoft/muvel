@@ -3,9 +3,10 @@ import EditorTemplate from "../templates/editor"
 import stringToBlock from "../../utils/stringToBlock"
 import { IBlock } from "../../types"
 import EditorContext from "../../context/editorContext"
+import { getRandomSample } from "../../utils/ipsum"
 
 const EditorPage: React.FC = () => {
-  const [blocks, setBlocks] = useState<IBlock[]>(stringToBlock("가을"))
+  const [blocks, setBlocks] = useState<IBlock[]>(getRandomSample())
   const [title, setTitle] = useState<string>("")
   const [chapter, setChapter] = useState<string>("")
 
@@ -14,7 +15,9 @@ const EditorPage: React.FC = () => {
   }, [])
 
   return (
-    <EditorContext.Provider value={{ blocks, setBlocks, title, setTitle, chapter, setChapter }}>
+    <EditorContext.Provider
+      value={{ blocks, setBlocks, title, setTitle, chapter, setChapter }}
+    >
       <EditorTemplate />
     </EditorContext.Provider>
   )
