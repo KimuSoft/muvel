@@ -4,6 +4,7 @@ import { IBlock } from "../../../types"
 import ImportButton from "./ImportButton"
 import ExportButton from "./ExportButton"
 import EpisodeTitle from "../../atoms/EpisodeTitle"
+import Auth from "./Auth"
 
 const SideBlock = styled.div`
   width: 100%;
@@ -34,6 +35,7 @@ const Header: React.FC = () => {
       <EpisodeTitle />
       <ExportButton />
       <ImportButton />
+      <Auth />
     </HeaderStyle>
   )
 }
