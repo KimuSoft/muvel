@@ -13,17 +13,21 @@
     "@strapi/plugin-i18n": "4.5.5",
     "@strapi/plugin-users-permissions": "4.5.5",
     "@strapi/strapi": "4.5.5",
-    "better-sqlite3": "7.4.6"
+    "better-sqlite3": "7.4.6",
+    "react-select": "^5.7.0"
   },
   "author": {
     "name": "A Strapi developer"
   },
   "strapi": {
-    "uuid": "9cf61bb8-9b05-4f6b-8de5-310dea3455e1"
+    "uuid": "56bda642-f43f-4021-b1ff-524e7d0b1959"
   },
   "engines": {
     "node": ">=14.19.1 <=18.x.x",
     "npm": ">=6.0.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@strapi/typescript-utils": "^4.5.5"
+  }
 }

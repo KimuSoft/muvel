@@ -2641,7 +2641,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@strapi/typescript-utils@npm:4.5.5":
+"@strapi/typescript-utils@npm:4.5.5, @strapi/typescript-utils@npm:^4.5.5":
   version: 4.5.5
   resolution: "@strapi/typescript-utils@npm:4.5.5"
   dependencies:
@@ -11575,6 +11575,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-select@npm:^5.7.0":
+  version: 5.7.0
+  resolution: "react-select@npm:5.7.0"
+  dependencies:
+    "@babel/runtime": ^7.12.0
+    "@emotion/cache": ^11.4.0
+    "@emotion/react": ^11.8.1
+    "@floating-ui/dom": ^1.0.1
+    "@types/react-transition-group": ^4.4.0
+    memoize-one: ^6.0.0
+    prop-types: ^15.6.0
+    react-transition-group: ^4.3.0
+    use-isomorphic-layout-effect: ^1.1.2
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 3d29f7bb6dd66ad55396d820f05da6112f1d21b67526422a8ff5aa6cd47c783804c1b73042ac2949ba0871056a3dc68c06a73a8281abb61571e475d72bbd80dc
+  languageName: node
+  linkType: hard
+
 "react-side-effect@npm:^2.1.0":
   version: 2.1.2
   resolution: "react-side-effect@npm:2.1.2"
@@ -12430,7 +12450,9 @@ __metadata:
     "@strapi/plugin-i18n": 4.5.5
     "@strapi/plugin-users-permissions": 4.5.5
     "@strapi/strapi": 4.5.5
+    "@strapi/typescript-utils": ^4.5.5
     better-sqlite3: 7.4.6
+    react-select: ^5.7.0
   languageName: unknown
   linkType: soft
 
