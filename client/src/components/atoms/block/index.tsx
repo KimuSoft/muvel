@@ -1,9 +1,12 @@
 import React, { useRef, useState } from "react"
 import { ContentEditableEvent } from "react-contenteditable"
-import { BlockType, IBlock } from "../../types"
+import { BlockType, IBlock } from "../../../types"
 import { BlockWrapper, StyledContentEditable, TypeMark } from "./styles"
-import keySound from "./keySound.mp3"
+import keySoundFile from "./keySound.mp3"
 import styled from "styled-components"
+import {Howl} from 'howler'
+
+const keySound = new Howl({src:keySoundFile})
 
 const Block: React.FC<{
   block: IBlock
@@ -44,8 +47,7 @@ const Block: React.FC<{
   }
 
   const keyDownHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    const audio = new Audio(keySound)
-    audio.play().then()
+    keySound.play()
 
     // 새로운 블록 생성
     if (e.key === "Enter") {

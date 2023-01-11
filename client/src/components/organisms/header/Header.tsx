@@ -1,6 +1,8 @@
 import React from "react"
 import styled from "styled-components"
-import { IBlock } from "../../types"
+import { IBlock } from "../../../types"
+import ImportButton from "./ImportButton";
+import ExportButton from "./ExportButton";
 
 const TitleBlock = styled.div`
   display: flex;
@@ -65,14 +67,15 @@ const HeaderStyle = styled.div`
   }
 `
 
-const Header: React.FC<{ blocks: IBlock[] }> = ({ blocks }) => {
+const Header: React.FC = () => {
   return (
     <HeaderStyle>
       <TitleBlock>
         <Title>여신이 되어버린 이야기!</Title>
         <SubTitle>EP.01 여신이라 부르지 말아주세요!</SubTitle>
       </TitleBlock>
-      {/*<ExportButton blocks={blocks} />*/}
+      <ExportButton/>
+      <ImportButton/>
     </HeaderStyle>
   )
 }

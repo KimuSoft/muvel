@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react"
-import { BlockType, IBlock } from "../../types"
-import Block from "../block"
-import usePrevious from "../../hooks/usePrevious"
-import setCaretToEnd from "../../utils/setCaretToEnd"
+import React, {useContext, useEffect, useState} from "react"
+import { BlockType, IBlock } from "../../../types"
+import Block from "../../atoms/block"
+import usePrevious from "../../../hooks/usePrevious"
+import setCaretToEnd from "../../../utils/setCaretToEnd"
 import { ContentsBlock, DummyBlock, EditorBlock } from "./styles"
-import sample from "../../utils/sample"
-import stringToBlock from "../../utils/stringToBlock"
+import sample from "../../../utils/sample"
+import stringToBlock from "../../../utils/stringToBlock"
 import styled from "styled-components"
+import EditorContext from "../../../context/editorContext";
 
 const defaultBlocks: IBlock[] = [
   {
@@ -16,22 +17,19 @@ const defaultBlocks: IBlock[] = [
   },
 ]
 
-const Editor: React.FC<{ onChange?(block: IBlock[]): void }> = ({
-  onChange,
-}) => {
-  const [blocks, setBlocks] = useState<IBlock[]>(stringToBlock(sample))
+const Editor: React.FC = () => {
+  const context = useContext(EditorContext)
   const [currentBlockId, setCurrentBlockId] = useState<string>("1")
 
-  const prevBlocks = usePrevious<IBlock[]>(blocks)
+  const prevBlocks = usePrevious<IBlock[]>(context.blocks)
 
   // Handling the cursor and focus on adding and deleting blocks
   useEffect(() => {
-    onChange?.(blocks)
 
     // If a new block was added, move the caret to it
-    if (prevBlocks && prevBlocks.length + 1 === blocks.length) {
+    if (prevBlocks && prevBlocks.length + 1 === context.blocks.length) {
       const nextBlockPosition =
-        blocks.map((b) => b.id).indexOf(currentBlockId) + 1 + 1
+        context.blocks.map((b) => b.id).indexOf(currentBlockId) + 1 + 1
       const nextBlock = document.querySelector(
         `[data-position="${nextBlockPosition}"]`
       ) as HTMLElement
@@ -40,7 +38,7 @@ const Editor: React.FC<{ onChange?(block: IBlock[]): void }> = ({
       }
     }
     // If a block was deleted, move the caret to the end of the last block
-    if (prevBlocks && prevBlocks.length - 1 === blocks.length) {
+    if (prevBlocks && prevBlocks.length - 1 === context.blocks.length) {
       const lastBlockPosition = prevBlocks
         .map((b) => b.id)
         .indexOf(currentBlockId)
@@ -53,11 +51,11 @@ const Editor: React.FC<{ onChange?(block: IBlock[]): void }> = ({
         setCaretToEnd(lastBlock)
       }
     }
-  }, [blocks, prevBlocks, currentBlockId])
+  }, [context.blocks, prevBlocks, currentBlockId])
 
   const addBlockHandler = (block: IBlock) => {
     setCurrentBlockId(block.id)
-    setBlocks((b) => {
+    context.setBlocks((b) => {
       const _blocks = b.map((b) => ({ ...b, focus: false }))
       _blocks.splice(_blocks.findIndex((b) => b.id === block.id) + 1, 0, {
         id: Math.random().toString(),
@@ -71,15 +69,15 @@ const Editor: React.FC<{ onChange?(block: IBlock[]): void }> = ({
 
   const deleteBlockHandler = ({ id }: { id: string }) => {
     setCurrentBlockId(id)
-    const index = blocks.findIndex((b) => b.id === id)
+    const index = context.blocks.findIndex((b) => b.id === id)
 
     // 첫 블록은 지울 수 없음
     if (!index) return
-    setBlocks((b) => b.filter((b) => b.id !== id))
+    context.setBlocks((b) => b.filter((b) => b.id !== id))
   }
 
   const updateBlockHandler = (block: IBlock) => {
-    setBlocks((b) => {
+    context.setBlocks((b) => {
       return b.map((b) => (b.id === block.id ? block : b))
     })
   }
@@ -105,8 +103,8 @@ const Editor: React.FC<{ onChange?(block: IBlock[]): void }> = ({
         {/*<br />*/}
         {/*<b>{JSON.stringify(blocks)}</b>*/}
         <DummyBlock height={"100px"} />
-        {blocks.map((b, index) => {
-          const bp = blocks[index + 1]?.blockType !== b.blockType
+        {context.blocks.map((b, index) => {
+          const bp = context.blocks[index + 1]?.blockType !== b.blockType
 
           return (
             <Block

@@ -14,7 +14,7 @@ const stringToBlock = (content: string): IBlock[] => {
       blockType: blockType,
       content: line
         .trim()
-        .replace(/^["“”](.*)["“”]$/, "$1")
+        .replace(/^"(.*)"$/, "“$1”")
         .replace(/\.\.\./g, "…"),
       id: Math.random().toString(),
     })

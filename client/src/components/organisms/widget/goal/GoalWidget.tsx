@@ -1,7 +1,8 @@
 import styled from "styled-components"
-import React from "react"
-import { IBlock } from "../../../types"
-import ProgressBar from "./ProgressBar"
+import React, {useContext} from "react"
+import { IBlock } from "../../../../types"
+import ProgressBar from "../../../atoms/ProgressBar"
+import EditorContext from "../../../../context/editorContext";
 
 const WidgetBlock = styled.div`
   display: flex;
@@ -53,9 +54,11 @@ const GoalPercent = styled.h3`
   width: 70px;
 `
 
-const GoalWidget: React.FC<{ blocks: IBlock[] }> = ({ blocks }) => {
+const GoalWidget: React.FC = () => {
+  const context = useContext(EditorContext)
+
   const goal = 3000
-  const current = blocks.reduce(
+  const current = context.blocks.reduce(
     (acc, cur) => acc + cur.content.replace(/[\s\n]/g, "").length,
     0
   )

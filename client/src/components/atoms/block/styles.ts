@@ -1,6 +1,6 @@
 import styled from "styled-components"
 import ContentEditable from "react-contenteditable"
-import { BlockType } from "../../types"
+import { BlockType } from "../../../types"
 import Block from "./index"
 
 export const StyledContentEditable = styled(ContentEditable)<{}>`
