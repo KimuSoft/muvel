@@ -1,9 +1,10 @@
 import React, { createRef, useContext } from "react"
-import { BiImport } from "react-icons/all"
+import { MdUploadFile } from "react-icons/all"
 import EditorContext from "../../../context/editorContext"
 import stringToBlock from "../../../utils/stringToBlock"
 import { BlockType, IBlock } from "../../../types"
 import { z } from "zod"
+import { toast } from "react-toastify"
 
 const readFile = (file: File) =>
   new Promise<string | ArrayBuffer>((resolve, reject) => {
@@ -22,7 +23,7 @@ const episodeSchema = z.object({
       content: z.string(),
       blockType: z.nativeEnum(BlockType),
     })
-  )
+  ),
 })
 
 const ImportButton: React.FC = () => {
@@ -35,17 +36,19 @@ const ImportButton: React.FC = () => {
     const r = await readFile(e.target.files[0])
     alert("업로드 완료")
 
-    if (typeof r !== "string") return alert("지원하지 않는 파일입니다.")
+    if (typeof r !== "string") return toast.error("지원하지 않는 파일이에요...")
 
     try {
       const episode = episodeSchema.parse(JSON.parse(r.toString()))
       setBlocks(episode.blocks)
       setTitle(episode.title)
       setChapter(episode.chapter)
+      toast.info("뮤블 에피소드 파일을 성공적으로 불러왔어요!")
     } catch (e) {
       setBlocks(stringToBlock(r.toString()))
       setTitle("")
       setChapter("")
+      toast.info("텍스트 파일을 뮤블 에피소드로 변환해 불러왔어요!")
     }
   }
 
@@ -58,7 +61,7 @@ const ImportButton: React.FC = () => {
         accept="application/json, text/plain"
         onChange={uploadHandler}
       />
-      <BiImport onClick={clickHandler} style={{ fontSize: 30 }} />
+      <MdUploadFile onClick={clickHandler} style={{ fontSize: 30 }} />
     </>
   )
 }

@@ -1,15 +1,14 @@
-import React, { createRef, useContext } from "react"
-import { BiExport } from "react-icons/all"
+import React, { useContext } from "react"
 import EditorContext from "../../../context/editorContext"
-import stringToBlock from "../../../utils/stringToBlock"
-import {BlockType, IBlock, IEpisode} from "../../../types"
-import { z } from "zod"
+import { IEpisode } from "../../../types"
+import { toast } from "react-toastify"
+import { MdDownload } from "react-icons/md"
 
 const ImportButton: React.FC = () => {
   const { blocks, title, chapter } = useContext(EditorContext)
 
   const clickHandler = () => {
-    const json = JSON.stringify({title, chapter, blocks } as IEpisode)
+    const json = JSON.stringify({ title, chapter, blocks } as IEpisode)
     const blob = new Blob([json], { type: "application/json" })
     const href = URL.createObjectURL(blob)
     const link = document.createElement("a")
@@ -19,11 +18,12 @@ const ImportButton: React.FC = () => {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+    toast.info("성공적으로 저장했어요!")
   }
 
   return (
     <>
-      <BiExport onClick={clickHandler} style={{ fontSize: 30 }} />
+      <MdDownload onClick={clickHandler} style={{ fontSize: 30 }} />
     </>
   )
 }

@@ -1,3 +1,9 @@
+export interface IUser {
+  id: string
+  username: string
+  avatar: string
+}
+
 export interface INovel {
   name: string
   episodes: IEpisode[]

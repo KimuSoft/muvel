@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "2023-01-11T14:07:24.622Z"
+    "x-generation-date": "2023-01-11T15:15:48.057Z"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -668,6 +668,9 @@
                                                         }
                                                       }
                                                     }
+                                                  },
+                                                  "avatar": {
+                                                    "type": "string"
                                                   },
                                                   "createdAt": {
                                                     "type": "string",
@@ -1508,6 +1511,9 @@
                                                         }
                                                       }
                                                     }
+                                                  },
+                                                  "avatar": {
+                                                    "type": "string"
                                                   },
                                                   "createdAt": {
                                                     "type": "string",
@@ -2382,6 +2388,9 @@
                                                       }
                                                     }
                                                   },
+                                                  "avatar": {
+                                                    "type": "string"
+                                                  },
                                                   "createdAt": {
                                                     "type": "string",
                                                     "format": "date-time"
@@ -3221,6 +3230,9 @@
                                                         }
                                                       }
                                                     }
+                                                  },
+                                                  "avatar": {
+                                                    "type": "string"
                                                   },
                                                   "createdAt": {
                                                     "type": "string",
@@ -4261,6 +4273,9 @@
                                           }
                                         }
                                       },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
                                       "createdAt": {
                                         "type": "string",
                                         "format": "date-time"
@@ -5120,6 +5135,9 @@
                                             }
                                           }
                                         }
+                                      },
+                                      "avatar": {
+                                        "type": "string"
                                       },
                                       "createdAt": {
                                         "type": "string",
@@ -6014,6 +6032,9 @@
                                           }
                                         }
                                       },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
                                       "createdAt": {
                                         "type": "string",
                                         "format": "date-time"
@@ -6874,6 +6895,9 @@
                                           }
                                         }
                                       },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
                                       "createdAt": {
                                         "type": "string",
                                         "format": "date-time"
@@ -7650,6 +7674,9 @@
                                                           }
                                                         }
                                                       }
+                                                    },
+                                                    "avatar": {
+                                                      "type": "string"
                                                     },
                                                     "createdAt": {
                                                       "type": "string",
@@ -8510,6 +8537,9 @@
                                                           }
                                                         }
                                                       }
+                                                    },
+                                                    "avatar": {
+                                                      "type": "string"
                                                     },
                                                     "createdAt": {
                                                       "type": "string",
@@ -9404,6 +9434,9 @@
                                                         }
                                                       }
                                                     },
+                                                    "avatar": {
+                                                      "type": "string"
+                                                    },
                                                     "createdAt": {
                                                       "type": "string",
                                                       "format": "date-time"
@@ -10263,6 +10296,9 @@
                                                           }
                                                         }
                                                       }
+                                                    },
+                                                    "avatar": {
+                                                      "type": "string"
                                                     },
                                                     "createdAt": {
                                                       "type": "string",
@@ -16421,6 +16457,9 @@
                                             }
                                           }
                                         },
+                                        "avatar": {
+                                          "type": "string"
+                                        },
                                         "createdAt": {
                                           "type": "string",
                                           "format": "date-time"
@@ -17253,6 +17292,9 @@
                                               }
                                             }
                                           }
+                                        },
+                                        "avatar": {
+                                          "type": "string"
                                         },
                                         "createdAt": {
                                           "type": "string",
@@ -18120,6 +18162,9 @@
                                             }
                                           }
                                         },
+                                        "avatar": {
+                                          "type": "string"
+                                        },
                                         "createdAt": {
                                           "type": "string",
                                           "format": "date-time"
@@ -18952,6 +18997,9 @@
                                               }
                                             }
                                           }
+                                        },
+                                        "avatar": {
+                                          "type": "string"
                                         },
                                         "createdAt": {
                                           "type": "string",
@@ -19808,6 +19856,9 @@
                                                             }
                                                           }
                                                         }
+                                                      },
+                                                      "avatar": {
+                                                        "type": "string"
                                                       },
                                                       "createdAt": {
                                                         "type": "string",
@@ -20670,6 +20721,9 @@
                                                             }
                                                           }
                                                         }
+                                                      },
+                                                      "avatar": {
+                                                        "type": "string"
                                                       },
                                                       "createdAt": {
                                                         "type": "string",
@@ -21566,6 +21620,9 @@
                                                           }
                                                         }
                                                       },
+                                                      "avatar": {
+                                                        "type": "string"
+                                                      },
                                                       "createdAt": {
                                                         "type": "string",
                                                         "format": "date-time"
@@ -22428,6 +22485,9 @@
                                                           }
                                                         }
                                                       },
+                                                      "avatar": {
+                                                        "type": "string"
+                                                      },
                                                       "createdAt": {
                                                         "type": "string",
                                                         "format": "date-time"
@@ -22714,6 +22774,9 @@
                   ],
                   "example": "string or id"
                 }
+              },
+              "avatar": {
+                "type": "string"
               }
             }
           }
@@ -23428,6 +23491,9 @@
                                             }
                                           }
                                         },
+                                        "avatar": {
+                                          "type": "string"
+                                        },
                                         "createdAt": {
                                           "type": "string",
                                           "format": "date-time"
@@ -23544,6 +23610,9 @@
                     }
                   }
                 }
+              },
+              "avatar": {
+                "type": "string"
               },
               "createdAt": {
                 "type": "string",
@@ -24300,6 +24369,9 @@
                                             }
                                           }
                                         },
+                                        "avatar": {
+                                          "type": "string"
+                                        },
                                         "createdAt": {
                                           "type": "string",
                                           "format": "date-time"
@@ -24416,6 +24488,9 @@
                     }
                   }
                 }
+              },
+              "avatar": {
+                "type": "string"
               },
               "createdAt": {
                 "type": "string",
@@ -25205,6 +25280,9 @@
                                             }
                                           }
                                         },
+                                        "avatar": {
+                                          "type": "string"
+                                        },
                                         "createdAt": {
                                           "type": "string",
                                           "format": "date-time"
@@ -25321,6 +25399,9 @@
                     }
                   }
                 }
+              },
+              "avatar": {
+                "type": "string"
               },
               "createdAt": {
                 "type": "string",
@@ -26077,6 +26158,9 @@
                                             }
                                           }
                                         },
+                                        "avatar": {
+                                          "type": "string"
+                                        },
                                         "createdAt": {
                                           "type": "string",
                                           "format": "date-time"
@@ -26193,6 +26277,9 @@
                     }
                   }
                 }
+              },
+              "avatar": {
+                "type": "string"
               },
               "createdAt": {
                 "type": "string",

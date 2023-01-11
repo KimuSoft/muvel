@@ -68,6 +68,9 @@
       "relation": "oneToMany",
       "target": "api::novel.novel",
       "mappedBy": "author"
+    },
+    "avatar": {
+      "type": "string"
     }
   }
 }

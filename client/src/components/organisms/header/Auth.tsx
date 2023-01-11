@@ -1,9 +1,16 @@
 import React from "react"
+import useCurrentUser from "../../../hooks/useCurrentUser"
 
 const Auth: React.FC = () => {
+  const user = useCurrentUser()
+
   return (
     <>
-      <a href="http://localhost:1337/api/connect/discord">Sign in</a>
+      {user ? (
+        user.username + user.avatar
+      ) : (
+        <a href={import.meta.env.VITE_API_BASE + "/connect/discord"}>Sign in</a>
+      )}
     </>
   )
 }
