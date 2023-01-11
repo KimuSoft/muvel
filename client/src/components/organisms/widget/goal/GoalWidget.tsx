@@ -1,8 +1,8 @@
 import styled from "styled-components"
-import React, {useContext} from "react"
+import React, { useContext } from "react"
 import { IBlock } from "../../../../types"
 import ProgressBar from "../../../atoms/ProgressBar"
-import EditorContext from "../../../../context/editorContext";
+import EditorContext from "../../../../context/editorContext"
 
 const WidgetBlock = styled.div`
   display: flex;

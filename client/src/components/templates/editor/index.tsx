@@ -9,11 +9,11 @@ import { Body, MainStyle, Widgets } from "./styles"
 const EditorTemplate: React.FC = () => {
   return (
     <MainStyle>
-      <Header/>
+      <Header />
       <Body>
         <Editor />
         <Widgets>
-          <GoalWidget/>
+          <GoalWidget />
         </Widgets>
       </Body>
     </MainStyle>

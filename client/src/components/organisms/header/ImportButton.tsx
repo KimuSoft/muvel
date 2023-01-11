@@ -1,48 +1,66 @@
-import React, {createRef, useContext} from "react";
-import {BiImport} from "react-icons/all";
-import EditorContext from "../../../context/editorContext";
-import stringToBlock from "../../../utils/stringToBlock";
-import {BlockType, IBlock} from "../../../types";
-import {z} from "zod";
+import React, { createRef, useContext } from "react"
+import { BiImport } from "react-icons/all"
+import EditorContext from "../../../context/editorContext"
+import stringToBlock from "../../../utils/stringToBlock"
+import { BlockType, IBlock } from "../../../types"
+import { z } from "zod"
 
-const readFile = (file: File) => new Promise<string | ArrayBuffer>((resolve, reject) => {
-  const reader = new FileReader()
-  reader.onload = (e) => resolve(e.target!.result!)
-  reader.onerror = reject
-  reader.readAsText(file)
+const readFile = (file: File) =>
+  new Promise<string | ArrayBuffer>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => resolve(e.target!.result!)
+    reader.onerror = reject
+    reader.readAsText(file)
+  })
+
+const episodeSchema = z.object({
+  title: z.string(),
+  chapter: z.string(),
+  blocks: z.array(
+    z.object({
+      id: z.string(),
+      content: z.string(),
+      blockType: z.nativeEnum(BlockType),
+    })
+  )
 })
 
-const blockSchema = z.array(z.object({
-  id: z.string(),
-  content: z.string(),
-  blockType: z.nativeEnum(BlockType),
-}))
-
-const ImportButton :React.FC = () => {
+const ImportButton: React.FC = () => {
   const fileInput = createRef<HTMLInputElement>()
-  const {setBlocks } = useContext(EditorContext);
+  const { setBlocks, setTitle, setChapter } = useContext(EditorContext)
 
-  const clickHandler = () =>fileInput.current?.click()
+  const clickHandler = () => fileInput.current?.click()
   const uploadHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if(!e.target.files) return alert("파일을 선택해주세요")
+    if (!e.target.files) return alert("파일을 선택해주세요")
     const r = await readFile(e.target.files[0])
     alert("업로드 완료")
 
-    if(typeof r !== "string") return alert("지원하지 않는 파일입니다.")
+    if (typeof r !== "string") return alert("지원하지 않는 파일입니다.")
 
-    let blocks: IBlock[] = []
     try {
-       blocks = blockSchema.parse(JSON.parse(r.toString()))
-    } catch  (e) {
-      blocks = stringToBlock(r.toString())
+      const episode = episodeSchema.parse(JSON.parse(r.toString()))
+      setBlocks(episode.blocks)
+      setTitle(episode.title)
+      setChapter(episode.chapter)
+    } catch (e) {
+      setBlocks(stringToBlock(r.toString()))
+      setTitle("")
+      setChapter("")
     }
-    setBlocks(blocks)
   }
 
-  return <>
-    <input type="file" style={{display: "none"}} ref={fileInput} accept="application/json, text/plain" onChange={uploadHandler}/>
-    <BiImport onClick={clickHandler} style={{fontSize: 30} }/>
-  </>
+  return (
+    <>
+      <input
+        type="file"
+        style={{ display: "none" }}
+        ref={fileInput}
+        accept="application/json, text/plain"
+        onChange={uploadHandler}
+      />
+      <BiImport onClick={clickHandler} style={{ fontSize: 30 }} />
+    </>
+  )
 }
 
 export default ImportButton

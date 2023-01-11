@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { BlockType, IBlock } from "../../../types"
 import Block from "../../atoms/block"
 import usePrevious from "../../../hooks/usePrevious"
@@ -7,7 +7,7 @@ import { ContentsBlock, DummyBlock, EditorBlock } from "./styles"
 import sample from "../../../utils/sample"
 import stringToBlock from "../../../utils/stringToBlock"
 import styled from "styled-components"
-import EditorContext from "../../../context/editorContext";
+import EditorContext from "../../../context/editorContext"
 
 const defaultBlocks: IBlock[] = [
   {
@@ -25,7 +25,6 @@ const Editor: React.FC = () => {
 
   // Handling the cursor and focus on adding and deleting blocks
   useEffect(() => {
-
     // If a new block was added, move the caret to it
     if (prevBlocks && prevBlocks.length + 1 === context.blocks.length) {
       const nextBlockPosition =

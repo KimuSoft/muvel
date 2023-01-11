@@ -4,9 +4,9 @@ import { BlockType, IBlock } from "../../../types"
 import { BlockWrapper, StyledContentEditable, TypeMark } from "./styles"
 import keySoundFile from "./keySound.mp3"
 import styled from "styled-components"
-import {Howl} from 'howler'
+import { Howl } from "howler"
 
-const keySound = new Howl({src:keySoundFile})
+const keySound = new Howl({ src: keySoundFile })
 
 const Block: React.FC<{
   block: IBlock

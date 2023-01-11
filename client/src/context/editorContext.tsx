@@ -1,8 +1,20 @@
-import React, {createContext} from "react";
-import {IBlock} from "../types";
-
+import React, { createContext } from "react"
+import { IBlock } from "../types"
 
 export default createContext<{
   blocks: IBlock[]
   setBlocks: React.Dispatch<React.SetStateAction<IBlock[]>>
-}>({blocks: [], setBlocks: () => {}})
+
+  title: string
+  setTitle: React.Dispatch<React.SetStateAction<string>>
+
+  chapter: string
+  setChapter: React.Dispatch<React.SetStateAction<string>>
+}>({
+  blocks: [],
+  setBlocks: () => {},
+  title: "",
+  setTitle: () => {},
+  chapter: "",
+  setChapter: () => {},
+})
