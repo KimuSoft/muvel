@@ -34,3 +34,5 @@ config.json
 env.sh
 
 data/
+
+.env
