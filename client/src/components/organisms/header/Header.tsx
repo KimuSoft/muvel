@@ -40,9 +40,9 @@ const Header: React.FC = () => {
     <HeaderStyle>
       <IconButton
         onClick={() => setIsSidebarOpen(true)}
-        style={{ backgroundColor: "transparent" }}
+        style={{ backgroundColor: "transparent", marginLeft: 15 }}
       >
-        <MdMenu />
+        <MdMenu style={{ fontSize: 24 }} />
       </IconButton>
       <EpisodeTitle />
       <ExportButton />
