@@ -35,4 +35,5 @@ env.sh
 
 data/
 
+.yarn/install-state.gz
 .env
