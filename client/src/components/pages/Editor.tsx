@@ -9,6 +9,7 @@ const EditorPage: React.FC = () => {
   const [blocks, setBlocks] = useState<IBlock[]>(getRandomSample())
   const [title, setTitle] = useState<string>("")
   const [chapter, setChapter] = useState<string>("")
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false)
 
   useEffect(() => {
     window.onbeforeunload = () => 0
@@ -16,7 +17,16 @@ const EditorPage: React.FC = () => {
 
   return (
     <EditorContext.Provider
-      value={{ blocks, setBlocks, title, setTitle, chapter, setChapter }}
+      value={{
+        blocks,
+        setBlocks,
+        title,
+        setTitle,
+        chapter,
+        setChapter,
+        isSidebarOpen,
+        setIsSidebarOpen,
+      }}
     >
       <EditorTemplate />
     </EditorContext.Provider>

@@ -4,9 +4,6 @@ import Block from "../../atoms/block"
 import usePrevious from "../../../hooks/usePrevious"
 import setCaretToEnd from "../../../utils/setCaretToEnd"
 import { ContentsBlock, DummyBlock, EditorBlock } from "./styles"
-import sample from "../../../utils/sample"
-import stringToBlock from "../../../utils/stringToBlock"
-import styled from "styled-components"
 import EditorContext from "../../../context/editorContext"
 
 const defaultBlocks: IBlock[] = [

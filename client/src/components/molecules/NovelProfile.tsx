@@ -1,0 +1,75 @@
+import React from "react"
+import { FaFeatherAlt } from "react-icons/fa"
+import styled from "styled-components"
+import IconButton from "../atoms/IconButton"
+
+const NovelProfile: React.FC = () => {
+  return (
+    <ProfileContainer>
+      <ProfileImage />
+      <RightContainer>
+        <Title>여신이 되어버린 이야기</Title>
+        <Description>커엽커엽커엽추</Description>
+        <ButtonMenu>
+          <IconButton text={"새 편 쓰기"}>
+            <FaFeatherAlt />
+          </IconButton>
+        </ButtonMenu>
+      </RightContainer>
+    </ProfileContainer>
+  )
+}
+
+const ProfileContainer = styled.div`
+  width: 100%;
+  height: 200px;
+
+  display: flex;
+  flex-direction: row;
+
+  padding: 10px 15px;
+  gap: 20px;
+`
+
+const ProfileImage = styled.div`
+  border-radius: 5px;
+  width: 100px;
+  height: 140px;
+
+  background-color: #71717a;
+`
+
+const RightContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  gap: 5px;
+
+  width: 0;
+  height: 100%;
+  flex-grow: 1;
+`
+
+const Title = styled.div`
+  font-size: 20px;
+  font-weight: 800;
+
+  width: 100%;
+`
+
+const Description = styled.div`
+  font-size: 12px;
+  text-indent: 1em;
+
+  width: 100%;
+  height: 100px;
+`
+
+const ButtonMenu = styled.div`
+  display: flex;
+  flex-direction: row-reverse;
+
+  width: 100%;
+`
+
+export default NovelProfile

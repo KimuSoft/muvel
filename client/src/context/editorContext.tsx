@@ -10,6 +10,9 @@ export default createContext<{
 
   chapter: string
   setChapter: React.Dispatch<React.SetStateAction<string>>
+
+  isSidebarOpen: boolean
+  setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>
 }>({
   blocks: [],
   setBlocks: () => {},
@@ -17,4 +20,6 @@ export default createContext<{
   setTitle: () => {},
   chapter: "",
   setChapter: () => {},
+  isSidebarOpen: false,
+  setIsSidebarOpen: () => {},
 })
