@@ -2,6 +2,8 @@
 
 set -x
 
+. ./env.sh
+
 docker rm -f muvel-server
 echo Deleted previous container
 
