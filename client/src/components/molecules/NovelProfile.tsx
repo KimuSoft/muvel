@@ -1,7 +1,8 @@
-import React from "react"
+import React, { useRef } from "react"
 import { FaFeatherAlt } from "react-icons/fa"
 import styled from "styled-components"
 import IconButton from "../atoms/IconButton"
+import ContentEditable from "react-contenteditable"
 
 const NovelProfile: React.FC = () => {
   return (
@@ -62,7 +63,7 @@ const Description = styled.div`
   text-indent: 1em;
 
   width: 100%;
-  height: 100px;
+  height: 100%;
 `
 
 const ButtonMenu = styled.div`
