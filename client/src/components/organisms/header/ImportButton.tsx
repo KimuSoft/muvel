@@ -34,7 +34,6 @@ const ImportButton: React.FC = () => {
   const uploadHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return alert("파일을 선택해주세요")
     const r = await readFile(e.target.files[0])
-    alert("업로드 완료")
 
     if (typeof r !== "string") return toast.error("지원하지 않는 파일이에요...")
 

@@ -16,6 +16,8 @@ export const SidebarFrame = styled.div<{ isOpen: boolean }>`
 
   padding: 20px 30px;
   gap: 30px;
+
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5);
 `
 
 export const Top = styled.div`

@@ -100,6 +100,7 @@ const SubTitle = styled(ContentEditable)`
   }
 
   @media (max-width: 1000px) {
+    display: none;
     font-size: 16px;
   }
 

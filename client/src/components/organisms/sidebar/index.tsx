@@ -4,6 +4,7 @@ import NovelProfile from "../../molecules/NovelProfile"
 import IconButton from "../../atoms/IconButton"
 import { MdChevronLeft, MdMenuOpen } from "react-icons/md"
 import EditorContext from "../../../context/editorContext"
+import EpisodeList from "../EpisodeList"
 
 const Sidebar: React.FC = () => {
   const { isSidebarOpen, setIsSidebarOpen } = useContext(EditorContext)
@@ -25,6 +26,7 @@ const Sidebar: React.FC = () => {
         </IconButton>
       </Top>
       <NovelProfile />
+      <EpisodeList />
     </SidebarFrame>
   )
 }

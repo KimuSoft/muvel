@@ -15,6 +15,15 @@ export const Body = styled.div`
   height: 100vh;
 
   padding: 80px 30px 90px;
+
+  overflow-y: scroll;
+  ::-webkit-scrollbar-thumb {
+    background-color: #ffffff;
+    border-radius: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
 `
 
 export const Widgets = styled.div`

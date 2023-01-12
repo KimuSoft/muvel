@@ -22,13 +22,6 @@ export const EditorBlock = styled.div`
     position: relative;
     left: 5px;
   }
-  ::-webkit-scrollbar-thumb {
-    background-color: #71717a30;
-    border-radius: 5px;
-  }
-  ::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
 `
 
 export const DummyBlock = styled.div<{ height: string }>`
