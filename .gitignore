@@ -30,3 +30,7 @@ node_modules
 convertedWords.json
 words.json
 config.json
+
+env.sh
+
+data/
