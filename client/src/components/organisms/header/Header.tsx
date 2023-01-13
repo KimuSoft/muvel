@@ -1,12 +1,10 @@
 import React, { useContext } from "react"
 import styled from "styled-components"
-import { IBlock } from "../../../types"
 import ImportButton from "./ImportButton"
 import ExportButton from "./ExportButton"
 import EpisodeTitle from "../../atoms/EpisodeTitle"
 import Auth from "./Auth"
 import IconButton from "../../atoms/IconButton"
-import { FaHamburger } from "react-icons/fa"
 import EditorContext from "../../../context/EditorContext"
 import { MdMenu } from "react-icons/md"
 
@@ -28,6 +26,8 @@ const HeaderStyle = styled.div`
   background-color: #27272a;
   width: 100%;
 
+  padding: 0 20px;
+
   @media (max-width: 1000px) {
     height: 90px;
   }
@@ -40,7 +40,7 @@ const Header: React.FC = () => {
     <HeaderStyle>
       <IconButton
         onClick={() => setIsSidebarOpen(true)}
-        style={{ backgroundColor: "transparent", marginLeft: 15 }}
+        style={{ backgroundColor: "transparent" }}
       >
         <MdMenu style={{ fontSize: 24 }} />
       </IconButton>

@@ -1,8 +1,8 @@
 import React from "react"
 import styled from "styled-components"
-import { IEpisodeWithBlocks } from "../../types"
+import { IEpisode } from "../../types"
 
-const EpisodeElement: React.FC<{ episode: IEpisodeWithBlocks; index: number }> = ({
+const EpisodeElement: React.FC<{ episode: IEpisode; index: number }> = ({
   episode,
   index,
 }) => {
