@@ -1,27 +1,13 @@
 version: "3"
 services:
-  muvel:
-    ports:
-      - "127.0.0.1:8080:8080"
-    build:
-      context: .
-    #    deploy:
-    #      replicas: $TOTAL_REPLICAS
-    depends_on:
-      - db
-    #    volumes:
-    #      - /run/docker.sock:/run/docker.sock:ro
-    #      - ../config.deploy.json:/app/config.json:ro
-    #      - ./logs:/app/logs:rw
-    restart: unless-stopped
-
   db:
-    image: mongo
-    volumes:
-      - mongo:/data/db
+    image: postgres
     ports:
-      - "127.0.0.1:27018:27017"
-    restart: unless-stopped
+      - '5432:5432'
+    volumes:
+      - pg-data:/data/db
+    environment:
+      - POSTGRES_PASSWORD=paring
 
 volumes:
-  mongo:
+  pg-data:

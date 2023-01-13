@@ -19,7 +19,7 @@ const Main: React.FC = () => {
   }, [])
 
   const loginClickHandler = () => {
-    window.location.href = import.meta.env.VITE_API_BASE + "/connect/discord"
+    window.location.href = import.meta.env.VITE_API_BASE + "/auth/login/discord"
   }
 
   return (
