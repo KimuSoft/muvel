@@ -5,8 +5,11 @@ import EditorContext from "../../context/EditorContext"
 import { getRandomSample } from "../../utils/ipsum"
 import axios from "axios"
 import { useParams } from "react-router-dom"
+import useCurrentUser from "../../hooks/useCurrentUser"
 
 const EditorPage: React.FC = () => {
+  const user = useCurrentUser()
+
   const episodeId = useParams<{ id: string }>().id || ""
 
   const [blocks, setBlocks] = useState<IBlock[]>(getRandomSample())
@@ -26,6 +29,11 @@ const EditorPage: React.FC = () => {
   }
 
   useEffect(() => {
+    if (!user) {
+      window.location.href = "/login"
+      return
+    }
+
     window.onbeforeunload = () => 0
   }, [])
 

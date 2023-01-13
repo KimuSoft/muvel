@@ -14,7 +14,7 @@ const Main: React.FC = () => {
     // 메인 페이지에 접속했을 때 로그인이 되어 있다면 가장 최근의 소설 작업 페이지로 리다이렉트
     if (user) {
       toast.info("와아 로그인 되셔있네요" + JSON.stringify(user))
-      navigate("/episode/1")
+      navigate("/episode/" + user.recentEpisodeId)
     }
   }, [])
 

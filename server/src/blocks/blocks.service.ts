@@ -1,4 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common"
+import { InjectRepository } from "@nestjs/typeorm"
+import { Repository } from "typeorm"
+import { Block } from "./block.entity"
+import { BlockType } from "../types"
+import { Episode } from "../episodes/episode.entity"
 
 @Injectable()
-export class BlocksService {}
+export class BlocksService {
+  constructor(
+    @InjectRepository(Block)
+    private blocksRepository: Repository<Block>
+  ) {}
+
+  async create(episode: Episode, content: string) {
+    const block = new Block()
+    block.blockType = BlockType.Describe
+    block.content = content
+    block.episode = episode
+
+    return this.blocksRepository.save(block)
+  }
+}

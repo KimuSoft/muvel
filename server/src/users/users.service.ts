@@ -2,15 +2,14 @@ import { Injectable } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 import { User } from "./user.entity"
 import { Repository } from "typeorm"
-import { Novel } from "../novels/novel.entity"
 import { NovelsService } from "../novels/novels.service"
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private novelsService: NovelsService,
-    private usersRepository: Repository<User>
+    private usersRepository: Repository<User>,
+    private novelsService: NovelsService
   ) {}
 
   async findOne(id: string): Promise<User | null> {
@@ -34,6 +33,8 @@ export class UsersService {
     user.novels = [
       await this.novelsService.create(user, "샘플 소설", "샘플 소설입니다."),
     ]
+
+    user.recentEpisodeId = user.novels[0].episodes[0].id
 
     return this.usersRepository.save(user)
   }

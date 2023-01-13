@@ -19,7 +19,7 @@ export class Novel {
   @Column()
   description: string
 
-  @OneToMany(() => Episode, (episode) => episode.novel)
+  @OneToMany(() => Episode, (episode) => episode.novel, { cascade: true })
   episodes: Episode[]
 
   @ManyToOne(() => User, (user) => user.novels)
