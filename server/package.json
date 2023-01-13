@@ -29,6 +29,6 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@strapi/typescript-utils": "^4.5.5"
+    "@strapi/typescript-utils": "^4.5.6"
   }
 }

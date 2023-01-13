@@ -2671,7 +2671,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@strapi/typescript-utils@npm:4.5.6":
+"@strapi/typescript-utils@npm:4.5.6, @strapi/typescript-utils@npm:^4.5.6":
   version: 4.5.6
   resolution: "@strapi/typescript-utils@npm:4.5.6"
   dependencies:
@@ -2682,20 +2682,6 @@ __metadata:
     prettier: 2.7.1
     typescript: 4.6.2
   checksum: bd80b1df5bceb76d5d9dafb40e541df204cf88cd9e39187bcd4450d6d57279e9d11c075c254f1fef592d9313b8259c866565e7f43f09636f28876de9e09d13b3
-  languageName: node
-  linkType: hard
-
-"@strapi/typescript-utils@npm:^4.5.5":
-  version: 4.5.5
-  resolution: "@strapi/typescript-utils@npm:4.5.5"
-  dependencies:
-    chalk: 4.1.2
-    cli-table3: 0.6.2
-    fs-extra: 10.0.1
-    lodash: 4.17.21
-    prettier: 2.7.1
-    typescript: 4.6.2
-  checksum: 7da4daa944830bf656e081d22fa26cdcd83cf47e527106a3fc14a8e6fcd495fcbc02f1992f2f3d6e76d7639d274d265a542dc119a734c520860558e541a81212
   languageName: node
   linkType: hard
 
@@ -12578,7 +12564,7 @@ __metadata:
     "@strapi/plugin-i18n": ^4.5.6
     "@strapi/plugin-users-permissions": ^4.5.6
     "@strapi/strapi": ^4.5.6
-    "@strapi/typescript-utils": ^4.5.5
+    "@strapi/typescript-utils": ^4.5.6
     better-sqlite3: 7.4.6
     react-select: ^5.7.0
   languageName: unknown
