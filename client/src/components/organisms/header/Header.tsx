@@ -7,7 +7,7 @@ import EpisodeTitle from "../../atoms/EpisodeTitle"
 import Auth from "./Auth"
 import IconButton from "../../atoms/IconButton"
 import { FaHamburger } from "react-icons/fa"
-import EditorContext from "../../../context/editorContext"
+import EditorContext from "../../../context/EditorContext"
 import { MdMenu } from "react-icons/md"
 
 const SideBlock = styled.div`

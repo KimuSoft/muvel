@@ -1,46 +1,15 @@
-import React from "react"
-import { IEpisode } from "../../types"
+import React, { useContext } from "react"
 import EpisodeElement from "../molecules/EpisodeElement"
 import styled from "styled-components"
+import EditorContext from "../../context/EditorContext"
 
 const EpisodeList: React.FC = () => {
-  const sample: IEpisode[] = [
-    {
-      title: "키뮤는 귀엽다",
-      chapter: "흐잉잉앙",
-      blocks: [],
-    },
-    {
-      title: "키뮤는 귀엽다",
-      chapter: "흐잉잉앙",
-      blocks: [],
-    },
-    {
-      title: "키뮤는 귀엽다",
-      chapter: "흐잉잉앙",
-      blocks: [],
-    },
-    {
-      title: "키뮤는 귀엽다",
-      chapter: "흐잉잉ddd앙",
-      blocks: [],
-    },
-    {
-      title: "키뮤는 귀엽다",
-      chapter: "흐잉잉ddd앙",
-      blocks: [],
-    },
-    {
-      title: "키뮤는 귀엽다",
-      chapter: "흐잉잉ddd앙",
-      blocks: [],
-    },
-  ]
+  const { novel } = useContext(EditorContext)
 
   return (
     <EpisodeListContainer>
-      {sample.map((e, idx) => {
-        if (e.chapter && sample[idx - 1]?.chapter !== e.chapter) {
+      {novel.episodes.map((e, idx) => {
+        if (e.chapter && novel.episodes[idx - 1]?.chapter !== e.chapter) {
           return (
             <>
               <ChapterTitle>{e.chapter}</ChapterTitle>

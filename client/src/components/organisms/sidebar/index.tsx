@@ -3,7 +3,7 @@ import { SidebarFrame, Top } from "./styles"
 import NovelProfile from "../../molecules/NovelProfile"
 import IconButton from "../../atoms/IconButton"
 import { MdChevronLeft, MdMenuOpen } from "react-icons/md"
-import EditorContext from "../../../context/editorContext"
+import EditorContext from "../../../context/EditorContext"
 import EpisodeList from "../EpisodeList"
 
 const Sidebar: React.FC = () => {

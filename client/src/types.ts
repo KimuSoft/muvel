@@ -5,14 +5,16 @@ export interface IUser {
 }
 
 export interface INovel {
-  name: string
+  title: string
+  description: string
   episodes: IEpisode[]
 }
 
 export interface IEpisode {
-  blocks: IBlock[]
   title: string
+  description: string
   chapter: string
+  blocks?: IBlock[]
 }
 
 export interface IBlock {

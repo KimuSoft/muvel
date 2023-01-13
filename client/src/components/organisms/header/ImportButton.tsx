@@ -1,6 +1,6 @@
 import React, { createRef, useContext } from "react"
 import { MdUploadFile } from "react-icons/all"
-import EditorContext from "../../../context/editorContext"
+import EditorContext from "../../../context/EditorContext"
 import stringToBlock from "../../../utils/stringToBlock"
 import { BlockType, IBlock } from "../../../types"
 import { z } from "zod"

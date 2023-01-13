@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
-import { api } from "../utils/api"
+import { api } from "../../utils/api"
 
 const AuthCallback: React.FC = () => {
   const location = useLocation()

@@ -1,7 +1,7 @@
 import React, { useContext } from "react"
 import styled from "styled-components"
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable"
-import EditorContext from "../../context/editorContext"
+import EditorContext from "../../context/EditorContext"
 
 const EpisodeTitle: React.FC = () => {
   const context = useContext(EditorContext)
