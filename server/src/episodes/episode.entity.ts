@@ -22,9 +22,13 @@ export class Episode {
   @Column()
   chapter: string
 
-  @ManyToOne(() => Novel, (novel) => novel.episodes)
+  @ManyToOne(() => Novel, (novel) => novel.episodes, {
+    onDelete: "CASCADE",
+  })
   novel: Novel
 
-  @OneToMany(() => Block, (block) => block.episode, { cascade: true })
+  @OneToMany(() => Block, (block) => block.episode, {
+    cascade: true,
+  })
   blocks: Block[]
 }

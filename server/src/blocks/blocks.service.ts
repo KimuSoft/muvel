@@ -12,11 +12,11 @@ export class BlocksService {
     private blocksRepository: Repository<Block>
   ) {}
 
-  async create(episode: Episode, content: string) {
+  async create(content: string) {
+    console.log("블록 추가!")
     const block = new Block()
     block.blockType = BlockType.Describe
     block.content = content
-    block.episode = episode
 
     return this.blocksRepository.save(block)
   }

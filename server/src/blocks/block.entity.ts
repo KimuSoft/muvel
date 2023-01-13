@@ -13,6 +13,8 @@ export class Block {
   @Column()
   blockType: BlockType
 
-  @ManyToOne(() => Episode, (episode) => episode.blocks)
+  @ManyToOne(() => Episode, (episode) => episode.blocks, {
+    onDelete: "CASCADE",
+  })
   episode: Episode
 }

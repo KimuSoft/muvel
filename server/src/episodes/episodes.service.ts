@@ -13,14 +13,16 @@ export class EpisodesService {
     private blocksService: BlocksService
   ) {}
 
-  async create(novel: Novel, title: string, description: string) {
+  async create(title: string, description: string = "", chapter: string = "") {
+    console.log("에피소드 추가!")
+
     const episode = new Episode()
     episode.title = title
     episode.description = description
-    episode.novel = novel
+    episode.chapter = chapter
 
     // 블록 생성
-    await this.blocksService.create(episode, "샘플 블록입니다.")
+    episode.blocks = [await this.blocksService.create("샘플 블록입니다.")]
 
     return this.episodesRepository.save(episode)
   }

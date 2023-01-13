@@ -31,7 +31,7 @@ export class UsersService {
 
     // 샘플 소설을 만듦.
     user.novels = [
-      await this.novelsService.create(user, "샘플 소설", "샘플 소설입니다."),
+      await this.novelsService.create("샘플 소설", "샘플 소설입니다."),
     ]
 
     user.recentEpisodeId = user.novels[0].episodes[0].id

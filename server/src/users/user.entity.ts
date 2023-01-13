@@ -12,7 +12,9 @@ export class User {
   @Column()
   avatar: string
 
-  @OneToMany(() => Novel, (novel) => novel.author, { cascade: true })
+  @OneToMany(() => Novel, (novel) => novel.author, {
+    cascade: true,
+  })
   novels: Novel[]
 
   @Column()

@@ -13,16 +13,16 @@ export class NovelsService {
     private episodesService: EpisodesService
   ) {}
 
-  async create(author: User, title: string, description: string) {
+  async create(title: string, description: string) {
+    console.log("소설 추가!")
+
     const novel = new Novel()
     novel.title = title
     novel.description = description
-    novel.author = author
 
     // 에피소드 생성
     novel.episodes = [
       await this.episodesService.create(
-        novel,
         "시작하기",
         "뮤블의 사용법을 배워 보아요!"
       ),
