@@ -14,8 +14,6 @@ export class EpisodesService {
   ) {}
 
   async create(title: string, description: string = "", chapter: string = "") {
-    console.log("에피소드 추가!")
-
     const episode = new Episode()
     episode.title = title
     episode.description = description

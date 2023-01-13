@@ -14,8 +14,6 @@ export class NovelsService {
   ) {}
 
   async create(title: string, description: string) {
-    console.log("소설 추가!")
-
     const novel = new Novel()
     novel.title = title
     novel.description = description

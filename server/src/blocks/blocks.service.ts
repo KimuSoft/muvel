@@ -13,7 +13,6 @@ export class BlocksService {
   ) {}
 
   async create(content: string) {
-    console.log("블록 추가!")
     const block = new Block()
     block.blockType = BlockType.Describe
     block.content = content
