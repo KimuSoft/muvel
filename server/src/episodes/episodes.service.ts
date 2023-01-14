@@ -25,7 +25,7 @@ export class EpisodesService {
     return this.episodesRepository.save(episode)
   }
 
-  async findOne(id: number, relations: string[] = []) {
+  async findOne(id: string, relations: string[] = []) {
     return this.episodesRepository.findOne({
       where: { id },
       relations,

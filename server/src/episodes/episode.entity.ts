@@ -10,8 +10,8 @@ import { Novel } from "../novels/novel.entity"
 
 @Entity()
 export class Episode {
-  @PrimaryGeneratedColumn()
-  id: number
+  @PrimaryGeneratedColumn("uuid")
+  id: string
 
   @Column()
   title: string

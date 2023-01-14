@@ -18,5 +18,5 @@ export class User {
   novels: Novel[]
 
   @Column()
-  recentEpisodeId: number
+  recentEpisodeId: string
 }

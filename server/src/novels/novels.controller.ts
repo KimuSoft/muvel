@@ -8,7 +8,7 @@ export class NovelsController {
   @Get()
   async getNovels(
     @Request() req,
-    @Query("id") id: number,
+    @Query("id") id: string,
     @Query("loadEpisodes") loadEpisodes: boolean = false
   ) {
     return this.novelsService.findOne(id, [
@@ -17,7 +17,7 @@ export class NovelsController {
   }
 
   @Get("add-episode")
-  async addEpisode(@Query("id") id: number) {
+  async addEpisode(@Query("id") id: string) {
     return this.novelsService.addEpisode(
       id,
       "새 에피소드",

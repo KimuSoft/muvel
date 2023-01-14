@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common"
-import { User } from "../users/user.entity"
 import { Novel } from "./novel.entity"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
@@ -29,14 +28,14 @@ export class NovelsService {
     return this.novelsRepository.save(novel)
   }
 
-  async addEpisode(novelId: number, title: string, description: string) {
+  async addEpisode(novelId: string, title: string, description: string) {
     const novel = await this.findOne(novelId, ["episodes"])
     const episode = await this.episodesService.create(title, description)
     novel.episodes.push(episode)
     return this.novelsRepository.save(novel)
   }
 
-  async findOne(id: number, relations: string[] = []) {
+  async findOne(id: string, relations: string[] = []) {
     return this.novelsRepository.findOne({
       where: { id },
       relations,

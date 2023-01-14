@@ -8,7 +8,7 @@ export class EpisodesController {
   @Get()
   async getEpisodes(
     @Request() req,
-    @Query("id") id: number,
+    @Query("id") id: string,
     @Query("loadBlocks") loadBlocks: boolean = false,
     @Query("loadNovel") loadNovel: boolean = false
   ) {
