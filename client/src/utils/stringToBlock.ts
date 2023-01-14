@@ -1,7 +1,7 @@
-import { BlockType, IBlock } from "../types"
+import { BlockType, PartialBlock } from "../types/block.type"
 
-const stringToBlock = (content: string): IBlock[] => {
-  const blocks: IBlock[] = []
+const stringToBlock = (content: string): PartialBlock[] => {
+  const blocks: PartialBlock[] = []
   const lines = content.split("\n")
   for (const line of lines) {
     if (!line) continue

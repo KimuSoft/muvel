@@ -1,24 +1,16 @@
 import React, { useContext, useEffect, useState } from "react"
-import { BlockType, IBlock } from "../../../types"
 import Block from "../../atoms/block"
 import usePrevious from "../../../hooks/usePrevious"
 import setCaretToEnd from "../../../utils/setCaretToEnd"
 import { ContentsBlock, DummyBlock, EditorBlock } from "./styles"
 import EditorContext from "../../../context/EditorContext"
-
-const defaultBlocks: IBlock[] = [
-  {
-    id: "1",
-    blockType: BlockType.Describe,
-    content: "hello",
-  },
-]
+import { BlockType, PartialBlock } from "../../../types/block.type"
 
 const Editor: React.FC = () => {
   const context = useContext(EditorContext)
   const [currentBlockId, setCurrentBlockId] = useState<string>("1")
 
-  const prevBlocks = usePrevious<IBlock[]>(context.blocks)
+  const prevBlocks = usePrevious<PartialBlock[]>(context.blocks)
 
   // Handling the cursor and focus on adding and deleting blocks
   useEffect(() => {
@@ -49,7 +41,7 @@ const Editor: React.FC = () => {
     }
   }, [context.blocks, prevBlocks, currentBlockId])
 
-  const addBlockHandler = (block: IBlock) => {
+  const addBlockHandler = (block: PartialBlock) => {
     setCurrentBlockId(block.id)
     context.setBlocks((b) => {
       const _blocks = b.map((b) => ({ ...b, focus: false }))
@@ -72,7 +64,7 @@ const Editor: React.FC = () => {
     context.setBlocks((b) => b.filter((b) => b.id !== id))
   }
 
-  const updateBlockHandler = (block: IBlock) => {
+  const updateBlockHandler = (block: PartialBlock) => {
     context.setBlocks((b) => {
       return b.map((b) => (b.id === block.id ? block : b))
     })

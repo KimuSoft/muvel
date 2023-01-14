@@ -1,6 +1,5 @@
 import styled from "styled-components"
 import React, { useContext } from "react"
-import { IBlock } from "../../../../types"
 import ProgressBar from "../../../atoms/ProgressBar"
 import EditorContext from "../../../../context/EditorContext"
 

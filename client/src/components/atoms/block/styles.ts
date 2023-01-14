@@ -1,7 +1,6 @@
 import styled from "styled-components"
 import ContentEditable from "react-contenteditable"
-import { BlockType } from "../../../types"
-import Block from "./index"
+import { BlockType } from "../../../types/block.type"
 
 export const StyledContentEditable = styled(ContentEditable)<{}>`
   text-indent: 1em;
@@ -70,7 +69,7 @@ export const TypeMark = styled.div<{ blockType: BlockType }>`
   }};
 `
 
-export const BlockWrapper = styled.div`
+export const BlockContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;

@@ -1,10 +1,10 @@
 import React, { useContext } from "react"
 import styled from "styled-components"
-import { IEpisode } from "../../types"
 import { useNavigate } from "react-router-dom"
 import EditorContext from "../../context/EditorContext"
+import { PartialEpisode } from "../../types/episode.type"
 
-const EpisodeElement: React.FC<{ episode: IEpisode; index: number }> = ({
+const EpisodeElement: React.FC<{ episode: PartialEpisode; index: number }> = ({
   episode,
   index,
 }) => {

@@ -2,7 +2,7 @@ import React, { useContext } from "react"
 import EditorContext from "../../../context/EditorContext"
 import { toast } from "react-toastify"
 import { MdDownload } from "react-icons/md"
-import { IEpisode } from "../../../types"
+import { Episode } from "../../../types/episode.type"
 
 const ImportButton: React.FC = () => {
   const { blocks, title, chapter } = useContext(EditorContext)
@@ -12,7 +12,7 @@ const ImportButton: React.FC = () => {
       title,
       chapter,
       blocks,
-    } as IEpisode)
+    } as Episode)
     const blob = new Blob([json], { type: "application/json" })
     const href = URL.createObjectURL(blob)
     const link = document.createElement("a")

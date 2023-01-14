@@ -1,30 +1,12 @@
-export interface IUser {
-  id: string
-  username: string
-  avatar: string
-  recentEpisodeId: number
-}
+import { PartialData } from "./index"
 
-export interface INovel {
-  id: number
-  title: string
-  description: string
-  episodes: IEpisode[]
-}
-
-export interface IEpisode {
-  id: string
-  title: string
-  description: string
-  chapter: string
-  blocks?: IBlock[]
-  novel?: INovel
-}
-
-export interface IBlock {
-  id: string
+export interface PartialBlock extends PartialData {
   content: string
   blockType: BlockType
+}
+
+export interface Block extends PartialBlock {
+  episode: PartialData
 }
 
 export enum BlockType {

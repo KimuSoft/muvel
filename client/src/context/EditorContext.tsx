@@ -1,10 +1,11 @@
 import React, { createContext } from "react"
-import { IBlock, INovel } from "../types"
+import { PartialBlock } from "../types/block.type"
+import { Novel } from "../types/novel.type"
 
 export default createContext<{
   // episode data (IEpisode)
-  blocks: IBlock[]
-  setBlocks: React.Dispatch<React.SetStateAction<IBlock[]>>
+  blocks: PartialBlock[]
+  setBlocks: React.Dispatch<React.SetStateAction<PartialBlock[]>>
 
   title: string
   setTitle: React.Dispatch<React.SetStateAction<string>>
@@ -18,7 +19,7 @@ export default createContext<{
 
   episodeId: string
 
-  novel: INovel
+  novel: Novel
 }>({
   blocks: [],
   setBlocks: () => {},
@@ -33,6 +34,7 @@ export default createContext<{
     title: "",
     description: "",
     episodes: [],
-    id: 0,
+    id: "",
+    author: { id: "" },
   },
 })

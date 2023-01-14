@@ -1,6 +1,6 @@
-import { IBlock } from "../types"
+import { PartialBlock } from "../types/block.type"
 
-const blocksToString = (blocks: IBlock[]): string => {
+const blocksToString = (blocks: PartialBlock[]): string => {
   let content = ""
 
   let index = 0

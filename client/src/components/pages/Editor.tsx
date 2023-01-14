@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react"
 import EditorTemplate from "../templates/editor"
-import { IBlock, INovel } from "../../types"
 import EditorContext from "../../context/EditorContext"
 import { useNavigate, useParams } from "react-router-dom"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import { api } from "../../utils/api"
 import { toast } from "react-toastify"
+import { PartialBlock } from "../../types/block.type"
+import { Novel } from "../../types/novel.type"
 
 const EditorPage: React.FC = () => {
   const user = useCurrentUser()
@@ -15,18 +16,19 @@ const EditorPage: React.FC = () => {
   const episodeId = useParams<{ id: string }>().id || ""
 
   // Episode Data
-  const [blocks, setBlocks] = useState<IBlock[]>([]) //getRandomSample()
+  const [blocks, setBlocks] = useState<PartialBlock[]>([]) //getRandomSample()
   const [title, setTitle] = useState<string>("")
   const [chapter, setChapter] = useState<string>("")
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false)
 
   // 사이드바를 위한 소설 전체 데이터 (블록 데이터 제외)
   const [novelId, setNovelId] = useState<string>("")
-  const [novel, setNovel] = useState<INovel>({
+  const [novel, setNovel] = useState<Novel>({
+    id: "",
     title: "",
     description: "",
     episodes: [],
-    id: 0,
+    author: { id: "" },
   })
 
   const refreshNovelData = async () => {

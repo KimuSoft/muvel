@@ -1,19 +1,19 @@
 import React, { useRef, useState } from "react"
 import { ContentEditableEvent } from "react-contenteditable"
-import { BlockType, IBlock } from "../../../types"
 import { StyledContentEditable } from "./styles"
 import keySoundFile from "./keySound.mp3"
 import styled from "styled-components"
 import { Howl } from "howler"
+import { BlockType, PartialBlock } from "../../../types/block.type"
 
 const keySound = new Howl({ src: keySoundFile })
 
 const Block: React.FC<{
-  block: IBlock
+  block: PartialBlock
   position: number
-  addBlock?: (block: IBlock) => void
+  addBlock?: (block: PartialBlock) => void
   deleteBlock?: ({ id }: { id: string }) => void
-  updateBlock?: (block: IBlock) => void
+  updateBlock?: (block: PartialBlock) => void
   moveToRelativeBlock?: (currentPos: number, direction: -1 | 1) => void
   bottomSpacing: boolean
 }> = ({

@@ -1,6 +1,6 @@
 import React, { createContext } from "react"
-import { IUser } from "../types"
+import { User } from "../types/user.type"
 
 export default createContext<{
-  user: IUser | null
+  user: User | null
 }>({ user: null })
