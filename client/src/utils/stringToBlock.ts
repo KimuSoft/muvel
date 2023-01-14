@@ -16,7 +16,7 @@ const stringToBlock = (content: string): PartialBlock[] => {
         .trim()
         .replace(/^"(.*)"$/, "“$1”")
         .replace(/\.\.\./g, "…"),
-      id: Math.random().toString(),
+      id: crypto.randomUUID(),
     })
   }
   return blocks

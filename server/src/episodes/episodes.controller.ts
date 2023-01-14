@@ -1,5 +1,6 @@
-import { Controller, Get, Request, Query } from "@nestjs/common"
+import { Controller, Get, Request, Query, Post, Body } from "@nestjs/common"
 import { EpisodesService } from "./episodes.service"
+import { BlockType } from "../types"
 
 @Controller("api/episodes")
 export class EpisodesController {
@@ -16,5 +17,31 @@ export class EpisodesController {
       ...(loadBlocks ? ["blocks"] : []),
       ...(loadNovel ? ["novel"] : []),
     ])
+  }
+
+  @Post("update")
+  async update(
+    @Request() req,
+    @Body()
+    episode: {
+      id: string
+      chapter: string
+      title: string
+      description: string
+      blocks: {
+        id: string
+        content: string
+        blockType: BlockType
+        isDeleted: boolean
+      }[]
+    }
+  ) {
+    return this.episodesService.update(
+      episode.id,
+      episode.chapter,
+      episode.title,
+      episode.description,
+      episode.blocks
+    )
   }
 }

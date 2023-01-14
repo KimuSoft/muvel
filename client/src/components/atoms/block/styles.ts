@@ -26,9 +26,8 @@ export const StyledContentEditable = styled(ContentEditable)<{}>`
   text-align: justify;
 
   font-family: "KoPubWorldBatang", "Noto Serif KR", serif;
-  color: #ededff;
-
-  caret-color: #90909c;
+  color: var(--color-zinc-100);
+  caret-color: var(--color-zinc-300);
 
   @media (max-width: 1000px) {
     font-size: 16px;
@@ -45,7 +44,7 @@ export const StyledContentEditable = styled(ContentEditable)<{}>`
   &:empty:before {
     content: attr(placeholder);
     display: block; /* For Firefox */
-    color: #4a4a50;
+    color: var(--color-zinc-600);
   }
 `
 

@@ -32,7 +32,8 @@ export class NovelsService {
     const novel = await this.findOne(novelId, ["episodes"])
     const episode = await this.episodesService.create(title, description)
     novel.episodes.push(episode)
-    return this.novelsRepository.save(novel)
+    await this.novelsRepository.save(novel)
+    return episode
   }
 
   async findOne(id: string, relations: string[] = []) {

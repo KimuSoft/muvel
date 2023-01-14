@@ -13,7 +13,7 @@ const EpisodeList: React.FC = () => {
     )
 
     const el = _episodes.map((e, idx) => {
-      if ((!idx && e.chapter) || _episodes[idx - 1]?.chapter !== e.chapter) {
+      if (_episodes[idx - 1]?.chapter !== e.chapter) {
         return (
           <>
             <ChapterTitle key={"ct" + e.id}>{e.chapter}</ChapterTitle>
@@ -25,7 +25,6 @@ const EpisodeList: React.FC = () => {
     })
 
     setEpisodeList(el)
-    console.log(_episodes)
   }, [novel, episode])
 
   return <EpisodeListContainer>{episodeList}</EpisodeListContainer>

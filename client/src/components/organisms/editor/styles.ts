@@ -1,6 +1,6 @@
 import styled from "styled-components"
 
-export const EditorBlock = styled.div`
+export const EditorContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -29,7 +29,7 @@ export const DummyBlock = styled.div<{ height: string }>`
   height: ${(props) => props.height};
 `
 
-export const ContentsBlock = styled.div`
+export const ContentContainer = styled.div`
   //display: flex;
   //flex-direction: column;
   //align-items: center;
@@ -46,12 +46,11 @@ export const ContentsBlock = styled.div`
 
   ::-webkit-scrollbar {
     width: 5px;
-    background-color: transparent;
     cursor: pointer;
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: #3f3f46;
+    background-color: var(--color-zinc-200);
     border-radius: 10px;
     width: 5px;
 
@@ -59,7 +58,7 @@ export const ContentsBlock = styled.div`
     transition: background-color 0.2s ease-in-out;
 
     &:hover {
-      background-color: #111113;
+      background-color: var(--color-zinc-500);
     }
   }
 `

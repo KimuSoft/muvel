@@ -8,11 +8,7 @@ import IconButton from "../../atoms/IconButton"
 import EditorContext from "../../../context/EditorContext"
 import { MdMenu } from "react-icons/md"
 
-const SideBlock = styled.div`
-  width: 100%;
-`
-
-const HeaderStyle = styled.div`
+const HeaderContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -23,7 +19,7 @@ const HeaderStyle = styled.div`
   top: 0;
   height: 70px;
 
-  background-color: #27272a;
+  background-color: var(--color-zinc-800);
   width: 100%;
 
   padding: 0 20px;
@@ -37,7 +33,7 @@ const Header: React.FC = () => {
   const { setIsSidebarOpen } = useContext(EditorContext)
 
   return (
-    <HeaderStyle>
+    <HeaderContainer>
       <IconButton
         onClick={() => setIsSidebarOpen(true)}
         style={{ backgroundColor: "transparent" }}
@@ -48,7 +44,7 @@ const Header: React.FC = () => {
       <ExportButton />
       <ImportButton />
       <Auth />
-    </HeaderStyle>
+    </HeaderContainer>
   )
 }
 

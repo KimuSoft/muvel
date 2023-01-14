@@ -19,7 +19,7 @@ const episodeSchema = z.object({
   chapter: z.string(),
   blocks: z.array(
     z.object({
-      id: z.string(),
+      id: z.string().uuid(),
       content: z.string(),
       blockType: z.nativeEnum(BlockType),
     })

@@ -4,6 +4,7 @@ import { Novel } from "../novels/novel.entity"
 import { Repository } from "typeorm"
 import { Episode } from "./episode.entity"
 import { BlocksService } from "../blocks/blocks.service"
+import { BlockType } from "../types"
 
 @Injectable()
 export class EpisodesService {
@@ -30,5 +31,44 @@ export class EpisodesService {
       where: { id },
       relations,
     })
+  }
+
+  async update(
+    id: string,
+    chapter: string,
+    title: string,
+    description: string,
+    blocksChange: {
+      id: string
+      content: string
+      blockType: BlockType
+      isDeleted: boolean
+    }[]
+  ) {
+    console.log(blocksChange)
+    const episode = await this.findOne(id)
+
+    episode.chapter = chapter
+    episode.title = title
+    episode.description = description
+
+    await this.episodesRepository.save(episode)
+
+    if (!blocksChange) return
+    await this.blocksService.upsert(
+      blocksChange
+        .filter((b) => !b.isDeleted)
+        .map((b) => ({
+          id: b.id,
+          content: b.content,
+          blockType: b.blockType,
+          episode,
+        }))
+    )
+
+    for (const i of blocksChange.filter((b) => b.isDeleted)) {
+      console.log("삭제", i)
+      await this.blocksService.delete(i.id)
+    }
   }
 }

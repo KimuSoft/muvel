@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react"
 import Block from "../../atoms/block"
 import usePrevious from "../../../hooks/usePrevious"
 import setCaretToEnd from "../../../utils/setCaretToEnd"
-import { ContentsBlock, DummyBlock, EditorBlock } from "./styles"
+import { ContentContainer, DummyBlock, EditorContainer } from "./styles"
 import EditorContext from "../../../context/EditorContext"
 import { BlockType, PartialBlock } from "../../../types/block.type"
 
@@ -33,8 +33,6 @@ const Editor: React.FC = () => {
       const lastBlock = document.querySelector(
         `[data-position="${lastBlockPosition}"]`
       ) as HTMLElement
-      console.log(currentBlockId)
-      console.log(lastBlock)
       if (lastBlock) {
         setCaretToEnd(lastBlock)
       }
@@ -46,7 +44,7 @@ const Editor: React.FC = () => {
     setEpisode((e) => {
       const _blocks = e.blocks.map((b) => ({ ...b, focus: false }))
       _blocks.splice(_blocks.findIndex((b) => b.id === block.id) + 1, 0, {
-        id: Math.random().toString(),
+        id: crypto.randomUUID(),
         blockType: BlockType.Describe,
         content: "",
         focus: true,
@@ -65,10 +63,10 @@ const Editor: React.FC = () => {
     // 첫 블록은 지울 수 없음
     if (!index) return
 
-    setEpisode({
-      ...episode,
-      blocks: episode.blocks.filter((b) => b.id !== id),
-    })
+    setEpisode((e) => ({
+      ...e,
+      blocks: e.blocks.filter((b) => b.id !== id),
+    }))
   }
 
   const updateBlockHandler = (block: PartialBlock) => {
@@ -95,8 +93,8 @@ const Editor: React.FC = () => {
   }
 
   return (
-    <EditorBlock>
-      <ContentsBlock>
+    <EditorContainer>
+      <ContentContainer>
         {/*<b>{window.getSelection()?.focusOffset || 0}</b>*/}
         {/*<br />*/}
         {/*<b>{JSON.stringify(blocks)}</b>*/}
@@ -118,8 +116,8 @@ const Editor: React.FC = () => {
           )
         })}
         <DummyBlock height={"500px"} />
-      </ContentsBlock>
-    </EditorBlock>
+      </ContentContainer>
+    </EditorContainer>
   )
 }
 

@@ -19,4 +19,19 @@ export class BlocksService {
 
     return this.blocksRepository.save(block)
   }
+
+  async upsert(
+    blocks: {
+      id: string
+      content: string
+      blockType: BlockType
+      episode: Episode
+    }[]
+  ) {
+    return this.blocksRepository.upsert(blocks, ["id"])
+  }
+
+  async delete(id: string) {
+    return this.blocksRepository.delete(id)
+  }
 }
