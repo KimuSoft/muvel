@@ -1,26 +1,34 @@
-import React, { useContext } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import EpisodeElement from "../molecules/EpisodeElement"
 import styled from "styled-components"
 import EditorContext from "../../context/EditorContext"
 
 const EpisodeList: React.FC = () => {
-  const { novel } = useContext(EditorContext)
+  const { novel, episode } = useContext(EditorContext)
+  const [episodeList, setEpisodeList] = useState<JSX.Element[]>([])
 
-  return (
-    <EpisodeListContainer>
-      {novel.episodes.map((e, idx) => {
-        if (e.chapter && novel.episodes[idx - 1]?.chapter !== e.chapter) {
-          return (
-            <>
-              <ChapterTitle key={"ct" + e.id}>{e.chapter}</ChapterTitle>
-              <EpisodeElement episode={e} index={idx + 1} key={e.id} />
-            </>
-          )
-        }
-        return <EpisodeElement episode={e} index={idx + 1} key={e.id} />
-      })}
-    </EpisodeListContainer>
-  )
+  useEffect(() => {
+    const _episodes = novel.episodes.map((e) =>
+      e.id === episode.id ? episode : e
+    )
+
+    const el = _episodes.map((e, idx) => {
+      if ((!idx && e.chapter) || _episodes[idx - 1]?.chapter !== e.chapter) {
+        return (
+          <>
+            <ChapterTitle key={"ct" + e.id}>{e.chapter}</ChapterTitle>
+            <EpisodeElement episode={e} index={idx + 1} key={e.id} />
+          </>
+        )
+      }
+      return <EpisodeElement episode={e} index={idx + 1} key={e.id} />
+    })
+
+    setEpisodeList(el)
+    console.log(_episodes)
+  }, [novel, episode])
+
+  return <EpisodeListContainer>{episodeList}</EpisodeListContainer>
 }
 
 const EpisodeListContainer = styled.div`

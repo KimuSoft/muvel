@@ -5,14 +5,10 @@ import { MdDownload } from "react-icons/md"
 import { Episode } from "../../../types/episode.type"
 
 const ImportButton: React.FC = () => {
-  const { blocks, title, chapter } = useContext(EditorContext)
+  const { episode } = useContext(EditorContext)
 
   const clickHandler = () => {
-    const json = JSON.stringify({
-      title,
-      chapter,
-      blocks,
-    } as Episode)
+    const json = JSON.stringify(episode)
     const blob = new Blob([json], { type: "application/json" })
     const href = URL.createObjectURL(blob)
     const link = document.createElement("a")

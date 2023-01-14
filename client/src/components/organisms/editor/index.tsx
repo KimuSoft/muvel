@@ -7,17 +7,17 @@ import EditorContext from "../../../context/EditorContext"
 import { BlockType, PartialBlock } from "../../../types/block.type"
 
 const Editor: React.FC = () => {
-  const context = useContext(EditorContext)
+  const { episode, setEpisode } = useContext(EditorContext)
   const [currentBlockId, setCurrentBlockId] = useState<string>("1")
 
-  const prevBlocks = usePrevious<PartialBlock[]>(context.blocks)
+  const prevBlocks = usePrevious<PartialBlock[]>(episode.blocks)
 
   // Handling the cursor and focus on adding and deleting blocks
   useEffect(() => {
     // If a new block was added, move the caret to it
-    if (prevBlocks && prevBlocks.length + 1 === context.blocks.length) {
+    if (prevBlocks && prevBlocks.length + 1 === episode.blocks.length) {
       const nextBlockPosition =
-        context.blocks.map((b) => b.id).indexOf(currentBlockId) + 1 + 1
+        episode.blocks.map((b) => b.id).indexOf(currentBlockId) + 1 + 1
       const nextBlock = document.querySelector(
         `[data-position="${nextBlockPosition}"]`
       ) as HTMLElement
@@ -26,7 +26,7 @@ const Editor: React.FC = () => {
       }
     }
     // If a block was deleted, move the caret to the end of the last block
-    if (prevBlocks && prevBlocks.length - 1 === context.blocks.length) {
+    if (prevBlocks && prevBlocks.length - 1 === episode.blocks.length) {
       const lastBlockPosition = prevBlocks
         .map((b) => b.id)
         .indexOf(currentBlockId)
@@ -39,34 +39,44 @@ const Editor: React.FC = () => {
         setCaretToEnd(lastBlock)
       }
     }
-  }, [context.blocks, prevBlocks, currentBlockId])
+  }, [episode.blocks, prevBlocks, currentBlockId])
 
   const addBlockHandler = (block: PartialBlock) => {
     setCurrentBlockId(block.id)
-    context.setBlocks((b) => {
-      const _blocks = b.map((b) => ({ ...b, focus: false }))
+    setEpisode((e) => {
+      const _blocks = e.blocks.map((b) => ({ ...b, focus: false }))
       _blocks.splice(_blocks.findIndex((b) => b.id === block.id) + 1, 0, {
         id: Math.random().toString(),
         blockType: BlockType.Describe,
         content: "",
         focus: true,
       })
-      return _blocks
+      return {
+        ...e,
+        blocks: _blocks,
+      }
     })
   }
 
   const deleteBlockHandler = ({ id }: { id: string }) => {
     setCurrentBlockId(id)
-    const index = context.blocks.findIndex((b) => b.id === id)
+    const index = episode.blocks.findIndex((b) => b.id === id)
 
     // 첫 블록은 지울 수 없음
     if (!index) return
-    context.setBlocks((b) => b.filter((b) => b.id !== id))
+
+    setEpisode({
+      ...episode,
+      blocks: episode.blocks.filter((b) => b.id !== id),
+    })
   }
 
   const updateBlockHandler = (block: PartialBlock) => {
-    context.setBlocks((b) => {
-      return b.map((b) => (b.id === block.id ? block : b))
+    setEpisode((e) => {
+      return {
+        ...e,
+        blocks: e.blocks.map((b) => (b.id === block.id ? block : b)),
+      }
     })
   }
 
@@ -91,8 +101,8 @@ const Editor: React.FC = () => {
         {/*<br />*/}
         {/*<b>{JSON.stringify(blocks)}</b>*/}
         <DummyBlock height={"100px"} />
-        {context.blocks.map((b, index) => {
-          const bp = context.blocks[index + 1]?.blockType !== b.blockType
+        {episode.blocks.map((b, index) => {
+          const bp = episode.blocks[index + 1]?.blockType !== b.blockType
 
           return (
             <Block

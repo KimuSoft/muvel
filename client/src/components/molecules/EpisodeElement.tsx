@@ -8,20 +8,24 @@ const EpisodeElement: React.FC<{ episode: PartialEpisode; index: number }> = ({
   episode,
   index,
 }) => {
-  const { episodeId } = useContext(EditorContext)
+  const currentEpisode = useContext(EditorContext).episode
   const navigate = useNavigate()
 
+  const isCurrent = currentEpisode.id === episode.id
+  const episode_ = isCurrent ? currentEpisode : episode
+
   const clickHandler = () => {
+    if (isCurrent) return
     navigate(`/episode/${episode.id}`)
   }
 
   return (
     <EpisodeContainer onClick={clickHandler}>
       <EpisodeTitleContainer>
-        {/* 실제 타입이 number라서 임시로 == 사용*/}
-        {episodeId == episode.id ? "후앵" : ""}
-        <EpisodeIndex>{index < 10 ? `0${index}` : index}편</EpisodeIndex>
-        <EpisodeTitle>{episode.title}</EpisodeTitle>
+        <EpisodeIndex isCurrent={isCurrent}>
+          {index < 10 ? `0${index}` : index}편
+        </EpisodeIndex>
+        <EpisodeTitle>{episode_.title}</EpisodeTitle>
       </EpisodeTitleContainer>
       {/*<EpisodeDetailedPaper></EpisodeDetailedPaper>*/}
     </EpisodeContainer>
@@ -64,11 +68,12 @@ const EpisodeTitleContainer = styled.div`
   }
 `
 
-const EpisodeIndex = styled.div`
+const EpisodeIndex = styled.div<{ isCurrent: boolean }>`
   font-size: 16px;
   font-weight: 700;
 
-  color: #71717a;
+  color: ${({ isCurrent }) => (isCurrent ? "#c4b7fa" : "#71717a")};
+  transition: color 0.2s ease-in-out;
 `
 
 const EpisodeTitle = styled.div`

@@ -1,7 +1,7 @@
 import React, { createRef, useContext } from "react"
 import { MdUploadFile } from "react-icons/all"
 import EditorContext from "../../../context/EditorContext"
-import stringToBlock from "../../../utils/stringToBlock"
+import stringToBlocks from "../../../utils/stringToBlock"
 import { z } from "zod"
 import { toast } from "react-toastify"
 import { BlockType } from "../../../types/block.type"
@@ -28,7 +28,7 @@ const episodeSchema = z.object({
 
 const ImportButton: React.FC = () => {
   const fileInput = createRef<HTMLInputElement>()
-  const { setBlocks, setTitle, setChapter } = useContext(EditorContext)
+  const { episode, setEpisode } = useContext(EditorContext)
 
   const clickHandler = () => fileInput.current?.click()
   const uploadHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,15 +38,17 @@ const ImportButton: React.FC = () => {
     if (typeof r !== "string") return toast.error("지원하지 않는 파일이에요...")
 
     try {
-      const episode = episodeSchema.parse(JSON.parse(r.toString()))
-      setBlocks(episode.blocks)
-      setTitle(episode.title)
-      setChapter(episode.chapter)
+      const loadedEpisode = episodeSchema.parse(JSON.parse(r.toString()))
+      setEpisode({
+        ...episode,
+        ...loadedEpisode,
+      })
       toast.info("뮤블 에피소드 파일을 성공적으로 불러왔어요!")
     } catch (e) {
-      setBlocks(stringToBlock(r.toString()))
-      setTitle("")
-      setChapter("")
+      setEpisode({
+        ...episode,
+        blocks: stringToBlocks(r.toString()),
+      })
       toast.info("텍스트 파일을 뮤블 에피소드로 변환해 불러왔어요!")
     }
   }

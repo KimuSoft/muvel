@@ -7,19 +7,20 @@ const EpisodeTitle: React.FC = () => {
   const context = useContext(EditorContext)
 
   const titleChangeHandler = (e: ContentEditableEvent) =>
-    context.setTitle(e.target.value)
+    context.setEpisode({ ...context.episode, title: e.target.value })
+
   const chapterChangeHandler = (e: ContentEditableEvent) =>
-    context.setChapter(e.target.value)
+    context.setEpisode({ ...context.episode, chapter: e.target.value })
 
   return (
     <TitleBlock>
       <Title
-        html={context.title}
+        html={context.episode.title}
         onChange={titleChangeHandler}
         placeholder="제목을 입력해 주세요"
       />
       <SubTitle
-        html={context.chapter}
+        html={context.episode.chapter}
         onChange={chapterChangeHandler}
         placeholder="챕터 이름"
       />

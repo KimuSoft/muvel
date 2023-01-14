@@ -5,24 +5,15 @@ import { useNavigate, useParams } from "react-router-dom"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import { api } from "../../utils/api"
 import { toast } from "react-toastify"
-import { PartialBlock } from "../../types/block.type"
 import { Novel } from "../../types/novel.type"
+import { Episode } from "../../types/episode.type"
 
 const EditorPage: React.FC = () => {
-  const user = useCurrentUser()
-
-  const navigate = useNavigate()
-
   const episodeId = useParams<{ id: string }>().id || ""
 
-  // Episode Data
-  const [blocks, setBlocks] = useState<PartialBlock[]>([]) //getRandomSample()
-  const [title, setTitle] = useState<string>("")
-  const [chapter, setChapter] = useState<string>("")
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false)
+  const user = useCurrentUser()
+  const navigate = useNavigate()
 
-  // 사이드바를 위한 소설 전체 데이터 (블록 데이터 제외)
-  const [novelId, setNovelId] = useState<string>("")
   const [novel, setNovel] = useState<Novel>({
     id: "",
     title: "",
@@ -31,10 +22,21 @@ const EditorPage: React.FC = () => {
     author: { id: "" },
   })
 
-  const refreshNovelData = async () => {
-    const { data } = await api.get("novels", {
+  const [episode, setEpisode] = useState<Episode>({
+    id: "",
+    title: "",
+    chapter: "",
+    description: "",
+    blocks: [],
+    novel: { id: "" },
+  })
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false)
+
+  const refreshNovel = async () => {
+    const { data } = await api.get<Novel>("novels", {
       params: {
-        id: novelId,
+        id: episode.novel.id,
         loadEpisodes: true,
       },
     })
@@ -42,8 +44,8 @@ const EditorPage: React.FC = () => {
     setNovel(data)
   }
 
-  const refreshEpisodeData = async () => {
-    const { data } = await api.get("episodes", {
+  const refresh = async () => {
+    const { data } = await api.get<Episode>("episodes", {
       params: {
         id: episodeId,
         loadBlocks: true,
@@ -58,11 +60,7 @@ const EditorPage: React.FC = () => {
       return navigate("/")
     }
 
-    console.log(data)
-    setNovelId(data.novel.id)
-    setBlocks(data.blocks!)
-    setTitle(data.title)
-    setChapter(data.chapter)
+    setEpisode(data)
   }
 
   useEffect(() => {
@@ -71,29 +69,29 @@ const EditorPage: React.FC = () => {
       return
     }
 
-    refreshEpisodeData().then()
+    refresh().then()
 
     window.onbeforeunload = () => 0
   }, [])
 
   useEffect(() => {
+    refresh().then()
+  }, [episodeId])
+
+  useEffect(() => {
     if (!isSidebarOpen) return
-    refreshNovelData().then()
-  }, [isSidebarOpen])
+    refreshNovel().then()
+  }, [isSidebarOpen, episode])
 
   return (
     <EditorContext.Provider
       value={{
-        blocks,
-        setBlocks,
-        title,
-        setTitle,
-        chapter,
-        setChapter,
+        novel,
+        setNovel,
+        episode,
+        setEpisode,
         isSidebarOpen,
         setIsSidebarOpen,
-        novel,
-        episodeId,
       }}
     >
       <EditorTemplate />

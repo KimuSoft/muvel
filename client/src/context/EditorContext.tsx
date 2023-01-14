@@ -1,40 +1,34 @@
 import React, { createContext } from "react"
-import { PartialBlock } from "../types/block.type"
 import { Novel } from "../types/novel.type"
+import { Episode } from "../types/episode.type"
 
 export default createContext<{
-  // episode data (IEpisode)
-  blocks: PartialBlock[]
-  setBlocks: React.Dispatch<React.SetStateAction<PartialBlock[]>>
+  novel: Novel
+  setNovel: React.Dispatch<React.SetStateAction<Novel>>
 
-  title: string
-  setTitle: React.Dispatch<React.SetStateAction<string>>
+  episode: Episode
+  setEpisode: React.Dispatch<React.SetStateAction<Episode>>
 
-  chapter: string
-  setChapter: React.Dispatch<React.SetStateAction<string>>
-
-  // sidebar
   isSidebarOpen: boolean
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>
-
-  episodeId: string
-
-  novel: Novel
 }>({
-  blocks: [],
-  setBlocks: () => {},
-  title: "",
-  setTitle: () => {},
-  chapter: "",
-  setChapter: () => {},
-  isSidebarOpen: false,
-  setIsSidebarOpen: () => {},
-  episodeId: "",
   novel: {
+    id: "",
     title: "",
     description: "",
     episodes: [],
-    id: "",
     author: { id: "" },
   },
+  setNovel: () => {},
+  episode: {
+    id: "",
+    title: "",
+    chapter: "",
+    description: "",
+    blocks: [],
+    novel: { id: "" },
+  },
+  setEpisode: () => {},
+  isSidebarOpen: false,
+  setIsSidebarOpen: () => {},
 })

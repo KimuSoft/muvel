@@ -57,7 +57,7 @@ const GoalWidget: React.FC = () => {
   const context = useContext(EditorContext)
 
   const goal = 3000
-  const current = context.blocks.reduce(
+  const current = context.episode.blocks.reduce(
     (acc, cur) => acc + cur.content.replace(/[\s\n]/g, "").length,
     0
   )
