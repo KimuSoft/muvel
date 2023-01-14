@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react"
 import Block from "../../atoms/block"
 import usePrevious from "../../../hooks/usePrevious"
 import setCaretToEnd from "../../../utils/setCaretToEnd"
-import { ContentContainer, DummyBlock, EditorContainer } from "./styles"
+import { DummyBlock, EditorContainer } from "./styles"
 import EditorContext from "../../../context/EditorContext"
 import { BlockType, PartialBlock } from "../../../types/block.type"
 
@@ -94,28 +94,26 @@ const Editor: React.FC = () => {
 
   return (
     <EditorContainer>
-      <ContentContainer>
-        <DummyBlock height={"100px"} />
-        {episode.blocks.map((b, index) => {
-          const bp =
-            index !== episode.blocks.length - 1 &&
-            episode.blocks[index + 1]?.blockType !== b.blockType
+      <DummyBlock height={"100px"} />
+      {episode.blocks.map((b, index) => {
+        const bp =
+          index !== episode.blocks.length - 1 &&
+          episode.blocks[index + 1]?.blockType !== b.blockType
 
-          return (
-            <Block
-              block={b}
-              position={index + 1}
-              addBlock={addBlockHandler}
-              deleteBlock={deleteBlockHandler}
-              updateBlock={updateBlockHandler}
-              moveToRelativeBlock={moveToRelativeBlockHandler}
-              key={b.id}
-              bottomSpacing={bp}
-            />
-          )
-        })}
-        <DummyBlock height={"500px"} />
-      </ContentContainer>
+        return (
+          <Block
+            block={b}
+            position={index + 1}
+            addBlock={addBlockHandler}
+            deleteBlock={deleteBlockHandler}
+            updateBlock={updateBlockHandler}
+            moveToRelativeBlock={moveToRelativeBlockHandler}
+            key={b.id}
+            bottomSpacing={bp}
+          />
+        )
+      })}
+      <DummyBlock height={"500px"} />
     </EditorContainer>
   )
 }

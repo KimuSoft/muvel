@@ -39,12 +39,24 @@ const EpisodeContainer = styled.div`
 
   width: 100%;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
+
+  cursor: pointer;
+
+  @media (hover: hover) and (pointer: fine) {
+    background-color: var(--color-zinc-500);
+  }
+
+  &:active {
+    background-color: var(--color-zinc-600);
+  }
+  transition: background-color 0.2s ease-in-out;
+  border-radius: 10px;
 `
 
 const EpisodeDetailedPaper = styled.div`
   display: flex;
   border-radius: 10px;
-
   background-color: #fff;
 `
 
@@ -55,17 +67,9 @@ const EpisodeTitleContainer = styled.div`
 
   padding: 7px 10px;
   width: 100%;
-  border-radius: 10px;
 
   gap: 10px;
-
   user-select: none;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #61616c;
-    transition: background-color 0.2s ease-in-out;
-  }
 `
 
 const EpisodeIndex = styled.div<{ isCurrent: boolean }>`

@@ -8,7 +8,6 @@ import { toast } from "react-toastify"
 import { Novel } from "../../types/novel.type"
 import { Episode } from "../../types/episode.type"
 import _ from "lodash"
-import axios from "axios"
 
 const EditorPage: React.FC = () => {
   const episodeId = useParams<{ id: string }>().id || ""
@@ -67,7 +66,7 @@ const EditorPage: React.FC = () => {
       if (
         !blocksChange?.length &&
         episode.title === recentEpisode?.title &&
-        episode.description === recentEpisode?.description
+        episode.chapter === recentEpisode?.chapter
       )
         return
 

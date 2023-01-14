@@ -16,7 +16,9 @@ const EpisodeList: React.FC = () => {
       if (_episodes[idx - 1]?.chapter !== e.chapter) {
         return (
           <>
-            <ChapterTitle key={"ct" + e.id}>{e.chapter}</ChapterTitle>
+            <ChapterTitle key={"ct" + e.id}>
+              {e.chapter || "· · · · · · · · · · · · · · ·"}
+            </ChapterTitle>
             <EpisodeElement episode={e} index={idx + 1} key={e.id} />
           </>
         )

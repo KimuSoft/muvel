@@ -4,7 +4,7 @@ const stringToBlock = (content: string): PartialBlock[] => {
   const blocks: PartialBlock[] = []
   const lines = content.split("\n")
   for (const line of lines) {
-    if (!line) continue
+    if (!line.trim()) continue
 
     const blockType = /^["“”].*["“”]/.test(line.trim())
       ? BlockType.DoubleQuote

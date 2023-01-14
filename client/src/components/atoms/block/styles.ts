@@ -35,16 +35,19 @@ export const StyledContentEditable = styled(ContentEditable)<{}>`
 
   border-radius: 5px;
 
-  &:hover {
-    background-color: #ffffff09;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: #ffffff09;
+    }
   }
+
   transition: all 0.2s ease;
   cursor: text;
 
   &:empty:before {
     content: attr(placeholder);
     display: block; /* For Firefox */
-    color: var(--color-zinc-600);
+    color: #52525b;
   }
 `
 

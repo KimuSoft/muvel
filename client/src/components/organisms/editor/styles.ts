@@ -1,10 +1,7 @@
 import styled from "styled-components"
 
 export const EditorContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 0;
+  padding: 0 5px;
   gap: 30px;
 
   width: 800px;
@@ -13,52 +10,30 @@ export const EditorContainer = styled.div`
   }
 
   height: 100%;
-  overflow: auto;
+  overflow-y: scroll;
   overflow-x: hidden;
+  cursor: text;
 
   ::-webkit-scrollbar {
-    width: 5px;
+    width: 3px;
+    cursor: pointer;
+  }
 
-    position: relative;
-    left: 5px;
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-zinc-600);
+    border-radius: 10px;
+    width: 3px;
+
+    // hover color animation
+    transition: background-color 0.2s ease-in-out;
+
+    &:hover {
+      background-color: var(--color-zinc-700);
+    }
   }
 `
 
 export const DummyBlock = styled.div<{ height: string }>`
   width: 100%;
   height: ${(props) => props.height};
-`
-
-export const ContentContainer = styled.div`
-  //display: flex;
-  //flex-direction: column;
-  //align-items: center;
-  padding: 0 10px 0 0;
-  cursor: text;
-
-  //overflow-y: scroll;
-
-  width: 800px;
-  @media (max-width: 1000px) {
-    width: 100%;
-  }
-  height: 100%;
-
-  ::-webkit-scrollbar {
-    width: 5px;
-    cursor: pointer;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background-color: var(--color-zinc-200);
-    border-radius: 10px;
-    width: 5px;
-
-    // hover color animation
-    transition: background-color 0.2s ease-in-out;
-
-    &:hover {
-      background-color: var(--color-zinc-500);
-    }
-  }
 `

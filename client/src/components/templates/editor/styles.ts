@@ -14,7 +14,7 @@ export const Body = styled.div`
 
   height: 100vh;
 
-  padding: 80px 30px 90px;
+  padding: 80px 20px 0px;
 
   overflow-y: scroll;
   ::-webkit-scrollbar-thumb {
