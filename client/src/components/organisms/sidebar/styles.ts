@@ -9,6 +9,11 @@ export const SidebarFrame = styled.div<{ isOpen: boolean }>`
   width: 420px;
   height: 100vh;
 
+  // 모바일 환경으로 추정되는 경우
+  @media (max-width: 500px) {
+    width: 100vw;
+  }
+
   background-color: #3f3f46;
 
   display: flex;

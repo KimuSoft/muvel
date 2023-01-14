@@ -10,8 +10,6 @@ export const StyledContentEditable = styled(ContentEditable)<{}>`
   -moz-box-shadow: none;
   box-shadow: none;
   resize: none;
-
-  //transition: height 0.1s ease; 눈물을 머금고 포기
   overflow-y: hidden;
 
   margin: 0 0;
@@ -29,8 +27,10 @@ export const StyledContentEditable = styled(ContentEditable)<{}>`
   color: var(--color-zinc-100);
   caret-color: var(--color-zinc-300);
 
+  // 모바일 환경으로 추정되는 경우
   @media (max-width: 1000px) {
     font-size: 16px;
+    padding: 5px 0;
   }
 
   border-radius: 5px;
