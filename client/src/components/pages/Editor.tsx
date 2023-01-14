@@ -125,7 +125,9 @@ const EditorPage: React.FC = () => {
 
     refresh().then()
 
-    window.onbeforeunload = () => 0
+    // 닫을 때 저장 내용을 잃을 수 있다는 경고 표시
+    // 자동 저장을 구현하여 주석 처리함
+    // window.onbeforeunload = () => 0
   }, [])
 
   useEffect(() => {
