@@ -95,12 +95,11 @@ const Editor: React.FC = () => {
   return (
     <EditorContainer>
       <ContentContainer>
-        {/*<b>{window.getSelection()?.focusOffset || 0}</b>*/}
-        {/*<br />*/}
-        {/*<b>{JSON.stringify(blocks)}</b>*/}
         <DummyBlock height={"100px"} />
         {episode.blocks.map((b, index) => {
-          const bp = episode.blocks[index + 1]?.blockType !== b.blockType
+          const bp =
+            index !== episode.blocks.length - 1 &&
+            episode.blocks[index + 1]?.blockType !== b.blockType
 
           return (
             <Block
