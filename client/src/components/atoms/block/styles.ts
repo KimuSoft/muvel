@@ -21,7 +21,9 @@ export const StyledContentEditable = styled(ContentEditable)<{}>`
   font-weight: 50;
   font-size: 18px;
   line-height: 34px;
-  text-align: justify;
+
+  text-align: left;
+  //text-align: justify;
 
   font-family: "KoPubWorldBatang", "Noto Serif KR", serif;
   color: var(--color-zinc-100);
