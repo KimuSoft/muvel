@@ -18,7 +18,8 @@ const EpisodeElement: React.FC<{ episode: IEpisode; index: number }> = ({
   return (
     <EpisodeContainer onClick={clickHandler}>
       <EpisodeTitleContainer>
-        {episodeId === episode.id ? "후앵" : ""}
+        {/* 실제 타입이 number라서 임시로 == 사용*/}
+        {episodeId == episode.id ? "후앵" : ""}
         <EpisodeIndex>{index < 10 ? `0${index}` : index}편</EpisodeIndex>
         <EpisodeTitle>{episode.title}</EpisodeTitle>
       </EpisodeTitleContainer>
