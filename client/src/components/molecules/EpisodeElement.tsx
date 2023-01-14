@@ -1,14 +1,24 @@
-import React from "react"
+import React, { useContext } from "react"
 import styled from "styled-components"
 import { IEpisode } from "../../types"
+import { useNavigate } from "react-router-dom"
+import EditorContext from "../../context/EditorContext"
 
 const EpisodeElement: React.FC<{ episode: IEpisode; index: number }> = ({
   episode,
   index,
 }) => {
+  const { episodeId } = useContext(EditorContext)
+  const navigate = useNavigate()
+
+  const clickHandler = () => {
+    navigate(`/episode/${episode.id}`)
+  }
+
   return (
-    <EpisodeContainer>
+    <EpisodeContainer onClick={clickHandler}>
       <EpisodeTitleContainer>
+        {episodeId === episode.id ? "후앵" : ""}
         <EpisodeIndex>{index < 10 ? `0${index}` : index}편</EpisodeIndex>
         <EpisodeTitle>{episode.title}</EpisodeTitle>
       </EpisodeTitleContainer>

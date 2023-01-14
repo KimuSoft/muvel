@@ -29,6 +29,13 @@ export class NovelsService {
     return this.novelsRepository.save(novel)
   }
 
+  async addEpisode(novelId: number, title: string, description: string) {
+    const novel = await this.findOne(novelId, ["episodes"])
+    const episode = await this.episodesService.create(title, description)
+    novel.episodes.push(episode)
+    return this.novelsRepository.save(novel)
+  }
+
   async findOne(id: number, relations: string[] = []) {
     return this.novelsRepository.findOne({
       where: { id },

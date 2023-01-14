@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Request } from "@nestjs/common"
+import { Controller, Get, Post, Query, Request } from "@nestjs/common"
 import { NovelsService } from "./novels.service"
 
 @Controller("api/novels")
@@ -14,5 +14,14 @@ export class NovelsController {
     return this.novelsService.findOne(id, [
       ...(loadEpisodes ? ["episodes"] : []),
     ])
+  }
+
+  @Get("add-episode")
+  async addEpisode(@Query("id") id: number) {
+    return this.novelsService.addEpisode(
+      id,
+      "새 에피소드",
+      "새 에피소드입니다."
+    )
   }
 }

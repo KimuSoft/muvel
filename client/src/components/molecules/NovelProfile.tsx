@@ -3,9 +3,25 @@ import { FaFeatherAlt } from "react-icons/fa"
 import styled from "styled-components"
 import IconButton from "../atoms/IconButton"
 import EditorContext from "../../context/EditorContext"
+import { api } from "../../utils/api"
+import { useNavigate } from "react-router-dom"
+import { toast } from "react-toastify"
 
 const NovelProfile: React.FC = () => {
   const { novel } = useContext(EditorContext)
+
+  const navigate = useNavigate()
+
+  const addNovelClickHandler = async () => {
+    const { data } = await api.get("novels/add-episode", {
+      params: {
+        id: novel.id,
+      },
+    })
+
+    navigate(`/episode/${data.id}`)
+    toast.info("새 에피소드가 생성되었습니다.")
+  }
 
   return (
     <ProfileContainer>
@@ -14,7 +30,7 @@ const NovelProfile: React.FC = () => {
         <Title>{novel.title}</Title>
         <Description>{novel.description}</Description>
         <ButtonMenu>
-          <IconButton text={"새 편 쓰기"}>
+          <IconButton text={"새 편 쓰기"} onClick={addNovelClickHandler}>
             <FaFeatherAlt />
           </IconButton>
         </ButtonMenu>

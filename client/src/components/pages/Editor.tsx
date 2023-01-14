@@ -1,8 +1,7 @@
-import React, { createContext, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import EditorTemplate from "../templates/editor"
-import { IBlock, IEpisode, INovel } from "../../types"
+import { IBlock, INovel } from "../../types"
 import EditorContext from "../../context/EditorContext"
-import { getRandomSample } from "../../utils/ipsum"
 import { useNavigate, useParams } from "react-router-dom"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import { api } from "../../utils/api"
@@ -27,6 +26,7 @@ const EditorPage: React.FC = () => {
     title: "",
     description: "",
     episodes: [],
+    id: 0,
   })
 
   const refreshNovelData = async () => {
@@ -91,6 +91,7 @@ const EditorPage: React.FC = () => {
         isSidebarOpen,
         setIsSidebarOpen,
         novel,
+        episodeId,
       }}
     >
       <EditorTemplate />

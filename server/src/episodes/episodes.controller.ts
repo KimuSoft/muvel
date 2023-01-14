@@ -1,5 +1,4 @@
 import { Controller, Get, Request, Query } from "@nestjs/common"
-import { AppService } from "../app.service"
 import { EpisodesService } from "./episodes.service"
 
 @Controller("api/episodes")

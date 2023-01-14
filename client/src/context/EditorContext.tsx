@@ -16,6 +16,8 @@ export default createContext<{
   isSidebarOpen: boolean
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>
 
+  episodeId: string
+
   novel: INovel
 }>({
   blocks: [],
@@ -26,9 +28,11 @@ export default createContext<{
   setChapter: () => {},
   isSidebarOpen: false,
   setIsSidebarOpen: () => {},
+  episodeId: "",
   novel: {
     title: "",
     description: "",
     episodes: [],
+    id: 0,
   },
 })
