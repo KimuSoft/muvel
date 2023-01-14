@@ -12,12 +12,12 @@ const EpisodeList: React.FC = () => {
         if (e.chapter && novel.episodes[idx - 1]?.chapter !== e.chapter) {
           return (
             <>
-              <ChapterTitle>{e.chapter}</ChapterTitle>
-              <EpisodeElement episode={e} index={idx + 1} />
+              <ChapterTitle key={"ct" + e.id}>{e.chapter}</ChapterTitle>
+              <EpisodeElement episode={e} index={idx + 1} key={e.id} />
             </>
           )
         }
-        return <EpisodeElement episode={e} index={idx + 1} />
+        return <EpisodeElement episode={e} index={idx + 1} key={e.id} />
       })}
     </EpisodeListContainer>
   )

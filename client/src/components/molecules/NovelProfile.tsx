@@ -1,16 +1,18 @@
-import React, { useRef } from "react"
+import React, { useContext, useRef } from "react"
 import { FaFeatherAlt } from "react-icons/fa"
 import styled from "styled-components"
 import IconButton from "../atoms/IconButton"
-import ContentEditable from "react-contenteditable"
+import EditorContext from "../../context/EditorContext"
 
 const NovelProfile: React.FC = () => {
+  const { novel } = useContext(EditorContext)
+
   return (
     <ProfileContainer>
       <ProfileImage />
       <RightContainer>
-        <Title>여신이 되어버린 이야기</Title>
-        <Description>커엽커엽커엽추</Description>
+        <Title>{novel.title}</Title>
+        <Description>{novel.description}</Description>
         <ButtonMenu>
           <IconButton text={"새 편 쓰기"}>
             <FaFeatherAlt />

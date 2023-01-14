@@ -6,16 +6,19 @@ export interface IUser {
 }
 
 export interface INovel {
+  id: number
   title: string
   description: string
   episodes: IEpisode[]
 }
 
 export interface IEpisode {
+  id: number
   title: string
   description: string
   chapter: string
   blocks?: IBlock[]
+  novel?: INovel
 }
 
 export interface IBlock {

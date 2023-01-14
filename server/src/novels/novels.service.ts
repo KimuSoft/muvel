@@ -28,4 +28,11 @@ export class NovelsService {
 
     return this.novelsRepository.save(novel)
   }
+
+  async findOne(id: number, relations: string[] = []) {
+    return this.novelsRepository.findOne({
+      where: { id },
+      relations,
+    })
+  }
 }
