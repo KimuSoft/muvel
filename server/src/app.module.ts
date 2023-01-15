@@ -8,6 +8,8 @@ import { BlocksModule } from "./blocks/blocks.module"
 import { EpisodesModule } from "./episodes/episodes.module"
 import { AuthModule } from "./auth/auth.module"
 import * as process from "process"
+import { ServeStaticModule } from "@nestjs/serve-static"
+import { join } from "path"
 
 @Module({
   imports: [
@@ -21,6 +23,9 @@ import * as process from "process"
     BlocksModule,
     EpisodesModule,
     AuthModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, "..", "client", "dist"),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

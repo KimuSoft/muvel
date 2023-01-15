@@ -1163,6 +1163,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/serve-static@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@nestjs/serve-static@npm:3.0.0"
+  dependencies:
+    path-to-regexp: 0.2.5
+  peerDependencies:
+    "@nestjs/common": ^9.0.0
+    "@nestjs/core": ^9.0.0
+  checksum: fb5873506c13ca3625e462c722d57fa0f1f5299803ed9d8d3b3afdc0aa8f337cf4aee7528cbe38a65aa511f440ad6d37c45885d0dae1444887915fa292e4697c
+  languageName: node
+  linkType: hard
+
 "@nestjs/testing@npm:^9.0.0":
   version: 9.2.1
   resolution: "@nestjs/testing@npm:9.2.1"
@@ -6385,6 +6397,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"path-to-regexp@npm:0.2.5":
+  version: 0.2.5
+  resolution: "path-to-regexp@npm:0.2.5"
+  checksum: 44adcbd847d170786490de80d2abc4762d5e65cd8857f230b87bdff6ab1bd17a91baa201fea549954b4cbfd208ae021a3a4ebac19a69ebdf3fdc628c8344ad39
+  languageName: node
+  linkType: hard
+
 "path-to-regexp@npm:3.2.0":
   version: 3.2.0
   resolution: "path-to-regexp@npm:3.2.0"
@@ -7162,6 +7181,7 @@ __metadata:
     "@nestjs/passport": ^9.0.0
     "@nestjs/platform-express": ^9.0.0
     "@nestjs/schematics": ^9.0.0
+    "@nestjs/serve-static": ^3.0.0
     "@nestjs/testing": ^9.0.0
     "@nestjs/typeorm": ^9.0.1
     "@types/express": ^4.17.13
