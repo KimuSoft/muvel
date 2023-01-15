@@ -17,6 +17,7 @@ services:
       - pg-data:/data/db
     environment:
       - POSTGRES_PASSWORD=paring
+      - POSTGRES_DB=muvel
 
 volumes:
   pg-data:
