@@ -9,7 +9,7 @@ services:
     depends_on:
       - db
 
-  db:
+  muvel-db:
     image: postgres
     ports:
       - '2345:5432'
