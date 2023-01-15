@@ -24,7 +24,7 @@ import { join } from "path"
     EpisodesModule,
     AuthModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, "..", "client", "dist"),
+      rootPath: join(__dirname, "..", "..", "client", "dist"),
     }),
   ],
   controllers: [AppController],
