@@ -7,9 +7,9 @@ services:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      - muvel-db
+      - db
 
-  muvel-db:
+  db:
     image: postgres
     ports:
       - '2345:5432'
@@ -17,7 +17,7 @@ services:
       - pg-data:/data/db
     environment:
       - POSTGRES_PASSWORD=paring
-      - POSTGRES_DB=muvel
+      - POSTGRES_DATABASE=muvel
 
 volumes:
   pg-data:
