@@ -43,13 +43,14 @@ const EpisodeContainer = styled.div`
 
   cursor: pointer;
 
-  @media (hover: hover) and (pointer: fine) {
-    background-color: var(--color-zinc-500);
+  &:hover {
+    background-color: var(--color-zinc-600);
   }
 
   &:active {
-    background-color: var(--color-zinc-600);
+    background-color: var(--color-zinc-500);
   }
+
   transition: background-color 0.2s ease-in-out;
   border-radius: 10px;
 `

@@ -1,10 +1,12 @@
-import React, { useRef, useState } from "react"
+import React, { useContext, useRef, useState } from "react"
 import { ContentEditableEvent } from "react-contenteditable"
 import { StyledContentEditable } from "./styles"
 import keySoundFile from "./keySound.mp3"
 import styled from "styled-components"
 import { Howl } from "howler"
 import { BlockType, PartialBlock } from "../../../types/block.type"
+import EditorContext from "../../../context/EditorContext"
+import stringToBlock from "../../../utils/stringToBlock"
 
 const keySound = new Howl({ src: keySoundFile })
 
@@ -25,6 +27,9 @@ const Block: React.FC<{
   moveToRelativeBlock,
   bottomSpacing,
 }) => {
+  // Ctrl + V 기능 전용으로 사용
+  const { setEpisode } = useContext(EditorContext)
+
   const [blockType, setBlockType] = useState<BlockType>(block.blockType)
 
   const contenteditable = useRef<HTMLDivElement>(null)
@@ -44,6 +49,25 @@ const Block: React.FC<{
     setBlockType(getBlockType(e.target.value))
     content.current = e.target.value
     updateBlock?.({ id: block.id, blockType, content: e.target.value })
+  }
+
+  const pasteHandler = (e: ClipboardEvent) => {
+    const text = e.clipboardData?.getData("text/plain") || ""
+    if (!text.includes("\n")) return
+
+    // Ctrl + V를 누르면 블록으로 붙여넣음
+    e.preventDefault()
+
+    setEpisode((e) => {
+      return {
+        ...e,
+        blocks: [
+          ...e.blocks.slice(0, position + 1),
+          ...stringToBlock(text),
+          ...e.blocks.slice(position + 1),
+        ],
+      }
+    })
   }
 
   const keyDownHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -118,6 +142,8 @@ const Block: React.FC<{
         innerRef={contenteditable}
         onChange={handleChange}
         onKeyDown={keyDownHandler}
+        // @ts-ignore
+        onPaste={pasteHandler}
         html={content.current}
         data-position={position}
         placeholder={"내용을 입력해 주세요."}

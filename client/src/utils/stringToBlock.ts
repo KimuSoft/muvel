@@ -6,7 +6,7 @@ const stringToBlock = (content: string): PartialBlock[] => {
   for (const line of lines) {
     if (!line.trim()) continue
 
-    const blockType = /^["“”].*["“”]/.test(line.trim())
+    const blockType = /^["“”].*["“”]$/.test(line.trim())
       ? BlockType.DoubleQuote
       : BlockType.Describe
 
