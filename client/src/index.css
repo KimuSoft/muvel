@@ -33,3 +33,12 @@ body {
 
   background-color: var(--color-zinc-800);
 }
+
+.cdx-block {
+  text-indent: 1em;
+  font-style: normal;
+  font-weight: 50;
+  font-size: 18px;
+  font-family: "KoPubWorldBatang", "Noto Serif KR", serif;
+  /*color: var(--color-zinc-100);*/
+}

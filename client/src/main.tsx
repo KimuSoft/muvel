@@ -8,9 +8,10 @@ import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { AppLayout } from "./layouts/AppLayout"
 import Main from "./components/pages/Main"
+import Test from "./components/pages/Test"
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
+  <>
     <ToastContainer />
     <BrowserRouter>
       <Routes>
@@ -19,7 +20,8 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           <Route path={"episode/:id"} element={<EditorPage />}></Route>
         </Route>
         <Route path="auth/callback" element={<AuthCallback />}></Route>
+        <Route path="test" element={<Test />}></Route>
       </Routes>
     </BrowserRouter>
-  </React.StrictMode>
+  </>
 )
