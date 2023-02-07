@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  PrimaryColumn,
-  PrimaryGeneratedColumn,
-} from "typeorm"
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 import { Episode } from "../episodes/episode.entity"
 import { BlockType } from "../types"
 
@@ -18,6 +12,9 @@ export class Block {
 
   @Column()
   blockType: BlockType
+
+  @Column()
+  order: number
 
   @ManyToOne(() => Episode, (episode) => episode.blocks, {
     onDelete: "CASCADE",

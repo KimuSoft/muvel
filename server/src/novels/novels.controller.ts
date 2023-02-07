@@ -11,9 +11,12 @@ export class NovelsController {
     @Query("id") id: string,
     @Query("loadEpisodes") loadEpisodes: boolean = false
   ) {
-    return this.novelsService.findOne(id, [
+    const novel = await this.novelsService.findOne(id, [
       ...(loadEpisodes ? ["episodes"] : []),
     ])
+    // createdAt을 기준으로 정렬 (임시)
+    novel.episodes.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+    return novel
   }
 
   @Get("add-episode")

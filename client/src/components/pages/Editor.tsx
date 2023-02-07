@@ -43,14 +43,11 @@ const EditorPage: React.FC = () => {
     // deleted blocks  검증
     const deletedBlocks = recentEpisode.blocks
       .filter((b) => !episode.blocks.find((b2) => b2.id === b.id))
-      .map((b) => ({
-        id: b.id,
-        isDeleted: true,
-      }))
+      .map((b) => ({ id: b.id, isDeleted: true }))
 
     const difference = _.differenceWith(
-      episode.blocks,
-      recentEpisode.blocks,
+      episode.blocks.map((b, order) => ({ ...b, order })),
+      recentEpisode.blocks.map((b, order) => ({ ...b, order })),
       _.isEqual
     )
 

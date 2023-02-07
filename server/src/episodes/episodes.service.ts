@@ -43,9 +43,10 @@ export class EpisodesService {
       content: string
       blockType: BlockType
       isDeleted: boolean
+      order: number
     }[]
   ) {
-    console.log(blocksChange)
+    // console.log(blocksChange)
     const episode = await this.findOne(id)
 
     episode.chapter = chapter
@@ -62,6 +63,7 @@ export class EpisodesService {
           id: b.id,
           content: b.content,
           blockType: b.blockType,
+          order: b.order,
           episode,
         }))
     )
