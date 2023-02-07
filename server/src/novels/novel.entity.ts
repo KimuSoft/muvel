@@ -1,9 +1,11 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm"
 import { Episode } from "../episodes/episode.entity"
 import { User } from "../users/user.entity"
@@ -18,6 +20,12 @@ export class Novel {
 
   @Column()
   description: string
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
 
   @OneToMany(() => Episode, (episode) => episode.novel, {
     cascade: true,

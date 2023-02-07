@@ -26,6 +26,7 @@ export class BlocksService {
       content: string
       blockType: BlockType
       episode: Episode
+      order: number
     }[]
   ) {
     return this.blocksRepository.upsert(blocks, ["id"])

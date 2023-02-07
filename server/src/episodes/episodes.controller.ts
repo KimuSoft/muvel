@@ -13,10 +13,13 @@ export class EpisodesController {
     @Query("loadBlocks") loadBlocks: boolean = false,
     @Query("loadNovel") loadNovel: boolean = false
   ) {
-    return this.episodesService.findOne(id, [
+    const episode = await this.episodesService.findOne(id, [
       ...(loadBlocks ? ["blocks"] : []),
       ...(loadNovel ? ["novel"] : []),
     ])
+
+    if (loadBlocks) episode.blocks.sort((a, b) => a.order - b.order)
+    return episode
   }
 
   @Post("update")
@@ -33,6 +36,7 @@ export class EpisodesController {
         content: string
         blockType: BlockType
         isDeleted: boolean
+        order: number
       }[]
     }
   ) {
