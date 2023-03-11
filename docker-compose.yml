@@ -12,7 +12,7 @@ services:
   db:
     image: postgres
     ports:
-      - '2345:5432'
+      - "2345:5432"
     volumes:
       - pg-data:/data/db
     environment:
