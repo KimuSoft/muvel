@@ -14,7 +14,7 @@ export class EpisodesService {
     private blocksService: BlocksService
   ) {}
 
-  async create(title: string, description: string = "", chapter: string = "") {
+  async create(title: string, description = "", chapter = "") {
     const episode = new Episode()
     episode.title = title
     episode.description = description
