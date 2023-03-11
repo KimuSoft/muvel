@@ -12,10 +12,18 @@ export class BlocksService {
     private blocksRepository: Repository<Block>
   ) {}
 
-  async create(content: string) {
+  async create(content: string, order?: number) {
+    if (!order) {
+      const lastBlock = await this.blocksRepository.findOne({
+        order: { order: "DESC" },
+      })
+      order = lastBlock.order + 1
+    }
+
     const block = new Block()
     block.blockType = BlockType.Describe
     block.content = content
+    block.order = order
 
     return this.blocksRepository.save(block)
   }
