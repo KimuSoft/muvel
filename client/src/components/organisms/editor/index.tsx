@@ -5,6 +5,9 @@ import setCaretToEnd from "../../../utils/setCaretToEnd"
 import { DummyBlock, EditorContainer } from "./styles"
 import EditorContext from "../../../context/EditorContext"
 import { BlockType, PartialBlock } from "../../../types/block.type"
+import _ from "lodash"
+
+const canvas = document.createElement("canvas").getContext("2d")!
 
 const Editor: React.FC = () => {
   const { episode, setEpisode } = useContext(EditorContext)
@@ -80,11 +83,67 @@ const Editor: React.FC = () => {
 
   const moveToRelativeBlockHandler = (
     currentPos: number,
-    direction: -1 | 1
+    direction: -1 | 1,
+    preserveCaretPosition: boolean
   ) => {
     const lastBlock = document.querySelector(
       `[data-position="${currentPos + direction}"]`
     ) as HTMLElement
+
+    const sel = document.getSelection()
+
+    if (sel && lastBlock && preserveCaretPosition) {
+      const target = lastBlock.firstChild as Text
+
+      const targetText = target.nodeValue
+
+      const currentText = sel.anchorNode?.nodeValue
+
+      if (!currentText || !targetText) return lastBlock.focus()
+
+      console.log("--------------")
+
+      console.log(currentText.slice(0, sel.anchorOffset))
+
+      const currentTextWidth = _.sum(
+        currentText
+          .slice(0, sel.anchorOffset)
+          .split("")
+          .map((char) => canvas.measureText(char).width)
+      )
+      const targetTextWidth = targetText
+        .split("")
+        .map((char) => canvas.measureText(char).width)
+
+      let sum = 0
+
+      let nearOffset = 0
+      let nearIndex = 0
+
+      let lastOffset = 0
+
+      for (let i = 0; i < targetTextWidth.length; i++) {
+        const item = targetTextWidth[i]
+
+        sum += item
+
+        const offset = Math.abs(sum - currentTextWidth)
+
+        if (i === 0 || offset <= nearOffset) {
+          nearOffset = offset
+          nearIndex = i
+        }
+
+        if (lastOffset < offset && i) break
+
+        lastOffset = offset
+      }
+
+      sel.setPosition(target, nearIndex + 1)
+      lastBlock.focus()
+
+      return
+    }
 
     if (lastBlock) {
       if (direction === -1) setCaretToEnd(lastBlock)

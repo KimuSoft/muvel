@@ -17,6 +17,11 @@ const Block: React.FC<{
   deleteBlock?: ({ id }: { id: string }) => void
   updateBlock?: (block: PartialBlock) => void
   moveToRelativeBlock?: (currentPos: number, direction: -1 | 1) => void
+  moveToRelativeBlock?: (
+    currentPos: number,
+    direction: -1 | 1,
+    preserveCaretPosition: boolean
+  ) => void
   bottomSpacing: boolean
 }> = ({
   block,
@@ -93,7 +98,7 @@ const Block: React.FC<{
       document.getSelection()?.anchorOffset === 0
     ) {
       e.preventDefault()
-      moveToRelativeBlock?.(position, -1)
+      moveToRelativeBlock?.(position, -1, false)
     }
 
     // 캐럿이 마지막에 있고, 뒤 방향키를 누르면 뒤 블록으로 이동
@@ -102,19 +107,19 @@ const Block: React.FC<{
       content.current.length === document.getSelection()?.anchorOffset
     ) {
       e.preventDefault()
-      moveToRelativeBlock?.(position, 1)
+      moveToRelativeBlock?.(position, 1, false)
     }
 
     // 아무 곳에서나 위 방향키를 누르면 위 블록으로 이동
     else if (e.key === "ArrowUp") {
       e.preventDefault()
-      moveToRelativeBlock?.(position, -1)
+      moveToRelativeBlock?.(position, -1, true)
     }
 
     // 아무 곳에서나 아래 방향키를 누르면 아래 블록으로 이동
     else if (e.key === "ArrowDown") {
       e.preventDefault()
-      moveToRelativeBlock?.(position, 1)
+      moveToRelativeBlock?.(position, 1, true)
     }
 
     // 쌍따옴표 블록 생성
