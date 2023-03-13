@@ -93,7 +93,7 @@ const Editor: React.FC = () => {
 
     const sel = document.getSelection()
 
-    if (sel && lastBlock && preserveCaretPosition) {
+    if (sel && lastBlock?.firstChild && preserveCaretPosition) {
       const target = lastBlock.firstChild as Text
 
       const targetText = target.nodeValue
@@ -101,10 +101,6 @@ const Editor: React.FC = () => {
       const currentText = sel.anchorNode?.nodeValue
 
       if (!currentText || !targetText) return lastBlock.focus()
-
-      console.log("--------------")
-
-      console.log(currentText.slice(0, sel.anchorOffset))
 
       const currentTextWidth = _.sum(
         currentText
