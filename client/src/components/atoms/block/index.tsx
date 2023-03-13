@@ -96,6 +96,7 @@ const Block: React.FC<{
     else if (e.key === "Backspace" && !contentWithoutHtmlTags.current) {
       // 첫 번째 블록이면 무시
       e.preventDefault()
+      moveToRelativeBlock?.(position, -1, false)
       deleteBlock?.({ id: block.id })
     }
 
