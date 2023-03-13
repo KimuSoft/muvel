@@ -14,9 +14,11 @@ export class BlocksService {
 
   async create(content: string, order?: number) {
     if (!order) {
-      const lastBlock = await this.blocksRepository.findOne({
-        order: { order: "DESC" },
-      })
+      const lastBlock = await this.blocksRepository
+        .findOne({
+          order: { order: "DESC" },
+        })
+        .catch(() => ({ order: 0 }))
       order = lastBlock.order + 1
     }
 
