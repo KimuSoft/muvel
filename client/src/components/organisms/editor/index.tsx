@@ -6,6 +6,7 @@ import { DummyBlock, EditorContainer } from "./styles"
 import EditorContext from "../../../context/EditorContext"
 import { BlockType, PartialBlock } from "../../../types/block.type"
 import _ from "lodash"
+import { v4 } from "uuid"
 
 const canvas = document.createElement("canvas").getContext("2d")!
 
@@ -47,7 +48,7 @@ const Editor: React.FC = () => {
     setEpisode((e) => {
       const _blocks = e.blocks.map((b) => ({ ...b, focus: false }))
       _blocks.splice(_blocks.findIndex((b) => b.id === block.id) + 1, 0, {
-        id: crypto.randomUUID(),
+        id: v4(),
         blockType: BlockType.Describe,
         content: "",
         focus: true,

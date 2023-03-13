@@ -1,4 +1,5 @@
 import { BlockType, PartialBlock } from "../types/block.type"
+import { v4 } from "uuid"
 
 const stringToBlock = (content: string): PartialBlock[] => {
   const blocks: PartialBlock[] = []
@@ -16,7 +17,7 @@ const stringToBlock = (content: string): PartialBlock[] => {
         .trim()
         .replace(/^"(.*)"$/, "“$1”")
         .replace(/\.\.\./g, "…"),
-      id: crypto.randomUUID(),
+      id: v4(),
     })
   }
   return blocks
