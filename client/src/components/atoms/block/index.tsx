@@ -16,7 +16,6 @@ const Block: React.FC<{
   addBlock?: (block: PartialBlock) => void
   deleteBlock?: ({ id }: { id: string }) => void
   updateBlock?: (block: PartialBlock) => void
-  moveToRelativeBlock?: (currentPos: number, direction: -1 | 1) => void
   moveToRelativeBlock?: (
     currentPos: number,
     direction: -1 | 1,
@@ -39,6 +38,7 @@ const Block: React.FC<{
 
   const contenteditable = useRef<HTMLDivElement>(null)
   const content = useRef<string>(block.content)
+  const contentWithoutHtmlTags = useRef<string>(block.content)
 
   const getBlockType = (content: string): BlockType => {
     if (content.startsWith("“") && content.endsWith("”")) {
@@ -51,8 +51,16 @@ const Block: React.FC<{
   }
 
   const handleChange = (e: ContentEditableEvent) => {
-    setBlockType(getBlockType(e.target.value))
+    const value = (e.currentTarget as HTMLDivElement).innerText.trim()
+
+    setBlockType(getBlockType(value))
     content.current = e.target.value
+    contentWithoutHtmlTags.current = value
+
+    if (!value) {
+      content.current = value
+    }
+
     updateBlock?.({ id: block.id, blockType, content: e.target.value })
   }
 
@@ -77,16 +85,15 @@ const Block: React.FC<{
 
   const keyDownHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
     keySound.play()
-
     // 새로운 블록 생성
     if (e.key === "Enter") {
       e.preventDefault()
-      if (!content.current) return
+      if (!contentWithoutHtmlTags.current) return
       addBlock?.(block)
     }
 
     // 내용이 없는 상태에서 백스페이스를 누르면 블록 삭제
-    else if (e.key === "Backspace" && !content.current) {
+    else if (e.key === "Backspace" && !contentWithoutHtmlTags.current) {
       // 첫 번째 블록이면 무시
       e.preventDefault()
       deleteBlock?.({ id: block.id })
