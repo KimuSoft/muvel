@@ -7,10 +7,13 @@ const EpisodeTitle: React.FC = () => {
   const context = useContext(EditorContext)
 
   const titleChangeHandler = (e: ContentEditableEvent) =>
-    context.setEpisode({ ...context.episode, title: e.target.value })
+    context.setEpisode({ ...context.episode, title: e.currentTarget.innerText })
 
   const chapterChangeHandler = (e: ContentEditableEvent) =>
-    context.setEpisode({ ...context.episode, chapter: e.target.value })
+    context.setEpisode({
+      ...context.episode,
+      chapter: e.currentTarget.innerText,
+    })
 
   return (
     <TitleBlock>
@@ -18,10 +21,16 @@ const EpisodeTitle: React.FC = () => {
         html={context.episode.title}
         onChange={titleChangeHandler}
         placeholder="제목을 입력해 주세요"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") e.preventDefault()
+        }}
       />
       <SubTitle
         html={context.episode.chapter}
         onChange={chapterChangeHandler}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") e.preventDefault()
+        }}
         placeholder="챕터 이름"
       />
     </TitleBlock>
