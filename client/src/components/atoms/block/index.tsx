@@ -61,7 +61,7 @@ const Block: React.FC<{
       content.current = value
     }
 
-    updateBlock?.({ id: block.id, blockType, content: e.target.value })
+    updateBlock?.({ id: block.id, blockType, content: value })
   }
 
   const pasteHandler = (e: ClipboardEvent) => {
