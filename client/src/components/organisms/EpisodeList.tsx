@@ -15,12 +15,12 @@ const EpisodeList: React.FC = () => {
     const el = _episodes.map((e, idx) => {
       if (_episodes[idx - 1]?.chapter !== e.chapter) {
         return (
-          <>
-            <ChapterTitle key={"ct" + e.id}>
+          <React.Fragment key={'ct' + e.id}>
+            <ChapterTitle>
               {e.chapter || "· · · · · · · · · · · · · · ·"}
             </ChapterTitle>
-            <EpisodeElement episode={e} index={idx + 1} key={e.id} />
-          </>
+            <EpisodeElement episode={e} index={idx + 1} />
+          </React.Fragment>
         )
       }
       return <EpisodeElement episode={e} index={idx + 1} key={e.id} />
