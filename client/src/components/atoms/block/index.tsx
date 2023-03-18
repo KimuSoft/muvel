@@ -7,10 +7,37 @@ import { Howl } from "howler"
 import { BlockType, PartialBlock } from "../../../types/block.type"
 import EditorContext from "../../../context/EditorContext"
 import stringToBlock from "../../../utils/stringToBlock"
+import { SortableElement, SortableHandle } from "react-sortable-hoc"
+import BlockHandle from "../BlockHandle"
 
 const keySound = new Howl({ src: keySoundFile })
 
-const Block: React.FC<{
+const DragHandle = SortableHandle<{ blockType: BlockType }>(
+  ({ blockType }: { blockType: BlockType }) => (
+    <BlockHandle blockType={blockType} />
+  )
+)
+
+// 좌우 정렬
+const BlockContainer = styled.li`
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+`
+
+export const SortableBlock = SortableElement<BlockProps>(
+  (props: BlockProps) => (
+    <BlockContainer>
+      <DragHandle blockType={props.block.blockType} />
+      <Block {...props} />
+    </BlockContainer>
+  )
+)
+
+interface BlockProps {
   block: PartialBlock
   position: number
   addBlock?: (block: PartialBlock) => void
@@ -22,7 +49,9 @@ const Block: React.FC<{
     preserveCaretPosition: boolean
   ) => void
   bottomSpacing: boolean
-}> = ({
+}
+
+const Block: React.FC<BlockProps> = ({
   block,
   addBlock,
   deleteBlock,

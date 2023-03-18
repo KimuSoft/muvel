@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react"
-import Block from "../../atoms/block"
+import Block, { SortableBlock } from "../../atoms/block"
 import usePrevious from "../../../hooks/usePrevious"
 import setCaretToEnd from "../../../utils/setCaretToEnd"
 import { DummyBlock, EditorContainer } from "./styles"
@@ -7,8 +7,19 @@ import EditorContext from "../../../context/EditorContext"
 import { BlockType, PartialBlock } from "../../../types/block.type"
 import _ from "lodash"
 import { v4 } from "uuid"
+import {
+  arrayMove,
+  SortableContainer,
+  SortableContainerProps,
+} from "react-sortable-hoc"
 
 const canvas = document.createElement("canvas").getContext("2d")!
+
+const _SortableContainer = SortableContainer<React.PropsWithChildren>(
+  ({ children }: React.PropsWithChildren) => {
+    return <ul>{children}</ul>
+  }
+)
 
 const Editor: React.FC = () => {
   const { episode, setEpisode } = useContext(EditorContext)
@@ -148,27 +159,40 @@ const Editor: React.FC = () => {
     }
   }
 
+  const onSortEnd: SortableContainerProps["onSortEnd"] = ({
+    oldIndex,
+    newIndex,
+  }) => {
+    setEpisode((episode) => ({
+      ...episode,
+      blocks: arrayMove(episode.blocks, oldIndex, newIndex),
+    }))
+  }
+
   return (
     <EditorContainer>
       <DummyBlock height={"100px"} />
-      {episode.blocks.map((b, index) => {
-        const bp =
-          index !== episode.blocks.length - 1 &&
-          episode.blocks[index + 1]?.blockType !== b.blockType
+      <_SortableContainer onSortEnd={onSortEnd}>
+        {episode.blocks.map((b, index) => {
+          const bp =
+            index !== episode.blocks.length - 1 &&
+            episode.blocks[index + 1]?.blockType !== b.blockType
 
-        return (
-          <Block
-            block={b}
-            position={index + 1}
-            addBlock={addBlockHandler}
-            deleteBlock={deleteBlockHandler}
-            updateBlock={updateBlockHandler}
-            moveToRelativeBlock={moveToRelativeBlockHandler}
-            key={b.id}
-            bottomSpacing={bp}
-          />
-        )
-      })}
+          return (
+            <SortableBlock
+              key={b.id}
+              index={index}
+              block={b}
+              position={index + 1}
+              addBlock={addBlockHandler}
+              deleteBlock={deleteBlockHandler}
+              updateBlock={updateBlockHandler}
+              moveToRelativeBlock={moveToRelativeBlockHandler}
+              bottomSpacing={bp}
+            />
+          )
+        })}
+      </_SortableContainer>
       <DummyBlock height={"500px"} />
     </EditorContainer>
   )
