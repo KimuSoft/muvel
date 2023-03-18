@@ -117,7 +117,9 @@ const Block: React.FC<BlockProps> = ({
   }
 
   const keyDownHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    keySound.play()
+    // 타자 효과음
+    // keySound.play()
+
     // 새로운 블록 생성
     if (e.key === "Enter") {
       e.preventDefault()
