@@ -466,6 +466,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.2.0":
+  version: 7.21.0
+  resolution: "@babel/runtime@npm:7.21.0"
+  dependencies:
+    regenerator-runtime: ^0.13.11
+  checksum: 7b33e25bfa9e0e1b9e8828bb61b2d32bdd46b41b07ba7cb43319ad08efc6fda8eb89445193e67d6541814627df0ca59122c0ea795e412b99c5183a0540d338ab
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.18.10, @babel/template@npm:^7.20.7, @babel/template@npm:^7.3.3":
   version: 7.20.7
   resolution: "@babel/template@npm:7.20.7"
@@ -2332,6 +2341,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"array-move@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "array-move@npm:4.0.0"
+  checksum: 307e6716e83567918cf8dd0050cdb44ce500d9969cd734ecbf1f8ae547df151dbf10713255a9db6a8950ca917f4817a778f0116f6d13944c3f3cd1fd1845f13f
+  languageName: node
+  linkType: hard
+
 "array-union@npm:^2.1.0":
   version: 2.1.0
   resolution: "array-union@npm:2.1.0"
@@ -2870,6 +2886,7 @@ __metadata:
     "@types/react-dom": ^18.0.6
     "@types/styled-components": ^5.1.26
     "@vitejs/plugin-react": ^2.1.0
+    array-move: ^4.0.0
     axios: ^1.2.2
     framer-motion: ^8.4.0
     howler: ^2.2.3
@@ -2880,6 +2897,7 @@ __metadata:
     react-icons: ^4.4.0
     react-is: ^18.2.0
     react-router-dom: ^6.4.2
+    react-sortable-hoc: ^2.0.0
     react-toastify: ^9.1.1
     styled-components: ^5.3.6
     typescript: 4.8
@@ -4723,6 +4741,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"invariant@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "invariant@npm:2.2.4"
+  dependencies:
+    loose-envify: ^1.0.0
+  checksum: cc3182d793aad82a8d1f0af697b462939cb46066ec48bbf1707c150ad5fad6406137e91a262022c269702e01621f35ef60269f6c0d7fd178487959809acdfb14
+  languageName: node
+  linkType: hard
+
 "ip@npm:^2.0.0":
   version: 2.0.0
   resolution: "ip@npm:2.0.0"
@@ -5583,7 +5610,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.1.0, loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -6670,7 +6697,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.7.1":
+"prop-types@npm:^15.5.7, prop-types@npm:^15.7.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -6837,6 +6864,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-sortable-hoc@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "react-sortable-hoc@npm:2.0.0"
+  dependencies:
+    "@babel/runtime": ^7.2.0
+    invariant: ^2.2.4
+    prop-types: ^15.5.7
+  peerDependencies:
+    prop-types: ^15.5.7
+    react: ^16.3.0 || ^17.0.0
+    react-dom: ^16.3.0 || ^17.0.0
+  checksum: c4930856eb8e9be638220423d452ddaab834aa43ff76069eeb057c6a5f1d0538f9e43c17bedd34bfd2a66ff4aa1e289557821d792db73a42ebf061bd1c92a423
+  languageName: node
+  linkType: hard
+
 "react-toastify@npm:^9.1.1":
   version: 9.1.1
   resolution: "react-toastify@npm:9.1.1"
@@ -6906,6 +6948,13 @@ __metadata:
   version: 0.1.13
   resolution: "reflect-metadata@npm:0.1.13"
   checksum: 798d379a7b6f6455501145419505c97dd11cbc23857a386add2b9ef15963ccf15a48d9d15507afe01d4cd74116df8a213247200bac00320bd7c11ddeaa5e8fb4
+  languageName: node
+  linkType: hard
+
+"regenerator-runtime@npm:^0.13.11":
+  version: 0.13.11
+  resolution: "regenerator-runtime@npm:0.13.11"
+  checksum: 27481628d22a1c4e3ff551096a683b424242a216fee44685467307f14d58020af1e19660bf2e26064de946bad7eff28950eae9f8209d55723e2d9351e632bbb4
   languageName: node
   linkType: hard
 

@@ -30,7 +30,7 @@ const HeaderContainer = styled.div`
 `
 
 const Header: React.FC = () => {
-  const { setIsSidebarOpen } = useContext(EditorContext)
+  const { setIsSidebarOpen, isSaving } = useContext(EditorContext)
 
   return (
     <HeaderContainer>
@@ -40,6 +40,7 @@ const Header: React.FC = () => {
       >
         <MdMenu style={{ fontSize: 24 }} />
       </IconButton>
+      {isSaving && <span>저장 중...</span>}
       <EpisodeTitle />
       <ExportButton />
       <ImportButton />

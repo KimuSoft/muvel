@@ -37,6 +37,8 @@ const EditorPage: React.FC = () => {
   // 업데이트 시 비교하는 용도
   const [recentEpisode, setRecentEpisode] = useState<Episode>()
 
+  const [isSaving, setIsSaving] = useState<boolean>(false)
+
   // 블록 변경사항을 로드하는 메서드
   const getBlocksChange = () => {
     if (!recentEpisode) return
@@ -70,11 +72,15 @@ const EditorPage: React.FC = () => {
       // 디버깅용 코드
       // toast.info(JSON.stringify(blocksChange))
 
+      setIsSaving(true)
+
       // 블록 데이터 업데이트 요청
       await api.post("episodes/update", {
         ...episode,
         blocks: blocksChange,
       })
+
+      setIsSaving(false)
 
       setRecentEpisode(episode)
     }, 1000)
@@ -144,6 +150,8 @@ const EditorPage: React.FC = () => {
         setEpisode,
         isSidebarOpen,
         setIsSidebarOpen,
+        isSaving,
+        setIsSaving,
       }}
     >
       <EditorTemplate />

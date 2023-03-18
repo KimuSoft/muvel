@@ -11,6 +11,9 @@ export default createContext<{
 
   isSidebarOpen: boolean
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>
+
+  isSaving: boolean
+  setIsSaving: React.Dispatch<React.SetStateAction<boolean>>
 }>({
   novel: {
     id: "",
@@ -31,4 +34,6 @@ export default createContext<{
   setEpisode: () => {},
   isSidebarOpen: false,
   setIsSidebarOpen: () => {},
+  isSaving: false,
+  setIsSaving: () => {},
 })
