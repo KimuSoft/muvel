@@ -15,8 +15,6 @@ const HeaderContainer = styled.div`
   justify-content: center;
   gap: 15px;
 
-  position: fixed;
-  top: 0;
   height: 70px;
 
   background-color: var(--color-zinc-800);

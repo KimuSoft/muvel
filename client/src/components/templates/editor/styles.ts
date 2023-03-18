@@ -8,21 +8,30 @@ export const MainStyle = styled.div`
 
 export const Body = styled.div`
   display: flex;
-  flex-direction: row;
-  align-items: center;
   justify-content: center;
 
-  height: 100vh;
+  height: calc(100vh - 80px);
 
-  padding: 80px 20px 0px;
+  padding: 20px 20px 0px;
 
   overflow-y: scroll;
-  ::-webkit-scrollbar-thumb {
-    background-color: #ffffff;
-    border-radius: 5px;
+
+  ::-webkit-scrollbar {
+    width: 3px;
+    cursor: pointer;
   }
-  ::-webkit-scrollbar-track {
-    background-color: transparent;
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-zinc-600);
+    border-radius: 10px;
+    width: 3px;
+
+    // hover color animation
+    transition: background-color 0.2s ease-in-out;
+
+    &:hover {
+      background-color: var(--color-zinc-700);
+    }
   }
 `
 

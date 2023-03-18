@@ -12,10 +12,10 @@ const EditorTemplate: React.FC = () => {
       <Sidebar />
       <Body>
         <Editor />
-        <Widgets>
-          <GoalWidget />
-        </Widgets>
       </Body>
+      <Widgets>
+        <GoalWidget />
+      </Widgets>
     </MainStyle>
   )
 }
