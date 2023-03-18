@@ -37,5 +37,3 @@ data/
 
 .yarn/install-state.gz
 .env
-
-server/src/migrations
