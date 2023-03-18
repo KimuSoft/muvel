@@ -23,9 +23,13 @@ const BlockContainer = styled.li`
   list-style: none;
   display: flex;
   flex-direction: row;
-  align-items: center;
   padding: 0;
   margin: 0;
+  gap: 10px;
+
+  &:hover .block-handle {
+    opacity: 1;
+  }
 `
 
 export const SortableBlock = SortableElement<BlockProps>(
