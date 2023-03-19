@@ -65,8 +65,8 @@ const Divider = styled.div`
 
   background-color: #52525b;
 
-  margin-top: 20px;
-  margin-bottom: 40px;
+  margin-top: 80px;
+  margin-bottom: 100px;
 `
 
 interface BlockProps {
