@@ -21,21 +21,26 @@ const DragHandle = SortableHandle<{ blockType: BlockType }>(
 // 좌우 정렬
 const BlockContainer = styled.li`
   list-style: none;
-  display: flex;
-  flex-direction: row;
   padding: 0;
   margin: 0;
-  gap: 10px;
 
   &:hover .block-handle {
     opacity: 1;
   }
 `
 
+const Relative = styled.div`
+  position: relative;
+  right: 40px;
+`
+
 export const SortableBlock = SortableElement<BlockProps>(
   (props: BlockProps) => (
     <BlockContainer>
-      <DragHandle blockType={props.block.blockType} />
+      <Relative>
+        <DragHandle blockType={props.block.blockType} />
+      </Relative>
+
       <Block {...props} />
     </BlockContainer>
   )

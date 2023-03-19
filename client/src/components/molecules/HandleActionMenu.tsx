@@ -15,7 +15,7 @@ const HandleActionMenu: React.FC = () => {
 }
 
 const MenuContainer = styled.div`
-  position: relative;
+  position: absolute;
   right: 100px;
 
   display: flex;
@@ -33,3 +33,5 @@ const MenuContainer = styled.div`
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 10px;
 `
+
+export default HandleActionMenu
