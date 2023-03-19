@@ -15,4 +15,5 @@ ENV VITE_API_BASE=/api
 RUN yarn workspace client build && \
     yarn workspace server build
 
-CMD yarn workspace server start:prod
+CMD yarn ["yarn", "workspace", "server", "migrateandstart"]
+
