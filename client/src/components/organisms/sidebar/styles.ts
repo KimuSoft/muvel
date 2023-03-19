@@ -2,6 +2,7 @@ import styled from "styled-components"
 
 export const SidebarFrame = styled.div<{ isOpen: boolean }>`
   position: absolute;
+  z-index: 1;
   top: 0;
   left: ${(props) => (props.isOpen ? 0 : -420)}px;
   transition: left 0.6s cubic-bezier(0.33, 1, 0.68, 1);
