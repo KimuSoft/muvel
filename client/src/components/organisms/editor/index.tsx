@@ -172,7 +172,7 @@ const Editor: React.FC = () => {
   return (
     <EditorContainer>
       <DummyBlock height={"100px"} />
-      <_SortableContainer onSortEnd={onSortEnd}>
+      <_SortableContainer onSortEnd={onSortEnd} pressDelay={100} lockAxis="y">
         {episode.blocks.map((b, index) => {
           const bp =
             index !== episode.blocks.length - 1 &&
