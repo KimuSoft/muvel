@@ -6,7 +6,7 @@ import styled from "styled-components"
 const BlockHandle: React.FC<{ blockType: BlockType }> = ({ blockType }) => {
   return (
     <HandleContainer>
-      {blockType === BlockType.Describe ? (
+      {blockType !== BlockType.DoubleQuote ? (
         <HandleIcon className="block-handle" />
       ) : (
         <ProfileHandle />
