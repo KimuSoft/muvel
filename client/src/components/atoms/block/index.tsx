@@ -41,10 +41,33 @@ export const SortableBlock = SortableElement<BlockProps>(
         <DragHandle blockType={props.block.blockType} />
       </Relative>
 
-      <Block {...props} />
+      {props.block.blockType === BlockType.Divider ? (
+        <DividerContainer>
+          <Divider />
+        </DividerContainer>
+      ) : (
+        <Block {...props} />
+      )}
     </BlockContainer>
   )
 )
+
+const DividerContainer = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
+const Divider = styled.div`
+  width: 60%;
+  height: 1px;
+
+  background-color: #52525b;
+
+  margin-top: 20px;
+  margin-bottom: 40px;
+`
 
 interface BlockProps {
   block: PartialBlock
@@ -168,6 +191,12 @@ const Block: React.FC<BlockProps> = ({
     else if (e.key === "ArrowDown") {
       e.preventDefault()
       moveToRelativeBlock?.(position, 1, true)
+    }
+
+    // 구분선 블록 생성
+    else if (e.key === "-" && content.current === "---") {
+      setBlockType(BlockType.Divider)
+      // moveToRelativeBlock?.(position, 1, false)
     }
 
     // 쌍따옴표 블록 생성

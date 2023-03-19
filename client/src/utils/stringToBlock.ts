@@ -5,18 +5,23 @@ const stringToBlock = (content: string): PartialBlock[] => {
   const blocks: PartialBlock[] = []
   const lines = content.split("\n")
   for (const line of lines) {
-    if (!line.trim()) continue
+    const content = line.trim()
 
-    const blockType = /^["“”].*["“”]$/.test(line.trim())
-      ? BlockType.DoubleQuote
-      : BlockType.Describe
+    if (!content) continue
+
+    let blockType = BlockType.Describe
+    if (/^["“”].*["“”]$/.test(content)) {
+      blockType = BlockType.DoubleQuote
+    } else if (/^[\s-=*]+$/.test(content)) {
+      blockType = BlockType.Divider
+    }
 
     blocks.push({
       blockType: blockType,
-      content: line
-        .trim()
-        .replace(/^"(.*)"$/, "“$1”")
-        .replace(/\.\.\./g, "…"),
+      content:
+        blockType !== BlockType.Divider
+          ? content.replace(/^"(.*)"$/, "“$1”").replace(/\.\.\./g, "…")
+          : "",
       id: v4(),
     })
   }

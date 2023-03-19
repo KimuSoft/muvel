@@ -26,4 +26,5 @@ export enum BlockType {
   DoubleGuillemet,
   // 출력 시 포함되지 않는 작가용 주석 블록
   Commnet,
+  Divider,
 }
