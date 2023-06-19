@@ -7,11 +7,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm"
-import { Block } from "../blocks/block.entity"
-import { Novel } from "../novels/novel.entity"
+import { BlockEntity } from "../blocks/block.entity"
+import { NovelEntity } from "../novels/novel.entity"
 
 @Entity()
-export class Episode {
+export class EpisodeEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string
 
@@ -31,13 +31,13 @@ export class Episode {
   @UpdateDateColumn()
   updatedAt: Date
 
-  @ManyToOne(() => Novel, (novel) => novel.episodes, {
+  @ManyToOne(() => NovelEntity, (novel) => novel.episodes, {
     onDelete: "CASCADE",
   })
-  novel: Novel
+  novel: NovelEntity
 
-  @OneToMany(() => Block, (block) => block.episode, {
+  @OneToMany(() => BlockEntity, (block) => block.episode, {
     cascade: true,
   })
-  blocks: Block[]
+  blocks: BlockEntity[]
 }

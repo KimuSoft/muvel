@@ -1,5 +1,5 @@
-import { Injectable } from "@nestjs/common"
-import { Novel } from "./novel.entity"
+import { ForbiddenException, Injectable } from "@nestjs/common"
+import { NovelEntity } from "./novel.entity"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
 import { EpisodesService } from "../episodes/episodes.service"
@@ -7,13 +7,13 @@ import { EpisodesService } from "../episodes/episodes.service"
 @Injectable()
 export class NovelsService {
   constructor(
-    @InjectRepository(Novel)
-    private novelsRepository: Repository<Novel>,
+    @InjectRepository(NovelEntity)
+    private novelsRepository: Repository<NovelEntity>,
     private episodesService: EpisodesService
   ) {}
 
   async create(title: string, description: string) {
-    const novel = new Novel()
+    const novel = new NovelEntity()
     novel.title = title
     novel.description = description
 
@@ -41,5 +41,14 @@ export class NovelsService {
       where: { id },
       relations,
     })
+  }
+
+  async checkAuthor(novelId: string, userId: string) {
+    const novel = await this.novelsRepository.findOne({
+      where: { id: novelId },
+      relations: ["owner"],
+    })
+
+    return novel.author.id === userId
   }
 }
