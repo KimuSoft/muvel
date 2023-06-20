@@ -7,6 +7,7 @@ import Auth from "./Auth"
 import IconButton from "../../atoms/IconButton"
 import EditorContext from "../../../context/EditorContext"
 import { MdMenu } from "react-icons/md"
+import Sidebar from "../sidebar"
 
 const HeaderContainer = styled.div`
   display: flex;
@@ -28,16 +29,11 @@ const HeaderContainer = styled.div`
 `
 
 const Header: React.FC = () => {
-  const { setIsSidebarOpen, isSaving } = useContext(EditorContext)
+  const { isSaving } = useContext(EditorContext)
 
   return (
     <HeaderContainer>
-      <IconButton
-        onClick={() => setIsSidebarOpen(true)}
-        style={{ backgroundColor: "transparent" }}
-      >
-        <MdMenu style={{ fontSize: 24 }} />
-      </IconButton>
+      <Sidebar />
       {isSaving && <span>저장 중...</span>}
       <EpisodeTitle />
       <ExportButton />

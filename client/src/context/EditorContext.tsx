@@ -17,9 +17,6 @@ export default createContext<{
   blocks: Block[]
   setBlocks: React.Dispatch<React.SetStateAction<Block[]>>
 
-  isSidebarOpen: boolean
-  setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>
-
   isSaving: boolean
   setIsSaving: React.Dispatch<React.SetStateAction<boolean>>
 }>({
@@ -29,8 +26,6 @@ export default createContext<{
   setEpisode: () => {},
   blocks: [],
   setBlocks: () => {},
-  isSidebarOpen: false,
-  setIsSidebarOpen: () => {},
   isSaving: false,
   setIsSaving: () => {},
 })

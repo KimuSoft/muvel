@@ -4,7 +4,7 @@
 body {
   padding: 0;
   margin: 0;
-  color: var(--color-zinc-100);
+  /*color: var(--color-zinc-100);*/
 }
 
 * {
@@ -30,6 +30,4 @@ body {
   --color-violet-600: #7c3aed;
   --color-violet-700: #6d28d9;
   --color-violet-800: #5b21b6;
-
-  background-color: var(--color-zinc-800);
 }

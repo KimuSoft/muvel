@@ -57,14 +57,13 @@ const GoalWidget: React.FC = () => {
   const { blocks } = useContext(EditorContext)
 
   const goal = 3000
-  const current = blocks.reduce(
-    (acc, cur) => acc + cur.content.replace(/[\s\n]/g, "").length,
-    0
-  )
 
-  const getPercentage = () => Math.floor((current * 100) / goal)
+  const getCurrentLength = () =>
+    blocks.reduce((acc, cur) => acc + cur.content.length, 0)
+  const getPercentage = () => Math.floor((getCurrentLength() * 100) / goal)
 
   const getCheeringText = () => {
+    console.log(blocks)
     const p = getPercentage()
     if (p < 20) return "열심히 써봐요!"
     if (p < 40) return "조금만 더 써봐요!"
@@ -79,7 +78,7 @@ const GoalWidget: React.FC = () => {
       <CheeringText>{getCheeringText()}</CheeringText>
       <GoalTextBlock>
         <GoalText>
-          {current.toLocaleString()}/{goal.toLocaleString()}자
+          {getCurrentLength().toLocaleString()}/{goal.toLocaleString()}자
         </GoalText>
         <GoalPercent>{getPercentage()}%</GoalPercent>
       </GoalTextBlock>

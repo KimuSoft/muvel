@@ -9,7 +9,6 @@ const EditorTemplate: React.FC = () => {
   return (
     <MainStyle>
       <Header />
-      <Sidebar />
       <Body>
         <Editor />
       </Body>

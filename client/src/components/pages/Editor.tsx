@@ -30,7 +30,6 @@ const EditorPage: React.FC = () => {
   const [blocksCache, setBlocksCache] = useState<Block[]>([])
 
   // State (UI)
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false)
   const [isSaving, setIsSaving] = useState<boolean>(false)
 
   useEffect(() => {
@@ -98,10 +97,6 @@ const EditorPage: React.FC = () => {
 
   const refreshNovel = async () => {
     const { data } = await api.get<Novel>(`novels/${episode.novelId}`)
-
-    console.debug(`novels/${episode.novelId}`)
-    console.debug(data)
-
     setNovel(data)
   }
 
@@ -113,13 +108,7 @@ const EditorPage: React.FC = () => {
       return navigate("/")
     }
 
-    console.debug("에피소드 정보")
-    console.debug(episodeRes.data)
-
     const blocksRes = await api.get<Block[]>(`episodes/${episodeId}/blocks`)
-
-    console.debug("블록 정보")
-    console.debug(blocksRes.data)
 
     setEpisode(episodeRes.data)
     setBlocks(blocksRes.data)
@@ -132,9 +121,8 @@ const EditorPage: React.FC = () => {
   }, [episodeId])
 
   useEffect(() => {
-    if (!isSidebarOpen) return
     refreshNovel().then()
-  }, [isSidebarOpen, episode])
+  }, [episode])
 
   return (
     <EditorContext.Provider
@@ -145,8 +133,6 @@ const EditorPage: React.FC = () => {
         setEpisode,
         blocks,
         setBlocks,
-        isSidebarOpen,
-        setIsSidebarOpen,
         isSaving,
         setIsSaving,
       }}
