@@ -5,12 +5,13 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  RelationId,
   UpdateDateColumn,
 } from "typeorm"
 import { BlockEntity } from "../blocks/block.entity"
 import { NovelEntity } from "../novels/novel.entity"
 
-@Entity()
+@Entity("episode")
 export class EpisodeEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string
@@ -18,10 +19,10 @@ export class EpisodeEntity {
   @Column()
   title: string
 
-  @Column()
+  @Column({ default: "" })
   description: string
 
-  @Column()
+  @Column({ default: "" })
   chapter: string
 
   // 임시로 생성 날짜를 기준으로 정렬하도록 함
@@ -36,8 +37,14 @@ export class EpisodeEntity {
   })
   novel: NovelEntity
 
+  @RelationId((episode: EpisodeEntity) => episode.novel)
+  novelId: string
+
   @OneToMany(() => BlockEntity, (block) => block.episode, {
     cascade: true,
   })
   blocks: BlockEntity[]
+
+  @Column({ default: 0 })
+  order: number
 }

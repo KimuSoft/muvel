@@ -1,8 +1,8 @@
-import { BlockType, PartialBlock } from "../types/block.type"
+import { Block, BlockType } from "../types/block.type"
 import { v4 } from "uuid"
 
-const stringToBlock = (content: string): PartialBlock[] => {
-  const blocks: PartialBlock[] = []
+const stringToBlock = (content: string): Block[] => {
+  const blocks: Block[] = []
   const lines = content.split("\n")
   for (const line of lines) {
     const content = line.trim()

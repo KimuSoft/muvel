@@ -5,135 +5,130 @@ import { useNavigate, useParams } from "react-router-dom"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import { api } from "../../utils/api"
 import { toast } from "react-toastify"
-import { Novel } from "../../types/novel.type"
-import { Episode } from "../../types/episode.type"
+import { initialNovel, Novel, PartialNovel } from "../../types/novel.type"
+import {
+  Episode,
+  initialPartialEpisode,
+  PartialEpisode,
+} from "../../types/episode.type"
 import _ from "lodash"
+import { Block } from "../../types/block.type"
 
 const EditorPage: React.FC = () => {
+  // Hooks
   const episodeId = useParams<{ id: string }>().id || ""
-
   const user = useCurrentUser()
   const navigate = useNavigate()
 
-  const [novel, setNovel] = useState<Novel>({
-    id: "",
-    title: "",
-    description: "",
-    episodes: [],
-    author: { id: "" },
-  })
+  // States (Data)
+  const [novel, setNovel] = useState<Novel>(initialNovel)
+  const [episode, setEpisode] = useState<PartialEpisode>(initialPartialEpisode)
+  const [blocks, setBlocks] = useState<Block[]>([])
 
-  const [episode, setEpisode] = useState<Episode>({
-    id: "",
-    title: "",
-    chapter: "",
-    description: "",
-    blocks: [],
-    novel: { id: "" },
-  })
+  // State (Cache) :업데이트 시 변경 사항을 비교하는 용도
+  const [episodeCache, setEpisodeCache] = useState<PartialEpisode>()
+  const [blocksCache, setBlocksCache] = useState<Block[]>([])
 
+  // State (UI)
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false)
-
-  // 업데이트 시 비교하는 용도
-  const [recentEpisode, setRecentEpisode] = useState<Episode>()
-
   const [isSaving, setIsSaving] = useState<boolean>(false)
+
+  useEffect(() => {
+    // 로그인되어 있지 않은 경우 로그인 페이지로 이동
+    if (!user) {
+      navigate("/api/auth/login/discord")
+      return
+    }
+
+    initEpisode().then()
+
+    // TODO: 변경사항이 서버에 올라가지 않은 상태면 창을 닫을 때 경고 표시
+    // window.onbeforeunload = () => 0
+  }, [])
 
   // 블록 변경사항을 로드하는 메서드
   const getBlocksChange = () => {
-    if (!recentEpisode) return
+    if (!episodeCache) return
     // deleted blocks  검증
-    const deletedBlocks = recentEpisode.blocks
-      .filter((b) => !episode.blocks.find((b2) => b2.id === b.id))
+    const deletedBlocks = blocksCache
+      .filter((b) => !blocks.find((b2) => b2.id === b.id))
       .map((b) => ({ id: b.id, isDeleted: true }))
 
     const difference = _.differenceWith(
-      episode.blocks.map((b, order) => ({ ...b, order })),
-      recentEpisode.blocks.map((b, order) => ({ ...b, order })),
+      blocks.map((b, order) => ({ ...b, order })),
+      blocksCache.map((b, order) => ({ ...b, order })),
       _.isEqual
     )
 
     return [...deletedBlocks, ...difference]
   }
 
-  // episode debounce
+  // 변경사항 자동 저장 (Debounce)
   React.useEffect(() => {
     const timeout = setTimeout(async () => {
-      const blocksChange = getBlocksChange()
-
-      // 최적화용 코드: 변경 사항이 없는 것으로 보이면 api 요청을 보내지 않음
-      if (
-        !blocksChange?.length &&
-        episode.title === recentEpisode?.title &&
-        episode.chapter === recentEpisode?.chapter
-      )
-        return
-
-      // 디버깅용 코드
-      // toast.info(JSON.stringify(blocksChange))
-
       setIsSaving(true)
 
-      // 블록 데이터 업데이트 요청
-      await api.post("episodes/update", {
-        ...episode,
-        blocks: blocksChange,
-      })
+      // 에피소드 변경사항 체크
+      if (
+        episode.title !== episodeCache?.title ||
+        episode.chapter !== episodeCache?.chapter
+      ) {
+        // 에피소드 업데이트 요청
+        await api.put(`episodes/${episodeId}`, {
+          title: episode.title,
+          description: episode.description,
+          chapter: episode.chapter,
+        })
+        setEpisodeCache(episode)
+      }
+
+      // 블록 변경사항 체크
+      const blocksChange = getBlocksChange()
+      if (blocksChange?.length) {
+        // 블록 데이터 업데이트 요청
+        await api.patch(`episodes/${episodeId}/blocks`, blocksChange)
+        setBlocksCache(blocks)
+      }
 
       setIsSaving(false)
-
-      setRecentEpisode(episode)
     }, 1000)
 
     return () => clearTimeout(timeout)
   }, [episode])
 
   const refreshNovel = async () => {
-    const { data } = await api.get<Novel>("novels", {
-      params: {
-        id: episode.novel.id,
-        loadEpisodes: true,
-      },
-    })
+    const { data } = await api.get<Novel>(`novels/${episode.novelId}`)
+
+    console.debug(`novels/${episode.novelId}`)
+    console.debug(data)
 
     setNovel(data)
   }
 
-  const refresh = async () => {
-    const { data } = await api.get<Episode>("episodes", {
-      params: {
-        id: episodeId,
-        loadBlocks: true,
-        loadNovel: true,
-      },
-    })
+  const initEpisode = async () => {
+    const episodeRes = await api.get<Episode>(`episodes/${episodeId}`)
 
-    if (!data) {
-      toast.error(
-        "해당 에피소드를 찾을 수 없어 가장 최근 작업한 페이지로 이동합니다."
-      )
+    if (!episodeRes.data) {
+      toast.error("해당 에피소드를 찾을 수 없습니다.")
       return navigate("/")
     }
 
-    setEpisode(data)
-    setRecentEpisode(data)
+    console.debug("에피소드 정보")
+    console.debug(episodeRes.data)
+
+    const blocksRes = await api.get<Block[]>(`episodes/${episodeId}/blocks`)
+
+    console.debug("블록 정보")
+    console.debug(blocksRes.data)
+
+    setEpisode(episodeRes.data)
+    setBlocks(blocksRes.data)
+    setEpisodeCache(episodeRes.data)
+    setBlocksCache(blocksRes.data)
   }
 
   useEffect(() => {
-    if (!user) {
-      window.location.href = "/auth/login/discord"
-      return
-    }
-
-    refresh().then()
-
-    // 닫을 때 저장 내용을 잃을 수 있다는 경고 표시
-    // 자동 저장을 구현하여 주석 처리함
-    // window.onbeforeunload = () => 0
-  }, [])
-
-  useEffect(() => {
-    refresh().then()
+    initEpisode().then()
   }, [episodeId])
 
   useEffect(() => {
@@ -148,6 +143,8 @@ const EditorPage: React.FC = () => {
         setNovel,
         episode,
         setEpisode,
+        blocks,
+        setBlocks,
         isSidebarOpen,
         setIsSidebarOpen,
         isSaving,

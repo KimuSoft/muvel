@@ -28,7 +28,7 @@ const episodeSchema = z.object({
 
 const ImportButton: React.FC = () => {
   const fileInput = createRef<HTMLInputElement>()
-  const { episode, setEpisode } = useContext(EditorContext)
+  const { episode, setEpisode, setBlocks } = useContext(EditorContext)
 
   const clickHandler = () => fileInput.current?.click()
   const uploadHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,10 +45,8 @@ const ImportButton: React.FC = () => {
       })
       toast.info("뮤블 에피소드 파일을 성공적으로 불러왔어요!")
     } catch (e) {
-      setEpisode({
-        ...episode,
-        blocks: stringToBlocks(r.toString()),
-      })
+      setEpisode(episode)
+      setBlocks(stringToBlocks(r.toString()))
       toast.info("텍스트 파일을 뮤블 에피소드로 변환해 불러왔어요!")
     }
   }

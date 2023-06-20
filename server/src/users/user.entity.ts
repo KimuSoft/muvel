@@ -1,7 +1,7 @@
 import { NovelEntity } from "src/novels/novel.entity"
-import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm"
+import { Column, Entity, OneToMany, PrimaryColumn, RelationId } from "typeorm"
 
-@Entity()
+@Entity("user")
 export class UserEntity {
   @PrimaryColumn()
   id: string
@@ -16,6 +16,9 @@ export class UserEntity {
     cascade: true,
   })
   novels: NovelEntity[]
+
+  @RelationId((self: UserEntity) => self.novels)
+  novelIds: string[]
 
   @Column()
   recentEpisodeId: string

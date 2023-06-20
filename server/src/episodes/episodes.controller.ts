@@ -74,7 +74,11 @@ export class EpisodesController {
     type: BlockDto,
     isArray: true,
   })
-  async getBlocks(@Request() req, @Param("id") id: string) {}
+  async getBlocks(@Param("id") id: string) {
+    const episode = await this.episodesService.findOne(id, ["blocks"])
+    episode.blocks.sort((a, b) => a.order - b.order)
+    return episode.blocks
+  }
 
   @Patch(":id/blocks")
   @ApiOperation({

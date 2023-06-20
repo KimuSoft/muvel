@@ -4,9 +4,13 @@ import { NovelEntity } from "./novel.entity"
 import { NovelsService } from "./novels.service"
 import { EpisodesModule } from "../episodes/episodes.module"
 import { NovelsController } from "./novels.controller"
+import { UserEntity } from "../users/user.entity"
 
 @Module({
-  imports: [TypeOrmModule.forFeature([NovelEntity]), EpisodesModule],
+  imports: [
+    TypeOrmModule.forFeature([NovelEntity, UserEntity]),
+    EpisodesModule,
+  ],
   exports: [NovelsService],
   providers: [NovelsService],
   controllers: [NovelsController],

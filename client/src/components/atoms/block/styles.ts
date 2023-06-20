@@ -37,11 +37,11 @@ export const StyledContentEditable = styled(ContentEditable)<{}>`
 
   border-radius: 5px;
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background-color: #ffffff09;
-    }
-  }
+  //@media (hover: hover) and (pointer: fine) {
+  //  &:hover {
+  //    background-color: #ffffff09;
+  //  }
+  //}
 
   transition: all 0.2s ease;
   cursor: text;

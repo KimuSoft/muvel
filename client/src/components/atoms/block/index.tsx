@@ -1,16 +1,16 @@
 import React, { useContext, useRef, useState } from "react"
 import { ContentEditableEvent } from "react-contenteditable"
 import { StyledContentEditable } from "./styles"
-import keySoundFile from "./keySound.mp3"
 import styled from "styled-components"
-import { Howl } from "howler"
-import { BlockType, PartialBlock } from "../../../types/block.type"
 import EditorContext from "../../../context/EditorContext"
 import stringToBlock from "../../../utils/stringToBlock"
 import { SortableElement, SortableHandle } from "react-sortable-hoc"
 import BlockHandle from "../BlockHandle"
+import { Block, BlockType } from "../../../types/block.type"
+// import keySoundFile from "./keySound.mp3"
+// import { Howl } from "howler"
 
-const keySound = new Howl({ src: keySoundFile })
+// const keySound = new Howl({ src: keySoundFile })
 
 const DragHandle = SortableHandle<{ blockType: BlockType }>(
   ({ blockType }: { blockType: BlockType }) => (
@@ -46,7 +46,7 @@ export const SortableBlock = SortableElement<BlockProps>(
           <Divider />
         </DividerContainer>
       ) : (
-        <Block {...props} />
+        <BlockComponent {...props} />
       )}
     </BlockContainer>
   )
@@ -70,11 +70,11 @@ const Divider = styled.div`
 `
 
 interface BlockProps {
-  block: PartialBlock
+  block: Block
   position: number
-  addBlock?: (block: PartialBlock) => void
+  addBlock?: (block: Block) => void
   deleteBlock?: ({ id }: { id: string }) => void
-  updateBlock?: (block: PartialBlock) => void
+  updateBlock?: (block: Block) => void
   moveToRelativeBlock?: (
     currentPos: number,
     direction: -1 | 1,
@@ -83,7 +83,7 @@ interface BlockProps {
   bottomSpacing: boolean
 }
 
-const Block: React.FC<BlockProps> = ({
+const BlockComponent: React.FC<BlockProps> = ({
   block,
   addBlock,
   deleteBlock,
@@ -93,7 +93,7 @@ const Block: React.FC<BlockProps> = ({
   bottomSpacing,
 }) => {
   // Ctrl + V 기능 전용으로 사용
-  const { setEpisode } = useContext(EditorContext)
+  const { blocks, setBlocks } = useContext(EditorContext)
 
   const [blockType, setBlockType] = useState<BlockType>(block.blockType)
 
@@ -118,9 +118,7 @@ const Block: React.FC<BlockProps> = ({
     content.current = e.target.value
     contentWithoutHtmlTags.current = value
 
-    if (!value) {
-      content.current = value
-    }
+    if (!value) content.current = value
 
     updateBlock?.({ id: block.id, blockType, content: value })
   }
@@ -132,16 +130,11 @@ const Block: React.FC<BlockProps> = ({
     // Ctrl + V를 누르면 블록으로 붙여넣음
     e.preventDefault()
 
-    setEpisode((e) => {
-      return {
-        ...e,
-        blocks: [
-          ...e.blocks.slice(0, position + 1),
-          ...stringToBlock(text),
-          ...e.blocks.slice(position + 1),
-        ],
-      }
-    })
+    setBlocks([
+      ...blocks.slice(0, position + 1),
+      ...stringToBlock(text),
+      ...blocks.slice(position + 1),
+    ])
   }
 
   const keyDownHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -240,4 +233,4 @@ export const PaddingBlock = styled.div<{ height: number }>`
   transition: height 0.5s ease;
 `
 
-export default Block
+export default BlockComponent

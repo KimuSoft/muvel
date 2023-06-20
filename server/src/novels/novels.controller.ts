@@ -6,54 +6,58 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Request,
-  UseGuards,
 } from "@nestjs/common"
 import { NovelsService } from "./novels.service"
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
-import { AuthGuard } from "@nestjs/passport"
-import { NovelDto } from "./dto/novel.dto"
+import { NovelDto, NovelDtoWithEpisodes } from "./dto/novel.dto"
 import { UpdateNovelDto } from "./dto/update-novel.dto"
 import { EpisodeDto } from "../episodes/dto/episode.dto"
-import { AddEpisodeDto } from "./dto/add-episode.dto"
+import { CreateEpisodeDto } from "./dto/create-episode.dto"
 import { RequireAuth } from "../auth/auth.decorator"
 import {
   RequirePermissionToEditNovel,
   RequirePermissionToReadNovel,
 } from "./novels.decorator"
+import {
+  SearchNovelsDto,
+  SearchNovelsResponseDto,
+} from "./dto/search-novels.dto"
 
 @ApiTags("Novels")
 @Controller("api/novels")
 export class NovelsController {
   constructor(private readonly novelsService: NovelsService) {}
 
-  @Post()
+  @Get()
   @ApiOperation({
-    summary: "소설 추가하기",
-    description: "새로운 소설을 추가합니다.",
+    summary: "소설 검색하기",
+    description: "소설을 검색합니다.",
   })
   @ApiOkResponse({
-    description: "추가된 소설 정보를 반환합니다.",
-    type: NovelDto,
+    type: SearchNovelsResponseDto,
+    isArray: true,
   })
-  @RequireAuth()
-  async createNovel(@Request() req, @Body() novelDto: NovelDto) {}
+  async searchNovels(@Query() searchNovelsDto: SearchNovelsDto) {
+    return this.novelsService.search(searchNovelsDto)
+  }
 
   @Get(":id")
   @ApiOperation({
     summary: "소설 정보 불러오기",
-    description: "에피소드를 포함한 소설의 정보를 불러옵니다.",
+    description:
+      "소설의 정보를 불러옵니다. 소설 정보에는 회차 정보가 포함되어 있으며, 에피소드는 회차 순서대로 정렬됩니다.",
   })
   @ApiOkResponse({
     description: "소설 정보를 반환합니다.",
-    type: NovelDto,
+    type: NovelDtoWithEpisodes,
   })
   @RequirePermissionToReadNovel()
   async getNovels(@Request() req, @Param("id") id: string) {
     const novel = await this.novelsService.findOne(id, ["episodes"])
+    novel.episodes.sort((a, b) => a.order - b.order)
 
-    // createdAt을 기준으로 정렬 (임시)
-    novel.episodes.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
     return novel
   }
 
@@ -89,7 +93,7 @@ export class NovelsController {
   @RequirePermissionToEditNovel()
   async addEpisode(
     @Param("id") id: string,
-    @Body() addEpisodeDto: AddEpisodeDto
+    @Body() addEpisodeDto: CreateEpisodeDto
   ) {
     return this.novelsService.addEpisode(
       id,

@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { IsUUID } from "class-validator"
-import { UserDto } from "../../users/dto/user.dto"
+import { EpisodeDto } from "../../episodes/dto/episode.dto"
 
 export class NovelDto {
   @ApiProperty({
@@ -23,7 +23,7 @@ export class NovelDto {
   description: string
 
   @ApiProperty()
-  episodes: any[]
+  episodeIds: string[]
 
   @ApiProperty()
   authorId: string
@@ -33,4 +33,12 @@ export class NovelDto {
 
   @ApiProperty()
   updatedAt: Date
+}
+
+export class NovelDtoWithEpisodes extends NovelDto {
+  @ApiProperty({
+    description: "소설의 에피소드로 회차 순서로 정렬되어 있습니다.",
+    type: [EpisodeDto],
+  })
+  episodes: EpisodeDto[]
 }

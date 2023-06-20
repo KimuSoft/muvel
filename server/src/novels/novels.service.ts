@@ -1,21 +1,27 @@
 import { ForbiddenException, Injectable } from "@nestjs/common"
 import { NovelEntity } from "./novel.entity"
 import { InjectRepository } from "@nestjs/typeorm"
-import { Repository } from "typeorm"
+import { FindManyOptions, Repository } from "typeorm"
 import { EpisodesService } from "../episodes/episodes.service"
+import { SearchNovelsDto } from "./dto/search-novels.dto"
+import { UserEntity } from "../users/user.entity"
 
 @Injectable()
 export class NovelsService {
   constructor(
     @InjectRepository(NovelEntity)
     private novelsRepository: Repository<NovelEntity>,
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
     private episodesService: EpisodesService
   ) {}
 
-  async create(title: string, description: string) {
+  async create(authorId: string, title: string, description: string) {
+    const user = await this.usersRepository.findOneBy({ id: authorId })
     const novel = new NovelEntity()
     novel.title = title
     novel.description = description
+    novel.author = user
 
     // 에피소드 생성
     novel.episodes = [
@@ -25,6 +31,13 @@ export class NovelsService {
       ),
     ]
 
+    return this.novelsRepository.save(novel)
+  }
+
+  async update(id: string, title: string, description: string) {
+    const novel = await this.findOne(id)
+    novel.title = title
+    novel.description = description
     return this.novelsRepository.save(novel)
   }
 
@@ -43,10 +56,45 @@ export class NovelsService {
     })
   }
 
+  async search(searchNovelsDto: SearchNovelsDto) {
+    let query = this.novelsRepository
+      .createQueryBuilder("novel")
+      .leftJoinAndSelect("novel.author", "author")
+
+    if (searchNovelsDto.author) {
+      query = query.where("author.username LIKE :name", {
+        name: `%${searchNovelsDto.author}%`,
+      })
+    }
+
+    if (searchNovelsDto.title) {
+      query = query.where("novel.title LIKE :title", {
+        title: `%${searchNovelsDto.title}%`,
+      })
+    }
+
+    console.debug(query.getSql())
+    return query
+      .select([
+        "novel.id",
+        "novel.title",
+        "novel.description",
+        "novel.authorId",
+        "novel.createdAt",
+        "novel.updatedAt",
+        "author.username",
+        "author.id",
+        "author.avatar",
+      ])
+      .offset(searchNovelsDto.start)
+      .take(searchNovelsDto.display)
+      .getMany()
+  }
+
   async checkAuthor(novelId: string, userId: string) {
     const novel = await this.novelsRepository.findOne({
       where: { id: novelId },
-      relations: ["owner"],
+      relations: ["author"],
     })
 
     return novel.author.id === userId

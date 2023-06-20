@@ -37,13 +37,22 @@ export class UsersService {
     user.username = username
     user.avatar = avatar
 
-    // 샘플 소설을 만듦.
-    user.novels = [
-      await this.novelsService.create("샘플 소설", "샘플 소설입니다."),
-    ]
+    const novel = await this.novelsService.create(
+      user.id,
+      "샘플 소설",
+      "샘플 소설입니다."
+    )
 
-    user.recentEpisodeId = user.novels[0].episodes[0].id
+    user.recentEpisodeId = novel.episodes[0].id
 
     return this.usersRepository.save(user)
+  }
+
+  async getNovels(id: string) {
+    const user = await this.usersRepository.findOne({
+      where: { id },
+      relations: ["novels"],
+    })
+    return user.novels
   }
 }

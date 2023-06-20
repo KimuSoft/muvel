@@ -7,17 +7,18 @@ import { api } from "../../utils/api"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { Novel } from "../../types/novel.type"
+import useCurrentUser from "../../hooks/useCurrentUser"
+import { Episode } from "../../types/episode.type"
 
 const NovelProfile: React.FC = () => {
-  const { novel, setNovel } = useContext(EditorContext)
+  const { novel } = useContext(EditorContext)
 
   const navigate = useNavigate()
 
   const addNovelClickHandler = async () => {
-    const { data } = await api.get<Novel>("novels/add-episode", {
-      params: {
-        id: novel.id,
-      },
+    console.log(novel)
+    const { data } = await api.post<Episode>(`novels/${novel.id}/episodes`, {
+      title: "새 에피소드",
     })
 
     navigate(`/episode/${data.id}`)

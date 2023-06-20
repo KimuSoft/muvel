@@ -54,10 +54,10 @@ const GoalPercent = styled.h3`
 `
 
 const GoalWidget: React.FC = () => {
-  const context = useContext(EditorContext)
+  const { blocks } = useContext(EditorContext)
 
   const goal = 3000
-  const current = context.episode.blocks.reduce(
+  const current = blocks.reduce(
     (acc, cur) => acc + cur.content.replace(/[\s\n]/g, "").length,
     0
   )

@@ -22,8 +22,14 @@ export class EpisodeDto {
   chapter: string
 
   @ApiProperty()
+  novelId: string
+
+  @ApiProperty()
   createdAt: Date
 
   @ApiProperty()
   updatedAt: Date
+
+  @ApiProperty()
+  order: number
 }

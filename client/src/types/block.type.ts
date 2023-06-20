@@ -1,12 +1,9 @@
 import { PartialData } from "./index"
 
-export interface PartialBlock extends PartialData {
+export interface Block extends PartialData {
   content: string
   blockType: BlockType
-}
-
-export interface Block extends PartialBlock {
-  episode: PartialData
+  episodeId?: string
 }
 
 export enum BlockType {

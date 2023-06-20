@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react"
-import Block, { SortableBlock } from "../../atoms/block"
+import BlockComponent, { SortableBlock } from "../../atoms/block"
 import usePrevious from "../../../hooks/usePrevious"
 import setCaretToEnd from "../../../utils/setCaretToEnd"
 import { DummyBlock, EditorContainer } from "./styles"
 import EditorContext from "../../../context/EditorContext"
-import { BlockType, PartialBlock } from "../../../types/block.type"
+import { Block, BlockType } from "../../../types/block.type"
 import _ from "lodash"
 import { v4 } from "uuid"
 import {
@@ -22,17 +22,17 @@ const _SortableContainer = SortableContainer<React.PropsWithChildren>(
 )
 
 const Editor: React.FC = () => {
-  const { episode, setEpisode } = useContext(EditorContext)
+  const { blocks, setBlocks } = useContext(EditorContext)
   const [currentBlockId, setCurrentBlockId] = useState<string>("1")
 
-  const prevBlocks = usePrevious<PartialBlock[]>(episode.blocks)
+  const prevBlocks = usePrevious<Block[]>(blocks)
 
   // Handling the cursor and focus on adding and deleting blocks
   useEffect(() => {
     // If a new block was added, move the caret to it
-    if (prevBlocks && prevBlocks.length + 1 === episode.blocks.length) {
+    if (prevBlocks && prevBlocks.length + 1 === blocks.length) {
       const nextBlockPosition =
-        episode.blocks.map((b) => b.id).indexOf(currentBlockId) + 1 + 1
+        blocks.map((b) => b.id).indexOf(currentBlockId) + 1 + 1
       const nextBlock = document.querySelector(
         `[data-position="${nextBlockPosition}"]`
       ) as HTMLElement
@@ -41,7 +41,7 @@ const Editor: React.FC = () => {
       }
     }
     // If a block was deleted, move the caret to the end of the last block
-    if (prevBlocks && prevBlocks.length - 1 === episode.blocks.length) {
+    if (prevBlocks && prevBlocks.length - 1 === blocks.length) {
       const lastBlockPosition = prevBlocks
         .map((b) => b.id)
         .indexOf(currentBlockId)
@@ -52,45 +52,35 @@ const Editor: React.FC = () => {
         setCaretToEnd(lastBlock)
       }
     }
-  }, [episode.blocks, prevBlocks, currentBlockId])
+  }, [blocks, prevBlocks, currentBlockId])
 
-  const addBlockHandler = (block: PartialBlock) => {
+  const addBlockHandler = (block: Block) => {
     setCurrentBlockId(block.id)
-    setEpisode((e) => {
-      const _blocks = e.blocks.map((b) => ({ ...b, focus: false }))
-      _blocks.splice(_blocks.findIndex((b) => b.id === block.id) + 1, 0, {
-        id: v4(),
-        blockType: BlockType.Describe,
-        content: "",
-        focus: true,
-      })
-      return {
-        ...e,
-        blocks: _blocks,
-      }
+
+    const _blocks = blocks.map((b) => ({ ...b, focus: false }))
+
+    _blocks.splice(_blocks.findIndex((b) => b.id === block.id) + 1, 0, {
+      id: v4(),
+      blockType: BlockType.Describe,
+      content: "",
+      focus: true,
     })
+
+    setBlocks(_blocks)
   }
 
   const deleteBlockHandler = ({ id }: { id: string }) => {
     setCurrentBlockId(id)
-    const index = episode.blocks.findIndex((b) => b.id === id)
+    const index = blocks.findIndex((b) => b.id === id)
 
     // 첫 블록은 지울 수 없음
     if (!index) return
-
-    setEpisode((e) => ({
-      ...e,
-      blocks: e.blocks.filter((b) => b.id !== id),
-    }))
+    setBlocks(blocks.filter((b) => b.id !== id))
   }
 
-  const updateBlockHandler = (block: PartialBlock) => {
-    setEpisode((e) => {
-      return {
-        ...e,
-        blocks: e.blocks.map((b) => (b.id === block.id ? block : b)),
-      }
-    })
+  const updateBlockHandler = (block: Block) => {
+    console.log(block)
+    setBlocks(blocks.map((b) => (b.id === block.id ? block : b)))
   }
 
   const moveToRelativeBlockHandler = (
@@ -162,21 +152,16 @@ const Editor: React.FC = () => {
   const onSortEnd: SortableContainerProps["onSortEnd"] = ({
     oldIndex,
     newIndex,
-  }) => {
-    setEpisode((episode) => ({
-      ...episode,
-      blocks: arrayMove(episode.blocks, oldIndex, newIndex),
-    }))
-  }
+  }) => setBlocks(arrayMove(blocks, oldIndex, newIndex))
 
   return (
     <EditorContainer>
       <DummyBlock height={"100px"} />
       <_SortableContainer onSortEnd={onSortEnd} pressDelay={100} lockAxis="y">
-        {episode.blocks.map((b, index) => {
+        {blocks.map((b, index) => {
           const bp =
-            index !== episode.blocks.length - 1 &&
-            episode.blocks[index + 1]?.blockType !== b.blockType
+            index !== blocks.length - 1 &&
+            blocks[index + 1]?.blockType !== b.blockType
 
           return (
             <SortableBlock

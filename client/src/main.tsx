@@ -10,7 +10,8 @@ import { AppLayout } from "./layouts/AppLayout"
 import Main from "./components/pages/Main"
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
+  // React.StrictMode
+  <>
     <ToastContainer />
     <BrowserRouter>
       <Routes>
@@ -21,5 +22,5 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         <Route path="auth/callback" element={<AuthCallback />}></Route>
       </Routes>
     </BrowserRouter>
-  </React.StrictMode>
+  </>
 )

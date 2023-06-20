@@ -36,6 +36,7 @@ export class AuthController {
   @Redirect()
   async loginDiscord(@Request() req, @Res() res: Response) {
     const loginResult = await this.authService.login(req.user)
+    console.debug(loginResult.accessToken)
     return { url: "/auth/callback?token=" + loginResult.accessToken }
   }
 }
