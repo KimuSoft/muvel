@@ -152,6 +152,36 @@ const Editor: React.FC = () => {
     }
   }
 
+  const hasFocus = (blockType: BlockType) =>
+    ![BlockType.Divider].includes(blockType)
+
+  const getBlockNodes = () => {
+    let skipIndex = 0
+    return blocks.map((b, index) => {
+      const bp =
+        index !== blocks.length - 1 &&
+        blocks[index + 1]?.blockType !== b.blockType
+
+      if (!hasFocus(b.blockType)) skipIndex++
+
+      return (
+        <>
+          <SortableBlock
+            key={b.id}
+            index={index}
+            block={b}
+            position={hasFocus(b.blockType) ? index + 1 - skipIndex : -99}
+            addBlock={addBlockHandler}
+            deleteBlock={deleteBlockHandler}
+            updateBlock={updateBlockHandler}
+            moveToRelativeBlock={moveToRelativeBlockHandler}
+          />
+          <PaddingBlock height={bp ? 20 : 0} key={b.id + "-bottom"} />
+        </>
+      )
+    })
+  }
+
   const onSortEnd: SortableContainerProps["onSortEnd"] = ({
     oldIndex,
     newIndex,
@@ -162,27 +192,7 @@ const Editor: React.FC = () => {
       <DummyBlock height={"100px"} />
       {JSON.stringify(blocks)}
       <_SortableContainer onSortEnd={onSortEnd} pressDelay={100} lockAxis="y">
-        {blocks.map((b, index) => {
-          const bp =
-            index !== blocks.length - 1 &&
-            blocks[index + 1]?.blockType !== b.blockType
-
-          return (
-            <>
-              <SortableBlock
-                key={b.id}
-                index={index}
-                block={b}
-                position={index + 1}
-                addBlock={addBlockHandler}
-                deleteBlock={deleteBlockHandler}
-                updateBlock={updateBlockHandler}
-                moveToRelativeBlock={moveToRelativeBlockHandler}
-              />
-              <PaddingBlock height={bp ? 20 : 0} key={b.id + "-bottom"} />
-            </>
-          )
-        })}
+        {getBlockNodes()}
       </_SortableContainer>
       <DummyBlock height={"500px"} />
     </EditorContainer>

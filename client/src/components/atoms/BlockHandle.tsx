@@ -3,13 +3,17 @@ import { BsDiamondFill } from "react-icons/all"
 import { BlockType } from "../../types/block.type"
 import styled from "styled-components"
 
-const BlockHandle: React.FC<{ blockType: BlockType }> = ({ blockType }) => {
+const BlockHandle: React.FC<{ blockType: BlockType; onClick(): void }> = ({
+  blockType,
+  onClick,
+}) => {
   return (
-    <HandleContainer>
+    <HandleContainer onClick={onClick}>
       {blockType !== BlockType.DoubleQuote ? (
         <HandleIcon className="block-handle" />
       ) : (
-        <ProfileHandle />
+        // <ProfileHandle /> 일단 비활성화
+        <HandleIcon className="block-handle" />
       )}
     </HandleContainer>
   )

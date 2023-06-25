@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react"
+import React, { useContext, useRef } from "react"
 import { ContentEditableEvent } from "react-contenteditable"
 import { StyledContentEditable } from "./styles"
 import styled from "styled-components"
@@ -7,14 +7,16 @@ import stringToBlock from "../../../utils/stringToBlock"
 import { SortableElement, SortableHandle } from "react-sortable-hoc"
 import BlockHandle from "../BlockHandle"
 import { Block, BlockType } from "../../../types/block.type"
+import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react"
+import { AiFillFileAdd } from "react-icons/all"
 // import keySoundFile from "./keySound.mp3"
 // import { Howl } from "howler"
 
 // const keySound = new Howl({ src: keySoundFile })
 
 const DragHandle = SortableHandle<{ blockType: BlockType }>(
-  ({ blockType }: { blockType: BlockType }) => (
-    <BlockHandle blockType={blockType} />
+  ({ blockType, onClick }: { blockType: BlockType; onClick(): void }) => (
+    <BlockHandle blockType={blockType} onClick={onClick} />
   )
 )
 
@@ -38,7 +40,18 @@ export const SortableBlock = SortableElement<BlockProps>(
   (props: BlockProps) => (
     <BlockContainer>
       <Relative>
-        <DragHandle blockType={props.block.blockType} />
+        <Menu>
+          <MenuButton
+            as={DragHandle}
+            aria-label="Options"
+            blockType={props.block.blockType}
+          />
+          <MenuList>
+            <MenuItem icon={<AiFillFileAdd />} command="⌘T">
+              New Tab
+            </MenuItem>
+          </MenuList>
+        </Menu>
       </Relative>
 
       {props.block.blockType === BlockType.Divider ? (
@@ -80,7 +93,6 @@ interface BlockProps {
     direction: -1 | 1,
     preserveCaretPosition: boolean
   ) => void
-  bottomSpacing?: boolean
 }
 
 const BlockComponent: React.FC<BlockProps> = ({
@@ -90,7 +102,6 @@ const BlockComponent: React.FC<BlockProps> = ({
   updateBlock,
   position,
   moveToRelativeBlock,
-  bottomSpacing,
 }) => {
   // Ctrl + V 기능 전용으로 사용
   const { blocks, setBlocks } = useContext(EditorContext)
@@ -152,7 +163,11 @@ const BlockComponent: React.FC<BlockProps> = ({
     const afterCaret = document.getSelection()?.anchorOffset
 
     // 내용이 없는 상태에서 백스페이스를 누르면 블록 삭제
-    if (e.key === "Backspace" && !contentWithoutHtmlTags.current) {
+    if (
+      e.key === "Backspace" &&
+      !contentWithoutHtmlTags.current &&
+      beforeCaret !== 1
+    ) {
       // 첫 번째 블록이면 무시
       moveToRelativeBlock?.(position, -1, false)
       deleteBlock?.({ id: block.id })
@@ -182,8 +197,14 @@ const BlockComponent: React.FC<BlockProps> = ({
 
     // 구분선 블록 생성
     else if (e.key === "-" && content.current === "---") {
-      // setBlockType(BlockType.Divider)
-      // moveToRelativeBlock?.(position, 1, false)
+      setBlocks((b) =>
+        b.map((bl) => ({
+          ...bl,
+          ...(bl.id === block.id && { blockType: BlockType.Divider }),
+        }))
+      )
+      addBlock?.(block)
+      moveToRelativeBlock?.(position, 1, false)
     }
     // 쌍따옴표 블록 생성
     else if (e.key === '"' && content.current === '"') {
