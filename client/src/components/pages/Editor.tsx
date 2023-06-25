@@ -86,6 +86,7 @@ const EditorPage: React.FC = () => {
       if (blocksChange?.length) {
         // 블록 데이터 업데이트 요청
         await api.patch(`episodes/${episodeId}/blocks`, blocksChange)
+        toast.info("블록 변경사항 저장 완료!")
         setBlocksCache(blocks)
       }
 
@@ -93,7 +94,7 @@ const EditorPage: React.FC = () => {
     }, 1000)
 
     return () => clearTimeout(timeout)
-  }, [episode])
+  }, [episode, blocks])
 
   const refreshNovel = async () => {
     const { data } = await api.get<Novel>(`novels/${episode.novelId}`)

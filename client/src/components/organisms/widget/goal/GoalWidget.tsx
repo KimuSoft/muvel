@@ -63,7 +63,6 @@ const GoalWidget: React.FC = () => {
   const getPercentage = () => Math.floor((getCurrentLength() * 100) / goal)
 
   const getCheeringText = () => {
-    console.log(blocks)
     const p = getPercentage()
     if (p < 20) return "열심히 써봐요!"
     if (p < 40) return "조금만 더 써봐요!"

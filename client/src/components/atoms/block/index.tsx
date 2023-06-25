@@ -80,7 +80,7 @@ interface BlockProps {
     direction: -1 | 1,
     preserveCaretPosition: boolean
   ) => void
-  bottomSpacing: boolean
+  bottomSpacing?: boolean
 }
 
 const BlockComponent: React.FC<BlockProps> = ({
@@ -94,8 +94,6 @@ const BlockComponent: React.FC<BlockProps> = ({
 }) => {
   // Ctrl + V 기능 전용으로 사용
   const { blocks, setBlocks } = useContext(EditorContext)
-
-  const [blockType, setBlockType] = useState<BlockType>(block.blockType)
 
   const contenteditable = useRef<HTMLDivElement>(null)
   const content = useRef<string>(block.content)
@@ -113,8 +111,9 @@ const BlockComponent: React.FC<BlockProps> = ({
 
   const handleChange = (e: ContentEditableEvent) => {
     const value = (e.currentTarget as HTMLDivElement).innerText.trim()
+    const blockType = getBlockType(value)
+    if (block.blockType !== blockType) console.log("바뀜!!!")
 
-    setBlockType(getBlockType(value))
     content.current = e.target.value
     contentWithoutHtmlTags.current = value
 
@@ -137,40 +136,35 @@ const BlockComponent: React.FC<BlockProps> = ({
     ])
   }
 
-  const keyDownHandler = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    // 타자 효과음
-    // keySound.play()
+  const keyDownHandler = async (e: React.KeyboardEvent<HTMLDivElement>) => {
+    // 주의: contentWithoutHtmlTags.current는 키 이벤트가 발생하기 이전의 값을 보여주므로 주의!
 
     // 새로운 블록 생성
     if (e.key === "Enter") {
       e.preventDefault()
       if (!contentWithoutHtmlTags.current) return
-      addBlock?.(block)
+      return addBlock?.(block)
     }
 
+    // 주의: 이 뒤에서는 e.preventDefault()가 정상적으로 작동하지 않는 듯함
+    const beforeCaret = document.getSelection()?.anchorOffset
+    await new Promise((res) => setTimeout(res, 0))
+    const afterCaret = document.getSelection()?.anchorOffset
+
     // 내용이 없는 상태에서 백스페이스를 누르면 블록 삭제
-    else if (e.key === "Backspace" && !contentWithoutHtmlTags.current) {
+    if (e.key === "Backspace" && !contentWithoutHtmlTags.current) {
       // 첫 번째 블록이면 무시
-      e.preventDefault()
       moveToRelativeBlock?.(position, -1, false)
       deleteBlock?.({ id: block.id })
     }
 
     // 캐럿이 0에 있고, 앞 방향키를 누르면 앞 블록으로 이동
-    else if (
-      e.key === "ArrowLeft" &&
-      document.getSelection()?.anchorOffset === 0
-    ) {
-      e.preventDefault()
+    else if (e.key === "ArrowLeft" && beforeCaret === afterCaret) {
       moveToRelativeBlock?.(position, -1, false)
     }
 
     // 캐럿이 마지막에 있고, 뒤 방향키를 누르면 뒤 블록으로 이동
-    else if (
-      e.key === "ArrowRight" &&
-      content.current.length === document.getSelection()?.anchorOffset
-    ) {
-      e.preventDefault()
+    else if (e.key === "ArrowRight" && beforeCaret === afterCaret) {
       moveToRelativeBlock?.(position, 1, false)
     }
 
@@ -188,12 +182,11 @@ const BlockComponent: React.FC<BlockProps> = ({
 
     // 구분선 블록 생성
     else if (e.key === "-" && content.current === "---") {
-      setBlockType(BlockType.Divider)
+      // setBlockType(BlockType.Divider)
       // moveToRelativeBlock?.(position, 1, false)
     }
-
     // 쌍따옴표 블록 생성
-    else if (e.key === '"' && content.current === "") {
+    else if (e.key === '"' && content.current === '"') {
       console.log("쌍따옴표 블록 생성")
       e.preventDefault()
       if (!contenteditable.current) return
@@ -211,26 +204,17 @@ const BlockComponent: React.FC<BlockProps> = ({
   }
 
   return (
-    /*<TypeMark blockType={blockType} />*/
-    <>
-      <StyledContentEditable
-        innerRef={contenteditable}
-        onChange={handleChange}
-        onKeyDown={keyDownHandler}
-        // @ts-ignore
-        onPaste={pasteHandler}
-        html={content.current}
-        data-position={position}
-        placeholder={"내용을 입력해 주세요."}
-      />
-      <PaddingBlock height={bottomSpacing ? 20 : 0} />
-    </>
+    <StyledContentEditable
+      innerRef={contenteditable}
+      onChange={handleChange}
+      onKeyDown={keyDownHandler}
+      // @ts-ignore
+      onPaste={pasteHandler}
+      html={content.current}
+      data-position={position}
+      placeholder={"내용을 입력해 주세요."}
+    />
   )
 }
-
-export const PaddingBlock = styled.div<{ height: number }>`
-  height: ${({ height }) => height}px;
-  transition: height 0.5s ease;
-`
 
 export default BlockComponent

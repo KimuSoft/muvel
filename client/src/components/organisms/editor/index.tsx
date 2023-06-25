@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react"
-import BlockComponent, { SortableBlock } from "../../atoms/block"
+import { SortableBlock } from "../../atoms/block"
 import usePrevious from "../../../hooks/usePrevious"
 import setCaretToEnd from "../../../utils/setCaretToEnd"
 import { DummyBlock, EditorContainer } from "./styles"
@@ -12,6 +12,7 @@ import {
   SortableContainer,
   SortableContainerProps,
 } from "react-sortable-hoc"
+import styled from "styled-components"
 
 const canvas = document.createElement("canvas").getContext("2d")!
 
@@ -57,16 +58,18 @@ const Editor: React.FC = () => {
   const addBlockHandler = (block: Block) => {
     setCurrentBlockId(block.id)
 
-    const _blocks = blocks.map((b) => ({ ...b, focus: false }))
+    setBlocks((b) => {
+      const _blocks = b.map((bl) => ({ ...bl, focus: false }))
 
-    _blocks.splice(_blocks.findIndex((b) => b.id === block.id) + 1, 0, {
-      id: v4(),
-      blockType: BlockType.Describe,
-      content: "",
-      focus: true,
+      _blocks.splice(_blocks.findIndex((b) => b.id === block.id) + 1, 0, {
+        id: v4(),
+        blockType: BlockType.Describe,
+        content: "",
+        focus: true,
+      })
+
+      return _blocks
     })
-
-    setBlocks(_blocks)
   }
 
   const deleteBlockHandler = ({ id }: { id: string }) => {
@@ -79,7 +82,7 @@ const Editor: React.FC = () => {
   }
 
   const updateBlockHandler = (block: Block) => {
-    console.log(block)
+    // console.log(block)
     setBlocks(blocks.map((b) => (b.id === block.id ? block : b)))
   }
 
@@ -157,6 +160,7 @@ const Editor: React.FC = () => {
   return (
     <EditorContainer>
       <DummyBlock height={"100px"} />
+      {JSON.stringify(blocks)}
       <_SortableContainer onSortEnd={onSortEnd} pressDelay={100} lockAxis="y">
         {blocks.map((b, index) => {
           const bp =
@@ -164,17 +168,19 @@ const Editor: React.FC = () => {
             blocks[index + 1]?.blockType !== b.blockType
 
           return (
-            <SortableBlock
-              key={b.id}
-              index={index}
-              block={b}
-              position={index + 1}
-              addBlock={addBlockHandler}
-              deleteBlock={deleteBlockHandler}
-              updateBlock={updateBlockHandler}
-              moveToRelativeBlock={moveToRelativeBlockHandler}
-              bottomSpacing={bp}
-            />
+            <>
+              <SortableBlock
+                key={b.id}
+                index={index}
+                block={b}
+                position={index + 1}
+                addBlock={addBlockHandler}
+                deleteBlock={deleteBlockHandler}
+                updateBlock={updateBlockHandler}
+                moveToRelativeBlock={moveToRelativeBlockHandler}
+              />
+              <PaddingBlock height={bp ? 20 : 0} key={b.id + "-bottom"} />
+            </>
           )
         })}
       </_SortableContainer>
@@ -182,5 +188,10 @@ const Editor: React.FC = () => {
     </EditorContainer>
   )
 }
+
+const PaddingBlock = styled.div<{ height: number }>`
+  height: ${({ height }) => height}px;
+  transition: height 0.5s ease;
+`
 
 export default Editor
