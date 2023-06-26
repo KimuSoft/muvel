@@ -55,7 +55,7 @@ export class NovelsController {
   })
   @RequirePermissionToReadNovel()
   async getNovels(@Request() req, @Param("id") id: string) {
-    const novel = await this.novelsService.findOne(id, ["episodes"])
+    const novel = await this.novelsService.findOne(id, ["episodes", "author"])
     novel.episodes.sort((a, b) => a.order - b.order)
 
     return novel

@@ -12,10 +12,13 @@ import {
   DrawerOverlay,
   useDisclosure,
 } from "@chakra-ui/react"
+import { useNavigate } from "react-router-dom"
 
 const Sidebar: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const btnRef = useRef<HTMLDivElement | null>(null)
+
+  const navigate = useNavigate()
 
   return (
     <>
@@ -38,6 +41,7 @@ const Sidebar: React.FC = () => {
           <DrawerBody>
             <Top>
               <IconButton
+                onClick={() => navigate("/novels")}
                 text={"다른 작품 쓰기"}
                 style={{ backgroundColor: "transparent", marginRight: "auto" }}
               >

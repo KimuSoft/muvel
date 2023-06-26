@@ -28,7 +28,7 @@ const HeaderContainer = styled.div`
   }
 `
 
-const Header: React.FC = () => {
+const EditorHeader: React.FC = () => {
   const { isSaving } = useContext(EditorContext)
 
   return (
@@ -43,4 +43,4 @@ const Header: React.FC = () => {
   )
 }
 
-export default Header
+export default EditorHeader

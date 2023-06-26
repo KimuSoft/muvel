@@ -15,6 +15,7 @@ import {
   ThemeConfig,
 } from "@chakra-ui/react"
 import NovelsPage from "./components/pages/Novels"
+import NovelDetail from "./components/pages/NovelDetail"
 
 const config: ThemeConfig = {
   initialColorMode: "dark",
@@ -34,6 +35,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           <Route index element={<Main />}></Route>
           <Route path={"episode/:id"} element={<EditorPage />}></Route>
           <Route path={"novels"} element={<NovelsPage />}></Route>
+          <Route path={"novels/:id"} element={<NovelDetail />}></Route>
         </Route>
         <Route path="auth/callback" element={<AuthCallback />}></Route>
       </Routes>

@@ -7,6 +7,7 @@ export interface PartialNovel extends PartialData {
   description: string
   episodeIds: string[]
   authorId: string
+  thumbnail: string
   createdAt: Date
   updatedAt: Date
 }
@@ -26,4 +27,5 @@ export const initialNovel: Novel = {
   updatedAt: new Date(),
   authorId: "",
   author: { id: "", avatar: "", username: "" },
+  thumbnail: "",
 }
