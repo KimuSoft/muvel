@@ -7,12 +7,10 @@ import EditorContext from "../../../context/EditorContext"
 import { Block, BlockType } from "../../../types/block.type"
 import _ from "lodash"
 import { v4 } from "uuid"
-import {
-  arrayMove,
-  SortableContainer,
-  SortableContainerProps,
-} from "react-sortable-hoc"
+import { SortableContainer, SortableContainerProps } from "react-sortable-hoc"
 import styled from "styled-components"
+import { Box, Container } from "@chakra-ui/react"
+import { arrayMoveImmutable } from "array-move"
 
 const canvas = document.createElement("canvas").getContext("2d")!
 
@@ -185,17 +183,16 @@ const Editor: React.FC = () => {
   const onSortEnd: SortableContainerProps["onSortEnd"] = ({
     oldIndex,
     newIndex,
-  }) => setBlocks(arrayMove(blocks, oldIndex, newIndex))
+  }) => setBlocks(arrayMoveImmutable(blocks, oldIndex, newIndex))
 
   return (
-    <EditorContainer>
-      <DummyBlock height={"100px"} />
-      {JSON.stringify(blocks)}
+    <Container maxW="3xl">
+      <Box h={100} />
       <_SortableContainer onSortEnd={onSortEnd} pressDelay={100} lockAxis="y">
         {getBlockNodes()}
       </_SortableContainer>
       <DummyBlock height={"500px"} />
-    </EditorContainer>
+    </Container>
   )
 }
 

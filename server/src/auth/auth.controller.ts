@@ -23,7 +23,10 @@ export class AuthController {
     description: "키뮤스토리 계정으로 로그인합니다.",
   })
   @Redirect()
-  async login(@Request() req, @Res() res: Response) {}
+  async login(@Request() req, @Res() res: Response) {
+    const loginResult = await this.authService.login(req.user)
+    return { url: "/auth/callback?token=" + loginResult.accessToken }
+  }
 
   @Get("login/discord")
   @UseGuards(AuthGuard("discord"))

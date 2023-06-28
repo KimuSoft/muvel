@@ -3,6 +3,8 @@ import { Outlet } from "react-router-dom"
 import GlobalContext from "../context/GlobalContext"
 import { api } from "../utils/api"
 import { User } from "../types/user.type"
+import { Center } from "@chakra-ui/react"
+import { AiOutlineLoading3Quarters } from "react-icons/all"
 
 export const AppLayout: React.FC = () => {
   const [loading, setLoading] = React.useState(true)
@@ -19,7 +21,9 @@ export const AppLayout: React.FC = () => {
   return (
     <>
       {loading ? (
-        "Loading..."
+        <Center w="100vw" h="100vh">
+          <AiOutlineLoading3Quarters size={32} />
+        </Center>
       ) : (
         <GlobalContext.Provider value={{ user }}>
           <Outlet />

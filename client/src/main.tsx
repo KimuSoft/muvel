@@ -33,7 +33,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <Routes>
         <Route element={<AppLayout />}>
           <Route index element={<Main />}></Route>
-          <Route path={"episode/:id"} element={<EditorPage />}></Route>
+          <Route path={"episodes/:id"} element={<EditorPage />}></Route>
           <Route path={"novels"} element={<NovelsPage />}></Route>
           <Route path={"novels/:id"} element={<NovelDetail />}></Route>
         </Route>

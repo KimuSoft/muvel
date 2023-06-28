@@ -1,13 +1,20 @@
 import {
+  ArgumentMetadata,
   Body,
   Controller,
   Delete,
   Get,
+  HttpStatus,
+  Injectable,
   Param,
+  ParseFilePipeBuilder,
+  PipeTransform,
   Post,
   Put,
   Query,
   Request,
+  UploadedFile,
+  UseInterceptors,
 } from "@nestjs/common"
 import { NovelsService } from "./novels.service"
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
@@ -15,7 +22,6 @@ import { NovelDto, NovelDtoWithEpisodes } from "./dto/novel.dto"
 import { UpdateNovelDto } from "./dto/update-novel.dto"
 import { EpisodeDto } from "../episodes/dto/episode.dto"
 import { CreateEpisodeDto } from "./dto/create-episode.dto"
-import { RequireAuth } from "../auth/auth.decorator"
 import {
   RequirePermissionToEditNovel,
   RequirePermissionToReadNovel,
@@ -24,6 +30,7 @@ import {
   SearchNovelsDto,
   SearchNovelsResponseDto,
 } from "./dto/search-novels.dto"
+import { FileInterceptor } from "@nestjs/platform-express"
 
 @ApiTags("Novels")
 @Controller("api/novels")
@@ -113,4 +120,35 @@ export class NovelsController {
   })
   @RequirePermissionToReadNovel()
   async getEpisodes(@Param("id") id: string) {}
+
+  @Post(":id/thumbnail")
+  @ApiOperation({
+    summary: "소설 썸네일 업로드하기",
+    description: "해당 소설의 썸네일을 업로드합니다. 용량 제한은 777KB입니다.",
+  })
+  @RequirePermissionToEditNovel()
+  @UseInterceptors(FileInterceptor("image"))
+  async uploadThumbnail(
+    @Param("id") id: string,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /\.(jpe?g|png|webp|gif)$/,
+        })
+        .addMaxSizeValidator({ maxSize: 777 })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        })
+    )
+    image: Express.Multer.File
+  ) {
+    return this.novelsService.uploadThumbnail(id, image)
+  }
+}
+
+@Injectable()
+export class FileSizeValidationPipe implements PipeTransform {
+  transform(value: any, metadata: ArgumentMetadata): any {
+    return value.size < 1024 * 777
+  }
 }

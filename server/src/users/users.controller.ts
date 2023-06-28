@@ -6,9 +6,7 @@ import {
   Param,
   Post,
   Request,
-  UseGuards,
 } from "@nestjs/common"
-import { AuthGuard } from "@nestjs/passport"
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
 import { UserDto } from "./dto/user.dto"
 import { RequireAuth } from "../auth/auth.decorator"

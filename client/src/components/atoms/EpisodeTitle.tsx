@@ -2,6 +2,7 @@ import React, { useContext } from "react"
 import styled from "styled-components"
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable"
 import EditorContext from "../../context/EditorContext"
+import { HStack } from "@chakra-ui/react"
 
 const EpisodeTitle: React.FC = () => {
   const context = useContext(EditorContext)
@@ -16,7 +17,7 @@ const EpisodeTitle: React.FC = () => {
     })
 
   return (
-    <TitleBlock>
+    <HStack w="100%" justifyContent="center">
       <Title
         html={context.episode.title}
         onChange={titleChangeHandler}
@@ -33,7 +34,7 @@ const EpisodeTitle: React.FC = () => {
         }}
         placeholder="챕터 이름"
       />
-    </TitleBlock>
+    </HStack>
   )
 }
 
@@ -58,7 +59,6 @@ const TitleBlock = styled.div`
 const Title = styled(ContentEditable)`
   font-size: 24px;
   font-weight: 500;
-  color: #fff;
 
   @media (max-width: 1000px) {
     font-size: 20px;

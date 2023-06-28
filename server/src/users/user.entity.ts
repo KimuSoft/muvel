@@ -20,8 +20,8 @@ export class UserEntity {
   @RelationId((self: UserEntity) => self.novels)
   novelIds: string[]
 
-  @Column()
-  recentEpisodeId: string
+  @Column({ nullable: true })
+  recentEpisodeId?: string
 
   @Column({ default: false })
   admin: boolean

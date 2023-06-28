@@ -16,7 +16,7 @@ const EpisodeElement: React.FC<{ episode: PartialEpisode; index: number }> = ({
 
   const clickHandler = () => {
     if (isCurrent) return
-    navigate(`/episode/${episode.id}`)
+    navigate(`/episodes/${episode.id}`)
   }
 
   return (

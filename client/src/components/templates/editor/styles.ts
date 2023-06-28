@@ -4,8 +4,8 @@ export const MainStyle = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #27272a;
-  color: #ffffff;
+  //background-color: #27272a;
+  //color: #ffffff;
 `
 
 export const Body = styled.div`

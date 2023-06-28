@@ -30,6 +30,8 @@ import { AiFillFileAdd, BiSearch } from "react-icons/all"
 import EditorHeader from "../organisms/editorHeader/EditorHeader"
 import Header from "../organisms/Header"
 import { useNavigate } from "react-router-dom"
+import useCurrentUser from "../../hooks/useCurrentUser"
+import { toast } from "react-toastify"
 
 const NovelsPage: React.FC = () => {
   const [novels, setNovels] = React.useState<Novel[]>([])
@@ -63,7 +65,7 @@ const NovelsPage: React.FC = () => {
         pt={5}
       >
         <HStack spacing={5}>
-          <HStack {...group}>
+          <HStack {...group} flexShrink="0">
             {["모든 소설", "내 소설"].map((value) => {
               const radio = getRadioProps({ value })
               return (
@@ -73,7 +75,7 @@ const NovelsPage: React.FC = () => {
               )
             })}
           </HStack>
-          <InputGroup w="2xl">
+          <InputGroup maxW="2xl">
             <Input placeholder="검색어를 입력해보세요. 아 참고로 작동은 안 해요" />
             <InputRightElement>
               <BiSearch />
@@ -94,13 +96,22 @@ const NovelsPage: React.FC = () => {
 
 const CreateNovelButton: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const user = useCurrentUser()
 
   const initialRef = React.useRef(null)
   const navigate = useNavigate()
 
-  const onSubmit = () => {
-    const id = "임시"
-    navigate(`/novels/${id}`)
+  const onSubmit = async () => {
+    const { data } = await api.post<Novel>(`/users/${user?.id}/novels`, {
+      title: "새 소설",
+      description: "설명",
+    })
+    navigate(`/novels/${data.id}`)
+  }
+
+  const _onOpen = () => {
+    if (!user) return toast.warn("소설을 쓰려면 로그인을 먼저 해 주세요!")
+    onOpen()
   }
 
   return (

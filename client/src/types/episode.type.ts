@@ -7,6 +7,8 @@ export interface PartialEpisode extends PartialData {
   chapter: string
   novelId: string
   order: number
+  createdAt: Date
+  updatedAt: Date
 }
 
 export interface Episode extends PartialEpisode {
@@ -21,4 +23,6 @@ export const initialPartialEpisode: PartialEpisode = {
   description: "",
   novelId: "",
   order: 0,
+  createdAt: new Date(),
+  updatedAt: new Date(),
 }

@@ -1,7 +1,7 @@
-import { ForbiddenException, Injectable } from "@nestjs/common"
+import { Injectable } from "@nestjs/common"
 import { NovelEntity } from "./novel.entity"
 import { InjectRepository } from "@nestjs/typeorm"
-import { FindManyOptions, Repository } from "typeorm"
+import { Repository } from "typeorm"
 import { EpisodesService } from "../episodes/episodes.service"
 import { SearchNovelsDto } from "./dto/search-novels.dto"
 import { UserEntity } from "../users/user.entity"
@@ -99,4 +99,6 @@ export class NovelsService {
 
     return novel.author.id === userId
   }
+
+  async uploadThumbnail(novelId: string, thumbnail: Express.Multer.File) {}
 }

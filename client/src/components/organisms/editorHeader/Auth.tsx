@@ -2,7 +2,7 @@ import React from "react"
 import { MdLock } from "react-icons/md"
 import useCurrentUser from "../../../hooks/useCurrentUser"
 import IconButton from "../../atoms/IconButton"
-import styled from "styled-components"
+import { Avatar, Text } from "@chakra-ui/react"
 
 const Auth: React.FC = () => {
   const user = useCurrentUser()
@@ -19,10 +19,13 @@ const Auth: React.FC = () => {
   return (
     <>
       {user ? (
-        <>
-          {/*{JSON.stringify(user)}*/}
-          <ProfileCircle onClick={logoutClickHandler} avatar={user.avatar} />
-        </>
+        <Avatar
+          cursor="pointer"
+          size="sm"
+          onClick={logoutClickHandler}
+          name={user.username}
+          src={user.avatar}
+        />
       ) : (
         <IconButton onClick={loginClickHandler}>
           <MdLock />
@@ -31,16 +34,5 @@ const Auth: React.FC = () => {
     </>
   )
 }
-
-const ProfileCircle = styled.div<{ avatar: string }>`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-image: url("${(props) => props.avatar}");
-  background-size: cover;
-
-  cursor: pointer;
-  flex-shrink: 0;
-`
 
 export default Auth

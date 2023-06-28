@@ -13,8 +13,11 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
+import ExportButton from "../editorHeader/ExportButton"
+import ImportButton from "../editorHeader/ImportButton"
 
 const Sidebar: React.FC = () => {
+  const { novel } = useContext(EditorContext)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const btnRef = useRef<HTMLDivElement | null>(null)
 
@@ -41,8 +44,8 @@ const Sidebar: React.FC = () => {
           <DrawerBody>
             <Top>
               <IconButton
-                onClick={() => navigate("/novels")}
-                text={"다른 작품 쓰기"}
+                onClick={() => navigate(`/novels/${novel.id}`)}
+                text={"소설 페이지로 돌아가기"}
                 style={{ backgroundColor: "transparent", marginRight: "auto" }}
               >
                 <MdChevronLeft />
@@ -56,6 +59,8 @@ const Sidebar: React.FC = () => {
             </Top>
             <NovelProfile />
             <EpisodeList />
+            {/*<ExportButton />*/}
+            {/*<ImportButton />*/}
           </DrawerBody>
         </DrawerContent>
       </Drawer>

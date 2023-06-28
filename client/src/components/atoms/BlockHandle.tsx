@@ -1,21 +1,37 @@
 import React from "react"
-import { BsDiamondFill } from "react-icons/all"
+import { AiFillFileAdd, BsDiamondFill } from "react-icons/all"
 import { BlockType } from "../../types/block.type"
 import styled from "styled-components"
+import {
+  Box,
+  Center,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+} from "@chakra-ui/react"
 
 const BlockHandle: React.FC<{ blockType: BlockType; onClick(): void }> = ({
   blockType,
   onClick,
 }) => {
   return (
-    <HandleContainer onClick={onClick}>
-      {blockType !== BlockType.DoubleQuote ? (
-        <HandleIcon className="block-handle" />
-      ) : (
-        // <ProfileHandle /> 일단 비활성화
-        <HandleIcon className="block-handle" />
-      )}
-    </HandleContainer>
+    <Menu>
+      <MenuButton as={HandleContainer} onClick={onClick} />
+      <HandleContainer onClick={onClick}>
+        {blockType !== BlockType.DoubleQuote ? (
+          <MenuButton as={HandleIcon} className="block-handle" />
+        ) : (
+          <MenuButton as={HandleIcon} className="block-handle" />
+          // <ProfileHandle /> 일단 비활성화
+        )}
+      </HandleContainer>
+      <MenuList>
+        <MenuItem icon={<AiFillFileAdd />} command="⌘T">
+          New Tab
+        </MenuItem>
+      </MenuList>
+    </Menu>
   )
 }
 

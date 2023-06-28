@@ -7,7 +7,7 @@ import stringToBlock from "../../../utils/stringToBlock"
 import { SortableElement, SortableHandle } from "react-sortable-hoc"
 import BlockHandle from "../BlockHandle"
 import { Block, BlockType } from "../../../types/block.type"
-import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react"
+import { Menu, MenuButton, MenuItem, MenuList, Portal } from "@chakra-ui/react"
 import { AiFillFileAdd } from "react-icons/all"
 // import keySoundFile from "./keySound.mp3"
 // import { Howl } from "howler"
@@ -40,18 +40,7 @@ export const SortableBlock = SortableElement<BlockProps>(
   (props: BlockProps) => (
     <BlockContainer>
       <Relative>
-        <Menu>
-          <MenuButton
-            as={DragHandle}
-            aria-label="Options"
-            blockType={props.block.blockType}
-          />
-          <MenuList>
-            <MenuItem icon={<AiFillFileAdd />} command="⌘T">
-              New Tab
-            </MenuItem>
-          </MenuList>
-        </Menu>
+        <DragHandle blockType={props.block.blockType} />
       </Relative>
 
       {props.block.blockType === BlockType.Divider ? (
@@ -151,7 +140,7 @@ const BlockComponent: React.FC<BlockProps> = ({
     // 주의: contentWithoutHtmlTags.current는 키 이벤트가 발생하기 이전의 값을 보여주므로 주의!
 
     // 새로운 블록 생성
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       if (!contentWithoutHtmlTags.current) return
       return addBlock?.(block)
@@ -174,23 +163,31 @@ const BlockComponent: React.FC<BlockProps> = ({
     }
 
     // 캐럿이 0에 있고, 앞 방향키를 누르면 앞 블록으로 이동
-    else if (e.key === "ArrowLeft" && beforeCaret === afterCaret) {
+    else if (
+      e.key === "ArrowLeft" &&
+      beforeCaret === afterCaret &&
+      !e.shiftKey
+    ) {
       moveToRelativeBlock?.(position, -1, false)
     }
 
     // 캐럿이 마지막에 있고, 뒤 방향키를 누르면 뒤 블록으로 이동
-    else if (e.key === "ArrowRight" && beforeCaret === afterCaret) {
+    else if (
+      e.key === "ArrowRight" &&
+      beforeCaret === afterCaret &&
+      !e.shiftKey
+    ) {
       moveToRelativeBlock?.(position, 1, false)
     }
 
     // 아무 곳에서나 위 방향키를 누르면 위 블록으로 이동
-    else if (e.key === "ArrowUp") {
+    else if (e.key === "ArrowUp" && !e.shiftKey) {
       e.preventDefault()
       moveToRelativeBlock?.(position, -1, true)
     }
 
     // 아무 곳에서나 아래 방향키를 누르면 아래 블록으로 이동
-    else if (e.key === "ArrowDown") {
+    else if (e.key === "ArrowDown" && !e.shiftKey) {
       e.preventDefault()
       moveToRelativeBlock?.(position, 1, true)
     }

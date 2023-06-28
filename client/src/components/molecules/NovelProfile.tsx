@@ -21,7 +21,7 @@ const NovelProfile: React.FC = () => {
       title: "새 에피소드",
     })
 
-    navigate(`/episode/${data.id}`)
+    navigate(`/episodes/${data.id}`)
     toast.info("새 에피소드가 생성되었습니다.")
   }
 

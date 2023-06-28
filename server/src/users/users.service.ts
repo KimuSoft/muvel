@@ -32,13 +32,15 @@ export class UsersService {
     username: string,
     avatar: string
   ): Promise<UserEntity> {
-    const user = new UserEntity()
-    user.id = id
-    user.username = username
-    user.avatar = avatar
+    const _user = new UserEntity()
+    _user.id = id
+    _user.username = username
+    _user.avatar = avatar
+
+    const user = await this.usersRepository.save(_user)
 
     const novel = await this.novelsService.create(
-      user.id,
+      _user.id,
       "샘플 소설",
       "샘플 소설입니다."
     )

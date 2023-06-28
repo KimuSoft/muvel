@@ -6,6 +6,7 @@ import { PassportModule } from "@nestjs/passport"
 import { JwtModule } from "@nestjs/jwt"
 import { DiscordStrategy } from "./strategies/discord.strategy"
 import { JwtStrategy } from "./strategies/jwt.strategy"
+import { KimustoryStrategy } from "./strategies/kimustory.strategy"
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { JwtStrategy } from "./strategies/jwt.strategy"
       signOptions: { expiresIn: "1d" },
     }),
   ],
-  providers: [AuthService, DiscordStrategy, JwtStrategy],
+  providers: [AuthService, DiscordStrategy, JwtStrategy, KimustoryStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
