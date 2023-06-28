@@ -5,7 +5,7 @@ import EditorContext from "../../../context/EditorContext"
 import Sidebar from "../sidebar"
 import { HStack } from "@chakra-ui/react"
 import ToggleColorModeButton from "../../atoms/ToggleColorModeButton"
-import { AiOutlineLoading3Quarters } from "react-icons/ai"
+import Loading from "../../atoms/Loading"
 
 const EditorHeader: React.FC = () => {
   const { isSaving } = useContext(EditorContext)
@@ -13,7 +13,7 @@ const EditorHeader: React.FC = () => {
   return (
     <HStack pl={10} pr={10} h="70px">
       <Sidebar />
-      {isSaving && <AiOutlineLoading3Quarters size={32} />}
+      {isSaving && <Loading />}
       <EpisodeTitle />
       <Auth />
       <ToggleColorModeButton />
