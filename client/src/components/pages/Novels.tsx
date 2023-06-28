@@ -22,16 +22,15 @@ import {
   useRadioGroup,
 } from "@chakra-ui/react"
 import NovelCard from "../molecules/NovelCard"
-import ToggleColorModeButton from "../atoms/ToggleColorModeButton"
 import { api } from "../../utils/api"
 import { Novel } from "../../types/novel.type"
 import RadioCard from "../molecules/RadioCard"
-import { AiFillFileAdd, BiSearch } from "react-icons/all"
-import EditorHeader from "../organisms/editorHeader/EditorHeader"
 import Header from "../organisms/Header"
 import { useNavigate } from "react-router-dom"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import { toast } from "react-toastify"
+import { BiSearch } from "react-icons/bi"
+import { AiFillFileAdd } from "react-icons/ai"
 
 const NovelsPage: React.FC = () => {
   const [novels, setNovels] = React.useState<Novel[]>([])

@@ -1,10 +1,10 @@
 import React, { createRef, useContext } from "react"
-import { MdUploadFile } from "react-icons/all"
 import EditorContext from "../../../context/EditorContext"
 import stringToBlocks from "../../../utils/stringToBlock"
 import { z } from "zod"
 import { toast } from "react-toastify"
 import { BlockType } from "../../../types/block.type"
+import { MdUploadFile } from "react-icons/md"
 
 const readFile = (file: File) =>
   new Promise<string | ArrayBuffer>((resolve, reject) => {

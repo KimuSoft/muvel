@@ -4,7 +4,7 @@ import GlobalContext from "../context/GlobalContext"
 import { api } from "../utils/api"
 import { User } from "../types/user.type"
 import { Center } from "@chakra-ui/react"
-import { AiOutlineLoading3Quarters } from "react-icons/all"
+import { AiOutlineLoading3Quarters } from "react-icons/ai"
 
 export const AppLayout: React.FC = () => {
   const [loading, setLoading] = React.useState(true)

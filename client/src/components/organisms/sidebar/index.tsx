@@ -8,7 +8,10 @@ import EpisodeList from "../EpisodeList"
 import {
   Drawer,
   DrawerBody,
+  DrawerCloseButton,
   DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
   DrawerOverlay,
   useDisclosure,
 } from "@chakra-ui/react"
@@ -37,31 +40,28 @@ const Sidebar: React.FC = () => {
         placement="left"
         onClose={onClose}
         finalFocusRef={btnRef}
-        size="lg"
+        size="sm"
       >
         <DrawerOverlay />
-        <DrawerContent w="3xl">
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>
+            <IconButton
+              onClick={() => navigate(`/novels/${novel.id}`)}
+              text={"소설 페이지로 돌아가기"}
+              style={{ backgroundColor: "transparent", marginRight: "auto" }}
+            >
+              <MdChevronLeft />
+            </IconButton>
+          </DrawerHeader>
           <DrawerBody>
-            <Top>
-              <IconButton
-                onClick={() => navigate(`/novels/${novel.id}`)}
-                text={"소설 페이지로 돌아가기"}
-                style={{ backgroundColor: "transparent", marginRight: "auto" }}
-              >
-                <MdChevronLeft />
-              </IconButton>
-              <IconButton
-                style={{ backgroundColor: "transparent" }}
-                onClick={onClose}
-              >
-                <MdMenuOpen style={{ fontSize: 24 }} />
-              </IconButton>
-            </Top>
             <NovelProfile />
             <EpisodeList />
-            {/*<ExportButton />*/}
-            {/*<ImportButton />*/}
           </DrawerBody>
+          <DrawerFooter>
+            <ExportButton />
+            <ImportButton />
+          </DrawerFooter>
         </DrawerContent>
       </Drawer>
     </>

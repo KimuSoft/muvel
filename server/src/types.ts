@@ -22,3 +22,9 @@ export enum Importance {
   Sub,
   Minor,
 }
+
+export enum ShareType {
+  Private,
+  Unlisted,
+  Public,
+}

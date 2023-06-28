@@ -76,12 +76,12 @@ const Editor: React.FC = () => {
 
     // 첫 블록은 지울 수 없음
     if (!index) return
-    setBlocks(blocks.filter((b) => b.id !== id))
+    setBlocks((b) => b.filter((b) => b.id !== id))
   }
 
   const updateBlockHandler = (block: Block) => {
     // console.log(block)
-    setBlocks(blocks.map((b) => (b.id === block.id ? block : b)))
+    setBlocks((_blocks) => _blocks.map((b) => (b.id === block.id ? block : b)))
   }
 
   const moveToRelativeBlockHandler = (

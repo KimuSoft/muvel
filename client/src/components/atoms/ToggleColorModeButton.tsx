@@ -1,6 +1,6 @@
 import React from "react"
 import { IconButton, useColorMode } from "@chakra-ui/react"
-import { BsFillMoonFill, BsFillSunFill } from "react-icons/all"
+import { BsFillMoonFill, BsFillSunFill } from "react-icons/bs"
 
 const ToggleColorModeButton: React.FC = () => {
   const { colorMode, toggleColorMode } = useColorMode()

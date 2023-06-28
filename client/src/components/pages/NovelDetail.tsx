@@ -2,7 +2,6 @@ import React, { useEffect } from "react"
 import Header from "../organisms/Header"
 import { useNavigate, useParams } from "react-router-dom"
 import {
-  Box,
   Button,
   Center,
   Container,
@@ -12,14 +11,16 @@ import {
   Spacer,
   Text,
   theme,
+  useColorModeValue,
   VStack,
 } from "@chakra-ui/react"
 import { initialNovel, Novel } from "../../types/novel.type"
 import { api } from "../../utils/api"
 import { toast } from "react-toastify"
-import { AiFillRead, MdNavigateBefore } from "react-icons/all"
-import { size } from "lodash"
-import { Episode, PartialEpisode } from "../../types/episode.type"
+import { PartialEpisode } from "../../types/episode.type"
+import styled from "styled-components"
+import { MdNavigateBefore } from "react-icons/md"
+import { AiFillRead } from "react-icons/ai"
 
 const NovelDetail: React.FC = () => {
   const novelId = useParams<{ id: string }>().id || ""
@@ -52,6 +53,9 @@ const NovelDetail: React.FC = () => {
         mb={7}
         h="300px"
         bgColor={theme.colors.gray[700]}
+        _light={{
+          background: "gray.200",
+        }}
       >
         <HStack h="100%" w="3xl">
           <VStack align={"baseline"} flexDir="column-reverse" h="100%">
@@ -77,20 +81,18 @@ const NovelDetail: React.FC = () => {
           </VStack>
         </HStack>
       </Center>
-      {/*{JSON.stringify(novel)}*/}
 
-      <Container maxW="3xl" display="flex" gap={3} flexDir="column">
-        <Text as="b" fontSize="2xl">
-          에피소드 목록
-        </Text>
+      <Container maxW="3xl" display="flex" gap={5} flexDir="column">
+        <Heading fontSize="xl">에피소드 목록</Heading>
         <VStack
           align="baseline"
-          bgColor="gray.700"
+          bgColor={useColorModeValue("gray.100", "gray.700")}
           borderRadius={10}
           pl={5}
           pr={5}
           pt={3}
           pb={3}
+          gap={0}
         >
           {novel.episodes.map((episode) => (
             <EpisodeRow key={episode.id} episode={episode} />
@@ -111,20 +113,31 @@ const EpisodeRow: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
   return (
     <HStack
       onClick={onClick}
-      pt={1}
-      pb={1}
+      pl={3}
+      pr={3}
+      pt={2}
+      pb={2}
+      borderRadius={5}
       cursor="pointer"
       w="100%"
       _hover={{
-        background: "gray.400",
+        backgroundColor: useColorModeValue("gray.200", "gray.600"),
       }}
+      transition={"background-color 0.3s ease"}
     >
-      <Text color="gray.500" fontSize="md" mr={3}>
+      <Text color={"gray.500"} fontSize="md" mr={3}>
         {episode.order}편
       </Text>
       <Text fontSize="xl">{episode.title}</Text>
     </HStack>
   )
 }
+
+const NovelThumbnail = styled.div`
+  width: 100%;
+  height: 250px;
+  border-radius: 5px;
+  background-color: #71717a;
+`
 
 export default NovelDetail

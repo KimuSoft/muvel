@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -11,6 +10,7 @@ import {
 } from "typeorm"
 import { EpisodeEntity } from "../episodes/episode.entity"
 import { UserEntity } from "../users/user.entity"
+import { ShareType } from "../types"
 
 @Entity("novel")
 export class NovelEntity {
@@ -44,4 +44,7 @@ export class NovelEntity {
 
   @RelationId((self: NovelEntity) => self.author)
   authorId: string
+
+  @Column({ default: ShareType.Private })
+  share: ShareType
 }

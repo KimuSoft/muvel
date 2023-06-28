@@ -5,7 +5,7 @@ import EditorContext from "../../../context/EditorContext"
 import Sidebar from "../sidebar"
 import { HStack } from "@chakra-ui/react"
 import ToggleColorModeButton from "../../atoms/ToggleColorModeButton"
-import { AiOutlineLoading3Quarters } from "react-icons/all"
+import { AiOutlineLoading3Quarters } from "react-icons/ai"
 
 const EditorHeader: React.FC = () => {
   const { isSaving } = useContext(EditorContext)

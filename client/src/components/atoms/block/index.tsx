@@ -1,47 +1,30 @@
-import React, { useContext, useRef } from "react"
+import React, { useContext, useEffect, useRef } from "react"
 import { ContentEditableEvent } from "react-contenteditable"
-import { StyledContentEditable } from "./styles"
-import styled from "styled-components"
+import {
+  BlockContainer,
+  Divider,
+  DividerContainer,
+  StyledContentEditable,
+} from "./styles"
 import EditorContext from "../../../context/EditorContext"
 import stringToBlock from "../../../utils/stringToBlock"
 import { SortableElement, SortableHandle } from "react-sortable-hoc"
-import BlockHandle from "../BlockHandle"
+import BlockHandle from "./BlockHandle"
 import { Block, BlockType } from "../../../types/block.type"
-import { Menu, MenuButton, MenuItem, MenuList, Portal } from "@chakra-ui/react"
-import { AiFillFileAdd } from "react-icons/all"
-// import keySoundFile from "./keySound.mp3"
-// import { Howl } from "howler"
+import { Box } from "@chakra-ui/react"
 
-// const keySound = new Howl({ src: keySoundFile })
-
-const DragHandle = SortableHandle<{ blockType: BlockType }>(
-  ({ blockType, onClick }: { blockType: BlockType; onClick(): void }) => (
-    <BlockHandle blockType={blockType} onClick={onClick} />
+const DragHandle = SortableHandle<{ block: Block }>(
+  ({ block, onClick }: { block: Block; onClick(): void }) => (
+    <BlockHandle block={block} onClick={onClick} />
   )
 )
-
-// 좌우 정렬
-const BlockContainer = styled.li`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-
-  &:hover .block-handle {
-    opacity: 1;
-  }
-`
-
-const Relative = styled.div`
-  position: relative;
-  right: 40px;
-`
 
 export const SortableBlock = SortableElement<BlockProps>(
   (props: BlockProps) => (
     <BlockContainer>
-      <Relative>
-        <DragHandle blockType={props.block.blockType} />
-      </Relative>
+      <Box position="relative" right="40px">
+        <DragHandle block={props.block} />
+      </Box>
 
       {props.block.blockType === BlockType.Divider ? (
         <DividerContainer>
@@ -53,36 +36,6 @@ export const SortableBlock = SortableElement<BlockProps>(
     </BlockContainer>
   )
 )
-
-const DividerContainer = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`
-
-const Divider = styled.div`
-  width: 60%;
-  height: 1px;
-
-  background-color: #52525b;
-
-  margin-top: 80px;
-  margin-bottom: 100px;
-`
-
-interface BlockProps {
-  block: Block
-  position: number
-  addBlock?: (block: Block) => void
-  deleteBlock?: ({ id }: { id: string }) => void
-  updateBlock?: (block: Block) => void
-  moveToRelativeBlock?: (
-    currentPos: number,
-    direction: -1 | 1,
-    preserveCaretPosition: boolean
-  ) => void
-}
 
 const BlockComponent: React.FC<BlockProps> = ({
   block,
@@ -98,6 +51,13 @@ const BlockComponent: React.FC<BlockProps> = ({
   const contenteditable = useRef<HTMLDivElement>(null)
   const content = useRef<string>(block.content)
   const contentWithoutHtmlTags = useRef<string>(block.content)
+
+  useEffect(() => {
+    if (!contenteditable.current || block.content === content.current) return
+
+    contenteditable.current.innerHTML = block.content
+    content.current = block.content
+  }, [block.blockType])
 
   const getBlockType = (content: string): BlockType => {
     if (content.startsWith("“") && content.endsWith("”")) {
@@ -235,4 +195,16 @@ const BlockComponent: React.FC<BlockProps> = ({
   )
 }
 
+interface BlockProps {
+  block: Block
+  position: number
+  addBlock?: (block: Block) => void
+  deleteBlock?: ({ id }: { id: string }) => void
+  updateBlock?: (block: Block) => void
+  moveToRelativeBlock?: (
+    currentPos: number,
+    direction: -1 | 1,
+    preserveCaretPosition: boolean
+  ) => void
+}
 export default BlockComponent

@@ -1,15 +1,6 @@
 import React from "react"
 import { Novel } from "../../types/novel.type"
-import {
-  Box,
-  HStack,
-  Input,
-  InputGroup,
-  Spacer,
-  Text,
-  theme,
-  VStack,
-} from "@chakra-ui/react"
+import { Box, HStack, Spacer, Text, theme } from "@chakra-ui/react"
 import styled from "styled-components"
 import { useNavigate } from "react-router-dom"
 

@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { IsUUID } from "class-validator"
 import { EpisodeDto } from "../../episodes/dto/episode.dto"
+import { ShareType } from "../../types"
 
 export class NovelDto {
   @ApiProperty({
@@ -33,6 +34,9 @@ export class NovelDto {
 
   @ApiProperty()
   updatedAt: Date
+
+  @ApiProperty()
+  share: ShareType
 }
 
 export class NovelDtoWithEpisodes extends NovelDto {
