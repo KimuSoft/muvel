@@ -8,8 +8,13 @@ import {
   MenuGroup,
   MenuItem,
   MenuList,
+  Tooltip,
 } from "@chakra-ui/react"
-import { BiSolidQuoteLeft, BiSolidQuoteSingleLeft } from "react-icons/bi"
+import {
+  BiSolidCommentDots,
+  BiSolidQuoteLeft,
+  BiSolidQuoteSingleLeft,
+} from "react-icons/bi"
 import { BsDiamondFill } from "react-icons/bs"
 import { MdDescription } from "react-icons/md"
 import EditorContext from "../../../context/EditorContext"
@@ -113,6 +118,18 @@ const BlockHandle: React.FC<{ block: Block; onClick(): void }> = ({
           >
             독백 블록
           </MenuItem>
+          <Tooltip
+            label="독자는 볼 수 없는 블록으로 소설 출력 시에도 이 부분은 나타나지 않습니다. 작가를 위한 복선, 설정, 표시 정리 등에 쓰입니다."
+            openDelay={500}
+          >
+            <MenuItem
+              icon={<BiSolidCommentDots />}
+              onClick={onChangeToSingleQuoteBlock}
+              {...getSelectedProps(BlockType.Commnet)}
+            >
+              주석 블록
+            </MenuItem>
+          </Tooltip>
         </MenuGroup>
         <MenuDivider />
         <MenuGroup title="블록 액션">
