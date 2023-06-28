@@ -5,6 +5,7 @@ import { Repository } from "typeorm"
 import { EpisodesService } from "../episodes/episodes.service"
 import { SearchNovelsDto } from "./dto/search-novels.dto"
 import { UserEntity } from "../users/user.entity"
+import { ShareType } from "../types"
 
 @Injectable()
 export class NovelsService {
@@ -59,6 +60,7 @@ export class NovelsService {
   async search(searchNovelsDto: SearchNovelsDto) {
     let query = this.novelsRepository
       .createQueryBuilder("novel")
+      .where(`novel.share = ${ShareType.Public}`)
       .leftJoinAndSelect("novel.author", "author")
 
     if (searchNovelsDto.author) {
