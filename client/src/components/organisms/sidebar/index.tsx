@@ -6,6 +6,7 @@ import { MdChevronLeft, MdMenu, MdMenuOpen } from "react-icons/md"
 import EditorContext from "../../../context/EditorContext"
 import EpisodeList from "../EpisodeList"
 import {
+  Divider,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -13,35 +14,26 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
+  Heading,
+  HStack,
   useDisclosure,
 } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
-import ExportButton from "../editorHeader/ExportButton"
-import ImportButton from "../editorHeader/ImportButton"
+import ExportButton from "../../molecules/ExportButton"
+import ImportButton from "../../molecules/ImportButton"
 
 const Sidebar: React.FC = () => {
   const { novel } = useContext(EditorContext)
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const btnRef = useRef<HTMLDivElement | null>(null)
 
   const navigate = useNavigate()
 
   return (
     <>
-      <IconButton
-        ref={btnRef}
-        onClick={onOpen}
-        style={{ backgroundColor: "transparent" }}
-      >
+      <IconButton onClick={onOpen} style={{ backgroundColor: "transparent" }}>
         <MdMenu style={{ fontSize: 24 }} />
       </IconButton>
-      <Drawer
-        isOpen={isOpen}
-        placement="left"
-        onClose={onClose}
-        finalFocusRef={btnRef}
-        size="sm"
-      >
+      <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="sm">
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
@@ -56,11 +48,17 @@ const Sidebar: React.FC = () => {
           </DrawerHeader>
           <DrawerBody>
             <NovelProfile />
-            <EpisodeList />
+            <Divider mt={10} mb={10} />
+            <Heading fontSize="xl" pl={4} mb={3}>
+              에피소드 목록
+            </Heading>
+            <EpisodeList novel={novel} />
           </DrawerBody>
           <DrawerFooter>
-            <ExportButton />
-            <ImportButton />
+            <HStack>
+              <ExportButton />
+              <ImportButton />
+            </HStack>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>

@@ -1,6 +1,14 @@
 import React from "react"
 import { Novel } from "../../types/novel.type"
-import { Box, HStack, Spacer, Text, theme } from "@chakra-ui/react"
+import {
+  Box,
+  HStack,
+  Spacer,
+  Text,
+  theme,
+  Tooltip,
+  useColorModeValue,
+} from "@chakra-ui/react"
 import styled from "styled-components"
 import { useNavigate } from "react-router-dom"
 
@@ -12,42 +20,52 @@ const NovelCard: React.FC<{ novel: Novel }> = ({ novel }) => {
   }
 
   return (
-    <Box
-      display="flex"
-      w={187}
-      gap={2}
-      flexDir="column"
-      cursor="pointer"
-      onClick={onClick}
-    >
-      <NovelThumbnail
-        style={{
-          backgroundImage: novel.thumbnail || "",
-        }}
-      />
+    <Tooltip label={novel.description} openDelay={500}>
       <Box
-        w="100%"
         display="flex"
-        alignItems="baseline"
-        paddingLeft="5px"
-        paddingRight="5px"
+        w={187}
+        gap={2}
+        flexDir="column"
+        cursor="pointer"
+        onClick={onClick}
       >
-        <Box w="100%">
-          <HStack>
-            <Text as="b" fontSize="md">
-              {novel.title}
-            </Text>
-            <Spacer />
+        <Box
+          w="100%"
+          h="250px"
+          borderRadius="5px"
+          backgroundColor={useColorModeValue("gray.200", "gray.700")}
+          style={{
+            backgroundImage: novel.thumbnail || "",
+          }}
+        />
+        <Box
+          w="100%"
+          display="flex"
+          alignItems="baseline"
+          paddingLeft="5px"
+          paddingRight="5px"
+        >
+          <Box w="100%">
+            <HStack>
+              <Text as="b" fontSize="md">
+                {novel.title}
+              </Text>
+              <Spacer />
+              <Text
+                fontSize="sm"
+                color={theme.colors.gray["400"]}
+                flexShrink={0}
+              >
+                {novel.episodeIds.length}편
+              </Text>
+            </HStack>
             <Text fontSize="sm" color={theme.colors.gray["400"]}>
-              {novel.episodeIds.length}편
+              {novel.author?.username}
             </Text>
-          </HStack>
-          <Text fontSize="sm" color={theme.colors.gray["400"]}>
-            {novel.author?.username}
-          </Text>
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </Tooltip>
   )
 }
 

@@ -42,19 +42,33 @@ export class NovelsService {
     return this.novelsRepository.save(novel)
   }
 
-  async addEpisode(novelId: string, title: string, description: string) {
+  async addEpisode(
+    novelId: string,
+    title: string,
+    description: string,
+    chapter: string
+  ) {
     const novel = await this.findOne(novelId, ["episodes"])
-    const episode = await this.episodesService.create(title, description)
+    const episode = await this.episodesService.create(
+      title,
+      description,
+      chapter,
+      novelId
+    )
     novel.episodes.push(episode)
     await this.novelsRepository.save(novel)
     return episode
   }
 
   async findOne(id: string, relations: string[] = []) {
-    return this.novelsRepository.findOne({
+    const novel = await this.novelsRepository.findOne({
       where: { id },
       relations,
     })
+
+    // 에피소드 정렬
+    novel.episodes.sort((a, b) => a.order - b.order)
+    return novel
   }
 
   async search(searchNovelsDto: SearchNovelsDto) {

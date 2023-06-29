@@ -75,10 +75,17 @@ export const BlockContainer = styled.li`
   }
 `
 
-export const CommentBlock = styled(StyledContentEditable)`
-  background-color: ${theme.colors.gray["900"]};
-  color: ${theme.colors.gray["400"]};
+export const CommentBlock = styled(StyledContentEditable)<{
+  theme: "dark" | "white"
+}>`
+  background-color: ${(props) =>
+    props.theme === "dark"
+      ? theme.colors.gray["900"]
+      : theme.colors.gray["100"]};
+  color: ${theme.colors.gray["500"]};
   font-size: 16px;
   padding: 10px 20px;
-  font-family: "Pretendard";
+  font-family: "Pretendard", sans-serif;
+
+  font-weight: 400;
 `

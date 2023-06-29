@@ -23,7 +23,7 @@ import { toast } from "react-toastify"
 import { AiFillFileAdd } from "react-icons/ai"
 import { Field, FieldAttributes, FieldProps, Form, Formik } from "formik"
 
-const CreateNovel: React.FC = () => {
+const UpdateNovel: React.FC<{ novel: Novel }> = ({ novel }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const user = useCurrentUser()
 
@@ -57,7 +57,7 @@ const CreateNovel: React.FC = () => {
       <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <Formik
-          initialValues={{ title: "새 소설", description: "" }}
+          initialValues={{ title: novel.title, description: novel.description }}
           onSubmit={onSubmit}
         >
           {(props) => (
@@ -107,7 +107,7 @@ const CreateNovel: React.FC = () => {
                     type="submit"
                     isLoading={props.isSubmitting}
                   >
-                    생성하기
+                    수정하기
                   </Button>
                 </ModalFooter>
               </ModalContent>
@@ -119,4 +119,4 @@ const CreateNovel: React.FC = () => {
   )
 }
 
-export default CreateNovel
+export default UpdateNovel

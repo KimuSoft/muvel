@@ -105,7 +105,8 @@ export class NovelsController {
     return this.novelsService.addEpisode(
       id,
       addEpisodeDto.title,
-      addEpisodeDto.description
+      addEpisodeDto.description,
+      addEpisodeDto.chapter
     )
   }
 

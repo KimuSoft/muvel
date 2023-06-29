@@ -1,10 +1,8 @@
 import { Injectable } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
-import { NovelEntity } from "../novels/novel.entity"
 import { Repository } from "typeorm"
 import { EpisodeEntity } from "./episode.entity"
 import { BlocksService } from "../blocks/blocks.service"
-import { BlockType } from "../types"
 import { PatchBlocksDto } from "./dto/patch-blocks.dto"
 
 @Injectable()
@@ -15,11 +13,25 @@ export class EpisodesService {
     private blocksService: BlocksService
   ) {}
 
-  async create(title: string, description = "", chapter = "") {
+  async create(
+    title: string,
+    description = "",
+    chapter = "",
+    novelId?: string
+  ) {
+    let order = 1
+    if (novelId) {
+      const lastBlock = await this.episodesRepository
+        .findOne({ where: { novelId }, order: { order: "DESC" } })
+        .catch(() => ({ order: 0 }))
+      order = lastBlock.order + 1
+    }
+
     const episode = new EpisodeEntity()
     episode.title = title
     episode.description = description
     episode.chapter = chapter
+    episode.order = order
 
     // 블록 생성
     episode.blocks = [await this.blocksService.create("샘플 블록입니다.")]

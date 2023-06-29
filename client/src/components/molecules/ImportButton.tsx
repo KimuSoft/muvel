@@ -1,10 +1,11 @@
 import React, { createRef, useContext } from "react"
-import EditorContext from "../../../context/EditorContext"
-import stringToBlocks from "../../../utils/stringToBlock"
+import EditorContext from "../../context/EditorContext"
+import stringToBlocks from "../../utils/stringToBlock"
 import { z } from "zod"
 import { toast } from "react-toastify"
-import { BlockType } from "../../../types/block.type"
-import { MdUploadFile } from "react-icons/md"
+import { BlockType } from "../../types/block.type"
+import { IconButton, Tooltip } from "@chakra-ui/react"
+import { FiUpload } from "react-icons/fi"
 
 const readFile = (file: File) =>
   new Promise<string | ArrayBuffer>((resolve, reject) => {
@@ -60,7 +61,14 @@ const ImportButton: React.FC = () => {
         accept="application/json, text/plain"
         onChange={uploadHandler}
       />
-      <MdUploadFile onClick={clickHandler} style={{ fontSize: 30 }} />
+      <Tooltip label="파일 불러오기">
+        <IconButton
+          aria-label={"Import File"}
+          variant="outline"
+          onClick={clickHandler}
+          icon={<FiUpload size={20} />}
+        />
+      </Tooltip>
     </>
   )
 }

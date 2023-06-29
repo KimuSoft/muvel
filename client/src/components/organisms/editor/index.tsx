@@ -2,20 +2,14 @@ import React, { useContext, useEffect, useState } from "react"
 import { SortableBlock } from "../../atoms/block"
 import usePrevious from "../../../hooks/usePrevious"
 import setCaretToEnd from "../../../utils/setCaretToEnd"
-import { DummyBlock, EditorContainer } from "./styles"
+import { DummyBlock } from "./styles"
 import EditorContext from "../../../context/EditorContext"
 import { Block, BlockType } from "../../../types/block.type"
 import _ from "lodash"
 import { v4 } from "uuid"
 import { SortableContainer, SortableContainerProps } from "react-sortable-hoc"
 import styled from "styled-components"
-import {
-  Box,
-  Container,
-  Text,
-  Textarea,
-  useColorModeValue,
-} from "@chakra-ui/react"
+import { Container, Text, Textarea, useColorModeValue } from "@chakra-ui/react"
 import { arrayMoveImmutable } from "array-move"
 
 const canvas = document.createElement("canvas").getContext("2d")!
@@ -27,8 +21,11 @@ const _SortableContainer = SortableContainer<React.PropsWithChildren>(
 )
 
 const Editor: React.FC = () => {
-  const { blocks, setBlocks } = useContext(EditorContext)
+  const { blocks, setBlocks, episode, setEpisode } = useContext(EditorContext)
   const [currentBlockId, setCurrentBlockId] = useState<string>("1")
+  const [episodeDescription, setEpisodeDescription] = useState<string>(
+    episode.description
+  )
 
   const prevBlocks = usePrevious<Block[]>(blocks)
 
@@ -58,6 +55,10 @@ const Editor: React.FC = () => {
       }
     }
   }, [blocks, prevBlocks, currentBlockId])
+
+  useEffect(() => {
+    setEpisode((e) => ({ ...e, description: episodeDescription }))
+  }, [episodeDescription])
 
   const addBlockHandler = (block: Block) => {
     setCurrentBlockId(block.id)
@@ -156,10 +157,11 @@ const Editor: React.FC = () => {
     }
   }
 
-  const hasFocus = (blockType: BlockType) =>
-    ![BlockType.Divider].includes(blockType)
-
   const getBlockNodes = () => {
+    const hasFocus = (blockType: BlockType) =>
+      ![BlockType.Divider].includes(blockType)
+
+    console.log("호출됨!")
     let skipIndex = 0
     return blocks.map((b, index) => {
       const bp =
@@ -169,9 +171,9 @@ const Editor: React.FC = () => {
       if (!hasFocus(b.blockType)) skipIndex++
 
       return (
-        <>
+        <React.Fragment key={b.id}>
           <SortableBlock
-            key={b.id}
+            key={`${b.id}-block`}
             index={index}
             block={b}
             position={hasFocus(b.blockType) ? index + 1 - skipIndex : -99}
@@ -180,8 +182,8 @@ const Editor: React.FC = () => {
             updateBlock={updateBlockHandler}
             moveToRelativeBlock={moveToRelativeBlockHandler}
           />
-          <PaddingBlock height={bp ? 20 : 0} key={b.id + "-bottom"} />
-        </>
+          <PaddingBlock height={bp ? 20 : 0} key={`${b.id}-bottom`} />
+        </React.Fragment>
       )
     })
   }
@@ -191,17 +193,28 @@ const Editor: React.FC = () => {
     newIndex,
   }) => setBlocks(arrayMoveImmutable(blocks, oldIndex, newIndex))
 
+  const onEpisodeDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setEpisodeDescription(e.target.value)
+  }
+
   return (
     <Container maxW="3xl">
       <Text color="gray.500" mb={3}>
         에피소드 설명
       </Text>
       <Textarea
+        defaultValue={episode.description}
         bgColor={useColorModeValue("gray.200", "gray.900")}
         border="none"
         _focus={{ border: "none" }}
         mb={10}
+        onChange={onEpisodeDescriptionChange}
       />
+      <Text color="gray.500" mb={3}>
+        본문
+      </Text>
       <_SortableContainer onSortEnd={onSortEnd} pressDelay={100} lockAxis="y">
         {getBlockNodes()}
       </_SortableContainer>

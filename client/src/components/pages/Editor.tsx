@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import { api } from "../../utils/api"
 import { toast } from "react-toastify"
-import { initialNovel, Novel, PartialNovel } from "../../types/novel.type"
+import { initialNovel, Novel } from "../../types/novel.type"
 import {
   Episode,
   initialPartialEpisode,
@@ -35,19 +35,16 @@ const EditorPage: React.FC = () => {
   useEffect(() => {
     // 로그인되어 있지 않은 경우 로그인 페이지로 이동
     if (!user) {
-      navigate("/api/auth/login/discord")
+      window.location.href = import.meta.env.VITE_API_BASE + "/auth/login"
       return
     }
 
     initEpisode().then()
-
-    // TODO: 변경사항이 서버에 올라가지 않은 상태면 창을 닫을 때 경고 표시
-    // window.onbeforeunload = () => 0
   }, [])
 
   // 블록 변경사항을 로드하는 메서드
   const getBlocksChange = () => {
-    if (!episodeCache) return
+    if (!episodeCache) return []
     // deleted blocks  검증
     const deletedBlocks = blocksCache
       .filter((b) => !blocks.find((b2) => b2.id === b.id))
@@ -62,16 +59,27 @@ const EditorPage: React.FC = () => {
     return [...deletedBlocks, ...difference]
   }
 
+  const isEpisodeUpdated = () =>
+    episode.title !== episodeCache?.title ||
+    episode.description !== episodeCache?.description ||
+    episode.chapter !== episodeCache?.chapter
+
+  const isBlocksUpdated = () => !_.isEqual(blocks, blocksCache)
+
   // 변경사항 자동 저장 (Debounce)
   React.useEffect(() => {
+    // 변경사항이 아직 서버에 올라가지 않았다면 경고
+    // if (isEpisodeUpdated() || getBlocksChange().length) {
+    //   window.onbeforeunload = () => 0
+    // } else {
+    //   window.onbeforeunload = undefined
+    // }
+
     const timeout = setTimeout(async () => {
       setIsSaving(true)
 
       // 에피소드 변경사항 체크
-      if (
-        episode.title !== episodeCache?.title ||
-        episode.chapter !== episodeCache?.chapter
-      ) {
+      if (isEpisodeUpdated()) {
         // 에피소드 업데이트 요청
         await api.put(`episodes/${episodeId}`, {
           title: episode.title,
@@ -86,7 +94,6 @@ const EditorPage: React.FC = () => {
       if (blocksChange?.length) {
         // 블록 데이터 업데이트 요청
         await api.patch(`episodes/${episodeId}/blocks`, blocksChange)
-        toast.info("블록 변경사항 저장 완료!")
         setBlocksCache(blocks)
       }
 
@@ -98,6 +105,8 @@ const EditorPage: React.FC = () => {
 
   const refreshNovel = async () => {
     const { data } = await api.get<Novel>(`novels/${episode.novelId}`)
+    data?.episodes?.sort((a, b) => a.order - b.order)
+    console.log(data)
     setNovel(data)
   }
 

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react"
+import React, { useContext, useEffect, useMemo, useRef } from "react"
 import { ContentEditableEvent } from "react-contenteditable"
 import {
   BlockContainer,
@@ -9,22 +9,16 @@ import {
 } from "./styles"
 import EditorContext from "../../../context/EditorContext"
 import stringToBlock from "../../../utils/stringToBlock"
-import { SortableElement, SortableHandle } from "react-sortable-hoc"
-import BlockHandle from "./BlockHandle"
+import { SortableElement } from "react-sortable-hoc"
 import { Block, BlockType } from "../../../types/block.type"
-import { Box } from "@chakra-ui/react"
-
-const DragHandle = SortableHandle<{ block: Block }>(
-  ({ block, onClick }: { block: Block; onClick(): void }) => (
-    <BlockHandle block={block} onClick={onClick} />
-  )
-)
+import { Box, useColorMode } from "@chakra-ui/react"
+import BlockHandle from "./BlockHandle"
 
 export const SortableBlock = SortableElement<BlockProps>(
   (props: BlockProps) => (
     <BlockContainer>
       <Box position="relative" right="40px">
-        <DragHandle block={props.block} />
+        <BlockHandle block={props.block} />
       </Box>
 
       {props.block.blockType === BlockType.Divider ? (
@@ -52,6 +46,8 @@ const BlockComponent: React.FC<BlockProps> = ({
   const contenteditable = useRef<HTMLDivElement>(null)
   const content = useRef<string>(block.content)
   const contentWithoutHtmlTags = useRef<string>(block.content)
+
+  const { colorMode } = useColorMode()
 
   useEffect(() => {
     if (!contenteditable.current || block.content === content.current) return
@@ -218,6 +214,7 @@ const BlockComponent: React.FC<BlockProps> = ({
       html={content.current}
       data-position={position}
       placeholder={"내용을 입력해 주세요."}
+      theme={colorMode}
     />
   ) : (
     <StyledContentEditable

@@ -1,26 +1,14 @@
 import React, { useEffect } from "react"
 import {
   Box,
-  Button,
   Center,
   Container,
-  FormControl,
-  FormLabel,
   HStack,
   Input,
   InputGroup,
   InputRightElement,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Spacer,
   Text,
-  Textarea,
-  useDisclosure,
   useRadioGroup,
 } from "@chakra-ui/react"
 import NovelCard from "../molecules/NovelCard"
@@ -28,11 +16,8 @@ import { api } from "../../utils/api"
 import { Novel } from "../../types/novel.type"
 import RadioCard from "../molecules/RadioCard"
 import Header from "../organisms/Header"
-import { useNavigate } from "react-router-dom"
 import useCurrentUser from "../../hooks/useCurrentUser"
-import { toast } from "react-toastify"
 import { BiSearch } from "react-icons/bi"
-import { AiFillFileAdd } from "react-icons/ai"
 import CreateNovel from "../organisms/CreateNovel"
 
 const NovelsPage: React.FC = () => {
@@ -59,7 +44,6 @@ const NovelsPage: React.FC = () => {
     const { data } = await api.get<Novel[]>(
       searchRange === "내 소설" ? `users/${user.id}/novels` : "novels"
     )
-    console.log(data)
     setNovels(data)
   }
 

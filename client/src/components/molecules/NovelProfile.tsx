@@ -11,16 +11,18 @@ import { Button, Heading, HStack, Spacer, Text, VStack } from "@chakra-ui/react"
 const NovelProfile: React.FC = () => {
   const { novel } = useContext(EditorContext)
 
+  const [loading, setLoading] = React.useState(false)
   const navigate = useNavigate()
 
   const addNovelClickHandler = async () => {
-    console.log(novel)
+    setLoading(true)
     const { data } = await api.post<Episode>(`novels/${novel.id}/episodes`, {
       title: "새 에피소드",
     })
 
     navigate(`/episodes/${data.id}`)
     toast.info("새 에피소드가 생성되었습니다.")
+    setLoading(false)
   }
 
   return (
@@ -33,12 +35,12 @@ const NovelProfile: React.FC = () => {
         </Text>
         <HStack w="100%">
           <Spacer />
-          <Button colorScheme={"purple"}>
-            <FaFeatherAlt
-              style={{ marginRight: 10 }}
-              onClick={addNovelClickHandler}
-            />
-            새 편 쓰기
+          <Button
+            colorScheme={"purple"}
+            isLoading={loading}
+            onClick={addNovelClickHandler}
+          >
+            <FaFeatherAlt style={{ marginRight: 10 }} />새 편 쓰기
           </Button>
         </HStack>
       </VStack>
