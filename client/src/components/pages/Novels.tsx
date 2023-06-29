@@ -33,6 +33,7 @@ import useCurrentUser from "../../hooks/useCurrentUser"
 import { toast } from "react-toastify"
 import { BiSearch } from "react-icons/bi"
 import { AiFillFileAdd } from "react-icons/ai"
+import CreateNovel from "../organisms/CreateNovel"
 
 const NovelsPage: React.FC = () => {
   const user = useCurrentUser()
@@ -94,7 +95,7 @@ const NovelsPage: React.FC = () => {
             </InputRightElement>
           </InputGroup>
           <Spacer />
-          <CreateNovelButton />
+          <CreateNovel />
         </HStack>
         {novels.length ? (
           <Box
@@ -115,63 +116,6 @@ const NovelsPage: React.FC = () => {
           </Center>
         )}
       </Container>
-    </>
-  )
-}
-
-const CreateNovelButton: React.FC = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const user = useCurrentUser()
-
-  const initialRef = React.useRef(null)
-  const navigate = useNavigate()
-
-  const onSubmit = async () => {
-    const { data } = await api.post<Novel>(`/users/${user?.id}/novels`, {
-      title: "새 소설",
-      description: "설명",
-    })
-    navigate(`/novels/${data.id}`)
-  }
-
-  const _onOpen = () => {
-    if (!user) return toast.warn("소설을 쓰려면 로그인을 먼저 해 주세요!")
-    onOpen()
-  }
-
-  return (
-    <>
-      <Button gap={3} colorScheme="purple" onClick={onOpen}>
-        <AiFillFileAdd /> 소설 추가하기
-      </Button>
-
-      <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>새 소설 작성하기</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            <FormControl>
-              <FormLabel>제목</FormLabel>
-              <Input ref={initialRef} placeholder="소설의 제목을 지어주세요." />
-            </FormControl>
-
-            <FormControl mt={4}>
-              <FormLabel>설명</FormLabel>
-              <Textarea placeholder="소설의 설명을 입력해 주세요" />
-            </FormControl>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button onClick={onClose} mr={3}>
-              취소
-            </Button>
-            <Button colorScheme="blue" onClick={onSubmit}>
-              생성하기
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </>
   )
 }
