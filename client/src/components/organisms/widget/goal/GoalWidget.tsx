@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import ProgressBar from "../../../atoms/ProgressBar"
 import EditorContext from "../../../../context/EditorContext"
 import {
@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react"
 import { FaExchangeAlt } from "react-icons/fa"
 import blocksToText from "../../../../utils/blocksToText"
+import confetti from "canvas-confetti"
 
 const WidgetBlock = styled.div`
   display: flex;
@@ -69,6 +70,7 @@ const GoalPercent = styled.h3`
 const GoalWidget: React.FC = () => {
   const { blocks } = useContext(EditorContext)
   const [type, setType] = useState<CountType>(CountType.NoSpacing)
+  const [percentage, setPercentage] = useState(0)
 
   const getGoal = () => [5000, 3000, 14][type]
 
@@ -102,7 +104,6 @@ const GoalWidget: React.FC = () => {
         )
     }
   }
-  const getPercentage = () => Math.floor((getCurrentLength() * 100) / getGoal())
 
   const changeType = () => {
     switch (type) {
@@ -117,17 +118,53 @@ const GoalWidget: React.FC = () => {
     }
   }
 
+  useEffect(() => {
+    const _percentage = (getCurrentLength() * 100) / getGoal()
+    setPercentage(_percentage)
+
+    if (_percentage !== 100) return
+    const duration = 10 * 1000
+    const animationEnd = Date.now() + duration
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 }
+
+    const randomInRange = (min: number, max: number) => {
+      return Math.random() * (max - min) + min
+    }
+
+    const interval: NodeJS.Timer = setInterval(() => {
+      const timeLeft = animationEnd - Date.now()
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval)
+      }
+
+      const particleCount = 50 * (timeLeft / duration)
+      // since particles fall down, start a bit higher than random
+      confetti(
+        Object.assign({}, defaults, {
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        })
+      )?.then()
+      confetti(
+        Object.assign({}, defaults, {
+          particleCount,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+        })
+      )?.then()
+    }, 250)
+  })
+
   const countTypeText = ["공백 포함", "공백 제외", ""]
   const countTypeUnit = ["자", "자", "KB"]
 
   const getCheeringText = () => {
-    const p = getPercentage()
-    if (p < 20) return "열심히 써봐요!"
-    if (p < 40) return "조금만 더 써봐요!"
-    if (p < 60) return "좋아요!"
-    if (p < 80) return "잘하고 있어요!"
-    if (p < 100) return "앞으로 조금만 더!"
-    if (p < 120) return "다 채웠어요!"
+    if (percentage < 20) return "열심히 써봐요!"
+    if (percentage < 40) return "조금만 더 써봐요!"
+    if (percentage < 60) return "좋아요!"
+    if (percentage < 80) return "잘하고 있어요!"
+    if (percentage < 100) return "앞으로 조금만 더!"
+    if (percentage < 120) return "다 채웠어요!"
   }
 
   return (
@@ -148,9 +185,9 @@ const GoalWidget: React.FC = () => {
           </Heading>
         </VStack>
         <Spacer />
-        <GoalPercent>{getPercentage()}%</GoalPercent>
+        <GoalPercent>{Math.floor(percentage)}%</GoalPercent>
       </HStack>
-      <ProgressBar value={getPercentage() / 100} />
+      <ProgressBar value={percentage / 100} />
       <Text fontSize="sm">{getCheeringText()}</Text>
       <IconButton
         size="sm"

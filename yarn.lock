@@ -2770,6 +2770,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/canvas-confetti@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "@types/canvas-confetti@npm:1.6.0"
+  checksum: e1bd2bc81e4d6ec6241982a4087ed90a3c21f858390dda7cb68e8aeb1df5573fc7c263ea4272397d2b39f0e78dcd192e8ba4a93c182ff29f80ea74073aaee496
+  languageName: node
+  linkType: hard
+
 "@types/connect@npm:*":
   version: 3.4.35
   resolution: "@types/connect@npm:3.4.35"
@@ -4158,6 +4165,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"canvas-confetti@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "canvas-confetti@npm:1.6.0"
+  checksum: be19e3be736ab28aa8af7b53cba9f4146f5714edadbf4d5a7d7b1899914dc59a8ac5574260fe6b7d9995c51df5787b0b707adfbb72dbacbc61fc03f9f2b25291
+  languageName: node
+  linkType: hard
+
 "chalk@npm:3.0.0":
   version: 3.0.0
   resolution: "chalk@npm:3.0.0"
@@ -4334,6 +4348,7 @@ __metadata:
     "@chakra-ui/react": ^2.7.1
     "@emotion/react": ^11.11.1
     "@emotion/styled": ^11.11.0
+    "@types/canvas-confetti": ^1.6.0
     "@types/howler": ^2
     "@types/lodash": ^4.14.186
     "@types/react": ^18.0.17
@@ -4342,6 +4357,7 @@ __metadata:
     "@vitejs/plugin-react": ^2.1.0
     array-move: ^4.0.0
     axios: ^1.2.2
+    canvas-confetti: ^1.6.0
     formik: ^2.4.2
     framer-motion: ^10.12.16
     howler: ^2.2.3

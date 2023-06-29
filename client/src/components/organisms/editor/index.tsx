@@ -9,7 +9,14 @@ import _ from "lodash"
 import { v4 } from "uuid"
 import { SortableContainer, SortableContainerProps } from "react-sortable-hoc"
 import styled from "styled-components"
-import { Container, Text, Textarea, useColorModeValue } from "@chakra-ui/react"
+import {
+  Container,
+  Skeleton,
+  Text,
+  Textarea,
+  useColorModeValue,
+  VStack,
+} from "@chakra-ui/react"
 import { arrayMoveImmutable } from "array-move"
 
 const canvas = document.createElement("canvas").getContext("2d")!
@@ -21,7 +28,8 @@ const _SortableContainer = SortableContainer<React.PropsWithChildren>(
 )
 
 const Editor: React.FC = () => {
-  const { blocks, setBlocks, episode, setEpisode } = useContext(EditorContext)
+  const { blocks, setBlocks, episode, setEpisode, isLoading } =
+    useContext(EditorContext)
   const [currentBlockId, setCurrentBlockId] = useState<string>("1")
   const [episodeDescription, setEpisodeDescription] = useState<string>(
     episode.description
@@ -201,25 +209,56 @@ const Editor: React.FC = () => {
 
   return (
     <Container maxW="3xl">
-      <Text color="gray.500" mb={3}>
-        에피소드 설명
-      </Text>
-      <Textarea
-        defaultValue={episode.description}
-        bgColor={useColorModeValue("gray.200", "gray.900")}
-        border="none"
-        _focus={{ border: "none" }}
-        mb={10}
-        onChange={onEpisodeDescriptionChange}
-      />
-      <Text color="gray.500" mb={3}>
-        본문
-      </Text>
-      <_SortableContainer onSortEnd={onSortEnd} pressDelay={100} lockAxis="y">
-        {getBlockNodes()}
-      </_SortableContainer>
+      {isLoading ? (
+        <EditorSkeleton />
+      ) : (
+        <>
+          <Text color="gray.500" mb={3}>
+            에피소드 설명
+          </Text>
+          <Textarea
+            defaultValue={episode.description}
+            bgColor={useColorModeValue("gray.200", "gray.900")}
+            border="none"
+            _focus={{ border: "none" }}
+            mb={10}
+            onChange={onEpisodeDescriptionChange}
+          />
+          <Text color="gray.500" mb={3}>
+            본문
+          </Text>
+          <_SortableContainer
+            onSortEnd={onSortEnd}
+            pressDelay={100}
+            lockAxis="y"
+          >
+            {getBlockNodes()}
+          </_SortableContainer>
+        </>
+      )}
       <DummyBlock height={"500px"} />
     </Container>
+  )
+}
+
+const EditorSkeleton = () => {
+  return (
+    <VStack gap={10} align={"baseline"}>
+      <Skeleton height="20px" width="100%" />
+      <Skeleton height="20px" width="80%" />
+      <Skeleton height="20px" width="60%" />
+      <Skeleton height="20px" width="100%" />
+      <Skeleton height="20px" width="60%" />
+      <Skeleton height="20px" width="100%" />
+      <Skeleton height="22px" width="90%" />
+      <Skeleton height="20px" width="100%" />
+      <Skeleton height="20px" width="80%" />
+      <Skeleton height="20px" width="40%" />
+      <Skeleton height="20px" width="100%" />
+      <Skeleton height="20px" width="60%" />
+      <Skeleton height="20px" width="30%" />
+      <Skeleton height="20px" width="60%" />
+    </VStack>
   )
 }
 

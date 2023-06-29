@@ -3,9 +3,8 @@ import EpisodeTitle from "../../atoms/EpisodeTitle"
 import Auth from "../../molecules/Auth"
 import EditorContext from "../../../context/EditorContext"
 import Sidebar from "../sidebar"
-import { HStack } from "@chakra-ui/react"
+import { HStack, Spinner } from "@chakra-ui/react"
 import ToggleColorModeButton from "../../atoms/ToggleColorModeButton"
-import Loading from "../../atoms/Loading"
 
 const EditorHeader: React.FC = () => {
   const { isSaving } = useContext(EditorContext)
@@ -13,7 +12,7 @@ const EditorHeader: React.FC = () => {
   return (
     <HStack pl={10} pr={10} h="70px">
       <Sidebar />
-      {isSaving && <Loading />}
+      {isSaving && <Spinner />}
       <EpisodeTitle />
       <Auth />
       <ToggleColorModeButton />

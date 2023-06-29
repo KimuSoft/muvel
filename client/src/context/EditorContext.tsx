@@ -19,6 +19,9 @@ export default createContext<{
 
   isSaving: boolean
   setIsSaving: React.Dispatch<React.SetStateAction<boolean>>
+
+  isLoading: boolean
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
 }>({
   novel: initialNovel,
   setNovel: () => {},
@@ -28,4 +31,6 @@ export default createContext<{
   setBlocks: () => {},
   isSaving: false,
   setIsSaving: () => {},
+  isLoading: false,
+  setIsLoading: () => {},
 })

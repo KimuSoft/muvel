@@ -31,6 +31,7 @@ const EditorPage: React.FC = () => {
 
   // State (UI)
   const [isSaving, setIsSaving] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     // 로그인되어 있지 않은 경우 로그인 페이지로 이동
@@ -106,11 +107,11 @@ const EditorPage: React.FC = () => {
   const refreshNovel = async () => {
     const { data } = await api.get<Novel>(`novels/${episode.novelId}`)
     data?.episodes?.sort((a, b) => a.order - b.order)
-    console.log(data)
     setNovel(data)
   }
 
   const initEpisode = async () => {
+    setIsLoading(true)
     const episodeRes = await api.get<Episode>(`episodes/${episodeId}`)
 
     if (!episodeRes.data) {
@@ -124,6 +125,7 @@ const EditorPage: React.FC = () => {
     setBlocks(blocksRes.data)
     setEpisodeCache(episodeRes.data)
     setBlocksCache(blocksRes.data)
+    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -145,6 +147,8 @@ const EditorPage: React.FC = () => {
         setBlocks,
         isSaving,
         setIsSaving,
+        isLoading,
+        setIsLoading,
       }}
     >
       <EditorTemplate />
