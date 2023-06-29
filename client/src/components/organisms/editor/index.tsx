@@ -9,7 +9,13 @@ import _ from "lodash"
 import { v4 } from "uuid"
 import { SortableContainer, SortableContainerProps } from "react-sortable-hoc"
 import styled from "styled-components"
-import { Box, Container } from "@chakra-ui/react"
+import {
+  Box,
+  Container,
+  Text,
+  Textarea,
+  useColorModeValue,
+} from "@chakra-ui/react"
 import { arrayMoveImmutable } from "array-move"
 
 const canvas = document.createElement("canvas").getContext("2d")!
@@ -187,7 +193,15 @@ const Editor: React.FC = () => {
 
   return (
     <Container maxW="3xl">
-      <Box h={100} />
+      <Text color="gray.500" mb={3}>
+        에피소드 설명
+      </Text>
+      <Textarea
+        bgColor={useColorModeValue("gray.200", "gray.900")}
+        border="none"
+        _focus={{ border: "none" }}
+        mb={10}
+      />
       <_SortableContainer onSortEnd={onSortEnd} pressDelay={100} lockAxis="y">
         {getBlockNodes()}
       </_SortableContainer>

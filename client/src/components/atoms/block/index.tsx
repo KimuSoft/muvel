@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef } from "react"
 import { ContentEditableEvent } from "react-contenteditable"
 import {
   BlockContainer,
+  CommentBlock,
   Divider,
   DividerContainer,
   StyledContentEditable,
@@ -60,6 +61,8 @@ const BlockComponent: React.FC<BlockProps> = ({
   }, [block.blockType])
 
   const getBlockType = (content: string): BlockType => {
+    if (block.blockType === BlockType.Comment) return BlockType.Comment
+
     if (content.startsWith("“") && content.endsWith("”")) {
       return BlockType.DoubleQuote
     } else if (content.startsWith("‘") && content.endsWith("’")) {
@@ -179,9 +182,44 @@ const BlockComponent: React.FC<BlockProps> = ({
       sel?.addRange(range)
       contenteditable.current.focus()
     }
+
+    // 주석 블록 생성
+    else if (e.key === "/" && content.current === "//") {
+      console.log("주석 블록 생성")
+      e.preventDefault()
+      if (!contenteditable.current) return
+      contenteditable.current.innerText = ""
+
+      setBlocks((b) =>
+        b.map((bl) => ({
+          ...bl,
+          ...(bl.id === block.id && { blockType: BlockType.Comment }),
+        }))
+      )
+
+      // set caret to 0
+      const range = document.createRange()
+      const sel = window.getSelection()
+      range.setStart(contenteditable.current.childNodes[0], 0)
+      range.collapse(true)
+      sel?.removeAllRanges()
+      sel?.addRange(range)
+      contenteditable.current.focus()
+    }
   }
 
-  return (
+  return block.blockType === BlockType.Comment ? (
+    <CommentBlock
+      innerRef={contenteditable}
+      onChange={handleChange}
+      onKeyDown={keyDownHandler}
+      // @ts-ignore
+      onPaste={pasteHandler}
+      html={content.current}
+      data-position={position}
+      placeholder={"내용을 입력해 주세요."}
+    />
+  ) : (
     <StyledContentEditable
       innerRef={contenteditable}
       onChange={handleChange}

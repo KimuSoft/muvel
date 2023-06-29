@@ -80,6 +80,19 @@ const BlockHandle: React.FC<{ block: Block; onClick(): void }> = ({
     )
   }
 
+  const onChangeToCommentBlock = () => {
+    setBlocks((prev) =>
+      prev.map((b) =>
+        b.id === block.id
+          ? {
+              ...b,
+              blockType: BlockType.Comment,
+            }
+          : b
+      )
+    )
+  }
+
   const onDelete = () => {
     setBlocks((prev) => prev.filter((b) => b.id !== block.id))
   }
@@ -124,8 +137,8 @@ const BlockHandle: React.FC<{ block: Block; onClick(): void }> = ({
           >
             <MenuItem
               icon={<BiSolidCommentDots />}
-              onClick={onChangeToSingleQuoteBlock}
-              {...getSelectedProps(BlockType.Commnet)}
+              onClick={onChangeToCommentBlock}
+              {...getSelectedProps(BlockType.Comment)}
             >
               주석 블록
             </MenuItem>

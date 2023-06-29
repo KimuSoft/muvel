@@ -22,6 +22,6 @@ export enum BlockType {
   // 겹화살괄호(《 》)로 감싸진 강조 대사 블록
   DoubleGuillemet,
   // 출력 시 포함되지 않는 작가용 주석 블록
-  Commnet,
+  Comment,
   Divider,
 }

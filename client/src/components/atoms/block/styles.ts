@@ -1,5 +1,6 @@
 import styled from "styled-components"
 import ContentEditable from "react-contenteditable"
+import { theme } from "@chakra-ui/react"
 
 export const StyledContentEditable = styled(ContentEditable)`
   text-indent: 1em;
@@ -72,4 +73,12 @@ export const BlockContainer = styled.li`
   &:hover .block-handle {
     opacity: 1;
   }
+`
+
+export const CommentBlock = styled(StyledContentEditable)`
+  background-color: ${theme.colors.gray["900"]};
+  color: ${theme.colors.gray["400"]};
+  font-size: 16px;
+  padding: 10px 20px;
+  font-family: "Pretendard";
 `
