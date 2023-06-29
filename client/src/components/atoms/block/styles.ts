@@ -1,8 +1,8 @@
 import styled from "styled-components"
 import ContentEditable from "react-contenteditable"
-import { BlockType } from "../../../types/block.type"
+import { theme } from "@chakra-ui/react"
 
-export const StyledContentEditable = styled(ContentEditable)<{}>`
+export const StyledContentEditable = styled(ContentEditable)`
   text-indent: 1em;
   border: none;
   outline: none;
@@ -26,22 +26,16 @@ export const StyledContentEditable = styled(ContentEditable)<{}>`
   //text-align: justify;
 
   font-family: "KoPubWorldBatang", "Noto Serif KR", serif;
-  color: var(--color-zinc-100);
+  //color: var(--color-zinc-100);
   caret-color: var(--color-zinc-300);
 
   // 모바일 환경으로 추정되는 경우
-  @media (max-width: 1000px) {
+  @media (max-width: 800px) {
     font-size: 16px;
     padding: 5px 0;
   }
 
   border-radius: 5px;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background-color: #ffffff09;
-    }
-  }
 
   transition: all 0.2s ease;
   cursor: text;
@@ -53,29 +47,45 @@ export const StyledContentEditable = styled(ContentEditable)<{}>`
   }
 `
 
-export const TypeMark = styled.div<{ blockType: BlockType }>`
-  position: relative;
-  left: -15px;
-  width: 5px;
-  height: 5px;
-
-  border-radius: 50%;
-
-  background-color: ${({ blockType }) => {
-    switch (blockType) {
-      case BlockType.Describe:
-        return "#4a4a50"
-      case BlockType.DoubleQuote:
-        return "#1e9cef"
-      default:
-        return "#ffffff"
-    }
-  }};
+export const DividerContainer = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `
 
-export const BlockContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
+export const Divider = styled.div`
+  width: 60%;
+  height: 1px;
+
+  background-color: #52525b;
+
+  margin-top: 80px;
+  margin-bottom: 100px;
+`
+
+// 좌우 정렬
+export const BlockContainer = styled.li`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  &:hover .block-handle {
+    opacity: 1;
+  }
+`
+
+export const CommentBlock = styled(StyledContentEditable)<{
+  theme: "dark" | "white"
+}>`
+  background-color: ${(props) =>
+    props.theme === "dark"
+      ? theme.colors.gray["900"]
+      : theme.colors.gray["100"]};
+  color: ${theme.colors.gray["500"]};
+  font-size: 16px;
+  padding: 10px 20px;
+  font-family: "Pretendard", sans-serif;
+
+  font-weight: 400;
 `

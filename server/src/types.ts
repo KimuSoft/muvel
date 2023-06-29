@@ -16,3 +16,15 @@ export enum BlockType {
   // 출력 시 포함되지 않는 작가용 주석 블록
   Commnet,
 }
+
+export enum Importance {
+  Main,
+  Sub,
+  Minor,
+}
+
+export enum ShareType {
+  Private,
+  Unlisted,
+  Public,
+}

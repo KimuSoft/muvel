@@ -1,8 +1,8 @@
-import { Novel } from "src/novels/novel.entity"
-import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm"
+import { NovelEntity } from "src/novels/novel.entity"
+import { Column, Entity, OneToMany, PrimaryColumn, RelationId } from "typeorm"
 
-@Entity()
-export class User {
+@Entity("user")
+export class UserEntity {
   @PrimaryColumn()
   id: string
 
@@ -12,11 +12,17 @@ export class User {
   @Column()
   avatar: string
 
-  @OneToMany(() => Novel, (novel) => novel.author, {
+  @OneToMany(() => NovelEntity, (novel) => novel.author, {
     cascade: true,
   })
-  novels: Novel[]
+  novels: NovelEntity[]
 
-  @Column()
-  recentEpisodeId: string
+  @RelationId((self: UserEntity) => self.novels)
+  novelIds: string[]
+
+  @Column({ nullable: true })
+  recentEpisodeId?: string
+
+  @Column({ default: false })
+  admin: boolean
 }

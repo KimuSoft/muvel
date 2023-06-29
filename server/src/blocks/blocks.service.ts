@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
-import { Block } from "./block.entity"
+import { BlockEntity } from "./block.entity"
 import { BlockType } from "../types"
-import { Episode } from "../episodes/episode.entity"
+import { EpisodeEntity } from "../episodes/episode.entity"
 
 @Injectable()
 export class BlocksService {
   constructor(
-    @InjectRepository(Block)
-    private blocksRepository: Repository<Block>
+    @InjectRepository(BlockEntity)
+    private blocksRepository: Repository<BlockEntity>
   ) {}
 
   async create(content: string, order?: number) {
@@ -22,7 +22,7 @@ export class BlocksService {
       order = lastBlock.order + 1
     }
 
-    const block = new Block()
+    const block = new BlockEntity()
     block.blockType = BlockType.Describe
     block.content = content
     block.order = order
@@ -35,7 +35,7 @@ export class BlocksService {
       id: string
       content: string
       blockType: BlockType
-      episode: Episode
+      episode: EpisodeEntity
       order: number
     }[]
   ) {

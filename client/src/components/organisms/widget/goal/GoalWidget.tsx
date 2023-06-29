@@ -1,7 +1,20 @@
 import styled from "styled-components"
-import React, { useContext } from "react"
+import React, { useContext, useState } from "react"
 import ProgressBar from "../../../atoms/ProgressBar"
 import EditorContext from "../../../../context/EditorContext"
+import {
+  Box,
+  useColorModeValue,
+  VStack,
+  Text,
+  Heading,
+  HStack,
+  Spacer,
+  Button,
+  IconButton,
+} from "@chakra-ui/react"
+import { FaExchangeAlt } from "react-icons/fa"
+import blocksToText from "../../../../utils/blocksToText"
 
 const WidgetBlock = styled.div`
   display: flex;
@@ -54,15 +67,58 @@ const GoalPercent = styled.h3`
 `
 
 const GoalWidget: React.FC = () => {
-  const context = useContext(EditorContext)
+  const { blocks } = useContext(EditorContext)
+  const [type, setType] = useState<CountType>(CountType.NoSpacing)
 
-  const goal = 3000
-  const current = context.episode.blocks.reduce(
-    (acc, cur) => acc + cur.content.replace(/[\s\n]/g, "").length,
-    0
-  )
+  const getGoal = () => [5000, 3000, 14][type]
 
-  const getPercentage = () => Math.floor((current * 100) / goal)
+  const getByte = (content: string) => {
+    let totalByte = 0
+    for (let i = 0; i < content.length; i++) {
+      const currentByte = content.charCodeAt(i)
+      if (currentByte > 128) {
+        totalByte += 2
+      } else {
+        totalByte++
+      }
+    }
+    return totalByte
+  }
+
+  const getCurrentLength = () => {
+    switch (type) {
+      case CountType.NoSpacing:
+        return blocks.reduce(
+          (acc, cur) => acc + cur.content.replace(/\s/g, "").length,
+          0
+        )
+
+      case CountType.All:
+        return blocksToText(blocks).length
+
+      case CountType.KB:
+        return (
+          Math.floor((getByte(blocksToText(blocks)) / 1024) * 100 * 1.439) / 100
+        )
+    }
+  }
+  const getPercentage = () => Math.floor((getCurrentLength() * 100) / getGoal())
+
+  const changeType = () => {
+    switch (type) {
+      case CountType.NoSpacing:
+        setType(CountType.All)
+        break
+      case CountType.All:
+        setType(CountType.KB)
+        break
+      case CountType.KB:
+        setType(CountType.NoSpacing)
+    }
+  }
+
+  const countTypeText = ["공백 포함", "공백 제외", ""]
+  const countTypeUnit = ["자", "자", "KB"]
 
   const getCheeringText = () => {
     const p = getPercentage()
@@ -75,17 +131,44 @@ const GoalWidget: React.FC = () => {
   }
 
   return (
-    <WidgetBlock>
-      <CheeringText>{getCheeringText()}</CheeringText>
-      <GoalTextBlock>
-        <GoalText>
-          {current.toLocaleString()}/{goal.toLocaleString()}자
-        </GoalText>
+    <VStack
+      bgColor={useColorModeValue("gray.200", "gray.700")}
+      p={25}
+      gap={2}
+      w={300}
+      borderRadius={10}
+    >
+      <HStack w="100%">
+        <VStack align="baseline" gap={0}>
+          <Text>{countTypeText[type]}</Text>
+          <Heading fontSize="xl">
+            {getCurrentLength().toLocaleString()}
+            {countTypeUnit[type]} / {getGoal().toLocaleString()}
+            {countTypeUnit[type]}
+          </Heading>
+        </VStack>
+        <Spacer />
         <GoalPercent>{getPercentage()}%</GoalPercent>
-      </GoalTextBlock>
+      </HStack>
       <ProgressBar value={getPercentage() / 100} />
-    </WidgetBlock>
+      <Text fontSize="sm">{getCheeringText()}</Text>
+      <IconButton
+        size="sm"
+        aria-label="change"
+        position="absolute"
+        right="60px"
+        bottom="40px"
+        icon={<FaExchangeAlt />}
+        onClick={changeType}
+      />
+    </VStack>
   )
+}
+
+enum CountType {
+  All,
+  NoSpacing,
+  KB,
 }
 
 export default GoalWidget

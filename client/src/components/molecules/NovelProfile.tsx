@@ -1,95 +1,61 @@
-import React, { useContext, useRef } from "react"
+import React, { useContext } from "react"
 import { FaFeatherAlt } from "react-icons/fa"
 import styled from "styled-components"
-import IconButton from "../atoms/IconButton"
 import EditorContext from "../../context/EditorContext"
 import { api } from "../../utils/api"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
-import { Novel } from "../../types/novel.type"
+import { Episode } from "../../types/episode.type"
+import { Button, Heading, HStack, Spacer, Text, VStack } from "@chakra-ui/react"
 
 const NovelProfile: React.FC = () => {
-  const { novel, setNovel } = useContext(EditorContext)
+  const { novel } = useContext(EditorContext)
 
+  const [loading, setLoading] = React.useState(false)
   const navigate = useNavigate()
 
   const addNovelClickHandler = async () => {
-    const { data } = await api.get<Novel>("novels/add-episode", {
-      params: {
-        id: novel.id,
-      },
+    setLoading(true)
+    const { data } = await api.post<Episode>(`novels/${novel.id}/episodes`, {
+      title: "새 에피소드",
     })
 
-    navigate(`/episode/${data.id}`)
+    navigate(`/episodes/${data.id}`)
     toast.info("새 에피소드가 생성되었습니다.")
+    setLoading(false)
   }
 
   return (
-    <ProfileContainer>
+    <HStack gap={7}>
       <ProfileImage />
-      <RightContainer>
-        <Title>{novel.title}</Title>
-        <Description>{novel.description}</Description>
-        <ButtonMenu>
-          <IconButton text={"새 편 쓰기"} onClick={addNovelClickHandler}>
-            <FaFeatherAlt />
-          </IconButton>
-        </ButtonMenu>
-      </RightContainer>
-    </ProfileContainer>
+      <VStack w="100%" h="130px" align="baseline">
+        <Heading size="md">{novel.title}</Heading>
+        <Text textIndent="0.5em" h="110px">
+          {novel.description}
+        </Text>
+        <HStack w="100%">
+          <Spacer />
+          <Button
+            colorScheme={"purple"}
+            isLoading={loading}
+            onClick={addNovelClickHandler}
+          >
+            <FaFeatherAlt style={{ marginRight: 10 }} />새 편 쓰기
+          </Button>
+        </HStack>
+      </VStack>
+    </HStack>
   )
 }
-
-const ProfileContainer = styled.div`
-  width: 100%;
-  height: 200px;
-
-  display: flex;
-  flex-direction: row;
-
-  padding: 10px 15px;
-  gap: 20px;
-`
 
 const ProfileImage = styled.div`
   border-radius: 5px;
   width: 100px;
   height: 140px;
 
+  flex-shrink: 0;
+
   background-color: #71717a;
-`
-
-const RightContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  gap: 5px;
-
-  width: 0;
-  height: 100%;
-  flex-grow: 1;
-`
-
-const Title = styled.div`
-  font-size: 20px;
-  font-weight: 800;
-
-  width: 100%;
-`
-
-const Description = styled.div`
-  font-size: 12px;
-  text-indent: 1em;
-
-  width: 100%;
-  height: 100%;
-`
-
-const ButtonMenu = styled.div`
-  display: flex;
-  flex-direction: row-reverse;
-
-  width: 100%;
 `
 
 export default NovelProfile

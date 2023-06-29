@@ -1,39 +1,31 @@
 import React, { createContext } from "react"
-import { Novel } from "../types/novel.type"
-import { Episode } from "../types/episode.type"
+import { Novel, initialNovel } from "../types/novel.type"
+import {
+  Episode,
+  PartialEpisode,
+  initialPartialEpisode,
+} from "../types/episode.type"
+import { Block } from "../types/block.type"
 
 export default createContext<{
   novel: Novel
   setNovel: React.Dispatch<React.SetStateAction<Novel>>
 
-  episode: Episode
-  setEpisode: React.Dispatch<React.SetStateAction<Episode>>
+  episode: PartialEpisode
+  setEpisode: React.Dispatch<React.SetStateAction<PartialEpisode>>
 
-  isSidebarOpen: boolean
-  setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>
+  blocks: Block[]
+  setBlocks: React.Dispatch<React.SetStateAction<Block[]>>
 
   isSaving: boolean
   setIsSaving: React.Dispatch<React.SetStateAction<boolean>>
 }>({
-  novel: {
-    id: "",
-    title: "",
-    description: "",
-    episodes: [],
-    author: { id: "" },
-  },
+  novel: initialNovel,
   setNovel: () => {},
-  episode: {
-    id: "",
-    title: "",
-    chapter: "",
-    description: "",
-    blocks: [],
-    novel: { id: "" },
-  },
+  episode: initialPartialEpisode,
   setEpisode: () => {},
-  isSidebarOpen: false,
-  setIsSidebarOpen: () => {},
+  blocks: [],
+  setBlocks: () => {},
   isSaving: false,
   setIsSaving: () => {},
 })

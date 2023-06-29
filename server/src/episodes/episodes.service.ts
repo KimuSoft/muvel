@@ -1,24 +1,37 @@
 import { Injectable } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
-import { Novel } from "../novels/novel.entity"
 import { Repository } from "typeorm"
-import { Episode } from "./episode.entity"
+import { EpisodeEntity } from "./episode.entity"
 import { BlocksService } from "../blocks/blocks.service"
-import { BlockType } from "../types"
+import { PatchBlocksDto } from "./dto/patch-blocks.dto"
 
 @Injectable()
 export class EpisodesService {
   constructor(
-    @InjectRepository(Episode)
-    private episodesRepository: Repository<Episode>,
+    @InjectRepository(EpisodeEntity)
+    private episodesRepository: Repository<EpisodeEntity>,
     private blocksService: BlocksService
   ) {}
 
-  async create(title: string, description = "", chapter = "") {
-    const episode = new Episode()
+  async create(
+    title: string,
+    description = "",
+    chapter = "",
+    novelId?: string
+  ) {
+    let order = 1
+    if (novelId) {
+      const lastBlock = await this.episodesRepository
+        .findOne({ where: { novelId }, order: { order: "DESC" } })
+        .catch(() => ({ order: 0 }))
+      order = lastBlock.order + 1
+    }
+
+    const episode = new EpisodeEntity()
     episode.title = title
     episode.description = description
     episode.chapter = chapter
+    episode.order = order
 
     // 블록 생성
     episode.blocks = [await this.blocksService.create("샘플 블록입니다.")]
@@ -33,31 +46,16 @@ export class EpisodesService {
     })
   }
 
-  async update(
-    id: string,
-    chapter: string,
-    title: string,
-    description: string,
-    blocksChange: {
-      id: string
-      content: string
-      blockType: BlockType
-      isDeleted: boolean
-      order: number
-    }[]
-  ) {
-    // console.log(blocksChange)
+  async deleteEpisode(id: string) {
+    const episode = await this.findOne(id, ["blocks"])
+    await this.episodesRepository.delete(id)
+  }
+
+  async patchBlocks(id: string, blockDiffs: PatchBlocksDto[]) {
     const episode = await this.findOne(id)
 
-    episode.chapter = chapter
-    episode.title = title
-    episode.description = description
-
-    await this.episodesRepository.save(episode)
-
-    if (!blocksChange) return
     await this.blocksService.upsert(
-      blocksChange
+      blockDiffs
         .filter((b) => !b.isDeleted)
         .map((b) => ({
           id: b.id,
@@ -68,9 +66,24 @@ export class EpisodesService {
         }))
     )
 
-    for (const i of blocksChange.filter((b) => b.isDeleted)) {
+    for (const i of blockDiffs.filter((b) => b.isDeleted)) {
       console.log("삭제", i)
       await this.blocksService.delete(i.id)
     }
+  }
+
+  async update(
+    id: string,
+    chapter: string,
+    title: string,
+    description: string
+  ) {
+    const episode = await this.findOne(id)
+
+    episode.chapter = chapter
+    episode.title = title
+    episode.description = description
+
+    await this.episodesRepository.save(episode)
   }
 }

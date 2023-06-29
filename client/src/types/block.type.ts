@@ -1,12 +1,9 @@
 import { PartialData } from "./index"
 
-export interface PartialBlock extends PartialData {
+export interface Block extends PartialData {
   content: string
   blockType: BlockType
-}
-
-export interface Block extends PartialBlock {
-  episode: PartialData
+  episodeId?: string
 }
 
 export enum BlockType {
@@ -25,6 +22,6 @@ export enum BlockType {
   // 겹화살괄호(《 》)로 감싸진 강조 대사 블록
   DoubleGuillemet,
   // 출력 시 포함되지 않는 작가용 주석 블록
-  Commnet,
+  Comment,
   Divider,
 }

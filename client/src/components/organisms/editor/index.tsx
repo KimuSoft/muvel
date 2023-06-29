@@ -1,17 +1,16 @@
 import React, { useContext, useEffect, useState } from "react"
-import Block, { SortableBlock } from "../../atoms/block"
+import { SortableBlock } from "../../atoms/block"
 import usePrevious from "../../../hooks/usePrevious"
 import setCaretToEnd from "../../../utils/setCaretToEnd"
-import { DummyBlock, EditorContainer } from "./styles"
+import { DummyBlock } from "./styles"
 import EditorContext from "../../../context/EditorContext"
-import { BlockType, PartialBlock } from "../../../types/block.type"
+import { Block, BlockType } from "../../../types/block.type"
 import _ from "lodash"
 import { v4 } from "uuid"
-import {
-  arrayMove,
-  SortableContainer,
-  SortableContainerProps,
-} from "react-sortable-hoc"
+import { SortableContainer, SortableContainerProps } from "react-sortable-hoc"
+import styled from "styled-components"
+import { Container, Text, Textarea, useColorModeValue } from "@chakra-ui/react"
+import { arrayMoveImmutable } from "array-move"
 
 const canvas = document.createElement("canvas").getContext("2d")!
 
@@ -22,17 +21,20 @@ const _SortableContainer = SortableContainer<React.PropsWithChildren>(
 )
 
 const Editor: React.FC = () => {
-  const { episode, setEpisode } = useContext(EditorContext)
+  const { blocks, setBlocks, episode, setEpisode } = useContext(EditorContext)
   const [currentBlockId, setCurrentBlockId] = useState<string>("1")
+  const [episodeDescription, setEpisodeDescription] = useState<string>(
+    episode.description
+  )
 
-  const prevBlocks = usePrevious<PartialBlock[]>(episode.blocks)
+  const prevBlocks = usePrevious<Block[]>(blocks)
 
   // Handling the cursor and focus on adding and deleting blocks
   useEffect(() => {
     // If a new block was added, move the caret to it
-    if (prevBlocks && prevBlocks.length + 1 === episode.blocks.length) {
+    if (prevBlocks && prevBlocks.length + 1 === blocks.length) {
       const nextBlockPosition =
-        episode.blocks.map((b) => b.id).indexOf(currentBlockId) + 1 + 1
+        blocks.map((b) => b.id).indexOf(currentBlockId) + 1 + 1
       const nextBlock = document.querySelector(
         `[data-position="${nextBlockPosition}"]`
       ) as HTMLElement
@@ -41,7 +43,7 @@ const Editor: React.FC = () => {
       }
     }
     // If a block was deleted, move the caret to the end of the last block
-    if (prevBlocks && prevBlocks.length - 1 === episode.blocks.length) {
+    if (prevBlocks && prevBlocks.length - 1 === blocks.length) {
       const lastBlockPosition = prevBlocks
         .map((b) => b.id)
         .indexOf(currentBlockId)
@@ -52,45 +54,41 @@ const Editor: React.FC = () => {
         setCaretToEnd(lastBlock)
       }
     }
-  }, [episode.blocks, prevBlocks, currentBlockId])
+  }, [blocks, prevBlocks, currentBlockId])
 
-  const addBlockHandler = (block: PartialBlock) => {
+  useEffect(() => {
+    setEpisode((e) => ({ ...e, description: episodeDescription }))
+  }, [episodeDescription])
+
+  const addBlockHandler = (block: Block) => {
     setCurrentBlockId(block.id)
-    setEpisode((e) => {
-      const _blocks = e.blocks.map((b) => ({ ...b, focus: false }))
+
+    setBlocks((b) => {
+      const _blocks = b.map((bl) => ({ ...bl, focus: false }))
+
       _blocks.splice(_blocks.findIndex((b) => b.id === block.id) + 1, 0, {
         id: v4(),
         blockType: BlockType.Describe,
         content: "",
         focus: true,
       })
-      return {
-        ...e,
-        blocks: _blocks,
-      }
+
+      return _blocks
     })
   }
 
   const deleteBlockHandler = ({ id }: { id: string }) => {
     setCurrentBlockId(id)
-    const index = episode.blocks.findIndex((b) => b.id === id)
+    const index = blocks.findIndex((b) => b.id === id)
 
     // 첫 블록은 지울 수 없음
     if (!index) return
-
-    setEpisode((e) => ({
-      ...e,
-      blocks: e.blocks.filter((b) => b.id !== id),
-    }))
+    setBlocks((b) => b.filter((b) => b.id !== id))
   }
 
-  const updateBlockHandler = (block: PartialBlock) => {
-    setEpisode((e) => {
-      return {
-        ...e,
-        blocks: e.blocks.map((b) => (b.id === block.id ? block : b)),
-      }
-    })
+  const updateBlockHandler = (block: Block) => {
+    // console.log(block)
+    setBlocks((_blocks) => _blocks.map((b) => (b.id === block.id ? block : b)))
   }
 
   const moveToRelativeBlockHandler = (
@@ -159,43 +157,75 @@ const Editor: React.FC = () => {
     }
   }
 
+  const getBlockNodes = () => {
+    const hasFocus = (blockType: BlockType) =>
+      ![BlockType.Divider].includes(blockType)
+
+    console.log("호출됨!")
+    let skipIndex = 0
+    return blocks.map((b, index) => {
+      const bp =
+        index !== blocks.length - 1 &&
+        blocks[index + 1]?.blockType !== b.blockType
+
+      if (!hasFocus(b.blockType)) skipIndex++
+
+      return (
+        <React.Fragment key={b.id}>
+          <SortableBlock
+            key={`${b.id}-block`}
+            index={index}
+            block={b}
+            position={hasFocus(b.blockType) ? index + 1 - skipIndex : -99}
+            addBlock={addBlockHandler}
+            deleteBlock={deleteBlockHandler}
+            updateBlock={updateBlockHandler}
+            moveToRelativeBlock={moveToRelativeBlockHandler}
+          />
+          <PaddingBlock height={bp ? 20 : 0} key={`${b.id}-bottom`} />
+        </React.Fragment>
+      )
+    })
+  }
+
   const onSortEnd: SortableContainerProps["onSortEnd"] = ({
     oldIndex,
     newIndex,
-  }) => {
-    setEpisode((episode) => ({
-      ...episode,
-      blocks: arrayMove(episode.blocks, oldIndex, newIndex),
-    }))
+  }) => setBlocks(arrayMoveImmutable(blocks, oldIndex, newIndex))
+
+  const onEpisodeDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setEpisodeDescription(e.target.value)
   }
 
   return (
-    <EditorContainer>
-      <DummyBlock height={"100px"} />
+    <Container maxW="3xl">
+      <Text color="gray.500" mb={3}>
+        에피소드 설명
+      </Text>
+      <Textarea
+        defaultValue={episode.description}
+        bgColor={useColorModeValue("gray.200", "gray.900")}
+        border="none"
+        _focus={{ border: "none" }}
+        mb={10}
+        onChange={onEpisodeDescriptionChange}
+      />
+      <Text color="gray.500" mb={3}>
+        본문
+      </Text>
       <_SortableContainer onSortEnd={onSortEnd} pressDelay={100} lockAxis="y">
-        {episode.blocks.map((b, index) => {
-          const bp =
-            index !== episode.blocks.length - 1 &&
-            episode.blocks[index + 1]?.blockType !== b.blockType
-
-          return (
-            <SortableBlock
-              key={b.id}
-              index={index}
-              block={b}
-              position={index + 1}
-              addBlock={addBlockHandler}
-              deleteBlock={deleteBlockHandler}
-              updateBlock={updateBlockHandler}
-              moveToRelativeBlock={moveToRelativeBlockHandler}
-              bottomSpacing={bp}
-            />
-          )
-        })}
+        {getBlockNodes()}
       </_SortableContainer>
       <DummyBlock height={"500px"} />
-    </EditorContainer>
+    </Container>
   )
 }
+
+const PaddingBlock = styled.div<{ height: number }>`
+  height: ${({ height }) => height}px;
+  transition: height 0.5s ease;
+`
 
 export default Editor

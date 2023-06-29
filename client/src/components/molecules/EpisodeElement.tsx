@@ -3,6 +3,7 @@ import styled from "styled-components"
 import { useNavigate } from "react-router-dom"
 import EditorContext from "../../context/EditorContext"
 import { PartialEpisode } from "../../types/episode.type"
+import { Heading, Text, Tooltip } from "@chakra-ui/react"
 
 const EpisodeElement: React.FC<{ episode: PartialEpisode; index: number }> = ({
   episode,
@@ -16,19 +17,21 @@ const EpisodeElement: React.FC<{ episode: PartialEpisode; index: number }> = ({
 
   const clickHandler = () => {
     if (isCurrent) return
-    navigate(`/episode/${episode.id}`)
+    navigate(`/episodes/${episode.id}`)
   }
 
   return (
-    <EpisodeContainer onClick={clickHandler}>
-      <EpisodeTitleContainer>
-        <EpisodeIndex isCurrent={isCurrent}>
-          {index < 10 ? `0${index}` : index}편
-        </EpisodeIndex>
-        <EpisodeTitle>{episode_.title}</EpisodeTitle>
-      </EpisodeTitleContainer>
-      {/*<EpisodeDetailedPaper></EpisodeDetailedPaper>*/}
-    </EpisodeContainer>
+    <Tooltip label={episode.description + "까꿍"}>
+      <EpisodeContainer onClick={clickHandler}>
+        <EpisodeTitleContainer>
+          <EpisodeIndex isCurrent={isCurrent}>
+            {index < 10 ? `0${index}` : index}편
+          </EpisodeIndex>
+          <Text fontSize="xl">{episode_.title}</Text>
+        </EpisodeTitleContainer>
+        {/*<EpisodeDetailedPaper></EpisodeDetailedPaper>*/}
+      </EpisodeContainer>
+    </Tooltip>
   )
 }
 
@@ -53,12 +56,6 @@ const EpisodeContainer = styled.div`
 
   transition: background-color 0.2s ease-in-out;
   border-radius: 10px;
-`
-
-const EpisodeDetailedPaper = styled.div`
-  display: flex;
-  border-radius: 10px;
-  background-color: #fff;
 `
 
 const EpisodeTitleContainer = styled.div`

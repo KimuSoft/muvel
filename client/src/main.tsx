@@ -8,18 +8,37 @@ import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { AppLayout } from "./layouts/AppLayout"
 import Main from "./components/pages/Main"
+import {
+  ChakraProvider,
+  ColorModeScript,
+  extendTheme,
+  ThemeConfig,
+} from "@chakra-ui/react"
+import NovelsPage from "./components/pages/Novels"
+import NovelDetail from "./components/pages/NovelDetail"
+
+const config: ThemeConfig = {
+  initialColorMode: "dark",
+  useSystemColorMode: false,
+}
+
+const theme = extendTheme({ config })
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
+  // React.StrictMode
+  <ChakraProvider theme={theme}>
+    <ColorModeScript initialColorMode={theme.config.initialColorMode} />
     <ToastContainer />
     <BrowserRouter>
       <Routes>
         <Route element={<AppLayout />}>
           <Route index element={<Main />}></Route>
-          <Route path={"episode/:id"} element={<EditorPage />}></Route>
+          <Route path={"episodes/:id"} element={<EditorPage />}></Route>
+          <Route path={"novels"} element={<NovelsPage />}></Route>
+          <Route path={"novels/:id"} element={<NovelDetail />}></Route>
         </Route>
         <Route path="auth/callback" element={<AuthCallback />}></Route>
       </Routes>
     </BrowserRouter>
-  </React.StrictMode>
+  </ChakraProvider>
 )

@@ -1,12 +1,14 @@
 import { PartialData } from "./index"
-import { PartialNovel } from "./novel.type"
+import { Novel } from "./novel.type"
+import { PartialEpisode } from "./episode.type"
 
 export interface PartialUser extends PartialData {
   username: string
   avatar: string
-  recentEpisodeId: number
 }
 
 export interface User extends PartialUser {
-  novels: PartialNovel[]
+  novelIds: number[]
+  recentEpisodeId: number
+  admin: boolean
 }

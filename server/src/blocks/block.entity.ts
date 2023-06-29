@@ -1,9 +1,9 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
-import { Episode } from "../episodes/episode.entity"
+import { EpisodeEntity } from "../episodes/episode.entity"
 import { BlockType } from "../types"
 
-@Entity()
-export class Block {
+@Entity("block")
+export class BlockEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string
 
@@ -16,8 +16,8 @@ export class Block {
   @Column()
   order: number
 
-  @ManyToOne(() => Episode, (episode) => episode.blocks, {
+  @ManyToOne(() => EpisodeEntity, (episode) => episode.blocks, {
     onDelete: "CASCADE",
   })
-  episode: Episode
+  episode: EpisodeEntity
 }

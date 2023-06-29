@@ -2,9 +2,9 @@ import React, { useEffect } from "react"
 import { MdLogin } from "react-icons/md"
 import { useNavigate } from "react-router-dom"
 import useCurrentUser from "../../hooks/useCurrentUser"
-import IconButton from "../atoms/IconButton"
 import styled from "styled-components"
 import { toast } from "react-toastify"
+import { Button, Center, Heading, Text, VStack } from "@chakra-ui/react"
 
 const Main: React.FC = () => {
   const user = useCurrentUser()
@@ -14,23 +14,30 @@ const Main: React.FC = () => {
     // 메인 페이지에 접속했을 때 로그인이 되어 있다면 가장 최근의 소설 작업 페이지로 리다이렉트
     if (user) {
       toast.info(`${user.username}님 어서오세요!`)
-      navigate("/episode/" + user.recentEpisodeId)
+      navigate("/episodes/" + user.recentEpisodeId)
     }
   }, [])
 
   const loginClickHandler = () => {
-    window.location.href = import.meta.env.VITE_API_BASE + "/auth/login/discord"
+    window.location.href = import.meta.env.VITE_API_BASE + "/auth/login"
   }
 
   return (
-    <Body>
+    <Center w="100vw" h="100vh">
       <MainBackground />
-      <Logo>Muvel</Logo>
-      <Slogan>당신의 이야기를 위한 가장 완벽한 소설 사이트</Slogan>
-      <IconButton text="로그인하고 글쓰기" onClick={loginClickHandler}>
-        <MdLogin />
-      </IconButton>
-    </Body>
+      <VStack justify={"center"} spacing={7}>
+        <VStack spacing={3}>
+          <Heading as="h1" size="4xl">
+            Muvel
+          </Heading>
+          <Text size="4xl">당신과 당신의 이야기를 위한 작은 방</Text>
+        </VStack>
+        <Button onClick={loginClickHandler}>
+          <MdLogin style={{ marginRight: 8 }} />
+          로그인하고 글쓰기
+        </Button>
+      </VStack>
+    </Center>
   )
 }
 

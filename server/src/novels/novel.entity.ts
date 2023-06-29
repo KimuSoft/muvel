@@ -5,20 +5,22 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  RelationId,
   UpdateDateColumn,
 } from "typeorm"
-import { Episode } from "../episodes/episode.entity"
-import { User } from "../users/user.entity"
+import { EpisodeEntity } from "../episodes/episode.entity"
+import { UserEntity } from "../users/user.entity"
+import { ShareType } from "../types"
 
-@Entity()
-export class Novel {
+@Entity("novel")
+export class NovelEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string
 
   @Column()
   title: string
 
-  @Column()
+  @Column({ nullable: true })
   description: string
 
   @CreateDateColumn()
@@ -27,13 +29,22 @@ export class Novel {
   @UpdateDateColumn()
   updatedAt: Date
 
-  @OneToMany(() => Episode, (episode) => episode.novel, {
+  @OneToMany(() => EpisodeEntity, (episode) => episode.novel, {
     cascade: true,
   })
-  episodes: Episode[]
+  episodes: EpisodeEntity[]
 
-  @ManyToOne(() => User, (user) => user.novels, {
+  @RelationId((self: NovelEntity) => self.episodes)
+  episodeIds: string[]
+
+  @ManyToOne(() => UserEntity, (user) => user.novels, {
     onDelete: "CASCADE",
   })
-  author: User
+  author: UserEntity
+
+  @RelationId((self: NovelEntity) => self.author)
+  authorId: string
+
+  @Column({ default: ShareType.Private })
+  share: ShareType
 }

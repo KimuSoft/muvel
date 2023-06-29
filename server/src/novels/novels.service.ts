@@ -1,21 +1,28 @@
 import { Injectable } from "@nestjs/common"
-import { Novel } from "./novel.entity"
+import { NovelEntity } from "./novel.entity"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
 import { EpisodesService } from "../episodes/episodes.service"
+import { SearchNovelsDto } from "./dto/search-novels.dto"
+import { UserEntity } from "../users/user.entity"
+import { ShareType } from "../types"
 
 @Injectable()
 export class NovelsService {
   constructor(
-    @InjectRepository(Novel)
-    private novelsRepository: Repository<Novel>,
+    @InjectRepository(NovelEntity)
+    private novelsRepository: Repository<NovelEntity>,
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
     private episodesService: EpisodesService
   ) {}
 
-  async create(title: string, description: string) {
-    const novel = new Novel()
+  async create(authorId: string, title: string, description: string) {
+    const user = await this.usersRepository.findOneBy({ id: authorId })
+    const novel = new NovelEntity()
     novel.title = title
     novel.description = description
+    novel.author = user
 
     // 에피소드 생성
     novel.episodes = [
@@ -28,18 +35,86 @@ export class NovelsService {
     return this.novelsRepository.save(novel)
   }
 
-  async addEpisode(novelId: string, title: string, description: string) {
+  async update(id: string, title: string, description: string) {
+    const novel = await this.findOne(id)
+    novel.title = title
+    novel.description = description
+    return this.novelsRepository.save(novel)
+  }
+
+  async addEpisode(
+    novelId: string,
+    title: string,
+    description: string,
+    chapter: string
+  ) {
     const novel = await this.findOne(novelId, ["episodes"])
-    const episode = await this.episodesService.create(title, description)
+    const episode = await this.episodesService.create(
+      title,
+      description,
+      chapter,
+      novelId
+    )
     novel.episodes.push(episode)
     await this.novelsRepository.save(novel)
     return episode
   }
 
   async findOne(id: string, relations: string[] = []) {
-    return this.novelsRepository.findOne({
+    const novel = await this.novelsRepository.findOne({
       where: { id },
       relations,
     })
+
+    // 에피소드 정렬
+    novel.episodes.sort((a, b) => a.order - b.order)
+    return novel
   }
+
+  async search(searchNovelsDto: SearchNovelsDto) {
+    let query = this.novelsRepository
+      .createQueryBuilder("novel")
+      .where(`novel.share = ${ShareType.Public}`)
+      .leftJoinAndSelect("novel.author", "author")
+
+    if (searchNovelsDto.author) {
+      query = query.where("author.username LIKE :name", {
+        name: `%${searchNovelsDto.author}%`,
+      })
+    }
+
+    if (searchNovelsDto.title) {
+      query = query.where("novel.title LIKE :title", {
+        title: `%${searchNovelsDto.title}%`,
+      })
+    }
+
+    console.debug(query.getSql())
+    return query
+      .select([
+        "novel.id",
+        "novel.title",
+        "novel.description",
+        "novel.authorId",
+        "novel.createdAt",
+        "novel.updatedAt",
+        "author.username",
+        "author.id",
+        "author.avatar",
+      ])
+      .offset(searchNovelsDto.start)
+      .take(searchNovelsDto.display)
+      .getMany()
+  }
+
+  async checkAuthor(novelId: string, userId: string) {
+    const novel = await this.novelsRepository.findOne({
+      where: { id: novelId },
+      relations: ["author"],
+    })
+
+    return novel.author.id === userId
+  }
+
+  async uploadThumbnail(novelId: string, thumbnail: Express.Multer.File) {}
 }
