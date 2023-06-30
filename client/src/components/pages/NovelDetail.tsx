@@ -9,6 +9,7 @@ import {
   Heading,
   HStack,
   IconButton,
+  Skeleton,
   Spacer,
   Text,
   theme,
@@ -27,16 +28,19 @@ import CreateNovel from "../organisms/CreateNovel"
 const NovelDetail: React.FC = () => {
   const novelId = useParams<{ id: string }>().id || ""
   const [novel, setNovel] = React.useState<Novel>(initialNovel)
+  const [isLoading, setIsLoading] = React.useState(false)
 
   const navigate = useNavigate()
 
   const fetchNovel = async () => {
+    setIsLoading(true)
     const { data } = await api.get<Novel>(`/novels/${novelId}`)
     if (!data) {
       navigate("/novels")
       toast("소설을 찾을 수 없습니다")
     }
     setNovel(data)
+    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -60,20 +64,26 @@ const NovelDetail: React.FC = () => {
       >
         <HStack h="100%" w="3xl">
           <VStack align={"baseline"} flexDir="column-reverse" h="100%">
-            <Text>{novel.description}</Text>
-            <Heading>{novel.title}</Heading>
-            <HStack>
-              {novel.share !== ShareType.Public ? (
-                novel.share === ShareType.Private ? (
-                  <AiFillLock color={theme.colors.gray["500"]} />
-                ) : (
-                  <AiOutlineLink color={theme.colors.gray["500"]} />
-                )
-              ) : null}
-              <Text color={"gray.500"}>
-                {novel.author?.username} 작가 · {novel.episodeIds.length}편
-              </Text>
-            </HStack>
+            {!isLoading ? (
+              <>
+                <Text>{novel.description}</Text>
+                <Heading>{novel.title}</Heading>
+                <HStack>
+                  {novel.share !== ShareType.Public ? (
+                    novel.share === ShareType.Private ? (
+                      <AiFillLock color={theme.colors.gray["500"]} />
+                    ) : (
+                      <AiOutlineLink color={theme.colors.gray["500"]} />
+                    )
+                  ) : null}
+                  <Text color={"gray.500"}>
+                    {novel.author?.username} 작가 · {novel.episodeIds.length}편
+                  </Text>
+                </HStack>
+              </>
+            ) : (
+              <NovelSkeleton />
+            )}
           </VStack>
           <Spacer />
           <VStack h="100%" align="end" gap={3}>
@@ -106,6 +116,18 @@ const NovelDetail: React.FC = () => {
           <EpisodeList novel={novel} />
         </Box>
       </Container>
+    </>
+  )
+}
+
+const NovelSkeleton: React.FC = () => {
+  return (
+    <>
+      <Skeleton>ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</Skeleton>
+      <Skeleton w="200px" h="50px">
+        소설 제목
+      </Skeleton>
+      <Skeleton>ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</Skeleton>
     </>
   )
 }
