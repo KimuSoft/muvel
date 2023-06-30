@@ -6,7 +6,15 @@ import { api } from "../../utils/api"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { Episode } from "../../types/episode.type"
-import { Button, Heading, HStack, Spacer, Text, VStack } from "@chakra-ui/react"
+import {
+  Box,
+  Button,
+  Heading,
+  HStack,
+  Spacer,
+  Text,
+  VStack,
+} from "@chakra-ui/react"
 
 const NovelProfile: React.FC = () => {
   const { novel } = useContext(EditorContext)
@@ -26,8 +34,14 @@ const NovelProfile: React.FC = () => {
   }
 
   return (
-    <HStack gap={7}>
-      <ProfileImage />
+    <HStack gap={5}>
+      <Box
+        borderRadius="5px"
+        w="100px"
+        h="140px"
+        flexShrink={0}
+        bgColor="gray.500"
+      />
       <VStack w="100%" h="130px" align="baseline">
         <Heading size="md">{novel.title}</Heading>
         <Text textIndent="0.5em" h="110px">
@@ -47,15 +61,5 @@ const NovelProfile: React.FC = () => {
     </HStack>
   )
 }
-
-const ProfileImage = styled.div`
-  border-radius: 5px;
-  width: 100px;
-  height: 140px;
-
-  flex-shrink: 0;
-
-  background-color: #71717a;
-`
 
 export default NovelProfile
