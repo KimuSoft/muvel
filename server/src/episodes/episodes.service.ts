@@ -47,7 +47,7 @@ export class EpisodesService {
   }
 
   async deleteEpisode(id: string) {
-    const episode = await this.findOne(id, ["blocks"])
+    await this.findOne(id, ["blocks"])
     await this.episodesRepository.delete(id)
   }
 

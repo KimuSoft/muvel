@@ -26,14 +26,14 @@ export enum ShareType {
 
 export const initialNovel: Novel = {
   id: "",
-  title: "",
-  description: "",
+  title: "와 샌즈",
+  description: "키뮤는 너무 귀엽다 꺄르륵",
   episodeIds: [],
   episodes: [],
   createdAt: new Date(),
   updatedAt: new Date(),
   authorId: "",
-  author: { id: "", avatar: "", username: "" },
+  author: { id: "", avatar: "", username: "키뮤키뮤" },
   thumbnail: "",
   share: ShareType.Public,
 }

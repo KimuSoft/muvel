@@ -60,7 +60,7 @@ const ExportButton: React.FC = () => {
 
   const onCopyToClipboard = () => {
     // preview를 클립보드에 저장
-    navigator.clipboard.writeText(preview)
+    navigator.clipboard.writeText(preview).then()
     toast.success("성공적으로 복사했어요!")
   }
 
