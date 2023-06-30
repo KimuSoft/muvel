@@ -17,12 +17,18 @@ export class NovelsService {
     private episodesService: EpisodesService
   ) {}
 
-  async create(authorId: string, title: string, description: string) {
+  async create(
+    authorId: string,
+    title: string,
+    description: string,
+    share?: ShareType
+  ) {
     const user = await this.usersRepository.findOneBy({ id: authorId })
     const novel = new NovelEntity()
-    novel.title = title
-    novel.description = description
+    novel.title = title || ""
+    novel.description = description || ""
     novel.author = user
+    novel.share = share || ShareType.Private
 
     // 에피소드 생성
     novel.episodes = [
@@ -35,10 +41,16 @@ export class NovelsService {
     return this.novelsRepository.save(novel)
   }
 
-  async update(id: string, title: string, description: string) {
+  async update(
+    id: string,
+    title: string,
+    description: string,
+    share: ShareType
+  ) {
     const novel = await this.findOne(id)
     novel.title = title
     novel.description = description
+    novel.share = share
     return this.novelsRepository.save(novel)
   }
 
@@ -66,8 +78,13 @@ export class NovelsService {
       relations,
     })
 
+    if (!novel) {
+      console.warn(`소설을 찾을 수 없습니다. id=${id}`)
+      return novel
+    }
+
     // 에피소드 정렬
-    novel.episodes.sort((a, b) => a.order - b.order)
+    novel.episodes?.sort((a, b) => a.order - b.order)
     return novel
   }
 

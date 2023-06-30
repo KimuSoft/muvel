@@ -64,7 +64,8 @@ export class UsersController {
     return this.novelsService.create(
       userId,
       createNovelDto.title,
-      createNovelDto.description
+      createNovelDto.description,
+      createNovelDto.share
     )
   }
 }

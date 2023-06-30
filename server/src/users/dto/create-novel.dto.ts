@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsOptional, IsString } from "class-validator"
+import { IsEnum, IsOptional, IsString } from "class-validator"
+import { ShareType } from "../../types"
 
 export class CreateNovelDto {
   @ApiProperty()
@@ -10,4 +11,12 @@ export class CreateNovelDto {
   @IsString()
   @IsOptional()
   description: string
+
+  @ApiProperty({
+    description: "소설의 공개 범위",
+    type: "enum",
+    enum: ShareType,
+  })
+  @IsEnum(ShareType)
+  share: ShareType
 }

@@ -4,6 +4,7 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  HStack,
   Input,
   Modal,
   ModalBody,
@@ -12,27 +13,57 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Text,
   Textarea,
   useDisclosure,
 } from "@chakra-ui/react"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import { useNavigate } from "react-router-dom"
 import { api } from "../../utils/api"
-import { Novel } from "../../types/novel.type"
+import { Novel, ShareType } from "../../types/novel.type"
 import { toast } from "react-toastify"
-import { AiFillFileAdd } from "react-icons/ai"
-import { Field, FieldAttributes, FieldProps, Form, Formik } from "formik"
+import {
+  AiFillEdit,
+  AiFillFileAdd,
+  AiFillLock,
+  AiOutlineLink,
+} from "react-icons/ai"
+import { Field, FieldProps, Form, Formik } from "formik"
+import RadioCardGroup from "../molecules/RadioCardGroup"
+import { MdPublic } from "react-icons/md"
+import DeleteNovel from "./DeleteNovel"
 
-const CreateNovel: React.FC = () => {
+const CreateNovel: React.FC<{
+  novel?: Novel
+  refresh?: () => Promise<unknown>
+}> = ({ novel, refresh }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const user = useCurrentUser()
 
   const initialRef = React.useRef(null)
   const navigate = useNavigate()
 
-  const onSubmit = async (values: { title: string; description: string }) => {
-    const { data } = await api.post<Novel>(`/users/${user?.id}/novels`, values)
-    navigate(`/novels/${data.id}`)
+  const onSubmit = async (values: {
+    title: string
+    description: string
+    share: string | number
+  }) => {
+    values = { ...values, share: parseInt(values.share.toString()) }
+
+    if (novel) {
+      // Update Novel
+      console.log(values)
+      await api.patch<Novel>(`/novels/${novel.id}`, values)
+      onClose()
+      refresh?.().then()
+    } else {
+      // Create Novel
+      const { data } = await api.post<Novel>(
+        `/users/${user?.id}/novels`,
+        values
+      )
+      navigate(`/novels/${data.id}`)
+    }
   }
 
   const _onOpen = () => {
@@ -50,14 +81,26 @@ const CreateNovel: React.FC = () => {
 
   return (
     <>
-      <Button gap={3} colorScheme="purple" onClick={onOpen}>
-        <AiFillFileAdd /> 소설 추가하기
+      <Button gap={2.5} colorScheme="purple" onClick={_onOpen}>
+        {novel ? (
+          <>
+            <AiFillEdit /> 소설 수정하기
+          </>
+        ) : (
+          <>
+            <AiFillFileAdd /> 소설 추가하기
+          </>
+        )}
       </Button>
 
       <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <Formik
-          initialValues={{ title: "새 소설", description: "" }}
+          initialValues={{
+            title: novel?.title || "새 소설",
+            description: novel?.description || "",
+            share: novel?.share.toString() || ShareType.Private.toString(),
+          }}
           onSubmit={onSubmit}
         >
           {(props) => (
@@ -66,6 +109,7 @@ const CreateNovel: React.FC = () => {
                 <ModalHeader>새 소설 작성하기</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody pb={6}>
+                  {/* 소설 제목 필드 */}
                   <Field name="title" validate={validateTitle}>
                     {({ field, form }: FieldProps) => (
                       <FormControl
@@ -84,6 +128,7 @@ const CreateNovel: React.FC = () => {
                     )}
                   </Field>
 
+                  {/* 소설 설명 필드 */}
                   <Field name="description" validate={validateTitle}>
                     {({ field, form }: FieldProps) => (
                       <FormControl mt={4}>
@@ -96,18 +141,60 @@ const CreateNovel: React.FC = () => {
                       </FormControl>
                     )}
                   </Field>
+
+                  <Field name="share">
+                    {({ field, form }: FieldProps) => (
+                      <FormControl mt={4}>
+                        <FormLabel>공개 범위</FormLabel>
+                        <RadioCardGroup
+                          onChange={(value) =>
+                            form.setFieldValue("share", value)
+                          }
+                          defaultValue={field.value}
+                          options={[
+                            {
+                              value: ShareType.Public.toString(),
+                              label: (
+                                <HStack gap={2}>
+                                  <MdPublic />
+                                  <Text>공개</Text>
+                                </HStack>
+                              ),
+                            },
+                            {
+                              value: ShareType.Unlisted.toString(),
+                              label: (
+                                <HStack gap={2}>
+                                  <AiOutlineLink />
+                                  <Text>일부 공개</Text>
+                                </HStack>
+                              ),
+                            },
+                            {
+                              value: ShareType.Private.toString(),
+                              label: (
+                                <HStack gap={2}>
+                                  <AiFillLock />
+                                  <Text>비공개</Text>
+                                </HStack>
+                              ),
+                            },
+                          ]}
+                        />
+                      </FormControl>
+                    )}
+                  </Field>
                 </ModalBody>
 
-                <ModalFooter>
-                  <Button onClick={onClose} mr={3}>
-                    취소
-                  </Button>
+                <ModalFooter gap={2}>
+                  <Button onClick={onClose}>취소</Button>
+                  {novel ? <DeleteNovel novelId={novel.id} /> : null}
                   <Button
                     colorScheme="blue"
                     type="submit"
                     isLoading={props.isSubmitting}
                   >
-                    생성하기
+                    {novel ? "수정하기" : "작성하기"}
                   </Button>
                 </ModalFooter>
               </ModalContent>

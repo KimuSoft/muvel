@@ -15,13 +15,14 @@ import {
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react"
-import { initialNovel, Novel } from "../../types/novel.type"
+import { initialNovel, Novel, ShareType } from "../../types/novel.type"
 import { api } from "../../utils/api"
 import { toast } from "react-toastify"
 import styled from "styled-components"
 import { MdNavigateBefore } from "react-icons/md"
-import { AiFillEdit, AiFillRead } from "react-icons/ai"
+import { AiFillLock, AiFillRead, AiOutlineLink } from "react-icons/ai"
 import EpisodeList from "../organisms/EpisodeList"
+import CreateNovel from "../organisms/CreateNovel"
 
 const NovelDetail: React.FC = () => {
   const novelId = useParams<{ id: string }>().id || ""
@@ -61,9 +62,18 @@ const NovelDetail: React.FC = () => {
           <VStack align={"baseline"} flexDir="column-reverse" h="100%">
             <Text>{novel.description}</Text>
             <Heading>{novel.title}</Heading>
-            <Text color={"gray.500"}>
-              {novel.author?.username} 작가 · {novel.episodeIds.length} 편
-            </Text>
+            <HStack>
+              {novel.share !== ShareType.Public ? (
+                novel.share === ShareType.Private ? (
+                  <AiFillLock color={theme.colors.gray["500"]} />
+                ) : (
+                  <AiOutlineLink color={theme.colors.gray["500"]} />
+                )
+              ) : null}
+              <Text color={"gray.500"}>
+                {novel.author?.username} 작가 · {novel.episodeIds.length}편
+              </Text>
+            </HStack>
           </VStack>
           <Spacer />
           <VStack h="100%" align="end" gap={3}>
@@ -74,10 +84,7 @@ const NovelDetail: React.FC = () => {
               icon={<MdNavigateBefore style={{ fontSize: 30 }} />}
             />
             <Spacer />
-            <Button colorScheme="blue">
-              <AiFillEdit style={{ marginRight: 10 }} />
-              소설 수정하기
-            </Button>
+            <CreateNovel novel={novel} refresh={fetchNovel} />
             <Button colorScheme="purple">
               <AiFillRead style={{ marginRight: 10 }} />
               1편부터 보기

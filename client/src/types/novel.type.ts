@@ -10,11 +10,18 @@ export interface PartialNovel extends PartialData {
   thumbnail: string
   createdAt: Date
   updatedAt: Date
+  share: ShareType
 }
 
 export interface Novel extends PartialNovel {
   author: PartialUser
   episodes: PartialEpisode[]
+}
+
+export enum ShareType {
+  Private,
+  Unlisted,
+  Public,
 }
 
 export const initialNovel: Novel = {
@@ -28,4 +35,5 @@ export const initialNovel: Novel = {
   authorId: "",
   author: { id: "", avatar: "", username: "" },
   thumbnail: "",
+  share: ShareType.Public,
 }

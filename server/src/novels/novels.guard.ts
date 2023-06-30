@@ -9,7 +9,6 @@ export class NovelsGuard implements CanActivate {
   canActivate(
     context: ExecutionContext
   ): boolean | Promise<boolean> | Observable<boolean> {
-    console.info("가드 일한다!!")
     const request = context.switchToHttp().getRequest()
     const novelId: string = request.params.id
 

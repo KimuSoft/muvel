@@ -8,6 +8,7 @@ import {
   Injectable,
   Param,
   ParseFilePipeBuilder,
+  Patch,
   PipeTransform,
   Post,
   Put,
@@ -68,7 +69,7 @@ export class NovelsController {
     return novel
   }
 
-  @Put(":id")
+  @Patch(":id")
   @ApiOperation({
     summary: "소설 정보 수정하기",
     description: "소설의 정보를 수정합니다.",
@@ -82,7 +83,15 @@ export class NovelsController {
     @Request() req,
     @Param("id") id: string,
     @Body() novelUpdateDto: UpdateNovelDto
-  ) {}
+  ) {
+    console.log(novelUpdateDto)
+    return this.novelsService.update(
+      id,
+      novelUpdateDto.title,
+      novelUpdateDto.description,
+      novelUpdateDto.share
+    )
+  }
 
   @Delete(":id")
   @ApiOperation({
