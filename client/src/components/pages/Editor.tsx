@@ -83,7 +83,7 @@ const EditorPage: React.FC = () => {
       if (isEpisodeUpdated()) {
         // 에피소드 업데이트 요청
         await api.put(`episodes/${episodeId}`, {
-          title: episode.title,
+          title: episode.title || "제목 없음",
           description: episode.description,
           chapter: episode.chapter,
         })
