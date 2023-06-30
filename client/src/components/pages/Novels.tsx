@@ -7,9 +7,11 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  Skeleton,
   Spacer,
   Text,
   useRadioGroup,
+  VStack,
 } from "@chakra-ui/react"
 import NovelCard from "../molecules/NovelCard"
 import { api } from "../../utils/api"
@@ -27,6 +29,7 @@ const NovelsPage: React.FC = () => {
   const [searchRange, setSearchRange] = React.useState<"내 소설" | "모든 소설">(
     "내 소설"
   )
+  const [loading, setLoading] = React.useState<boolean>(false)
 
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "range",
@@ -41,10 +44,12 @@ const NovelsPage: React.FC = () => {
 
   const fetchNovels = async () => {
     if (!user) return
+    setLoading(true)
     const { data } = await api.get<Novel[]>(
       searchRange === "내 소설" ? `users/${user.id}/novels` : "novels"
     )
     setNovels(data)
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -81,25 +86,49 @@ const NovelsPage: React.FC = () => {
           <Spacer />
           <CreateNovel />
         </HStack>
-        {novels.length ? (
+        {!loading ? (
+          novels.length ? (
+            <Box
+              display="flex"
+              flexWrap="wrap"
+              gap="20px"
+              justifyContent="center"
+            >
+              {novels.map((novel) => (
+                <NovelCard novel={novel} key={novel.id} />
+              ))}
+            </Box>
+          ) : (
+            <Center h="400px">
+              <Text color="gray.500" fontSize="2xl">
+                으음... 소설이 없네요
+              </Text>
+            </Center>
+          )
+        ) : (
           <Box
             display="flex"
             flexWrap="wrap"
             gap="20px"
             justifyContent="center"
           >
-            {novels.map((novel) => (
-              <NovelCard novel={novel} key={novel.id} />
-            ))}
+            <NovelCardsSkeleton />
           </Box>
-        ) : (
-          <Center h="400px">
-            <Text color="gray.500" fontSize="2xl">
-              으음... 소설이 없네요
-            </Text>
-          </Center>
         )}
       </Container>
+    </>
+  )
+}
+
+const NovelCardsSkeleton: React.FC = () => {
+  return (
+    <>
+      {Array.from({ length: 12 }).map((_, i) => (
+        <VStack key={`novel-card-skeleton-${i}`}>
+          <Skeleton w={187} h="250px"></Skeleton>
+          <Skeleton w={187} h="20px"></Skeleton>
+        </VStack>
+      ))}
     </>
   )
 }
