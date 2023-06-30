@@ -22,10 +22,12 @@ export class EpisodesService {
   ) {
     let order = 1
     if (novelId) {
-      const lastBlock = await this.episodesRepository
-        .findOne({ where: { novelId }, order: { order: "DESC" } })
-        .catch(() => ({ order: 0 }))
-      order = lastBlock.order + 1
+      const lastBlock: { order: number }[] =
+        await this.episodesRepository.query(
+          'SELECT * FROM "episode" WHERE "novelId" = $1 ORDER BY "order" DESC LIMIT 1',
+          [novelId]
+        )
+      order = lastBlock?.[0].order + 1
     }
 
     const episode = new EpisodeEntity()

@@ -113,7 +113,7 @@ const NovelDetail: React.FC = () => {
           pb={3}
           borderRadius={10}
         >
-          <EpisodeList novel={novel} />
+          <EpisodeList novel={novel} refresh={fetchNovel} />
         </Box>
       </Container>
     </>
