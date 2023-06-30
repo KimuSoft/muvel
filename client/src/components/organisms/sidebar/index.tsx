@@ -1,8 +1,7 @@
-import React, { useContext, useRef } from "react"
-import { SidebarFrame, Top } from "./styles"
+import React, { useContext } from "react"
 import NovelProfile from "../../molecules/NovelProfile"
 import IconButton from "../../atoms/IconButton"
-import { MdChevronLeft, MdMenu, MdMenuOpen } from "react-icons/md"
+import { MdChevronLeft, MdMenu } from "react-icons/md"
 import EditorContext from "../../../context/EditorContext"
 import EpisodeList from "../EpisodeList"
 import {
@@ -16,14 +15,16 @@ import {
   DrawerOverlay,
   Heading,
   HStack,
+  Spacer,
   useDisclosure,
 } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
 import ExportButton from "../../molecules/ExportButton"
 import ImportButton from "../../molecules/ImportButton"
+import DeleteEpisode from "../DeleteEpisode"
 
 const Sidebar: React.FC = () => {
-  const { novel } = useContext(EditorContext)
+  const { novel, episode } = useContext(EditorContext)
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const navigate = useNavigate()
@@ -33,6 +34,7 @@ const Sidebar: React.FC = () => {
       <IconButton onClick={onOpen} style={{ backgroundColor: "transparent" }}>
         <MdMenu style={{ fontSize: 24 }} />
       </IconButton>
+
       <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="sm">
         <DrawerOverlay />
         <DrawerContent>
@@ -55,7 +57,9 @@ const Sidebar: React.FC = () => {
             <EpisodeList novel={novel} />
           </DrawerBody>
           <DrawerFooter>
-            <HStack>
+            <HStack w="100%">
+              <DeleteEpisode novel={novel} episodeId={episode.id} />
+              <Spacer />
               <ExportButton />
               <ImportButton />
             </HStack>
