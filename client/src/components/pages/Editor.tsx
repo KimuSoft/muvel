@@ -141,6 +141,7 @@ const EditorPage: React.FC = () => {
       value={{
         novel,
         setNovel,
+        refreshNovel,
         episode,
         setEpisode,
         blocks,

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import {
   HStack,
   Text,
@@ -9,40 +9,64 @@ import {
 import { PartialEpisode } from "../../types/episode.type"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Novel } from "../../types/novel.type"
+import {
+  SortableContainer,
+  SortableContainerProps,
+  SortableElement,
+} from "react-sortable-hoc"
+import { arrayMoveImmutable } from "array-move"
+import { api } from "../../utils/api"
+import _ from "lodash"
 
-// const EpisodeList: React.FC = () => {
-//   const { novel, episode } = useContext(EditorContext)
-//   const [episodeList, setEpisodeList] = useState<JSX.Element[]>([])
-//
-//   useEffect(() => {
-//     const _episodes = novel.episodes.map((e) =>
-//       e.id === episode.id ? episode : e
-//     )
-//
-//     const el = _episodes.map((e, idx) => {
-//       if (_episodes[idx - 1]?.chapter !== e.chapter) {
-//         return (
-//           <React.Fragment key={"ct" + e.id}>
-//             {e.chapter ? (
-//               <Text mt="10px" p="10px">
-//                 {e.chapter}
-//               </Text>
-//             ) : null}
-//             <EpisodeElement episode={e} index={idx + 1} />
-//           </React.Fragment>
-//         )
-//       }
-//       return <EpisodeElement episode={e} index={idx + 1} key={e.id} />
-//     })
-//
-//     setEpisodeList(el)
-//   }, [novel, episode])
-//
-//   return <Box w="100%">{episodeList}</Box>
-// }
+const _SortableContainer = SortableContainer<React.PropsWithChildren>(
+  ({ children }: React.PropsWithChildren) => {
+    return (
+      <VStack align="baseline" borderRadius={10} gap={0}>
+        {children}
+      </VStack>
+    )
+  }
+)
 
-const EpisodeList: React.FC<{ novel: Novel }> = ({ novel }) => {
+const EpisodeList: React.FC<{
+  novel: Novel
+  refresh?: () => Promise<unknown>
+}> = ({ novel, refresh }) => {
   const [episodeList, setEpisodeList] = useState<JSX.Element[]>([])
+  const [episodes, setEpisodes] = useState<PartialEpisode[]>(novel.episodes)
+
+  useEffect(() => {
+    setEpisodes(novel.episodes)
+  }, [novel.episodes])
+
+  useEffect(() => {
+    const patch = async () => {
+      const _episodes = episodes.map((e, idx) => ({ ...e, order: idx }))
+
+      const difference = _.differenceWith(
+        _episodes.map((b, order) => ({ ...b, order })),
+        novel.episodes.map((b, order) => ({ ...b, order })),
+        _.isEqual
+      ).map((e) => ({
+        id: e.id,
+        title: e.title,
+        order: e.order,
+        description: e.description,
+      }))
+
+      if (!difference.length) return
+
+      console.log("패치합니당")
+      await api.patch(`/novels/${novel.id}/episodes`, difference)
+      refresh?.().then()
+    }
+    patch().then()
+  }, [episodes])
+
+  const onSortEnd: SortableContainerProps["onSortEnd"] = ({
+    oldIndex,
+    newIndex,
+  }) => setEpisodes(arrayMoveImmutable(episodes, oldIndex, newIndex))
 
   useEffect(() => {
     const el = novel?.episodes?.map((e, idx) => {
@@ -54,27 +78,34 @@ const EpisodeList: React.FC<{ novel: Novel }> = ({ novel }) => {
                 {e.chapter}
               </Text>
             ) : null}
-            <EpisodeRow episode={e} index={idx + 1} />
+            <SortableEpisodeRow episode={e} order={idx + 1} index={idx} />
           </React.Fragment>
         )
       }
-      return <EpisodeRow episode={e} index={idx + 1} key={e.id} />
+      return (
+        <SortableEpisodeRow
+          episode={e}
+          order={idx + 1}
+          key={e.id}
+          index={idx}
+        />
+      )
     })
-
     setEpisodeList(el)
   }, [novel])
 
   return (
-    <VStack align="baseline" borderRadius={10} gap={0}>
+    <_SortableContainer onSortEnd={onSortEnd} pressDelay={100} lockAxis="y">
       {episodeList}
-    </VStack>
+    </_SortableContainer>
   )
 }
 
-const EpisodeRow: React.FC<{ episode: PartialEpisode; index: number }> = ({
-  episode,
-  index,
-}) => {
+const SortableEpisodeRow = SortableElement<EpisodeRowProps>(
+  (props: EpisodeRowProps) => <EpisodeRow {...props} />
+)
+
+const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
   const location = useLocation()
 
   const isNow = (episodeId: string) => {
@@ -123,12 +154,17 @@ const EpisodeRow: React.FC<{ episode: PartialEpisode; index: number }> = ({
           fontSize="md"
           mr={3}
         >
-          {index}편
+          {order}편
         </Text>
         <Text fontSize="xl">{episode.title}</Text>
       </HStack>
     </Tooltip>
   )
+}
+
+interface EpisodeRowProps {
+  episode: PartialEpisode
+  order: number
 }
 
 export default EpisodeList

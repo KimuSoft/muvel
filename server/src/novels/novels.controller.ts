@@ -11,7 +11,6 @@ import {
   Patch,
   PipeTransform,
   Post,
-  Put,
   Query,
   Request,
   UploadedFile,
@@ -32,6 +31,7 @@ import {
   SearchNovelsResponseDto,
 } from "./dto/search-novels.dto"
 import { FileInterceptor } from "@nestjs/platform-express"
+import { PatchEpisodesDto } from "./dto/patch-episodes.dto"
 
 @ApiTags("Novels")
 @Controller("api/novels")
@@ -153,6 +153,19 @@ export class NovelsController {
     image: Express.Multer.File
   ) {
     return this.novelsService.uploadThumbnail(id, image)
+  }
+
+  @Patch(":id/episodes")
+  @ApiOperation({
+    summary: "에피소드 수정하기",
+    description: "해당 소설의 에피소드를 수정합니다. (현재는 order만 가능)",
+  })
+  @RequirePermissionToEditNovel()
+  async updateEpisode(
+    @Param("id") id: string,
+    @Body() patchEpisodesDtos: PatchEpisodesDto[]
+  ) {
+    return this.novelsService.patchEpisodes(id, patchEpisodesDtos)
   }
 }
 

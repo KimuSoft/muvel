@@ -11,6 +11,8 @@ export default createContext<{
   novel: Novel
   setNovel: React.Dispatch<React.SetStateAction<Novel>>
 
+  refreshNovel: () => Promise<unknown>
+
   episode: PartialEpisode
   setEpisode: React.Dispatch<React.SetStateAction<PartialEpisode>>
 
@@ -25,6 +27,7 @@ export default createContext<{
 }>({
   novel: initialNovel,
   setNovel: () => {},
+  refreshNovel: () => Promise.resolve(),
   episode: initialPartialEpisode,
   setEpisode: () => {},
   blocks: [],

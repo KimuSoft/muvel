@@ -6,6 +6,7 @@ import { EpisodesService } from "../episodes/episodes.service"
 import { SearchNovelsDto } from "./dto/search-novels.dto"
 import { UserEntity } from "../users/user.entity"
 import { ShareType } from "../types"
+import { PatchEpisodesDto } from "./dto/patch-episodes.dto"
 
 @Injectable()
 export class NovelsService {
@@ -134,4 +135,15 @@ export class NovelsService {
   }
 
   async uploadThumbnail(novelId: string, thumbnail: Express.Multer.File) {}
+
+  async patchEpisodes(id: string, episodesDiff: PatchEpisodesDto[]) {
+    const episode = await this.findOne(id)
+
+    await this.episodesService.upsert(episodesDiff)
+
+    // for (const i of episodesDiff.filter((b) => b.isDeleted)) {
+    //   console.log("삭제", i)
+    //   await this.episodesService.delete(i.id)
+    // }
+  }
 }

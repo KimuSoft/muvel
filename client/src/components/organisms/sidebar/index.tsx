@@ -24,7 +24,7 @@ import ImportButton from "../../molecules/ImportButton"
 import DeleteEpisode from "../DeleteEpisode"
 
 const Sidebar: React.FC = () => {
-  const { novel, episode } = useContext(EditorContext)
+  const { novel, episode, refreshNovel } = useContext(EditorContext)
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const navigate = useNavigate()
@@ -54,7 +54,7 @@ const Sidebar: React.FC = () => {
             <Heading fontSize="xl" pl={4} mb={3}>
               에피소드 목록
             </Heading>
-            <EpisodeList novel={novel} />
+            <EpisodeList novel={novel} refresh={refreshNovel} />
           </DrawerBody>
           <DrawerFooter>
             <HStack w="100%">

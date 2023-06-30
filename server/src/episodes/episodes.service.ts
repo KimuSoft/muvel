@@ -4,6 +4,7 @@ import { Repository } from "typeorm"
 import { EpisodeEntity } from "./episode.entity"
 import { BlocksService } from "../blocks/blocks.service"
 import { PatchBlocksDto } from "./dto/patch-blocks.dto"
+import { PatchEpisodesDto } from "../novels/dto/patch-episodes.dto"
 
 @Injectable()
 export class EpisodesService {
@@ -85,5 +86,9 @@ export class EpisodesService {
     episode.description = description
 
     await this.episodesRepository.save(episode)
+  }
+
+  async upsert(episodes: PatchEpisodesDto[]) {
+    return this.episodesRepository.upsert(episodes, ["id"])
   }
 }
