@@ -24,7 +24,6 @@ const AuthCallback: React.FC = () => {
     }
 
     localStorage.accessToken = accessToken
-    toast.success("로그인 완료!")
     navigate("/")
   }, [isFirst.current, location.search])
 

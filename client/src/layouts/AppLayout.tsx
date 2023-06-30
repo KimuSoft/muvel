@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom"
 import GlobalContext from "../context/GlobalContext"
 import { api } from "../utils/api"
 import { User } from "../types/user.type"
-import { Center } from "@chakra-ui/react"
+import { Center, Spinner } from "@chakra-ui/react"
 import { AiOutlineLoading3Quarters } from "react-icons/ai"
 
 export const AppLayout: React.FC = () => {
@@ -22,7 +22,7 @@ export const AppLayout: React.FC = () => {
     <>
       {loading ? (
         <Center w="100vw" h="100vh">
-          <AiOutlineLoading3Quarters size={32} />
+          <Spinner />
         </Center>
       ) : (
         <GlobalContext.Provider value={{ user }}>

@@ -13,7 +13,6 @@ const Main: React.FC = () => {
   useEffect(() => {
     // 메인 페이지에 접속했을 때 로그인이 되어 있다면 가장 최근의 소설 작업 페이지로 리다이렉트
     if (user) {
-      toast.info(`${user.username}님 어서오세요!`)
       navigate("/episodes/" + user.recentEpisodeId)
     }
   }, [])

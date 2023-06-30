@@ -1,5 +1,11 @@
 import React, { PropsWithChildren } from "react"
-import { Box, useColorModeValue, useRadio } from "@chakra-ui/react"
+import {
+  Box,
+  HStack,
+  useColorModeValue,
+  useRadio,
+  useRadioGroup,
+} from "@chakra-ui/react"
 
 const RadioCard: React.FC<PropsWithChildren<{}>> = (props) => {
   // @ts-ignore
@@ -17,7 +23,7 @@ const RadioCard: React.FC<PropsWithChildren<{}>> = (props) => {
         borderWidth="1px"
         borderRadius="md"
         border="none"
-        bgColor={useColorModeValue("gray.200", "gray.700")}
+        bgColor={useColorModeValue("gray.200", "gray.600")}
         _checked={{
           bg: "purple.600",
           color: "white",
