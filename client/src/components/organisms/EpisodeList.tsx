@@ -124,7 +124,9 @@ const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
     // 100글자까지만 보여주고 이후에 ...
     <Tooltip
       label={
-        `(${date.getFullYear()}년 ${date.getMonth()}월 ${date.getDate()}일) ` +
+        `(${date.getFullYear()}년 ${
+          date.getMonth() + 1
+        }월 ${date.getDate()}일) ` +
         episode.description.slice(0, 100) +
         "..."
       }
