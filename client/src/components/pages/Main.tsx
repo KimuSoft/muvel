@@ -5,6 +5,7 @@ import useCurrentUser from "../../hooks/useCurrentUser"
 import styled from "styled-components"
 import { toast } from "react-toastify"
 import { Button, Center, Heading, Text, VStack } from "@chakra-ui/react"
+import { AiFillRead } from "react-icons/ai"
 
 const Main: React.FC = () => {
   const user = useCurrentUser()
@@ -34,6 +35,14 @@ const Main: React.FC = () => {
         <Button onClick={loginClickHandler}>
           <MdLogin style={{ marginRight: 8 }} />
           로그인하고 글쓰기
+        </Button>
+        <Button
+          onClick={() => {
+            navigate("/novels")
+          }}
+        >
+          <AiFillRead style={{ marginRight: 8 }} />
+          소설 보러 가기
         </Button>
       </VStack>
     </Center>
