@@ -53,7 +53,7 @@ export class UsersService {
   async getNovels(id: string) {
     const user = await this.usersRepository.findOne({
       where: { id },
-      relations: ["novels"],
+      relations: ["novels", "novels.author"],
     })
     return user.novels
   }
