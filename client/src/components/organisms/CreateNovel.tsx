@@ -106,7 +106,9 @@ const CreateNovel: React.FC<{
           {(props) => (
             <Form>
               <ModalContent>
-                <ModalHeader>새 소설 작성하기</ModalHeader>
+                <ModalHeader>
+                  {novel ? `소설 수정하기` : "새 소설 작성하기"}
+                </ModalHeader>
                 <ModalCloseButton />
                 <ModalBody pb={6}>
                   {/* 소설 제목 필드 */}
