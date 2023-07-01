@@ -1,8 +1,10 @@
 import styled from "styled-components"
 import ContentEditable from "react-contenteditable"
-import { theme } from "@chakra-ui/react"
+import { ColorMode, theme } from "@chakra-ui/react"
 
-export const StyledContentEditable = styled(ContentEditable)`
+export const StyledContentEditable = styled(ContentEditable)<{
+  colorMode: ColorMode
+}>`
   text-indent: 1em;
   border: none;
   outline: none;
@@ -18,7 +20,9 @@ export const StyledContentEditable = styled(ContentEditable)`
   width: 100%;
 
   font-style: normal;
-  font-weight: 50;
+  color: ${({ colorMode }) =>
+    colorMode === "dark" ? theme.colors.gray["300"] : theme.colors.gray["700"]};
+  font-weight: ${({ colorMode }) => (colorMode === "dark" ? 50 : 500)};
   font-size: 19px;
   line-height: 34px;
 

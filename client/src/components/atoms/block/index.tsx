@@ -214,7 +214,7 @@ const BlockComponent: React.FC<BlockProps> = ({
       html={content.current}
       data-position={position}
       placeholder={"내용을 입력해 주세요."}
-      theme={colorMode}
+      colorMode={colorMode}
     />
   ) : (
     <StyledContentEditable
@@ -226,6 +226,7 @@ const BlockComponent: React.FC<BlockProps> = ({
       html={content.current}
       data-position={position}
       placeholder={"내용을 입력해 주세요."}
+      colorMode={colorMode}
     />
   )
 }
