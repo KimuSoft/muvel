@@ -22,16 +22,14 @@ import { NovelDto, NovelDtoWithEpisodes } from "./dto/novel.dto"
 import { UpdateNovelDto } from "./dto/update-novel.dto"
 import { EpisodeDto } from "../episodes/dto/episode.dto"
 import { CreateEpisodeDto } from "./dto/create-episode.dto"
-import {
-  RequirePermissionToEditNovel,
-  RequirePermissionToReadNovel,
-} from "./novels.decorator"
+import { RequirePermission } from "./novels.decorator"
 import {
   SearchNovelsDto,
   SearchNovelsResponseDto,
 } from "./dto/search-novels.dto"
 import { FileInterceptor } from "@nestjs/platform-express"
 import { PatchEpisodesDto } from "./dto/patch-episodes.dto"
+import { NovelPermission } from "../types"
 
 @ApiTags("Novels")
 @Controller("api/novels")
@@ -61,7 +59,7 @@ export class NovelsController {
     description: "소설 정보를 반환합니다.",
     type: NovelDtoWithEpisodes,
   })
-  @RequirePermissionToReadNovel()
+  @RequirePermission(NovelPermission.ReadNovel)
   async getNovels(@Request() req, @Param("id") id: string) {
     const novel = await this.novelsService.findOne(id, ["episodes", "author"])
     novel.episodes.sort((a, b) => a.order - b.order)
@@ -78,7 +76,7 @@ export class NovelsController {
     description: "수정된 소설 정보를 반환합니다.",
     type: NovelDto,
   })
-  @RequirePermissionToEditNovel()
+  @RequirePermission(NovelPermission.EditNovel)
   async updateNovel(
     @Request() req,
     @Param("id") id: string,
@@ -98,7 +96,7 @@ export class NovelsController {
     summary: "소설 삭제하기",
     description: "소설을 삭제합니다.",
   })
-  @RequirePermissionToEditNovel()
+  @RequirePermission(NovelPermission.DeleteNovel)
   async deleteNovel(@Request() req, @Param("id") id: string) {}
 
   @Post(":id/episodes")
@@ -106,7 +104,7 @@ export class NovelsController {
     summary: "에피소드 추가하기",
     description: "해당 소설에 새로운 에피소드를 추가합니다.",
   })
-  @RequirePermissionToEditNovel()
+  @RequirePermission(NovelPermission.EditNovel)
   async addEpisode(
     @Param("id") id: string,
     @Body() addEpisodeDto: CreateEpisodeDto
@@ -128,7 +126,7 @@ export class NovelsController {
     type: EpisodeDto,
     isArray: true,
   })
-  @RequirePermissionToReadNovel()
+  @RequirePermission(NovelPermission.ReadNovel)
   async getEpisodes(@Param("id") id: string) {}
 
   @Post(":id/thumbnail")
@@ -136,7 +134,7 @@ export class NovelsController {
     summary: "소설 썸네일 업로드하기",
     description: "해당 소설의 썸네일을 업로드합니다. 용량 제한은 777KB입니다.",
   })
-  @RequirePermissionToEditNovel()
+  @RequirePermission(NovelPermission.EditNovel)
   @UseInterceptors(FileInterceptor("image"))
   async uploadThumbnail(
     @Param("id") id: string,
@@ -160,7 +158,7 @@ export class NovelsController {
     summary: "에피소드 수정하기",
     description: "해당 소설의 에피소드를 수정합니다. (현재는 order만 가능)",
   })
-  @RequirePermissionToEditNovel()
+  @RequirePermission(NovelPermission.EditNovel)
   async updateEpisode(
     @Param("id") id: string,
     @Body() patchEpisodesDtos: PatchEpisodesDto[]

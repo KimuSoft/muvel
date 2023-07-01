@@ -1,18 +1,6 @@
-import { Controller, Get } from "@nestjs/common"
-import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
-import { BlockDto } from "./dto/block.dto"
+import { Controller } from "@nestjs/common"
+import { ApiTags } from "@nestjs/swagger"
 
 @Controller("blocks")
 @ApiTags("Blocks")
-export class BlocksController {
-  @Get("search")
-  @ApiOperation({
-    summary: "블록 검색하기",
-    description: "블록을 검색합니다.",
-  })
-  @ApiOkResponse({
-    type: BlockDto,
-    isArray: true,
-  })
-  async searchBlocks() {}
-}
+export class BlocksController {}

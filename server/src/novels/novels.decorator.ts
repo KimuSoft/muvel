@@ -1,21 +1,15 @@
-import { applyDecorators, UseGuards } from "@nestjs/common"
-import { AuthGuard } from "@nestjs/passport"
-import {
-  ApiBearerAuth,
-  ApiForbiddenResponse,
-  ApiUnauthorizedResponse,
-} from "@nestjs/swagger"
+import { applyDecorators, SetMetadata, UseGuards } from "@nestjs/common"
+import { ApiForbiddenResponse } from "@nestjs/swagger"
 import { RequireAuth } from "../auth/auth.decorator"
 import { NovelsGuard } from "./novels.guard"
+import { NovelPermission } from "../types"
 
-export const RequirePermissionToReadNovel = () => {
-  return applyDecorators(
+export const RequirePermission = (permission: NovelPermission) =>
+  applyDecorators(
     RequireAuth(),
+    SetMetadata("permission", permission),
     UseGuards(NovelsGuard),
     ApiForbiddenResponse({
-      description: "열람 권한이 부족한 경우 거부됨",
+      description: "권한이 부족할 경우",
     })
   )
-}
-
-export const RequirePermissionToEditNovel = RequirePermissionToReadNovel

@@ -30,6 +30,4 @@ export class AuthService {
       accessToken: await this.jwtService.signAsync(payload),
     }
   }
-
-  async logout() {}
 }

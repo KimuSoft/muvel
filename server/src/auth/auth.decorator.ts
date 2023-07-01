@@ -23,29 +23,12 @@ export const RequireAuth = () => {
   )
 }
 
-export const RequireAdmin = () => {
-  return applyDecorators(
-    RequireAuth,
-    AdminOnly,
-    ApiForbiddenResponse({
-      description: "관리자 권한이 없을 경우 거부됨",
-    })
-  )
-}
-
 export const AdminOnly = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest()
     if (!request.user.admin) {
       throw new ForbiddenException()
     }
-  }
-)
-
-export const User = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
-    const req = ctx.switchToHttp().getRequest<EpRequest>()
-    return req.user
   }
 )
 

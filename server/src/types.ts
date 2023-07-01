@@ -17,14 +17,24 @@ export enum BlockType {
   Commnet,
 }
 
-export enum Importance {
-  Main,
-  Sub,
-  Minor,
-}
-
 export enum ShareType {
   Private,
   Unlisted,
   Public,
+}
+
+// 숫자가 적을 수록 상위 권한 (일반적으로)
+export enum NovelPermission {
+  // 소설의 작가
+  Author,
+  // 소설의 작가
+  DeleteNovel,
+  // 소설의 작가
+  EditNovel,
+  // 소설의 작가
+  CreateNovel,
+  // 주석을 읽을 수 있음, 일반적으로 작가
+  ReadNovelComments,
+  // 공개 설정에 따라 일반 유저 또는 작가
+  ReadNovel,
 }

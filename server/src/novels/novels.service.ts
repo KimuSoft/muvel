@@ -5,7 +5,7 @@ import { Repository } from "typeorm"
 import { EpisodesService } from "../episodes/episodes.service"
 import { SearchNovelsDto } from "./dto/search-novels.dto"
 import { UserEntity } from "../users/user.entity"
-import { ShareType } from "../types"
+import { NovelPermission, ShareType } from "../types"
 import { PatchEpisodesDto } from "./dto/patch-episodes.dto"
 
 @Injectable()
@@ -125,13 +125,25 @@ export class NovelsService {
       .getMany()
   }
 
-  async checkAuthor(novelId: string, userId: string) {
+  async getPermission(novelId: string, userId?: string) {
     const novel = await this.novelsRepository.findOne({
       where: { id: novelId },
       relations: ["author"],
     })
 
-    return novel.author.id === userId
+    if (userId && novel.author.id === userId) {
+      return [
+        NovelPermission.Author,
+        NovelPermission.ReadNovel,
+        NovelPermission.EditNovel,
+        NovelPermission.CreateNovel,
+        NovelPermission.DeleteNovel,
+        NovelPermission.ReadNovelComments,
+      ]
+    } else {
+      if (novel.share === ShareType.Private) return []
+      else return [NovelPermission.ReadNovel]
+    }
   }
 
   async uploadThumbnail(novelId: string, thumbnail: Express.Multer.File) {}
@@ -145,5 +157,13 @@ export class NovelsService {
     //   console.log("삭제", i)
     //   await this.episodesService.delete(i.id)
     // }
+  }
+
+  async getNovelByEpisodeId(episodeId: string) {
+    return this.novelsRepository
+      .createQueryBuilder("novel")
+      .leftJoinAndSelect("novel.episodes", "episodes")
+      .where("episodes.id = :episodeId", { episodeId })
+      .getOne()
   }
 }
