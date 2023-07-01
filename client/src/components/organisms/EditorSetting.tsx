@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react"
+import React, { useContext, useEffect, useMemo } from "react"
 import { CiSettings } from "react-icons/ci"
 import {
   Button,
@@ -20,28 +20,12 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { toast } from "react-toastify"
-import useEditorSetting, {
-  defaultOption,
-  EditorOption,
-} from "../../hooks/useEditorSetting"
+import EditorContext from "../../context/EditorContext"
+import { defaultOption } from "../../types"
 
 const EditorSetting: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-
-  const initialOption = useEditorSetting()
-  const [options, setOptions] = React.useState<EditorOption>(initialOption)
-
-  useEffect(() => {
-    try {
-      localStorage["editorOption"] = JSON.stringify(options)
-    } catch (e: any) {
-      toast.error(
-        `에디터 설정을 불러오는 데 실패하여 자동으로 초기화되었어요! - ` +
-          e.toString()
-      )
-      localStorage["editorOption"] = JSON.stringify(defaultOption)
-    }
-  }, [options])
+  const { option, setOption } = useContext(EditorContext)
 
   return (
     <>
@@ -58,16 +42,52 @@ const EditorSetting: React.FC = () => {
           <ModalCloseButton />
           <ModalBody>
             <FormControl mb={3}>
-              <FormLabel>행 간격: {options.lineHeight}px</FormLabel>
+              <FormLabel>줄 높이: {option.lineHeight}px</FormLabel>
               <Slider
                 aria-label="slider-ex-1"
-                defaultValue={options.lineHeight}
-                value={options.lineHeight}
+                defaultValue={option.lineHeight}
+                value={option.lineHeight}
                 onChange={(value: number) =>
-                  setOptions({ ...options, lineHeight: value })
+                  setOption({ ...option, lineHeight: value })
                 }
                 min={12}
-                max={40}
+                max={56}
+              >
+                <SliderTrack>
+                  <SliderFilledTrack />
+                </SliderTrack>
+                <SliderThumb />
+              </Slider>
+            </FormControl>
+            <FormControl mb={3}>
+              <FormLabel>행 간격: {option.gap}px</FormLabel>
+              <Slider
+                aria-label="slider-ex-1"
+                defaultValue={option.gap}
+                value={option.gap}
+                onChange={(value: number) =>
+                  setOption({ ...option, gap: value })
+                }
+                min={0}
+                max={16}
+              >
+                <SliderTrack>
+                  <SliderFilledTrack />
+                </SliderTrack>
+                <SliderThumb />
+              </Slider>
+            </FormControl>
+            <FormControl mb={3}>
+              <FormLabel>글자 크기: {option.fontSize}px</FormLabel>
+              <Slider
+                aria-label="slider-ex-1"
+                defaultValue={option.fontSize}
+                value={option.fontSize}
+                onChange={(value: number) =>
+                  setOption({ ...option, fontSize: value })
+                }
+                min={6}
+                max={32}
               >
                 <SliderTrack>
                   <SliderFilledTrack />
@@ -76,16 +96,16 @@ const EditorSetting: React.FC = () => {
               </Slider>
             </FormControl>
             <FormControl>
-              <FormLabel>글자 크기: {options.fontSize}px</FormLabel>
+              <FormLabel>들여쓰기: {option.indent}em</FormLabel>
               <Slider
                 aria-label="slider-ex-1"
-                defaultValue={options.fontSize}
-                value={options.fontSize}
+                defaultValue={option.indent}
+                value={option.indent}
                 onChange={(value: number) =>
-                  setOptions({ ...options, fontSize: value })
+                  setOption({ ...option, indent: value })
                 }
-                min={6}
-                max={36}
+                min={0}
+                max={4}
               >
                 <SliderTrack>
                   <SliderFilledTrack />
@@ -93,13 +113,13 @@ const EditorSetting: React.FC = () => {
                 <SliderThumb />
               </Slider>
             </FormControl>
-            <Text>※ 에디터 설정은 새로고침 후에 적용됩니다. </Text>
           </ModalBody>
           <ModalFooter>
             <Button
               colorScheme="blue"
+              variant={"outline"}
               mr={3}
-              onClick={() => setOptions(defaultOption)}
+              onClick={() => setOption(defaultOption)}
             >
               기본값 복원
             </Button>

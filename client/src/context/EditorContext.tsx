@@ -6,6 +6,7 @@ import {
   initialPartialEpisode,
 } from "../types/episode.type"
 import { Block } from "../types/block.type"
+import { EditorOption } from "../types"
 
 export default createContext<{
   novel: Novel
@@ -24,6 +25,9 @@ export default createContext<{
 
   isLoading: boolean
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+
+  option: EditorOption
+  setOption: React.Dispatch<React.SetStateAction<EditorOption>>
 }>({
   novel: initialNovel,
   setNovel: () => {},
@@ -36,4 +40,6 @@ export default createContext<{
   setIsSaving: () => {},
   isLoading: false,
   setIsLoading: () => {},
+  option: {} as unknown as EditorOption,
+  setOption: () => {},
 })

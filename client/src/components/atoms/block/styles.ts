@@ -1,13 +1,13 @@
 import styled from "styled-components"
 import ContentEditable from "react-contenteditable"
 import { ColorMode, theme } from "@chakra-ui/react"
-import { EditorOption } from "../../../hooks/useEditorSetting"
+import { EditorOption } from "../../../types"
 
 export const StyledContentEditable = styled(ContentEditable)<{
   colorMode: ColorMode
   editorSetting: EditorOption
 }>`
-  text-indent: 1em;
+  text-indent: ${({ editorSetting }) => editorSetting.indent}em;
   border: none;
   outline: none;
   -webkit-box-shadow: none;
@@ -17,7 +17,7 @@ export const StyledContentEditable = styled(ContentEditable)<{
   overflow-y: hidden;
 
   margin: 0 0;
-  padding: 8px 0;
+  padding: ${({ editorSetting }) => editorSetting.gap / 2}px 0;
 
   width: 100%;
 
@@ -25,7 +25,7 @@ export const StyledContentEditable = styled(ContentEditable)<{
   color: ${({ colorMode }) =>
     colorMode === "dark" ? theme.colors.gray["300"] : theme.colors.gray["700"]};
   font-weight: ${({ colorMode }) => (colorMode === "dark" ? 50 : 500)};
-  font-size: 19px;
+  font-size: ${({ editorSetting }) => editorSetting.fontSize}px;
   line-height: ${({ editorSetting }) => editorSetting.lineHeight}px;
 
   text-align: left;
@@ -35,11 +35,11 @@ export const StyledContentEditable = styled(ContentEditable)<{
   //color: var(--color-zinc-100);
   caret-color: var(--color-zinc-300);
 
-  // 모바일 환경으로 추정되는 경우
-  @media (max-width: 800px) {
-    font-size: 16px;
-    padding: 5px 0;
-  }
+  //// 모바일 환경으로 추정되는 경우
+  //@media (max-width: 800px) {
+  //  font-size: 16px;
+  //  padding: 5px 0;
+  //}
 
   border-radius: 5px;
 

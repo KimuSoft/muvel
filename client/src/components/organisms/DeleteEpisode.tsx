@@ -36,7 +36,7 @@ const DeleteEpisode: React.FC<{ novel: Novel; episodeId: string }> = ({
 
   return (
     <>
-      {novel.episodeIds.length > 1 ? (
+      {novel?.episodeIds?.length > 1 ? (
         <Button onClick={onOpen} colorScheme="red">
           <AiTwotoneDelete style={{ marginRight: 10 }} /> 에피소드 삭제
         </Button>

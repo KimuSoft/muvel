@@ -34,12 +34,22 @@ const NovelDetail: React.FC = () => {
 
   const fetchNovel = async () => {
     setIsLoading(true)
-    const { data } = await api.get<Novel>(`/novels/${novelId}`)
-    if (!data) {
+
+    let novel: Novel | null = null
+    try {
+      novel = (await api.get<Novel>(`/novels/${novelId}`)).data
+    } catch (e) {
       navigate("/novels")
-      toast("소설을 찾을 수 없습니다")
+      toast.error("이 소설은 주인님만 볼 수 있어요!")
     }
-    setNovel(data)
+
+    if (!novel) {
+      navigate("/novels")
+      toast.error("소설을 찾을 수 없습니다")
+      return
+    }
+
+    setNovel(novel)
     setIsLoading(false)
   }
 

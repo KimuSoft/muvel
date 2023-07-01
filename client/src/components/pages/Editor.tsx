@@ -13,6 +13,7 @@ import {
 } from "../../types/episode.type"
 import _ from "lodash"
 import { Block } from "../../types/block.type"
+import { defaultOption, EditorOption } from "../../types"
 
 const EditorPage: React.FC = () => {
   // Hooks
@@ -32,6 +33,25 @@ const EditorPage: React.FC = () => {
   // State (UI)
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const initOption = () => {
+    try {
+      const storageOption = JSON.parse(
+        localStorage["editorOption"]
+      ) as EditorOption
+
+      const _option: EditorOption = { ...defaultOption }
+      if (storageOption.fontSize) _option.fontSize = storageOption.fontSize
+      if (storageOption.lineHeight)
+        _option.lineHeight = storageOption.lineHeight
+
+      return _option
+    } catch (e) {
+      return defaultOption
+    }
+  }
+
+  const [option, setOption] = useState<EditorOption>(initOption())
 
   useEffect(() => {
     // 로그인되어 있지 않은 경우 로그인 페이지로 이동
@@ -62,8 +82,6 @@ const EditorPage: React.FC = () => {
     episode.title !== episodeCache?.title ||
     episode.description !== episodeCache?.description ||
     episode.chapter !== episodeCache?.chapter
-
-  const isBlocksUpdated = () => !_.isEqual(blocks, blocksCache)
 
   // 변경사항 자동 저장 (Debounce)
   React.useEffect(() => {
@@ -148,6 +166,8 @@ const EditorPage: React.FC = () => {
         setIsSaving,
         isLoading,
         setIsLoading,
+        option,
+        setOption,
       }}
     >
       <EditorTemplate />

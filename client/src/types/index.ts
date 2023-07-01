@@ -3,3 +3,17 @@
 export interface PartialData {
   id: string
 }
+
+export const defaultOption: EditorOption = {
+  lineHeight: 34,
+  fontSize: 19,
+  gap: 8,
+  indent: 1,
+}
+
+export interface EditorOption {
+  lineHeight: number
+  fontSize: number
+  gap: number
+  indent: number
+}

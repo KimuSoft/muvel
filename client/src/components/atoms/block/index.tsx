@@ -13,7 +13,6 @@ import { SortableElement } from "react-sortable-hoc"
 import { Block, BlockType } from "../../../types/block.type"
 import { Box, useColorMode } from "@chakra-ui/react"
 import BlockHandle from "./BlockHandle"
-import useEditorSetting from "../../../hooks/useEditorSetting"
 
 export const SortableBlock = SortableElement<BlockProps>(
   (props: BlockProps) => (
@@ -42,7 +41,7 @@ const BlockComponent: React.FC<BlockProps> = ({
   moveToRelativeBlock,
 }) => {
   // Ctrl + V 기능 전용으로 사용
-  const { blocks, setBlocks } = useContext(EditorContext)
+  const { blocks, setBlocks, option } = useContext(EditorContext)
 
   const contenteditable = useRef<HTMLDivElement>(null)
   const content = useRef<string>(block.content)
@@ -205,8 +204,6 @@ const BlockComponent: React.FC<BlockProps> = ({
     }
   }
 
-  const editorSetting = useEditorSetting()
-
   return block.blockType === BlockType.Comment ? (
     <CommentBlock
       innerRef={contenteditable}
@@ -218,7 +215,7 @@ const BlockComponent: React.FC<BlockProps> = ({
       data-position={position}
       placeholder={"내용을 입력해 주세요."}
       colorMode={colorMode}
-      editorSetting={editorSetting}
+      editorSetting={option}
     />
   ) : (
     <StyledContentEditable
@@ -231,7 +228,7 @@ const BlockComponent: React.FC<BlockProps> = ({
       data-position={position}
       placeholder={"내용을 입력해 주세요."}
       colorMode={colorMode}
-      editorSetting={editorSetting}
+      editorSetting={option}
     />
   )
 }
