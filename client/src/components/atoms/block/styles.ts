@@ -1,9 +1,11 @@
 import styled from "styled-components"
 import ContentEditable from "react-contenteditable"
 import { ColorMode, theme } from "@chakra-ui/react"
+import { EditorOption } from "../../../hooks/useEditorSetting"
 
 export const StyledContentEditable = styled(ContentEditable)<{
   colorMode: ColorMode
+  editorSetting: EditorOption
 }>`
   text-indent: 1em;
   border: none;
@@ -24,7 +26,7 @@ export const StyledContentEditable = styled(ContentEditable)<{
     colorMode === "dark" ? theme.colors.gray["300"] : theme.colors.gray["700"]};
   font-weight: ${({ colorMode }) => (colorMode === "dark" ? 50 : 500)};
   font-size: 19px;
-  line-height: 34px;
+  line-height: ${({ editorSetting }) => editorSetting.lineHeight}px;
 
   text-align: left;
   // text-align: justify;
@@ -80,12 +82,10 @@ export const BlockContainer = styled.li`
 `
 
 export const CommentBlock = styled(StyledContentEditable)<{
-  theme: "dark" | "white"
+  colorMode: ColorMode
 }>`
-  background-color: ${(props) =>
-    props.theme === "dark"
-      ? theme.colors.gray["900"]
-      : theme.colors.gray["100"]};
+  background-color: ${({ colorMode }) =>
+    colorMode === "dark" ? theme.colors.gray["900"] : theme.colors.gray["100"]};
   color: ${theme.colors.gray["500"]};
   font-size: 16px;
   padding: 10px 20px;

@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom"
 import ExportButton from "../../molecules/ExportButton"
 import ImportButton from "../../molecules/ImportButton"
 import DeleteEpisode from "../DeleteEpisode"
+import EditorSetting from "../EditorSetting"
 
 const Sidebar: React.FC = () => {
   const { novel, episode, refreshNovel } = useContext(EditorContext)
@@ -60,6 +61,7 @@ const Sidebar: React.FC = () => {
             <HStack w="100%">
               <DeleteEpisode novel={novel} episodeId={episode.id} />
               <Spacer />
+              <EditorSetting />
               <ExportButton />
               <ImportButton />
             </HStack>
