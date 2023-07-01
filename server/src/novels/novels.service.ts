@@ -18,6 +18,10 @@ export class NovelsService {
     private episodesService: EpisodesService
   ) {}
 
+  async delete(id: string) {
+    return this.novelsRepository.softDelete({ id })
+  }
+
   async create(
     authorId: string,
     title: string,

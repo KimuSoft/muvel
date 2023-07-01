@@ -97,7 +97,9 @@ export class NovelsController {
     description: "소설을 삭제합니다.",
   })
   @RequirePermission(NovelPermission.DeleteNovel)
-  async deleteNovel(@Request() req, @Param("id") id: string) {}
+  async deleteNovel(@Request() req, @Param("id") id: string) {
+    return this.novelsService.delete(id)
+  }
 
   @Post(":id/episodes")
   @ApiOperation({

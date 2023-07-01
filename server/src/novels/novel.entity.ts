@@ -1,6 +1,7 @@
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
@@ -23,12 +24,6 @@ export class NovelEntity {
   @Column({ nullable: true })
   description: string
 
-  @CreateDateColumn()
-  createdAt: Date
-
-  @UpdateDateColumn()
-  updatedAt: Date
-
   @OneToMany(() => EpisodeEntity, (episode) => episode.novel, {
     cascade: true,
   })
@@ -47,4 +42,13 @@ export class NovelEntity {
 
   @Column({ default: ShareType.Private })
   share: ShareType
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
+
+  @DeleteDateColumn()
+  deletedAt: Date
 }
