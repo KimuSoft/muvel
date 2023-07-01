@@ -10,7 +10,7 @@ const Logo: React.FC = () => {
       <Heading size="lg" userSelect="none">
         Muvel
       </Heading>
-      <Text userSelect="none">v0.1.2</Text>
+      <Text userSelect="none">v0.1.3</Text>
     </HStack>
   )
 }
