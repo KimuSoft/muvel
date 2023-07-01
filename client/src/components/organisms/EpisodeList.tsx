@@ -107,18 +107,17 @@ const SortableEpisodeRow = SortableElement<EpisodeRowProps>(
 
 const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
   const location = useLocation()
+  const navigate = useNavigate()
+
+  const date = useMemo(() => new Date(episode.createdAt), [episode.createdAt])
 
   const isNow = (episodeId: string) => {
     return location.pathname === `/episodes/${episodeId}`
   }
 
-  const navigate = useNavigate()
-
   const onClick = () => {
     navigate(`/episodes/${episode.id}`)
   }
-
-  const date = useMemo(() => new Date(episode.createdAt), [episode.createdAt])
 
   return (
     // 100글자까지만 보여주고 이후에 ...

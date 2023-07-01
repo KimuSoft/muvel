@@ -3,7 +3,6 @@ import { MdLogin } from "react-icons/md"
 import { useNavigate } from "react-router-dom"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import styled from "styled-components"
-import { toast } from "react-toastify"
 import { Button, Center, Heading, Text, VStack } from "@chakra-ui/react"
 import { AiFillRead } from "react-icons/ai"
 

@@ -39,8 +39,6 @@ const EditorPage: React.FC = () => {
       window.location.href = import.meta.env.VITE_API_BASE + "/auth/login"
       return
     }
-
-    initEpisode().then()
   }, [])
 
   // 블록 변경사항을 로드하는 메서드
