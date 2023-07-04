@@ -10,5 +10,13 @@ services:
       - POSTGRES_PASSWORD=paring
       - POSTGRES_DB=muvel
 
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    restart: always
+    volumes:
+      - ./data.ms:/data.ms
+    ports:
+      - 7700:7700
+
 volumes:
   pg-data:

@@ -3,60 +3,17 @@ import React, { useContext, useEffect, useState } from "react"
 import ProgressBar from "../../../atoms/ProgressBar"
 import EditorContext from "../../../../context/EditorContext"
 import {
-  Box,
   useColorModeValue,
   VStack,
   Text,
   Heading,
   HStack,
   Spacer,
-  Button,
   IconButton,
 } from "@chakra-ui/react"
 import { FaExchangeAlt } from "react-icons/fa"
 import blocksToText from "../../../../utils/blocksToText"
 import confetti from "canvas-confetti"
-
-const WidgetBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  padding: 30px;
-  gap: 5px;
-
-  width: 100%;
-  height: 130px;
-
-  background-color: #3f3f46;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 10px;
-`
-
-const CheeringText = styled.h4`
-  margin: 0 0;
-  font-size: 16px;
-  font-weight: 500;
-  color: #ffffff;
-`
-
-const GoalTextBlock = styled.div`
-  display: flex;
-  flex-direction: row;
-
-  margin: 0 0;
-  padding: 0;
-  height: 30px;
-  width: 100%;
-`
-
-const GoalText = styled.h3`
-  margin: 0 0;
-  font-size: 24px;
-  font-weight: 700;
-  color: #ffffff;
-
-  width: calc(100% - 70px);
-`
 
 const GoalPercent = styled.h3`
   margin: 0 0;

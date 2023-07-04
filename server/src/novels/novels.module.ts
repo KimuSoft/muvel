@@ -5,14 +5,14 @@ import { NovelsService } from "./novels.service"
 import { EpisodesModule } from "../episodes/episodes.module"
 import { NovelsController } from "./novels.controller"
 import { UserEntity } from "../users/user.entity"
-import { APP_GUARD } from "@nestjs/core"
-import { NovelsGuard } from "./novels.guard"
+import { SearchModule } from "../search/search.module"
 
 @Global()
 @Module({
   imports: [
     TypeOrmModule.forFeature([NovelEntity, UserEntity]),
     EpisodesModule,
+    SearchModule,
   ],
   exports: [NovelsService],
   providers: [NovelsService],

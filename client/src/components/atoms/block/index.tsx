@@ -218,18 +218,21 @@ const BlockComponent: React.FC<BlockProps> = ({
       editorSetting={option}
     />
   ) : (
-    <StyledContentEditable
-      innerRef={contenteditable}
-      onChange={handleChange}
-      onKeyDown={keyDownHandler}
-      // @ts-ignore
-      onPaste={pasteHandler}
-      html={content.current}
-      data-position={position}
-      placeholder={"내용을 입력해 주세요."}
-      colorMode={colorMode}
-      editorSetting={option}
-    />
+    <>
+      {position}
+      <StyledContentEditable
+        innerRef={contenteditable}
+        onChange={handleChange}
+        onKeyDown={keyDownHandler}
+        // @ts-ignore
+        onPaste={pasteHandler}
+        html={content.current}
+        data-position={position}
+        placeholder={"내용을 입력해 주세요."}
+        colorMode={colorMode}
+        editorSetting={option}
+      />
+    </>
   )
 }
 

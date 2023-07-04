@@ -1,19 +1,12 @@
-import { ApiProperty } from "@nestjs/swagger"
 import { IsInt, IsOptional, IsString, Min } from "class-validator"
+import { ApiProperty } from "@nestjs/swagger"
 import { Transform } from "class-transformer"
-import { NovelDto } from "./novel.dto"
-import { PartialUserDto } from "../../users/dto/user.dto"
 
-export class SearchNovelsDto {
-  @ApiProperty({ description: "제목 검색", required: false })
+export class SearchInNovelDto {
+  @ApiProperty({ description: "검색어", required: false })
   @IsOptional()
   @IsString()
-  title: string
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  author?: string
+  q: string
 
   @Transform(({ value }) => parseInt(value.toString()))
   @ApiProperty({ default: 0, required: false, minimum: 0 })
@@ -28,9 +21,4 @@ export class SearchNovelsDto {
   @IsInt()
   @Min(1)
   display: number = 20
-}
-
-export class SearchNovelsResponseDto extends NovelDto {
-  @ApiProperty()
-  author: PartialUserDto
 }

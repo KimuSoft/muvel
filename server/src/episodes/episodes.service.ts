@@ -5,13 +5,15 @@ import { EpisodeEntity } from "./episode.entity"
 import { BlocksService } from "../blocks/blocks.service"
 import { PatchBlocksDto } from "./dto/patch-blocks.dto"
 import { PatchEpisodesDto } from "../novels/dto/patch-episodes.dto"
+import { SearchService } from "../search/search.service"
 
 @Injectable()
 export class EpisodesService {
   constructor(
     @InjectRepository(EpisodeEntity)
     private episodesRepository: Repository<EpisodeEntity>,
-    private blocksService: BlocksService
+    private blocksService: BlocksService,
+    private searchService: SearchService
   ) {}
 
   async create(
@@ -68,6 +70,22 @@ export class EpisodesService {
           episode,
         }))
     )
+
+    this.searchService
+      .insertBlocks(
+        blockDiffs.map((b) => ({
+          id: b.id,
+          content: b.content,
+          blockType: b.blockType,
+          order: b.order,
+          episodeId: id,
+          episodeName: episode.title,
+          episodeNumber: episode.order,
+          index: b.order,
+          novelId: episode.novelId,
+        }))
+      )
+      .then()
 
     for (const i of blockDiffs.filter((b) => b.isDeleted)) {
       console.log("삭제", i)

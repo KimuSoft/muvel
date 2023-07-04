@@ -4,9 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
-    "@types/uuid": "^9",
-    "prettier": "^2.7.1",
-    "typescript": "^5.1.5"
+    "prettier": "^2.7.1"
   },
   "scripts": {
     "dev": "yarn workspaces foreach -pi run dev"
@@ -15,9 +13,5 @@
     "./client",
     "./server"
   ],
-  "packageManager": "yarn@3.2.4",
-  "dependencies": {
-    "@types/multer": "^1.4.7",
-    "uuid": "^9.0.0"
-  }
+  "packageManager": "yarn@3.2.4"
 }

@@ -23,6 +23,7 @@ import ExportButton from "../../molecules/ExportButton"
 import ImportButton from "../../molecules/ImportButton"
 import DeleteEpisode from "../DeleteEpisode"
 import EditorSetting from "../EditorSetting"
+import SearchModal from "../SearchModal"
 
 const Sidebar: React.FC = () => {
   const { novel, episode, refreshNovel } = useContext(EditorContext)

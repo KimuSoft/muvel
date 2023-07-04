@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useMemo } from "react"
-import { CiSettings } from "react-icons/ci"
+import React, { useContext } from "react"
 import {
   Button,
   FormControl,
@@ -16,12 +15,12 @@ import {
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
-  Text,
+  Tooltip,
   useDisclosure,
 } from "@chakra-ui/react"
-import { toast } from "react-toastify"
 import EditorContext from "../../context/EditorContext"
 import { defaultOption } from "../../types"
+import { AiFillSetting } from "react-icons/ai"
 
 const EditorSetting: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -29,11 +28,13 @@ const EditorSetting: React.FC = () => {
 
   return (
     <>
-      <IconButton
-        aria-label={"에디터 설정"}
-        icon={<CiSettings />}
-        onClick={onOpen}
-      />
+      <Tooltip label={"에디터 디자인 설정하기"} openDelay={500}>
+        <IconButton
+          aria-label={"에디터 설정"}
+          icon={<AiFillSetting />}
+          onClick={onOpen}
+        />
+      </Tooltip>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

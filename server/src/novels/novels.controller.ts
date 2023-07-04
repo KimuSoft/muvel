@@ -30,11 +30,16 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express"
 import { PatchEpisodesDto } from "./dto/patch-episodes.dto"
 import { NovelPermission } from "../types"
+import { SearchService } from "../search/search.service"
+import { SearchInNovelDto } from "./dto/search-in-novel.dto"
 
 @ApiTags("Novels")
 @Controller("api/novels")
 export class NovelsController {
-  constructor(private readonly novelsService: NovelsService) {}
+  constructor(
+    private readonly novelsService: NovelsService,
+    private readonly searchService: SearchService
+  ) {}
 
   @Get()
   @ApiOperation({
@@ -166,6 +171,29 @@ export class NovelsController {
     @Body() patchEpisodesDtos: PatchEpisodesDto[]
   ) {
     return this.novelsService.patchEpisodes(id, patchEpisodesDtos)
+  }
+
+  @Get(":id/search")
+  @ApiOperation({
+    summary: "소설 안에서 검색하기",
+    description:
+      "소설 안의 블록, 설정, 캐릭터 문서 등을 검색합니다. (powered by Meilisearch)",
+  })
+  @ApiOkResponse({
+    type: SearchNovelsResponseDto,
+    isArray: true,
+  })
+  @RequirePermission(NovelPermission.ReadNovel)
+  async searchInNovel(
+    @Param("id") id: string,
+    @Query() searchInNovelDto: SearchInNovelDto
+  ) {
+    return this.searchService.searchInNovel(
+      id,
+      searchInNovelDto.q,
+      searchInNovelDto.display,
+      searchInNovelDto.start
+    )
   }
 }
 
