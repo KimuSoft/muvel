@@ -15,7 +15,7 @@ services:
     ports:
       - "2345:5432"
     volumes:
-      - pg-data:/data/db
+      - pg-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=paring
       - POSTGRES_DB=muvel
