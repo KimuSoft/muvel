@@ -25,6 +25,9 @@ export class EpisodeEntity {
   @Column({ default: "" })
   chapter: string
 
+  @Column({ default: "" })
+  authorComment: string
+
   // 임시로 생성 날짜를 기준으로 정렬하도록 함
   @CreateDateColumn()
   createdAt: Date

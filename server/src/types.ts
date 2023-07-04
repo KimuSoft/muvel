@@ -38,3 +38,15 @@ export enum NovelPermission {
   // 공개 설정에 따라 일반 유저 또는 작가
   ReadNovel,
 }
+
+// 캐릭터의 스토리적 중요도
+export enum Importance {
+  // 주인공
+  Main,
+  // 주요 캐릭터
+  Major,
+  // 일반 캐릭터
+  Minor,
+  // 배경 캐릭터 (엑스트라)
+  Background,
+}

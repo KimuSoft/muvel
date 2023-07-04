@@ -131,7 +131,7 @@ const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
       }
       openDelay={500}
     >
-      <HStack
+      <VStack
         onClick={onClick}
         pl={3}
         pr={3}
@@ -143,22 +143,31 @@ const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
         _hover={{
           backgroundColor: useColorModeValue("gray.200", "gray.600"),
         }}
-        transition={"background-color 0.3s ease"}
+        transition={"background-color 0.1s ease"}
+        align="baseline"
       >
-        <Text
-          as={isNow(episode.id) ? "b" : undefined}
-          color={
-            isNow(episode.id)
-              ? useColorModeValue("purple.500", "purple.200")
-              : "gray.500"
-          }
-          fontSize="md"
-          mr={3}
-        >
-          {order}편
-        </Text>
-        <Text fontSize="xl">{episode.title}</Text>
-      </HStack>
+        <HStack>
+          <Text
+            as={isNow(episode.id) ? "b" : undefined}
+            color={
+              isNow(episode.id)
+                ? useColorModeValue("purple.500", "purple.200")
+                : "gray.500"
+            }
+            fontSize="sm"
+            w={8}
+          >
+            {order}편
+          </Text>
+          <Text fontSize="xl">{episode.title}</Text>
+        </HStack>
+        {/*<HStack color={useColorModeValue("gray.300", "gray.500")}>*/}
+        {/*  <FaClock />*/}
+        {/*  <Text fontSize="sm">*/}
+        {/*    {date.getFullYear()}년 {date.getMonth() + 1}월 {date.getDate()}일*/}
+        {/*  </Text>*/}
+        {/*</HStack>*/}
+      </VStack>
     </Tooltip>
   )
 }

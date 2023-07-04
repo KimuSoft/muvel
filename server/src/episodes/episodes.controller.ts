@@ -91,4 +91,20 @@ export class EpisodesController {
   ) {
     this.episodesService.patchBlocks(id, blockDiffs).then()
   }
+
+  @Get(":id/search")
+  @ApiOperation({
+    summary: "에피소드 내 블록 검색하기",
+    description: "에피소드의 블록, 캐릭터, 설정 등을 종합적으로 검색합니다.",
+  })
+  @ApiOkResponse({
+    type: BlockDto,
+    isArray: true,
+  })
+  @RequirePermission(NovelPermission.ReadNovel)
+  async searchBlocks(@Param("id") id: string, @Body() query: string) {
+    const episode = await this.episodesService.findOne(id, ["blocks"])
+    episode.blocks.sort((a, b) => a.order - b.order)
+    return episode.blocks
+  }
 }

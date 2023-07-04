@@ -3,7 +3,7 @@ import { MdLogin } from "react-icons/md"
 import { useNavigate } from "react-router-dom"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import styled from "styled-components"
-import { Button, Center, Heading, Text, VStack } from "@chakra-ui/react"
+import { Button, Center, Heading, HStack, Text, VStack } from "@chakra-ui/react"
 import { AiFillRead } from "react-icons/ai"
 
 const Main: React.FC = () => {
@@ -31,18 +31,21 @@ const Main: React.FC = () => {
           </Heading>
           <Text size="4xl">당신과 당신의 이야기를 위한 작은 방</Text>
         </VStack>
-        <Button onClick={loginClickHandler}>
-          <MdLogin style={{ marginRight: 8 }} />
-          로그인하고 글쓰기
-        </Button>
-        <Button
-          onClick={() => {
-            navigate("/novels")
-          }}
-        >
-          <AiFillRead style={{ marginRight: 8 }} />
-          소설 보러 가기
-        </Button>
+        <HStack>
+          <Button onClick={loginClickHandler} colorScheme={"purple"}>
+            <MdLogin style={{ marginRight: 8 }} />
+            로그인하고 글쓰기
+          </Button>
+          <Button
+            onClick={() => {
+              navigate("/novels")
+            }}
+            colorScheme={"purple"}
+          >
+            <AiFillRead style={{ marginRight: 8 }} />
+            소설 보러 가기
+          </Button>
+        </HStack>
       </VStack>
     </Center>
   )
