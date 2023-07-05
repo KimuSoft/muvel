@@ -184,7 +184,7 @@ const Editor: React.FC = () => {
             key={`${b.id}-block`}
             index={index}
             block={b}
-            position={hasFocus(b.blockType) ? index + 1 - skipIndex : -99}
+            position={hasFocus(b.blockType) ? index - skipIndex : -99}
             addBlock={addBlockHandler}
             deleteBlock={deleteBlockHandler}
             updateBlock={updateBlockHandler}

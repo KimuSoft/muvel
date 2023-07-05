@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useRef } from "react"
+import React, { useContext, useEffect, useRef } from "react"
 import { ContentEditableEvent } from "react-contenteditable"
 import {
   BlockContainer,
@@ -140,14 +140,36 @@ const BlockComponent: React.FC<BlockProps> = ({
     }
 
     // 아무 곳에서나 위 방향키를 누르면 위 블록으로 이동
-    else if (e.key === "ArrowUp" && !e.shiftKey) {
-      e.preventDefault()
+    else if (e.key === "ArrowUp" && !e.shiftKey && !afterCaret && position) {
+      if (!beforeCaret) return console.warn("beforeCaret is null")
+      // 캐럿 위치를 원래대로 복구함
+      if (content.current) {
+        const range = document.createRange()
+        const sel = window.getSelection()
+        range.setStart(contenteditable.current?.childNodes[0]!, beforeCaret)
+        range.collapse(true)
+        sel?.removeAllRanges()
+        sel?.addRange(range)
+      }
       moveToRelativeBlock?.(position, -1, true)
     }
 
     // 아무 곳에서나 아래 방향키를 누르면 아래 블록으로 이동
-    else if (e.key === "ArrowDown" && !e.shiftKey) {
-      e.preventDefault()
+    else if (
+      e.key === "ArrowDown" &&
+      !e.shiftKey &&
+      afterCaret === block.content.length
+    ) {
+      if (!beforeCaret) return console.warn("beforeCaret is null")
+      // 캐럿 위치를 원래대로 복구함
+      if (content.current) {
+        const range = document.createRange()
+        const sel = window.getSelection()
+        range.setStart(contenteditable.current?.childNodes[0]!, beforeCaret)
+        range.collapse(true)
+        sel?.removeAllRanges()
+        sel?.addRange(range)
+      }
       moveToRelativeBlock?.(position, 1, true)
     }
 
