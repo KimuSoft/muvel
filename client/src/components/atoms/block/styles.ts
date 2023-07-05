@@ -5,9 +5,9 @@ import { EditorOption } from "../../../types"
 
 export const StyledContentEditable = styled(ContentEditable)<{
   colorMode: ColorMode
-  editorSetting: EditorOption
+  editor_options: EditorOption
 }>`
-  text-indent: ${({ editorSetting }) => editorSetting.indent}em;
+  text-indent: ${({ editor_options }) => editor_options.indent}em;
   border: none;
   outline: none;
   -webkit-box-shadow: none;
@@ -17,7 +17,7 @@ export const StyledContentEditable = styled(ContentEditable)<{
   overflow-y: hidden;
 
   margin: 0 0;
-  padding: ${({ editorSetting }) => editorSetting.gap / 2}px 0;
+  padding: ${({ editor_options }) => editor_options.gap / 2}px 0;
 
   width: 100%;
 
@@ -25,8 +25,8 @@ export const StyledContentEditable = styled(ContentEditable)<{
   color: ${({ colorMode }) =>
     colorMode === "dark" ? theme.colors.gray["300"] : theme.colors.gray["700"]};
   font-weight: ${({ colorMode }) => (colorMode === "dark" ? 50 : 500)};
-  font-size: ${({ editorSetting }) => editorSetting.fontSize}px;
-  line-height: ${({ editorSetting }) => editorSetting.lineHeight}px;
+  font-size: ${({ editor_options }) => editor_options.fontSize}px;
+  line-height: ${({ editor_options }) => editor_options.lineHeight}px;
 
   text-align: left;
   // text-align: justify;

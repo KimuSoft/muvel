@@ -237,7 +237,7 @@ const BlockComponent: React.FC<BlockProps> = ({
       data-position={position}
       placeholder={"내용을 입력해 주세요."}
       colorMode={colorMode}
-      editorSetting={option}
+      editor_options={option}
     />
   ) : (
     <>
@@ -252,7 +252,7 @@ const BlockComponent: React.FC<BlockProps> = ({
         data-position={position}
         placeholder={"내용을 입력해 주세요."}
         colorMode={colorMode}
-        editorSetting={option}
+        editor_options={option}
       />
     </>
   )
