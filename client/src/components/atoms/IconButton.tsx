@@ -5,7 +5,6 @@ const IconButton: React.FC<
   { text?: React.ReactNode } & React.HTMLProps<HTMLDivElement>
 > = ({ text, children, ...props }) => {
   return (
-    // @ts-expect-error styled-component 이슈로 보임 (작동 이상 없음)
     <IconButtonContainer {...props}>
       {children}
       {text}

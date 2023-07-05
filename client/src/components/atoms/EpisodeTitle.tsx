@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { KeyboardEventHandler, useContext } from "react"
 import styled from "styled-components"
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable"
 import EditorContext from "../../context/EditorContext"
@@ -22,6 +22,7 @@ const EpisodeTitle: React.FC = () => {
         html={context.episode.title}
         onChange={titleChangeHandler}
         placeholder="제목을 입력해 주세요"
+        // @ts-ignore
         onKeyDown={(e) => {
           if (e.key === "Enter") e.preventDefault()
         }}
@@ -29,6 +30,7 @@ const EpisodeTitle: React.FC = () => {
       <SubTitle
         html={context.episode.chapter}
         onChange={chapterChangeHandler}
+        // @ts-ignore
         onKeyDown={(e) => {
           if (e.key === "Enter") e.preventDefault()
         }}
@@ -37,24 +39,6 @@ const EpisodeTitle: React.FC = () => {
     </HStack>
   )
 }
-
-const TitleBlock = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-
-  padding: 0 0;
-  gap: 0;
-
-  width: 100%;
-  height: 80px;
-
-  @media (max-width: 1000px) {
-    flex-direction: column;
-    gap: 5px;
-  }
-`
 
 const Title = styled(ContentEditable)`
   font-size: 24px;
