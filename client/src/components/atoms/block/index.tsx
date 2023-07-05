@@ -228,6 +228,7 @@ const BlockComponent: React.FC<BlockProps> = ({
 
   return block.blockType === BlockType.Comment ? (
     <CommentBlock
+      key={"block-contenteditable-" + block.id}
       innerRef={contenteditable}
       onChange={handleChange}
       onKeyDown={keyDownHandler}
@@ -236,13 +237,13 @@ const BlockComponent: React.FC<BlockProps> = ({
       html={content.current}
       data-position={position}
       placeholder={"내용을 입력해 주세요."}
-      colorMode={colorMode}
+      color_mode={colorMode}
       editor_options={option}
     />
   ) : (
     <>
-      {position}
       <StyledContentEditable
+        key={"block-contenteditable-" + block.id}
         innerRef={contenteditable}
         onChange={handleChange}
         onKeyDown={keyDownHandler}
@@ -251,7 +252,7 @@ const BlockComponent: React.FC<BlockProps> = ({
         html={content.current}
         data-position={position}
         placeholder={"내용을 입력해 주세요."}
-        colorMode={colorMode}
+        color_mode={colorMode}
         editor_options={option}
       />
     </>

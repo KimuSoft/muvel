@@ -279,11 +279,11 @@ const Handle = forwardRef<{ block: Block; onClick(): never }, "div">(
     return (
       <HandleContainer onClick={onClick} ref={ref}>
         {block.blockType !== BlockType.DoubleQuote ? (
-          <HandleButton colorMode={colorMode} className="block-handle">
+          <HandleButton color_mode={colorMode} className="block-handle">
             <RxDragHandleDots2 />
           </HandleButton>
         ) : (
-          <HandleButton colorMode={colorMode} className="block-handle">
+          <HandleButton color_mode={colorMode} className="block-handle">
             <RxDragHandleDots2 />
           </HandleButton>
           // <ProfileHandle /> 일단 비활성화
@@ -293,7 +293,7 @@ const Handle = forwardRef<{ block: Block; onClick(): never }, "div">(
   }
 )
 
-const HandleButton = styled.div<{ colorMode: "light" | "dark" }>`
+const HandleButton = styled.div<{ color_mode: "light" | "dark" }>`
   width: 32px;
   height: 32px;
 
@@ -305,8 +305,8 @@ const HandleButton = styled.div<{ colorMode: "light" | "dark" }>`
   opacity: 0;
 
   &.active {
-    color: ${({ colorMode }) =>
-      colorMode === "light" ? "gray.500" : "gray.300"};
+    color: ${({ color_mode }) =>
+      color_mode === "light" ? "gray.500" : "gray.300"};
   }
 `
 

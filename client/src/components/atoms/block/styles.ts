@@ -4,7 +4,7 @@ import { ColorMode, theme } from "@chakra-ui/react"
 import { EditorOption } from "../../../types"
 
 export const StyledContentEditable = styled(ContentEditable)<{
-  colorMode: ColorMode
+  color_mode: ColorMode
   editor_options: EditorOption
 }>`
   text-indent: ${({ editor_options }) => editor_options.indent}em;
@@ -22,9 +22,11 @@ export const StyledContentEditable = styled(ContentEditable)<{
   width: 100%;
 
   font-style: normal;
-  color: ${({ colorMode }) =>
-    colorMode === "dark" ? theme.colors.gray["300"] : theme.colors.gray["700"]};
-  font-weight: ${({ colorMode }) => (colorMode === "dark" ? 50 : 500)};
+  color: ${({ color_mode }) =>
+    color_mode === "dark"
+      ? theme.colors.gray["300"]
+      : theme.colors.gray["700"]};
+  font-weight: ${({ color_mode }) => (color_mode === "dark" ? 50 : 500)};
   font-size: ${({ editor_options }) => editor_options.fontSize}px;
   line-height: ${({ editor_options }) => editor_options.lineHeight}px;
 
@@ -82,10 +84,12 @@ export const BlockContainer = styled.li`
 `
 
 export const CommentBlock = styled(StyledContentEditable)<{
-  colorMode: ColorMode
+  color_mode: ColorMode
 }>`
-  background-color: ${({ colorMode }) =>
-    colorMode === "dark" ? theme.colors.gray["900"] : theme.colors.gray["100"]};
+  background-color: ${({ color_mode }) =>
+    color_mode === "dark"
+      ? theme.colors.gray["900"]
+      : theme.colors.gray["100"]};
   color: ${theme.colors.gray["500"]};
   font-size: 16px;
   padding: 10px 20px;

@@ -54,7 +54,6 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
 
   useEffect(() => {
     document.addEventListener("keydown", (e) => {
-      console.log(e.key, e.ctrlKey, e.shiftKey)
       if (["f", "F"].includes(e.key) && e.ctrlKey && e.shiftKey) {
         e.preventDefault()
         onOpen()
