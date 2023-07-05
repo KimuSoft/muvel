@@ -64,7 +64,7 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
 
   return (
     <>
-      <Tooltip label={"소설 안에서 검색하기"}>
+      <Tooltip label={"소설 안에서 검색하기"} openDelay={500}>
         <IconButton
           aria-label={"search"}
           icon={<BiSearch />}
@@ -88,7 +88,7 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
           </ModalHeader>
           <ModalBody>
             {hitItems.length ? (
-              <VStack>
+              <VStack h={"430px"} overflowY={"auto"}>
                 {hitItems.map((item) => (
                   <SearchHitItem key={item.id} item={item} />
                 ))}
@@ -142,9 +142,19 @@ const SearchHitItem: React.FC<{ item: HitItem }> = ({ item }) => {
       transition={"background-color 0.1s ease"}
       gap={5}
     >
-      <MdMessage size={25} color={theme.colors.gray["500"]} />
+      <MdMessage
+        size={25}
+        color={theme.colors.gray["500"]}
+        style={{ flexShrink: 0 }}
+      />
       <VStack align={"baseline"} gap={1}>
-        <Text>{item.content}</Text>
+        <Tooltip label={item.content} openDelay={1000}>
+          <Text>
+            {item.content.length > 70
+              ? item.content.slice(0, 70) + " ..."
+              : item.content}
+          </Text>
+        </Tooltip>
         <HStack w="100%">
           <Text color={"gray.500"} fontSize={"sm"}>
             {item.episodeName}
