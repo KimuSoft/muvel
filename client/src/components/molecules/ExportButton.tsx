@@ -1,6 +1,5 @@
 import React, { useContext, useMemo } from "react"
 import EditorContext from "../../context/EditorContext"
-import { toast } from "react-toastify"
 import {
   Button,
   FormLabel,
@@ -16,6 +15,7 @@ import {
   Textarea,
   Tooltip,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react"
 import { FaCopy, FaFileExport, FaSave } from "react-icons/fa"
 import blocksToText from "../../utils/blocksToText"
@@ -25,6 +25,7 @@ const ExportButton: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const initialRef = React.useRef(null)
+  const toast = useToast()
 
   const onSubmit = async () => {
     saveToTxtFile()
@@ -41,7 +42,12 @@ const ExportButton: React.FC = () => {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    toast.info("성공적으로 저장했어요!")
+    toast({
+      title: "성공적으로 저장했어요!",
+      status: "success",
+      isClosable: true,
+      position: "top-right",
+    })
   }
 
   const saveToTxtFile = () => {
@@ -55,13 +61,23 @@ const ExportButton: React.FC = () => {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    toast.info("성공적으로 저장했어요!")
+    toast({
+      title: "성공적으로 저장했어요!",
+      status: "success",
+      isClosable: true,
+      position: "top-right",
+    })
   }
 
   const onCopyToClipboard = () => {
     // preview를 클립보드에 저장
     navigator.clipboard.writeText(preview).then()
-    toast.success("성공적으로 복사했어요!")
+    toast({
+      title: "클립보드에 복사했어요!",
+      status: "success",
+      isClosable: true,
+      position: "top-right",
+    })
   }
 
   const preview = useMemo(() => blocksToText(blocks), [blocks])
