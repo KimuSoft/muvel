@@ -6,8 +6,10 @@ export class SearchService {
   private readonly client: MeiliSearch
 
   constructor() {
+    if (!process.env.MEILISEARCH_HOST)
+      console.error("MEILISEARCH_HOST is not defined!")
     this.client = new MeiliSearch({
-      host: "http://localhost:7700",
+      host: process.env.MEILISEARCH_HOST,
     })
 
     this.updateFilterableAttributes().then()
