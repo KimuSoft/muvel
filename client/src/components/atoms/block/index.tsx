@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 import { ContentEditableEvent } from "react-contenteditable"
 import {
   BlockContainer,
@@ -127,6 +127,7 @@ const BlockComponent: React.FC<BlockProps> = ({
       beforeCaret === afterCaret &&
       !e.shiftKey
     ) {
+      console.log("좌이동")
       moveToRelativeBlock?.(position, -1, false)
     }
 
@@ -141,7 +142,7 @@ const BlockComponent: React.FC<BlockProps> = ({
 
     // 아무 곳에서나 위 방향키를 누르면 위 블록으로 이동
     else if (e.key === "ArrowUp" && !e.shiftKey && !afterCaret && position) {
-      if (!beforeCaret) return console.warn("beforeCaret is null")
+      if (beforeCaret === undefined) return console.warn("beforeCaret is null")
       // 캐럿 위치를 원래대로 복구함
       if (content.current) {
         const range = document.createRange()
@@ -158,9 +159,9 @@ const BlockComponent: React.FC<BlockProps> = ({
     else if (
       e.key === "ArrowDown" &&
       !e.shiftKey &&
-      afterCaret === block.content.length
+      afterCaret === content.current.length
     ) {
-      if (!beforeCaret) return console.warn("beforeCaret is null")
+      if (beforeCaret === undefined) return console.warn("beforeCaret is null")
       // 캐럿 위치를 원래대로 복구함
       if (content.current) {
         const range = document.createRange()
