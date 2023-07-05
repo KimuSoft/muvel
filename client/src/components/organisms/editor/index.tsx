@@ -37,30 +37,57 @@ const Editor: React.FC = () => {
 
   const prevBlocks = usePrevious<Block[]>(blocks)
 
+  const getFocusIndex = (id: string) => {
+    const b = blocks.find((b) => b.id === id)
+
+    if (!b) {
+      console.warn("Block not found")
+      return -1
+    }
+    return blocks
+      .filter((b) => ![BlockType.Divider].includes(b.blockType))
+      .indexOf(b)
+  }
+
+  const getFocusIndexOnPrevBlock = (id: string) => {
+    if (!prevBlocks) return -1
+    const b = prevBlocks.find((b) => b.id === id)
+
+    if (!b) {
+      console.warn("Block not found")
+      return -1
+    }
+    return prevBlocks
+      .filter((b) => ![BlockType.Divider].includes(b.blockType))
+      .indexOf(b)
+  }
+
   // Handling the cursor and focus on adding and deleting blocks
   useEffect(() => {
     // If a new block was added, move the caret to it
     if (prevBlocks && prevBlocks.length + 1 === blocks.length) {
-      const nextBlockPosition =
-        blocks.map((b) => b.id).indexOf(currentBlockId) + 1 + 1
+      console.log("added!")
+      const nextBlockPosition = getFocusIndex(currentBlockId) + 1
       const nextBlock = document.querySelector(
         `[data-position="${nextBlockPosition}"]`
       ) as HTMLElement
-      if (nextBlock) {
-        nextBlock.focus()
-      }
+      if (!nextBlock) return console.log("nextBlock is null")
+      nextBlock.focus()
     }
+
     // If a block was deleted, move the caret to the end of the last block
     if (prevBlocks && prevBlocks.length - 1 === blocks.length) {
-      const lastBlockPosition = prevBlocks
-        .map((b) => b.id)
-        .indexOf(currentBlockId)
+      const lastBlockPosition = getFocusIndexOnPrevBlock(currentBlockId) - 1
+      console.log("deleted from: " + lastBlockPosition)
       const lastBlock = document.querySelector(
         `[data-position="${lastBlockPosition}"]`
       ) as HTMLElement
-      if (lastBlock) {
-        setCaretToEnd(lastBlock)
+
+      if (!lastBlock) {
+        window.confirm("삭제하시겠습니까?")
+        return console.log("lastBlock is null")
       }
+      setCaretToEnd(lastBlock)
     }
   }, [blocks, prevBlocks, currentBlockId])
 
@@ -71,11 +98,13 @@ const Editor: React.FC = () => {
   const addBlockHandler = (block: Block) => {
     setCurrentBlockId(block.id)
 
+    const id = v4()
+
     setBlocks((b) => {
       const _blocks = b.map((bl) => ({ ...bl, focus: false }))
 
       _blocks.splice(_blocks.findIndex((b) => b.id === block.id) + 1, 0, {
-        id: v4(),
+        id,
         blockType: BlockType.Describe,
         content: "",
         focus: true,
@@ -104,9 +133,14 @@ const Editor: React.FC = () => {
     direction: -1 | 1,
     preserveCaretPosition: boolean
   ) => {
+    console.log("MOVE!!")
     const lastBlock = document.querySelector(
       `[data-position="${currentPos + direction}"]`
     ) as HTMLElement
+
+    console.log(currentPos, direction, lastBlock)
+    if (!lastBlock)
+      return console.log(`data-position ${currentPos + direction} is null`)
 
     const sel = document.getSelection()
 
@@ -169,7 +203,6 @@ const Editor: React.FC = () => {
     const hasFocus = (blockType: BlockType) =>
       ![BlockType.Divider].includes(blockType)
 
-    console.log("호출됨!")
     let skipIndex = 0
     return blocks.map((b, index) => {
       const bp =
