@@ -1,25 +1,26 @@
-import React, { KeyboardEventHandler, useContext } from "react"
+import React from "react"
 import styled from "styled-components"
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable"
-import EditorContext from "../../context/EditorContext"
 import { HStack } from "@chakra-ui/react"
+import { useRecoilState } from "recoil"
+import { episodeState } from "../../../recoil/editor"
 
 const EpisodeTitle: React.FC = () => {
-  const context = useContext(EditorContext)
+  const [episode, setEpisode] = useRecoilState(episodeState)
 
   const titleChangeHandler = (e: ContentEditableEvent) =>
-    context.setEpisode({ ...context.episode, title: e.currentTarget.innerText })
+    setEpisode({ ...episode, title: e.currentTarget.innerText })
 
   const chapterChangeHandler = (e: ContentEditableEvent) =>
-    context.setEpisode({
-      ...context.episode,
+    setEpisode({
+      ...episode,
       chapter: e.currentTarget.innerText,
     })
 
   return (
     <HStack w="100%" justifyContent="center">
       <Title
-        html={context.episode.title}
+        html={episode.title}
         onChange={titleChangeHandler}
         placeholder="제목을 입력해 주세요"
         // @ts-ignore
@@ -28,7 +29,7 @@ const EpisodeTitle: React.FC = () => {
         }}
       />
       <SubTitle
-        html={context.episode.chapter}
+        html={episode.chapter}
         onChange={chapterChangeHandler}
         // @ts-ignore
         onKeyDown={(e) => {

@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react"
 import NovelsPage from "./components/pages/Novels"
 import NovelDetail from "./components/pages/NovelDetail"
+import { RecoilRoot } from "recoil"
 
 const config: ThemeConfig = {
   initialColorMode: "dark",
@@ -27,18 +28,20 @@ const theme = extendTheme({ config })
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   // React.StrictMode
   <ChakraProvider theme={theme}>
-    <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-    <ToastContainer />
-    <BrowserRouter>
-      <Routes>
-        <Route element={<AppLayout />}>
-          <Route index element={<Main />}></Route>
-          <Route path={"episodes/:id"} element={<EditorPage />}></Route>
-          <Route path={"novels"} element={<NovelsPage />}></Route>
-          <Route path={"novels/:id"} element={<NovelDetail />}></Route>
-        </Route>
-        <Route path="auth/callback" element={<AuthCallback />}></Route>
-      </Routes>
-    </BrowserRouter>
+    <RecoilRoot>
+      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+      <ToastContainer />
+      <BrowserRouter>
+        <Routes>
+          <Route element={<AppLayout />}>
+            <Route index element={<Main />}></Route>
+            <Route path={"episodes/:id"} element={<EditorPage />}></Route>
+            <Route path={"novels"} element={<NovelsPage />}></Route>
+            <Route path={"novels/:id"} element={<NovelDetail />}></Route>
+          </Route>
+          <Route path="auth/callback" element={<AuthCallback />}></Route>
+        </Routes>
+      </BrowserRouter>
+    </RecoilRoot>
   </ChakraProvider>
 )

@@ -2,7 +2,7 @@ import React from "react"
 import { MdLock } from "react-icons/md"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import IconButton from "../atoms/IconButton"
-import { Avatar, Text } from "@chakra-ui/react"
+import { Avatar } from "@chakra-ui/react"
 
 const Auth: React.FC = () => {
   const user = useCurrentUser()

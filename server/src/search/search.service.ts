@@ -48,7 +48,7 @@ export class SearchService {
     }[]
   ) {
     await this.client.index("blocks").addDocuments(blockCaches)
-    console.log("와아 추가 완료!")
+    console.log("와아 추가 완료!", blockCaches)
   }
 
   async updateFilterableAttributes() {

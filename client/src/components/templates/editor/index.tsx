@@ -1,6 +1,6 @@
 import React from "react"
-import EditorHeader from "../../organisms/editorHeader/EditorHeader"
-import Editor from "../../organisms/editor"
+import EditorHeader from "../../organisms/editor/EditorHeader"
+import Editor from "../../organisms/editor/MuvelBlockEditor"
 import GoalWidget from "../../organisms/widget/goal/GoalWidget"
 import { Body, MainStyle, Widgets } from "./styles"
 

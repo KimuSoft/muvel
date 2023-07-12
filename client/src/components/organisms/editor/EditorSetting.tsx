@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import {
   Button,
   FormControl,
@@ -18,13 +18,14 @@ import {
   Tooltip,
   useDisclosure,
 } from "@chakra-ui/react"
-import EditorContext from "../../context/EditorContext"
-import { defaultOption } from "../../types"
+import { defaultOption } from "../../../types"
 import { AiFillSetting } from "react-icons/ai"
+import { useRecoilState } from "recoil"
+import { editorOptionsState } from "../../../recoil/editor"
 
 const EditorSetting: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { option, setOption } = useContext(EditorContext)
+  const [options, setOptions] = useRecoilState(editorOptionsState)
 
   return (
     <>
@@ -43,13 +44,13 @@ const EditorSetting: React.FC = () => {
           <ModalCloseButton />
           <ModalBody>
             <FormControl mb={3}>
-              <FormLabel>줄 높이: {option.lineHeight}px</FormLabel>
+              <FormLabel>줄 높이: {options.lineHeight}px</FormLabel>
               <Slider
                 aria-label="slider-ex-1"
-                defaultValue={option.lineHeight}
-                value={option.lineHeight}
+                defaultValue={options.lineHeight}
+                value={options.lineHeight}
                 onChange={(value: number) =>
-                  setOption({ ...option, lineHeight: value })
+                  setOptions({ ...options, lineHeight: value })
                 }
                 min={12}
                 max={56}
@@ -61,13 +62,13 @@ const EditorSetting: React.FC = () => {
               </Slider>
             </FormControl>
             <FormControl mb={3}>
-              <FormLabel>행 간격: {option.gap}px</FormLabel>
+              <FormLabel>행 간격: {options.gap}px</FormLabel>
               <Slider
                 aria-label="slider-ex-1"
-                defaultValue={option.gap}
-                value={option.gap}
+                defaultValue={options.gap}
+                value={options.gap}
                 onChange={(value: number) =>
-                  setOption({ ...option, gap: value })
+                  setOptions({ ...options, gap: value })
                 }
                 min={0}
                 max={16}
@@ -79,13 +80,13 @@ const EditorSetting: React.FC = () => {
               </Slider>
             </FormControl>
             <FormControl mb={3}>
-              <FormLabel>글자 크기: {option.fontSize}px</FormLabel>
+              <FormLabel>글자 크기: {options.fontSize}px</FormLabel>
               <Slider
                 aria-label="slider-ex-1"
-                defaultValue={option.fontSize}
-                value={option.fontSize}
+                defaultValue={options.fontSize}
+                value={options.fontSize}
                 onChange={(value: number) =>
-                  setOption({ ...option, fontSize: value })
+                  setOptions({ ...options, fontSize: value })
                 }
                 min={6}
                 max={32}
@@ -97,13 +98,13 @@ const EditorSetting: React.FC = () => {
               </Slider>
             </FormControl>
             <FormControl>
-              <FormLabel>들여쓰기: {option.indent}em</FormLabel>
+              <FormLabel>들여쓰기: {options.indent}em</FormLabel>
               <Slider
                 aria-label="slider-ex-1"
-                defaultValue={option.indent}
-                value={option.indent}
+                defaultValue={options.indent}
+                value={options.indent}
                 onChange={(value: number) =>
-                  setOption({ ...option, indent: value })
+                  setOptions({ ...options, indent: value })
                 }
                 min={0}
                 max={4}
@@ -120,7 +121,7 @@ const EditorSetting: React.FC = () => {
               colorScheme="blue"
               variant={"outline"}
               mr={3}
-              onClick={() => setOption(defaultOption)}
+              onClick={() => setOptions(defaultOption)}
             >
               기본값 복원
             </Button>

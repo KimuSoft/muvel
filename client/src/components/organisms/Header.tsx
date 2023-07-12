@@ -1,5 +1,5 @@
 import React from "react"
-import { Heading, HStack, Spacer, Text } from "@chakra-ui/react"
+import { HStack, Spacer } from "@chakra-ui/react"
 import ToggleColorModeButton from "../atoms/ToggleColorModeButton"
 import Auth from "../molecules/Auth"
 import Logo from "../molecules/Logo"

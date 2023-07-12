@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React, { ReactElement, useEffect, useMemo, useState } from "react"
 import {
   HStack,
   Text,
   Tooltip,
+  useColorMode,
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react"
@@ -32,7 +33,7 @@ const EpisodeList: React.FC<{
   novel: Novel
   refresh?: () => Promise<unknown>
 }> = ({ novel, refresh }) => {
-  const [episodeList, setEpisodeList] = useState<JSX.Element[]>([])
+  const [episodeList, setEpisodeList] = useState<ReactElement[]>([])
   const [episodes, setEpisodes] = useState<PartialEpisode[]>(novel.episodes)
 
   useEffect(() => {
@@ -110,14 +111,12 @@ const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
   const navigate = useNavigate()
 
   const date = useMemo(() => new Date(episode.createdAt), [episode.createdAt])
+  const { colorMode } = useColorMode()
 
-  const isNow = (episodeId: string) => {
-    return location.pathname === `/episodes/${episodeId}`
-  }
+  const isNow = (episodeId: string) =>
+    location.pathname === `/episodes/${episodeId}`
 
-  const onClick = () => {
-    navigate(`/episodes/${episode.id}`)
-  }
+  const onClick = () => navigate(`/episodes/${episode.id}`)
 
   return (
     // 100글자까지만 보여주고 이후에 ...
@@ -151,7 +150,9 @@ const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
             as={isNow(episode.id) ? "b" : undefined}
             color={
               isNow(episode.id)
-                ? useColorModeValue("purple.500", "purple.200")
+                ? colorMode === "light"
+                  ? "purple.500"
+                  : "purple.200"
                 : "gray.500"
             }
             fontSize="sm"

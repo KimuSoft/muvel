@@ -1,6 +1,4 @@
-import { Controller } from "@nestjs/common"
+import { Controller, Post } from "@nestjs/common"
 
 @Controller("api/search")
-export class SearchController {
-  constructor() {}
-}
+export class SearchController {}

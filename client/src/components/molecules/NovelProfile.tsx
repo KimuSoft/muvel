@@ -15,9 +15,11 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react"
+import { useRecoilState } from "recoil"
+import { novelState } from "../../recoil/editor"
 
 const NovelProfile: React.FC = () => {
-  const { novel } = useContext(EditorContext)
+  const [novel] = useRecoilState(novelState)
 
   const [loading, setLoading] = React.useState(false)
   const navigate = useNavigate()

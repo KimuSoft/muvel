@@ -1,5 +1,4 @@
-import React, { useContext, useMemo } from "react"
-import EditorContext from "../../context/EditorContext"
+import React, { useMemo } from "react"
 import {
   Button,
   FormLabel,
@@ -18,10 +17,14 @@ import {
   useToast,
 } from "@chakra-ui/react"
 import { FaCopy, FaFileExport, FaSave } from "react-icons/fa"
-import blocksToText from "../../utils/blocksToText"
+import blocksToText from "../../../utils/blocksToText"
+import { useRecoilState } from "recoil"
+import { blocksState, episodeState } from "../../../recoil/editor"
 
-const ExportButton: React.FC = () => {
-  const { episode, blocks } = useContext(EditorContext)
+const ExportEpisode: React.FC = () => {
+  const [blocks] = useRecoilState(blocksState)
+  const [episode] = useRecoilState(episodeState)
+
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const initialRef = React.useRef(null)
@@ -70,7 +73,7 @@ const ExportButton: React.FC = () => {
   }
 
   const onCopyToClipboard = () => {
-    // preview를 클립보드에 저장
+    // 미리보기를 클립보드에 저장
     navigator.clipboard.writeText(preview).then()
     toast({
       title: "클립보드에 복사했어요!",
@@ -123,4 +126,4 @@ const ExportButton: React.FC = () => {
   )
 }
 
-export default ExportButton
+export default ExportEpisode

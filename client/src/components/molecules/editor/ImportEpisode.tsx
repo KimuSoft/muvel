@@ -1,11 +1,12 @@
-import React, { createRef, useContext } from "react"
-import EditorContext from "../../context/EditorContext"
-import stringToBlocks from "../../utils/stringToBlock"
+import React, { createRef } from "react"
+import stringToBlocks from "../../../utils/stringToBlock"
 import { z } from "zod"
 import { toast } from "react-toastify"
-import { BlockType } from "../../types/block.type"
+import { BlockType } from "../../../types/block.type"
 import { IconButton, Tooltip } from "@chakra-ui/react"
 import { FiUpload } from "react-icons/fi"
+import { blocksState, episodeState } from "../../../recoil/editor"
+import { useRecoilState } from "recoil"
 
 const readFile = (file: File) =>
   new Promise<string | ArrayBuffer>((resolve, reject) => {
@@ -27,9 +28,10 @@ const episodeSchema = z.object({
   ),
 })
 
-const ImportButton: React.FC = () => {
+const ImportEpisode: React.FC = () => {
   const fileInput = createRef<HTMLInputElement>()
-  const { episode, setEpisode, setBlocks } = useContext(EditorContext)
+  const [_blocks, setBlocks] = useRecoilState(blocksState)
+  const [episode, setEpisode] = useRecoilState(episodeState)
 
   const clickHandler = () => fileInput.current?.click()
   const uploadHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,4 +75,4 @@ const ImportButton: React.FC = () => {
   )
 }
 
-export default ImportButton
+export default ImportEpisode

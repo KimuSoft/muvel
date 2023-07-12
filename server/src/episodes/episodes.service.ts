@@ -6,6 +6,7 @@ import { BlocksService } from "../blocks/blocks.service"
 import { PatchBlocksDto } from "./dto/patch-blocks.dto"
 import { PatchEpisodesDto } from "../novels/dto/patch-episodes.dto"
 import { SearchService } from "../search/search.service"
+import { BlockEntity } from "../blocks/block.entity"
 
 @Injectable()
 export class EpisodesService {
@@ -110,5 +111,32 @@ export class EpisodesService {
 
   async upsert(episodes: PatchEpisodesDto[]) {
     return this.episodesRepository.upsert(episodes, ["id"])
+  }
+
+  async insertAllBlocksToCache() {
+    const episodes = await this.episodesRepository
+      .createQueryBuilder("episode")
+      .leftJoinAndSelect("episode.blocks", "block")
+      .getMany()
+
+    const blocks = []
+
+    for (const episode of episodes) {
+      for (const block of episode.blocks) {
+        blocks.push({
+          id: block.id,
+          content: block.content,
+          blockType: block.blockType,
+          order: block.order,
+          episodeId: episode.id,
+          episodeName: episode.title,
+          episodeNumber: episode.order,
+          index: block.order,
+          novelId: episode.novelId,
+        })
+      }
+    }
+
+    return this.searchService.insertBlocks(blocks)
   }
 }

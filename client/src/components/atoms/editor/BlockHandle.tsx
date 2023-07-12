@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import { Block, BlockType } from "../../../types/block.type"
 import styled from "styled-components"
 import {
@@ -19,11 +19,12 @@ import {
   BiSolidQuoteSingleLeft,
 } from "react-icons/bi"
 import { MdDescription } from "react-icons/md"
-import EditorContext from "../../../context/EditorContext"
 import { AiTwotoneDelete } from "react-icons/ai"
 import { RxDragHandleDots2 } from "react-icons/rx"
 import { SortableHandle } from "react-sortable-hoc"
 import { BsCode } from "react-icons/bs"
+import { blocksState } from "../../../recoil/editor"
+import { useRecoilState } from "recoil"
 
 const BlockHandle = SortableHandle<{ block: Block }>(
   ({ block, onClick }: { block: Block; onClick(): void }) => (
@@ -35,7 +36,7 @@ const _BlockHandle: React.FC<{ block: Block; onClick(): void }> = ({
   block,
   onClick,
 }) => {
-  const { setBlocks } = useContext(EditorContext)
+  const [_blocks, setBlocks] = useRecoilState(blocksState)
 
   const removePunctuation = (str: string) =>
     str.replace(/[“”‘’「」『』〈〉《》]/g, "").trim()
@@ -279,11 +280,11 @@ const Handle = forwardRef<{ block: Block; onClick(): never }, "div">(
     return (
       <HandleContainer onClick={onClick} ref={ref}>
         {block.blockType !== BlockType.DoubleQuote ? (
-          <HandleButton color_mode={colorMode} className="block-handle">
+          <HandleButton $color_mode={colorMode} className="block-handle">
             <RxDragHandleDots2 />
           </HandleButton>
         ) : (
-          <HandleButton color_mode={colorMode} className="block-handle">
+          <HandleButton $color_mode={colorMode} className="block-handle">
             <RxDragHandleDots2 />
           </HandleButton>
           // <ProfileHandle /> 일단 비활성화
@@ -293,7 +294,7 @@ const Handle = forwardRef<{ block: Block; onClick(): never }, "div">(
   }
 )
 
-const HandleButton = styled.div<{ color_mode: "light" | "dark" }>`
+const HandleButton = styled.div<{ $color_mode: "light" | "dark" }>`
   width: 32px;
   height: 32px;
 
@@ -305,8 +306,8 @@ const HandleButton = styled.div<{ color_mode: "light" | "dark" }>`
   opacity: 0;
 
   &.active {
-    color: ${({ color_mode }) =>
-      color_mode === "light" ? "gray.500" : "gray.300"};
+    color: ${({ $color_mode }) =>
+      $color_mode === "light" ? "gray.500" : "gray.300"};
   }
 `
 

@@ -66,7 +66,8 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
       <Tooltip label={"소설 안에서 검색하기"} openDelay={500}>
         <IconButton
           aria-label={"search"}
-          icon={<BiSearch />}
+          icon={<BiSearch size={22} />}
+          variant="ghost"
           onClick={onOpen}
         />
       </Tooltip>

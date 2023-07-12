@@ -132,7 +132,7 @@ const CreateNovel: React.FC<{
 
                   {/* 소설 설명 필드 */}
                   <Field name="description" validate={validateTitle}>
-                    {({ field, form }: FieldProps) => (
+                    {({ field }: FieldProps) => (
                       <FormControl mt={4}>
                         <FormLabel>설명</FormLabel>
                         <Textarea

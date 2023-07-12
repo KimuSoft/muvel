@@ -1,15 +1,13 @@
-import React, { useContext, useEffect, useState } from "react"
-import { SortableBlock } from "../../atoms/block"
+import React, { useEffect, useState } from "react"
 import usePrevious from "../../../hooks/usePrevious"
 import setCaretToEnd from "../../../utils/setCaretToEnd"
-import { DummyBlock } from "./styles"
-import EditorContext from "../../../context/EditorContext"
 import { Block, BlockType } from "../../../types/block.type"
 import _ from "lodash"
 import { v4 } from "uuid"
 import { SortableContainer, SortableContainerProps } from "react-sortable-hoc"
 import styled from "styled-components"
 import {
+  Box,
   Container,
   Skeleton,
   Text,
@@ -18,6 +16,13 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { arrayMoveImmutable } from "array-move"
+import { useRecoilState } from "recoil"
+import {
+  blocksState,
+  episodeState,
+  isLoadingState,
+} from "../../../recoil/editor"
+import MuvelBlock from "../../molecules/editor/MuvelBlock"
 
 const canvas = document.createElement("canvas").getContext("2d")!
 
@@ -28,8 +33,11 @@ const _SortableContainer = SortableContainer<React.PropsWithChildren>(
 )
 
 const Editor: React.FC = () => {
-  const { blocks, setBlocks, episode, setEpisode, isLoading } =
-    useContext(EditorContext)
+  const [episode, setEpisode] = useRecoilState(episodeState)
+  const [blocks, setBlocks] = useRecoilState(blocksState)
+
+  const [isLoading] = useRecoilState(isLoadingState)
+
   const [currentBlockId, setCurrentBlockId] = useState<string>("1")
   const [episodeDescription, setEpisodeDescription] = useState<string>(
     episode.description
@@ -66,10 +74,9 @@ const Editor: React.FC = () => {
   useEffect(() => {
     // If a new block was added, move the caret to it
     if (prevBlocks && prevBlocks.length + 1 === blocks.length) {
-      console.log("added!")
       const nextBlockPosition = getFocusIndex(currentBlockId) + 1
       const nextBlock = document.querySelector(
-        `[data-position="${nextBlockPosition}"]`
+        `.data_position_${nextBlockPosition}`
       ) as HTMLElement
       if (!nextBlock) return console.log("nextBlock is null")
       nextBlock.focus()
@@ -80,7 +87,7 @@ const Editor: React.FC = () => {
       const lastBlockPosition = getFocusIndexOnPrevBlock(currentBlockId) - 1
       console.log("deleted from: " + lastBlockPosition)
       const lastBlock = document.querySelector(
-        `[data-position="${lastBlockPosition}"]`
+        `.data_position_${lastBlockPosition}`
       ) as HTMLElement
 
       if (!lastBlock) {
@@ -135,12 +142,12 @@ const Editor: React.FC = () => {
   ) => {
     console.log("MOVE!!")
     const lastBlock = document.querySelector(
-      `[data-position="${currentPos + direction}"]`
+      `.data_position_${currentPos + direction}`
     ) as HTMLElement
 
     console.log(currentPos, direction, lastBlock)
     if (!lastBlock)
-      return console.log(`data-position ${currentPos + direction} is null`)
+      return console.log(`data_position ${currentPos + direction} is null`)
 
     const sel = document.getSelection()
 
@@ -213,7 +220,7 @@ const Editor: React.FC = () => {
 
       return (
         <React.Fragment key={b.id}>
-          <SortableBlock
+          <MuvelBlock
             key={`${b.id}-block`}
             index={index}
             block={b}
@@ -269,7 +276,7 @@ const Editor: React.FC = () => {
           </_SortableContainer>
         </>
       )}
-      <DummyBlock height={"500px"} />
+      <Box w="100%" h="500px" />
     </Container>
   )
 }

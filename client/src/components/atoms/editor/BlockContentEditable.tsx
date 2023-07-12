@@ -1,38 +1,12 @@
-import React, { useContext, useEffect, useRef, useState } from "react"
-import { ContentEditableEvent } from "react-contenteditable"
-import {
-  BlockContainer,
-  CommentBlock,
-  Divider,
-  DividerContainer,
-  StyledContentEditable,
-} from "./styles"
-import EditorContext from "../../../context/EditorContext"
-import stringToBlock from "../../../utils/stringToBlock"
-import { SortableElement } from "react-sortable-hoc"
+import { blocksState, editorOptionsState } from "../../../recoil/editor"
 import { Block, BlockType } from "../../../types/block.type"
-import { Box, useColorMode } from "@chakra-ui/react"
-import BlockHandle from "./BlockHandle"
+import stringToBlock from "../../../utils/stringToBlock"
+import ContentEditable, { ContentEditableEvent } from "react-contenteditable"
+import { useRecoilState } from "recoil"
+import React, { useEffect, useMemo, useRef } from "react"
+import { theme, useColorMode } from "@chakra-ui/react"
 
-export const SortableBlock = SortableElement<BlockProps>(
-  (props: BlockProps) => (
-    <BlockContainer>
-      <Box position="relative" right="40px">
-        <BlockHandle block={props.block} />
-      </Box>
-
-      {props.block.blockType === BlockType.Divider ? (
-        <DividerContainer>
-          <Divider />
-        </DividerContainer>
-      ) : (
-        <BlockComponent {...props} />
-      )}
-    </BlockContainer>
-  )
-)
-
-const BlockComponent: React.FC<BlockProps> = ({
+const BlockContentEditable: React.FC<BlockContentEditableProps> = ({
   block,
   addBlock,
   deleteBlock,
@@ -41,13 +15,39 @@ const BlockComponent: React.FC<BlockProps> = ({
   moveToRelativeBlock,
 }) => {
   // Ctrl + V 기능 전용으로 사용
-  const { blocks, setBlocks, option } = useContext(EditorContext)
+  const [blocks, setBlocks] = useRecoilState(blocksState)
+  const [option] = useRecoilState(editorOptionsState)
 
   const contenteditable = useRef<HTMLDivElement>(null)
   const content = useRef<string>(block.content)
   const contentWithoutHtmlTags = useRef<string>(block.content)
 
   const { colorMode } = useColorMode()
+
+  const style = useMemo(() => {
+    switch (block.blockType) {
+      case BlockType.Comment:
+        return {
+          color: theme.colors.gray["500"],
+          backgroundColor:
+            colorMode === "light"
+              ? theme.colors.gray["100"]
+              : theme.colors.gray["900"],
+        }
+      default:
+        return {
+          padding: `${option.gap / 2}px 0`,
+          fontSize: option.fontSize + "px",
+          lineHeight: option.lineHeight + "px",
+          textIndent: option.indent + "em",
+          color:
+            colorMode === "light"
+              ? theme.colors.gray["700"]
+              : theme.colors.gray["300"],
+          fontWeight: colorMode === "light" ? 500 : 50,
+        }
+    }
+  }, [option, colorMode, block.blockType])
 
   useEffect(() => {
     if (!contenteditable.current || block.content === content.current) return
@@ -95,8 +95,21 @@ const BlockComponent: React.FC<BlockProps> = ({
     ])
   }
 
+  const subscribedKeys = [
+    "Enter",
+    "Backspace",
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowUp",
+    "ArrowDown",
+    "/",
+    '"',
+  ]
+
   const keyDownHandler = async (e: React.KeyboardEvent<HTMLDivElement>) => {
-    // 주의: contentWithoutHtmlTags.current는 키 이벤트가 발생하기 이전의 값을 보여주므로 주의!
+    if (!subscribedKeys.includes(e.key)) return
+
+    // 주의: contentWithoutHtmlTags.current 는 키 이벤트가 발생하기 이전의 값을 보여주므로 주의!
 
     // 새로운 블록 생성
     if (e.key === "Enter" && !e.shiftKey) {
@@ -227,38 +240,25 @@ const BlockComponent: React.FC<BlockProps> = ({
     }
   }
 
-  return block.blockType === BlockType.Comment ? (
-    <CommentBlock
+  return (
+    <ContentEditable
       key={"block-contenteditable-" + block.id}
+      className={`block data_position_${position} ${
+        block.blockType === BlockType.Comment ? "comment-block" : ""
+      }`}
       innerRef={contenteditable}
       onChange={handleChange}
       onKeyDown={keyDownHandler}
       // @ts-ignore
       onPaste={pasteHandler}
       html={content.current}
-      data-position={position}
       placeholder={"내용을 입력해 주세요."}
-      color_mode={colorMode}
-      editor_options={option}
-    />
-  ) : (
-    <StyledContentEditable
-      key={"block-contenteditable-" + block.id}
-      innerRef={contenteditable}
-      onChange={handleChange}
-      onKeyDown={keyDownHandler}
-      // @ts-ignore
-      onPaste={pasteHandler}
-      html={content.current}
-      data-position={position}
-      placeholder={"내용을 입력해 주세요."}
-      color_mode={colorMode}
-      editor_options={option}
+      style={style}
     />
   )
 }
 
-interface BlockProps {
+export interface BlockContentEditableProps {
   block: Block
   position: number
   addBlock?: (block: Block) => void
@@ -270,4 +270,5 @@ interface BlockProps {
     preserveCaretPosition: boolean
   ) => void
 }
-export default BlockComponent
+
+export default BlockContentEditable

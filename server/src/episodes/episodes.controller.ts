@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Put,
   Request,
 } from "@nestjs/common"
@@ -106,5 +107,14 @@ export class EpisodesController {
     const episode = await this.episodesService.findOne(id, ["blocks"])
     episode.blocks.sort((a, b) => a.order - b.order)
     return episode.blocks
+  }
+
+  @Post("cache/refresh")
+  @ApiOperation({
+    summary: "에피소드 meilisearch 검색 캐시 갱신하기",
+  })
+  async refreshCache() {
+    await this.episodesService.insertAllBlocksToCache()
+    return "done!"
   }
 }

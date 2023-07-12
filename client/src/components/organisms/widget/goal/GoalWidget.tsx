@@ -14,6 +14,8 @@ import {
 import { FaExchangeAlt } from "react-icons/fa"
 import blocksToText from "../../../../utils/blocksToText"
 import confetti from "canvas-confetti"
+import { blocksState } from "../../../../recoil/editor"
+import { useRecoilState } from "recoil"
 
 const GoalPercent = styled.h3`
   margin: 0 0;
@@ -25,7 +27,7 @@ const GoalPercent = styled.h3`
 `
 
 const GoalWidget: React.FC = () => {
-  const { blocks } = useContext(EditorContext)
+  const [blocks] = useRecoilState(blocksState)
   const [type, setType] = useState<CountType>(CountType.NoSpacing)
   const [percentage, setPercentage] = useState(0)
 

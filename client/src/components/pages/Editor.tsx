@@ -5,15 +5,18 @@ import { useNavigate, useParams } from "react-router-dom"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import { api } from "../../utils/api"
 import { toast } from "react-toastify"
-import { initialNovel, Novel } from "../../types/novel.type"
-import {
-  Episode,
-  initialPartialEpisode,
-  PartialEpisode,
-} from "../../types/episode.type"
+import { Novel } from "../../types/novel.type"
+import { Episode, PartialEpisode } from "../../types/episode.type"
 import _ from "lodash"
 import { Block } from "../../types/block.type"
-import { defaultOption, EditorOption } from "../../types"
+import { useRecoilState } from "recoil"
+import {
+  blocksState,
+  episodeState,
+  isAutoSavingState,
+  isLoadingState,
+  novelState,
+} from "../../recoil/editor"
 
 const EditorPage: React.FC = () => {
   // Hooks
@@ -22,36 +25,16 @@ const EditorPage: React.FC = () => {
   const navigate = useNavigate()
 
   // States (Data)
-  const [novel, setNovel] = useState<Novel>(initialNovel)
-  const [episode, setEpisode] = useState<PartialEpisode>(initialPartialEpisode)
-  const [blocks, setBlocks] = useState<Block[]>([])
+  const [_novel, setNovel] = useRecoilState(novelState)
+  const [episode, setEpisode] = useRecoilState(episodeState)
+  const [blocks, setBlocks] = useRecoilState(blocksState)
 
   // State (Cache) :업데이트 시 변경 사항을 비교하는 용도
   const [episodeCache, setEpisodeCache] = useState<PartialEpisode>()
   const [blocksCache, setBlocksCache] = useState<Block[]>([])
 
-  // State (UI)
-  const [isSaving, setIsSaving] = useState<boolean>(false)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-
-  const initOption = () => {
-    try {
-      const storageOption = JSON.parse(
-        localStorage["editorOption"]
-      ) as EditorOption
-
-      const _option: EditorOption = { ...defaultOption }
-      if (storageOption.fontSize) _option.fontSize = storageOption.fontSize
-      if (storageOption.lineHeight)
-        _option.lineHeight = storageOption.lineHeight
-
-      return _option
-    } catch (e) {
-      return defaultOption
-    }
-  }
-
-  const [option, setOption] = useState<EditorOption>(initOption())
+  const [isLoading, setIsLoading] = useRecoilState(isLoadingState)
+  const [_isAutoSaving, setIsAutoSaving] = useRecoilState(isAutoSavingState)
 
   useEffect(() => {
     // 로그인되어 있지 않은 경우 로그인 페이지로 이동
@@ -91,9 +74,13 @@ const EditorPage: React.FC = () => {
     // } else {
     //   window.onbeforeunload = undefined
     // }
+    if (isLoading) return
 
     const timeout = setTimeout(async () => {
-      setIsSaving(true)
+      if (isLoading) return
+      if (episodeCache?.id !== episode.id) return
+
+      setIsAutoSaving(true)
 
       // 에피소드 변경사항 체크
       if (isEpisodeUpdated()) {
@@ -114,7 +101,7 @@ const EditorPage: React.FC = () => {
         setBlocksCache(blocks)
       }
 
-      setIsSaving(false)
+      setIsAutoSaving(false)
     }, 1000)
 
     return () => clearTimeout(timeout)
@@ -153,23 +140,7 @@ const EditorPage: React.FC = () => {
   }, [episode])
 
   return (
-    <EditorContext.Provider
-      value={{
-        novel,
-        setNovel,
-        refreshNovel,
-        episode,
-        setEpisode,
-        blocks,
-        setBlocks,
-        isSaving,
-        setIsSaving,
-        isLoading,
-        setIsLoading,
-        option,
-        setOption,
-      }}
-    >
+    <EditorContext.Provider value={{ refreshNovel }}>
       <EditorTemplate />
     </EditorContext.Provider>
   )

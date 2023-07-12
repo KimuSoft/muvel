@@ -19,14 +19,18 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
-import ExportButton from "../../molecules/ExportButton"
-import ImportButton from "../../molecules/ImportButton"
+import ExportEpisode from "../../molecules/editor/ExportEpisode"
+import ImportEpisode from "../../molecules/editor/ImportEpisode"
 import DeleteEpisode from "../DeleteEpisode"
-import EditorSetting from "../EditorSetting"
-import SearchModal from "../SearchModal"
+import EditorSetting from "./EditorSetting"
+import { useRecoilState } from "recoil"
+import { episodeState, novelState } from "../../../recoil/editor"
 
-const Sidebar: React.FC = () => {
-  const { novel, episode, refreshNovel } = useContext(EditorContext)
+const EditorDrawer: React.FC = () => {
+  const [novel] = useRecoilState(novelState)
+  const [episode] = useRecoilState(episodeState)
+
+  const { refreshNovel } = useContext(EditorContext)
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const navigate = useNavigate()
@@ -63,8 +67,8 @@ const Sidebar: React.FC = () => {
               <DeleteEpisode novel={novel} episodeId={episode.id} />
               <Spacer />
               <EditorSetting />
-              <ExportButton />
-              <ImportButton />
+              <ExportEpisode />
+              <ImportEpisode />
             </HStack>
           </DrawerFooter>
         </DrawerContent>
@@ -73,4 +77,4 @@ const Sidebar: React.FC = () => {
   )
 }
 
-export default Sidebar
+export default EditorDrawer
