@@ -4,6 +4,7 @@ import { NestFactory } from "@nestjs/core"
 import { AppModule } from "./app.module"
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
 import { ValidationPipe } from "@nestjs/common"
+import * as express from "express"
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -26,6 +27,7 @@ async function bootstrap() {
   // api 대신 다른 루트를 넣어도 됨 (ex: swagger, api/swagger, api/docs)
   SwaggerModule.setup("api", app, document)
 
-  await app.listen(3000)
+  app.use(express.json({ limit: "50mb" }))
+  await app.listen(2556)
 }
 bootstrap().then()

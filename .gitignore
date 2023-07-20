@@ -37,3 +37,5 @@ data/
 
 .yarn/install-state.gz
 .env
+
+meili_data*

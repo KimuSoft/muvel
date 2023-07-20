@@ -11,13 +11,12 @@ services:
       - POSTGRES_DB=muvel
 
   meilisearch:
-    image: getmeili/meilisearch:latest
+    image: getmeili/meilisearch:v1.1.1
     restart: always
     volumes:
-      - meili_data:/meili_data
+      - ./meili_data:/meili_data
     ports:
-      - 7700:7700
+      - "7700:7700"
 
 volumes:
   pg-data:
-  meili_data:

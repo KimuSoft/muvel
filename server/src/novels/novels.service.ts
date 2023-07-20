@@ -135,6 +135,8 @@ export class NovelsService {
       relations: ["author"],
     })
 
+    if (!novel) throw new Error("소설을 찾을 수 없습니다. novelId=" + novelId)
+
     if (userId && novel.author.id === userId) {
       return [
         NovelPermission.Author,

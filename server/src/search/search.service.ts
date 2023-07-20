@@ -47,11 +47,24 @@ export class SearchService {
       index: number
     }[]
   ) {
-    await this.client.index("blocks").addDocuments(blockCaches)
+    const result = await this.client.index("blocks").addDocuments(blockCaches)
+
+    // 5초 대기
+    await new Promise((resolve) => setTimeout(resolve, 5000))
+
+    const res = await this.client.getTask(result.taskUid)
+
+    console.log(res)
     console.log("와아 추가 완료!", blockCaches)
   }
 
   async updateFilterableAttributes() {
+    await this.client.createIndex("blocks", {
+      primaryKey: "id",
+    })
+    await this.client.updateIndex("blocks", {
+      primaryKey: "id",
+    })
     await this.client.index("blocks").updateFilterableAttributes(["novelId"])
     console.info("filterable attributes updated!")
   }

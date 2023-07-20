@@ -3,8 +3,10 @@ import react from "@vitejs/plugin-react"
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  server: { proxy: { "/api": "http://localhost:3000" } },
-  plugins: [react({
-    fastRefresh: true
-  })],
+  server: { proxy: { "/api": "http://localhost:2556" } },
+  plugins: [
+    react({
+      fastRefresh: true,
+    }),
+  ],
 })
