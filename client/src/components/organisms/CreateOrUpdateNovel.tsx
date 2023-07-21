@@ -188,26 +188,27 @@ const CreateOrUpdateNovel: React.FC<{
                       </FormControl>
                     )}
                   </Field>
-                </ModalBody>
 
-                {/* 소설 썸네일 필드 */}
-                <Field name="thumbnail" validate={validateTitle}>
-                  {({ field, form }: FieldProps) => (
-                    <FormControl
-                      isInvalid={!!(form.errors.title && form.touched.title)}
-                    >
-                      <FormLabel>소설 썸네일 이미지</FormLabel>
-                      <Input
-                        {...field}
-                        ref={initialRef}
-                        placeholder="소설의 썸네일 이미지 URL을 입력해 주세요."
-                      />
-                      <FormErrorMessage>
-                        {form.errors.title as string}
-                      </FormErrorMessage>
-                    </FormControl>
-                  )}
-                </Field>
+                  {/* 소설 썸네일 필드 */}
+                  <Field name="thumbnail" validate={validateTitle}>
+                    {({ field, form }: FieldProps) => (
+                      <FormControl
+                        isInvalid={!!(form.errors.title && form.touched.title)}
+                        mt={4}
+                      >
+                        <FormLabel>소설 썸네일 이미지</FormLabel>
+                        <Input
+                          {...field}
+                          ref={initialRef}
+                          placeholder="소설의 썸네일 이미지 URL을 입력해 주세요."
+                        />
+                        <FormErrorMessage>
+                          {form.errors.title as string}
+                        </FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                </ModalBody>
 
                 <ModalFooter gap={2}>
                   <Button onClick={onClose}>취소</Button>

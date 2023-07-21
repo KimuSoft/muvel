@@ -43,6 +43,10 @@ const NovelProfile: React.FC = () => {
         h="140px"
         flexShrink={0}
         bgColor="gray.500"
+        backgroundImage={novel.thumbnail || ""}
+        backgroundRepeat={"no-repeat"}
+        backgroundSize={"cover"}
+        backgroundPosition={"center"}
       />
       <VStack w="100%" h="130px" align="baseline">
         <Heading size="md">{novel.title}</Heading>

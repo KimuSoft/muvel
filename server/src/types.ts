@@ -50,3 +50,11 @@ export enum Importance {
   // 배경 캐릭터 (엑스트라)
   Background,
 }
+
+export enum EpisodeType {
+  Episode,
+  EpisodeGroup,
+  Prologue,
+  Epilogue,
+  Special,
+}

@@ -33,9 +33,10 @@ const NovelCard: React.FC<{ novel: Novel }> = ({ novel }) => {
           h="250px"
           borderRadius="5px"
           backgroundColor={useColorModeValue("gray.200", "gray.700")}
-          style={{
-            backgroundImage: novel.thumbnail || "",
-          }}
+          backgroundImage={novel.thumbnail || ""}
+          backgroundRepeat={"no-repeat"}
+          backgroundSize={"cover"}
+          backgroundPosition={"center"}
         />
         <Box
           w="100%"

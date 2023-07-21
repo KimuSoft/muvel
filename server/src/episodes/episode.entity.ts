@@ -10,6 +10,7 @@ import {
 } from "typeorm"
 import { BlockEntity } from "../blocks/block.entity"
 import { NovelEntity } from "../novels/novel.entity"
+import { EpisodeType } from "../types"
 
 @Entity("episode")
 export class EpisodeEntity {
@@ -50,4 +51,7 @@ export class EpisodeEntity {
 
   @Column({ default: 0 })
   order: number
+
+  @Column({ default: EpisodeType.Episode })
+  episodeType: EpisodeType
 }
