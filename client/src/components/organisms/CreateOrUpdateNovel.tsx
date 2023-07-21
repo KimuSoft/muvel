@@ -33,10 +33,10 @@ import RadioCardGroup from "../molecules/RadioCardGroup"
 import { MdPublic } from "react-icons/md"
 import DeleteNovel from "./DeleteNovel"
 
-const CreateNovel: React.FC<{
+const CreateOrUpdateNovel: React.FC<{
   novel?: Novel
-  refresh?: () => Promise<unknown>
-}> = ({ novel, refresh }) => {
+  onCreateOrUpdate?: () => Promise<unknown>
+}> = ({ novel, onCreateOrUpdate }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const user = useCurrentUser()
 
@@ -47,6 +47,7 @@ const CreateNovel: React.FC<{
     title: string
     description: string
     share: string | number
+    thumbnail: string
   }) => {
     values = { ...values, share: parseInt(values.share.toString()) }
 
@@ -55,7 +56,7 @@ const CreateNovel: React.FC<{
       console.log(values)
       await api.patch<Novel>(`/novels/${novel.id}`, values)
       onClose()
-      refresh?.().then()
+      onCreateOrUpdate?.().then()
     } else {
       // Create Novel
       const { data } = await api.post<Novel>(
@@ -100,6 +101,7 @@ const CreateNovel: React.FC<{
             title: novel?.title || "새 소설",
             description: novel?.description || "",
             share: novel?.share.toString() || ShareType.Private.toString(),
+            thumbnail: novel?.thumbnail || "",
           }}
           onSubmit={onSubmit}
         >
@@ -188,6 +190,25 @@ const CreateNovel: React.FC<{
                   </Field>
                 </ModalBody>
 
+                {/* 소설 썸네일 필드 */}
+                <Field name="thumbnail" validate={validateTitle}>
+                  {({ field, form }: FieldProps) => (
+                    <FormControl
+                      isInvalid={!!(form.errors.title && form.touched.title)}
+                    >
+                      <FormLabel>소설 썸네일 이미지</FormLabel>
+                      <Input
+                        {...field}
+                        ref={initialRef}
+                        placeholder="소설의 썸네일 이미지 URL을 입력해 주세요."
+                      />
+                      <FormErrorMessage>
+                        {form.errors.title as string}
+                      </FormErrorMessage>
+                    </FormControl>
+                  )}
+                </Field>
+
                 <ModalFooter gap={2}>
                   <Button onClick={onClose}>취소</Button>
                   {novel ? <DeleteNovel novelId={novel.id} /> : null}
@@ -208,4 +229,4 @@ const CreateNovel: React.FC<{
   )
 }
 
-export default CreateNovel
+export default CreateOrUpdateNovel

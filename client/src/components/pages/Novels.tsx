@@ -20,7 +20,7 @@ import RadioCard from "../molecules/RadioCard"
 import Header from "../organisms/Header"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import { BiSearch } from "react-icons/bi"
-import CreateNovel from "../organisms/CreateNovel"
+import CreateOrUpdateNovel from "../organisms/CreateOrUpdateNovel"
 
 const NovelsPage: React.FC = () => {
   const user = useCurrentUser()
@@ -84,7 +84,7 @@ const NovelsPage: React.FC = () => {
             </InputRightElement>
           </InputGroup>
           <Spacer />
-          <CreateNovel />
+          <CreateOrUpdateNovel />
         </HStack>
         {!loading ? (
           novels.length ? (

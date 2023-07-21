@@ -9,7 +9,6 @@ import {
   Tooltip,
   useColorModeValue,
 } from "@chakra-ui/react"
-import styled from "styled-components"
 import { useNavigate } from "react-router-dom"
 
 const NovelCard: React.FC<{ novel: Novel }> = ({ novel }) => {
@@ -68,12 +67,5 @@ const NovelCard: React.FC<{ novel: Novel }> = ({ novel }) => {
     </Tooltip>
   )
 }
-
-const NovelThumbnail = styled.div`
-  width: 100%;
-  height: 250px;
-  border-radius: 5px;
-  background-color: #71717a;
-`
 
 export default NovelCard

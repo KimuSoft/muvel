@@ -7,6 +7,7 @@ import { SearchNovelsDto } from "./dto/search-novels.dto"
 import { UserEntity } from "../users/user.entity"
 import { NovelPermission, ShareType } from "../types"
 import { PatchEpisodesDto } from "./dto/patch-episodes.dto"
+import { UpdateNovelDto } from "./dto/update-novel.dto"
 
 @Injectable()
 export class NovelsService {
@@ -46,16 +47,16 @@ export class NovelsService {
     return this.novelsRepository.save(novel)
   }
 
-  async update(
-    id: string,
-    title: string,
-    description: string,
-    share: ShareType
-  ) {
+  async updateNovel(id: string, updateNovelDto: UpdateNovelDto) {
     const novel = await this.findOne(id)
-    novel.title = title
-    novel.description = description
-    novel.share = share
+
+    if (!novel) return null
+
+    novel.title = updateNovelDto.title ?? novel.title
+    novel.description = updateNovelDto.description ?? novel.description
+    novel.share = updateNovelDto.share ?? novel.share
+    novel.thumbnail = updateNovelDto.thumbnail ?? novel.thumbnail
+
     return this.novelsRepository.save(novel)
   }
 
@@ -152,17 +153,8 @@ export class NovelsService {
     }
   }
 
-  async uploadThumbnail(novelId: string, thumbnail: Express.Multer.File) {}
-
   async patchEpisodes(id: string, episodesDiff: PatchEpisodesDto[]) {
-    const episode = await this.findOne(id)
-
     await this.episodesService.upsert(episodesDiff)
-
-    // for (const i of episodesDiff.filter((b) => b.isDeleted)) {
-    //   console.log("삭제", i)
-    //   await this.episodesService.delete(i.id)
-    // }
   }
 
   async getNovelByEpisodeId(episodeId: string) {

@@ -23,7 +23,7 @@ import styled from "styled-components"
 import { MdNavigateBefore } from "react-icons/md"
 import { AiFillLock, AiFillRead, AiOutlineLink } from "react-icons/ai"
 import EpisodeList from "../organisms/EpisodeList"
-import CreateNovel from "../organisms/CreateNovel"
+import CreateOrUpdateNovel from "../organisms/CreateOrUpdateNovel"
 
 const NovelDetail: React.FC = () => {
   const novelId = useParams<{ id: string }>().id || ""
@@ -104,7 +104,7 @@ const NovelDetail: React.FC = () => {
               icon={<MdNavigateBefore style={{ fontSize: 30 }} />}
             />
             <Spacer />
-            <CreateNovel novel={novel} refresh={fetchNovel} />
+            <CreateOrUpdateNovel novel={novel} onCreateOrUpdate={fetchNovel} />
             <Button colorScheme="purple">
               <AiFillRead style={{ marginRight: 10 }} />
               1편부터 보기

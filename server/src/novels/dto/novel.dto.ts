@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsUUID } from "class-validator"
+import { IsUrl, IsUUID } from "class-validator"
 import { EpisodeDto } from "../../episodes/dto/episode.dto"
 import { ShareType } from "../../types"
 
@@ -23,6 +23,12 @@ export class NovelDto {
   })
   description: string
 
+  @ApiProperty({
+    description: "소설 썸네일 이미지 URL",
+  })
+  @IsUrl()
+  thumbnail: string
+
   @ApiProperty()
   episodeIds: string[]
 
@@ -30,13 +36,13 @@ export class NovelDto {
   authorId: string
 
   @ApiProperty()
+  share: ShareType
+
+  @ApiProperty()
   createdAt: Date
 
   @ApiProperty()
   updatedAt: Date
-
-  @ApiProperty()
-  share: ShareType
 }
 
 export class NovelDtoWithEpisodes extends NovelDto {

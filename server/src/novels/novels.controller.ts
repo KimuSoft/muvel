@@ -4,17 +4,13 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
   Injectable,
   Param,
-  ParseFilePipeBuilder,
   Patch,
   PipeTransform,
   Post,
   Query,
   Request,
-  UploadedFile,
-  UseInterceptors,
 } from "@nestjs/common"
 import { NovelsService } from "./novels.service"
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
@@ -27,7 +23,6 @@ import {
   SearchNovelsDto,
   SearchNovelsResponseDto,
 } from "./dto/search-novels.dto"
-import { FileInterceptor } from "@nestjs/platform-express"
 import { PatchEpisodesDto } from "./dto/patch-episodes.dto"
 import { NovelPermission } from "../types"
 import { SearchService } from "../search/search.service"
@@ -83,17 +78,10 @@ export class NovelsController {
   })
   @RequirePermission(NovelPermission.EditNovel)
   async updateNovel(
-    @Request() req,
     @Param("id") id: string,
     @Body() novelUpdateDto: UpdateNovelDto
   ) {
-    console.log(novelUpdateDto)
-    return this.novelsService.update(
-      id,
-      novelUpdateDto.title,
-      novelUpdateDto.description,
-      novelUpdateDto.share
-    )
+    return this.novelsService.updateNovel(id, novelUpdateDto)
   }
 
   @Delete(":id")
@@ -135,30 +123,6 @@ export class NovelsController {
   })
   @RequirePermission(NovelPermission.ReadNovel)
   async getEpisodes(@Param("id") id: string) {}
-
-  @Post(":id/thumbnail")
-  @ApiOperation({
-    summary: "소설 썸네일 업로드하기",
-    description: "해당 소설의 썸네일을 업로드합니다. 용량 제한은 777KB입니다.",
-  })
-  @RequirePermission(NovelPermission.EditNovel)
-  @UseInterceptors(FileInterceptor("image"))
-  async uploadThumbnail(
-    @Param("id") id: string,
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: /\.(jpe?g|png|webp|gif)$/,
-        })
-        .addMaxSizeValidator({ maxSize: 777 })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        })
-    )
-    image: Express.Multer.File
-  ) {
-    return this.novelsService.uploadThumbnail(id, image)
-  }
 
   @Patch(":id/episodes")
   @ApiOperation({

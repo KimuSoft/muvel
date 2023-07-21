@@ -24,6 +24,9 @@ export class NovelEntity {
   @Column({ nullable: true })
   description: string
 
+  @Column({ nullable: true })
+  thumbnail: string
+
   @OneToMany(() => EpisodeEntity, (episode) => episode.novel, {
     cascade: true,
   })

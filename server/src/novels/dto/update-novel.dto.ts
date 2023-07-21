@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { ShareType } from "../../types"
-import { IsEnum, IsString, Length } from "class-validator"
+import { IsEnum, IsOptional, IsString, IsUrl, Length } from "class-validator"
 import { Transform } from "class-transformer"
 
 export class UpdateNovelDto {
@@ -9,8 +9,9 @@ export class UpdateNovelDto {
     example: "파링의 모험",
   })
   @IsString()
+  @IsOptional()
   @Length(1, 128)
-  title: string
+  title?: string
 
   @ApiProperty({
     description: "소설 설명",
@@ -18,7 +19,8 @@ export class UpdateNovelDto {
   })
   @IsString()
   @Length(0, 20000)
-  description: string
+  @IsOptional()
+  description?: string
 
   @Transform(({ value }) => parseInt(value.toString()))
   @ApiProperty({
@@ -27,5 +29,14 @@ export class UpdateNovelDto {
     enum: ShareType,
   })
   @IsEnum(ShareType)
-  share: ShareType
+  @IsOptional()
+  share?: ShareType
+
+  @ApiProperty({
+    description: "소설 썸네일 이미지 URL",
+    example: "파링의 모험",
+  })
+  @IsUrl()
+  @IsOptional()
+  thumbnail?: string
 }
