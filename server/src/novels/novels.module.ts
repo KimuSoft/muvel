@@ -6,11 +6,16 @@ import { EpisodesModule } from "../episodes/episodes.module"
 import { NovelsController } from "./novels.controller"
 import { UserEntity } from "../users/user.entity"
 import { SearchModule } from "../search/search.module"
+import { multerOptionsFactory } from "../commons/utils/multer.option.factory"
+import { MulterModule } from "@nestjs/platform-express"
 
 @Global()
 @Module({
   imports: [
     TypeOrmModule.forFeature([NovelEntity, UserEntity]),
+    MulterModule.registerAsync({
+      useFactory: multerOptionsFactory,
+    }),
     EpisodesModule,
     SearchModule,
   ],

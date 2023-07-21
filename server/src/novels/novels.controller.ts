@@ -17,7 +17,13 @@ import {
   UseInterceptors,
 } from "@nestjs/common"
 import { NovelsService } from "./novels.service"
-import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger"
 import { NovelDto, NovelDtoWithEpisodes } from "./dto/novel.dto"
 import { UpdateNovelDto } from "./dto/update-novel.dto"
 import { EpisodeDto } from "../episodes/dto/episode.dto"
@@ -32,6 +38,7 @@ import { PatchEpisodesDto } from "./dto/patch-episodes.dto"
 import { NovelPermission } from "../types"
 import { SearchService } from "../search/search.service"
 import { SearchInNovelDto } from "./dto/search-in-novel.dto"
+import { ApiFile } from "../images/image.decorator"
 
 @ApiTags("Novels")
 @Controller("api/novels")
@@ -142,7 +149,7 @@ export class NovelsController {
     description: "해당 소설의 썸네일을 업로드합니다. 용량 제한은 777KB입니다.",
   })
   @RequirePermission(NovelPermission.EditNovel)
-  @UseInterceptors(FileInterceptor("image"))
+  @ApiFile("image")
   async uploadThumbnail(
     @Param("id") id: string,
     @UploadedFile(
@@ -150,13 +157,14 @@ export class NovelsController {
         .addFileTypeValidator({
           fileType: /\.(jpe?g|png|webp|gif)$/,
         })
-        .addMaxSizeValidator({ maxSize: 777 })
+        .addMaxSizeValidator({ maxSize: 1024 * 1024 * 3 })
         .build({
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
         })
     )
     image: Express.Multer.File
   ) {
+    console.log(image.path)
     return this.novelsService.uploadThumbnail(id, image)
   }
 
@@ -200,6 +208,6 @@ export class NovelsController {
 @Injectable()
 export class FileSizeValidationPipe implements PipeTransform {
   transform(value: any, metadata: ArgumentMetadata): any {
-    return value.size < 1024 * 777
+    return value.size < 1024 * 1024 * 777
   }
 }

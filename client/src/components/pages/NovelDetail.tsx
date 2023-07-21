@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { createRef, useEffect } from "react"
 import Header from "../organisms/Header"
 import { useNavigate, useParams } from "react-router-dom"
 import {
@@ -13,7 +13,9 @@ import {
   Spacer,
   Text,
   theme,
+  Tooltip,
   useColorModeValue,
+  useToast,
   VStack,
 } from "@chakra-ui/react"
 import { initialNovel, Novel, ShareType } from "../../types/novel.type"
@@ -24,6 +26,10 @@ import { MdNavigateBefore } from "react-icons/md"
 import { AiFillLock, AiFillRead, AiOutlineLink } from "react-icons/ai"
 import EpisodeList from "../organisms/EpisodeList"
 import CreateNovel from "../organisms/CreateNovel"
+import { blocksState, episodeState } from "../../recoil/editor"
+import stringToBlocks from "../../utils/stringToBlock"
+import axios from "axios"
+import imageCompression from "browser-image-compression"
 
 const NovelDetail: React.FC = () => {
   const novelId = useParams<{ id: string }>().id || ""
@@ -72,7 +78,8 @@ const NovelDetail: React.FC = () => {
           background: "gray.200",
         }}
       >
-        <HStack h="100%" w="3xl">
+        <HStack h="100%" w="3xl" align={"end"} gap={8}>
+          {/*<NovelThumbnail novel={novel} />*/}
           <VStack align={"baseline"} flexDir="column-reverse" h="100%">
             {!isLoading ? (
               <>
@@ -142,11 +149,69 @@ const NovelSkeleton: React.FC = () => {
   )
 }
 
-const NovelThumbnail = styled.div`
-  width: 100%;
-  height: 250px;
+const readFile = (file: File) =>
+  new Promise<string | ArrayBuffer>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => resolve(e.target!.result!)
+    reader.onerror = reject
+    reader.readAsText(file)
+  })
+
+const NovelThumbnail: React.FC<{ novel: Novel }> = ({ novel }) => {
+  const toast = useToast()
+  const fileInput = createRef<HTMLInputElement>()
+
+  const clickHandler = () => fileInput.current?.click()
+
+  const uploadHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return alert("파일을 선택해주세요")
+    // const r = await readFile(e.target.files[0])
+
+    const options = {
+      maxSizeMB: 2,
+      maxWidthOrHeight: 1200,
+    }
+
+    const compressedFile = await imageCompression(e.target.files[0], options)
+    console.log(compressedFile.size / 1024 / 1024 + " MB")
+
+    const formData = new FormData()
+    formData.append("image", compressedFile, "kimukimu.png")
+
+    await api.post(`/novels/${novel.id}/thumbnail`, formData)
+    toast({
+      title: "섬네일 업로드 성공",
+      description: "섬네일이 성공적으로 업로드되었어요!",
+      status: "success",
+    })
+  }
+
+  return (
+    <>
+      <input
+        type="file"
+        style={{ display: "none" }}
+        ref={fileInput}
+        accept="image/*"
+        onChange={uploadHandler}
+      />
+      <Tooltip label="섬네일 업로드하기">
+        <_NovelThumbnail
+          style={{ backgroundImage: novel.thumbnail }}
+          onClick={clickHandler}
+        />
+      </Tooltip>
+    </>
+  )
+}
+
+const _NovelThumbnail = styled.div`
+  width: 70px;
+  height: 100px;
   border-radius: 5px;
-  background-color: #71717a;
+  background-color: var(--chakra-colors-gray-200);
+
+  cursor: pointer;
 `
 
 export default NovelDetail
