@@ -11,12 +11,6 @@ const EpisodeTitle: React.FC = () => {
   const titleChangeHandler = (e: ContentEditableEvent) =>
     setEpisode({ ...episode, title: e.currentTarget.innerText })
 
-  const chapterChangeHandler = (e: ContentEditableEvent) =>
-    setEpisode({
-      ...episode,
-      chapter: e.currentTarget.innerText,
-    })
-
   return (
     <HStack w="100%" justifyContent="center">
       <Title
@@ -27,15 +21,6 @@ const EpisodeTitle: React.FC = () => {
         onKeyDown={(e) => {
           if (e.key === "Enter") e.preventDefault()
         }}
-      />
-      <SubTitle
-        html={episode.chapter}
-        onChange={chapterChangeHandler}
-        // @ts-ignore
-        onKeyDown={(e) => {
-          if (e.key === "Enter") e.preventDefault()
-        }}
-        placeholder="챕터 이름"
       />
     </HStack>
   )
@@ -64,7 +49,7 @@ const Title = styled(ContentEditable)`
   box-shadow: none;
   resize: none;
 
-  padding: 10px;
+  padding: 10px 20px;
   border-radius: 5px;
   cursor: text;
 
@@ -73,37 +58,37 @@ const Title = styled(ContentEditable)`
   }
 `
 
-const SubTitle = styled(ContentEditable)`
-  font-weight: 300;
-  font-size: 18px;
-  color: #71717a;
-  margin: 0 0;
-
-  border: none;
-  outline: none;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  resize: none;
-
-  padding: 10px;
-  border-radius: 5px;
-  cursor: text;
-
-  &:hover {
-    background-color: #ffffff15;
-  }
-
-  @media (max-width: 1000px) {
-    display: none;
-    font-size: 16px;
-  }
-
-  &:empty:before {
-    content: attr(placeholder);
-    display: block; /* For Firefox */
-    color: #4a4a50;
-  }
-`
+// const SubTitle = styled(ContentEditable)`
+//   font-weight: 300;
+//   font-size: 18px;
+//   color: #71717a;
+//   margin: 0 0;
+//
+//   border: none;
+//   outline: none;
+//   -webkit-box-shadow: none;
+//   -moz-box-shadow: none;
+//   box-shadow: none;
+//   resize: none;
+//
+//   padding: 10px;
+//   border-radius: 5px;
+//   cursor: text;
+//
+//   &:hover {
+//     background-color: #ffffff15;
+//   }
+//
+//   @media (max-width: 1000px) {
+//     display: none;
+//     font-size: 16px;
+//   }
+//
+//   &:empty:before {
+//     content: attr(placeholder);
+//     display: block; /* For Firefox */
+//     color: #4a4a50;
+//   }
+// `
 
 export default EpisodeTitle
