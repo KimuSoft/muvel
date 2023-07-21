@@ -14,12 +14,16 @@ const EditorHeader: React.FC = () => {
 
   return (
     <HStack pl={10} pr={10} h="70px">
-      <EditorDrawer />
-      {isAutoSaving && <Spinner flexShrink={0} />}
+      <HStack w={200}>
+        <EditorDrawer />
+        {isAutoSaving && <Spinner flexShrink={0} />}
+      </HStack>
       <EpisodeTitle />
-      <SearchModal novelId={novel.id} />
-      <ToggleColorModeButton />
-      <Auth />
+      <HStack w={200} flexDir={"row-reverse"}>
+        <Auth />
+        <ToggleColorModeButton />
+        <SearchModal novelId={novel.id} />
+      </HStack>
     </HStack>
   )
 }
