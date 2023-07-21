@@ -51,32 +51,6 @@ const Main: React.FC = () => {
   )
 }
 
-const Logo = styled.h1`
-  margin: 0;
-  font-size: 5rem;
-`
-
-// 슬로건
-const Slogan = styled.h2`
-  margin: 0;
-  margin-bottom: 20px;
-
-  font-size: 20px;
-  color: #cccccc;
-`
-
-const Body = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  height: 100vh;
-  width: 100vw;
-
-  gap: 5px;
-`
-
 const MainBackground = styled.div`
   position: fixed;
 
