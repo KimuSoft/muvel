@@ -1,7 +1,6 @@
 import styled from "styled-components"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import ProgressBar from "../../../atoms/ProgressBar"
-import EditorContext from "../../../../context/EditorContext"
 import {
   useColorModeValue,
   VStack,
@@ -9,13 +8,14 @@ import {
   Heading,
   HStack,
   Spacer,
-  IconButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react"
-import { FaExchangeAlt } from "react-icons/fa"
 import blocksToText from "../../../../utils/blocksToText"
 import confetti from "canvas-confetti"
 import { blocksState } from "../../../../recoil/editor"
 import { useRecoilState } from "recoil"
+import { ContextMenu } from "chakra-ui-contextmenu"
 
 const GoalPercent = styled.h3`
   margin: 0 0;
@@ -61,19 +61,6 @@ const GoalWidget: React.FC = () => {
         return (
           Math.floor((getByte(blocksToText(blocks)) / 1024) * 100 * 1.439) / 100
         )
-    }
-  }
-
-  const changeType = () => {
-    switch (type) {
-      case CountType.NoSpacing:
-        setType(CountType.All)
-        break
-      case CountType.All:
-        setType(CountType.KB)
-        break
-      case CountType.KB:
-        setType(CountType.NoSpacing)
     }
   }
 
@@ -126,38 +113,69 @@ const GoalWidget: React.FC = () => {
     if (percentage < 120) return "다 채웠어요!"
   }
 
+  const getSelectedProps = (menuCountType: CountType) =>
+    menuCountType === type
+      ? {
+          color: "purple.200",
+          disabled: true,
+          cursor: "default",
+        }
+      : {}
+
   return (
-    <VStack
-      bgColor={useColorModeValue("gray.200", "gray.700")}
-      p={25}
-      gap={2}
-      w={300}
-      borderRadius={10}
+    <ContextMenu
+      renderMenu={() => (
+        <MenuList>
+          <MenuItem
+            command={"노벨피아"}
+            onClick={() => setType(CountType.NoSpacing)}
+            {...getSelectedProps(CountType.NoSpacing)}
+          >
+            공백 제외 3,000자
+          </MenuItem>
+          <MenuItem
+            command={"문피아"}
+            onClick={() => setType(CountType.All)}
+            {...getSelectedProps(CountType.All)}
+          >
+            공백 포함 5,000자
+          </MenuItem>
+          <MenuItem
+            command={"조아라"}
+            onClick={() => setType(CountType.KB)}
+            {...getSelectedProps(CountType.KB)}
+          >
+            14KB
+          </MenuItem>
+        </MenuList>
+      )}
     >
-      <HStack w="100%">
-        <VStack align="baseline" gap={0}>
-          <Text>{countTypeText[type]}</Text>
-          <Heading fontSize="xl">
-            {getCurrentLength().toLocaleString()}
-            {countTypeUnit[type]} / {getGoal().toLocaleString()}
-            {countTypeUnit[type]}
-          </Heading>
+      {(ref) => (
+        <VStack
+          bgColor={useColorModeValue("gray.200", "gray.700")}
+          p={25}
+          gap={2}
+          w={300}
+          borderRadius={10}
+          ref={ref as unknown as React.RefObject<HTMLDivElement>}
+        >
+          <HStack w="100%">
+            <VStack align="baseline" gap={0}>
+              <Text fontSize="sm">{countTypeText[type]}</Text>
+              <Heading fontSize="lg">
+                {getCurrentLength().toLocaleString()}
+                {countTypeUnit[type]} / {getGoal().toLocaleString()}
+                {countTypeUnit[type]}
+              </Heading>
+            </VStack>
+            <Spacer />
+            <GoalPercent>{Math.floor(percentage)}%</GoalPercent>
+          </HStack>
+          <ProgressBar value={percentage / 100} />
+          <Text fontSize="sm">{getCheeringText()}</Text>
         </VStack>
-        <Spacer />
-        <GoalPercent>{Math.floor(percentage)}%</GoalPercent>
-      </HStack>
-      <ProgressBar value={percentage / 100} />
-      <Text fontSize="sm">{getCheeringText()}</Text>
-      <IconButton
-        size="sm"
-        aria-label="change"
-        position="absolute"
-        right="60px"
-        bottom="40px"
-        icon={<FaExchangeAlt />}
-        onClick={changeType}
-      />
-    </VStack>
+      )}
+    </ContextMenu>
   )
 }
 

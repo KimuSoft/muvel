@@ -15,6 +15,7 @@
     "array-move": "^4.0.0",
     "axios": "^1.4.0",
     "canvas-confetti": "^1.6.0",
+    "chakra-ui-contextmenu": "^1.0.5",
     "formik": "^2.4.2",
     "framer-motion": "^10.12.16",
     "lodash": "^4.17.21",

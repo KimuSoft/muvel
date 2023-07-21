@@ -8730,6 +8730,32 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["chakra-ui-contextmenu", [\
+        ["npm:1.0.5", {\
+          "packageLocation": "./.yarn/cache/chakra-ui-contextmenu-npm-1.0.5-0d4647a2ca-021d146857.zip/node_modules/chakra-ui-contextmenu/",\
+          "packageDependencies": [\
+            ["chakra-ui-contextmenu", "npm:1.0.5"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:656141524fab26d76b9a0de37412b0bd8d68b112a7ae5bb3607d411763274ecb93d754bd2292ee7cee1844b867cae11a6a7be00b96f1e87fd47684b593faaa6e#npm:1.0.5", {\
+          "packageLocation": "./.yarn/__virtual__/chakra-ui-contextmenu-virtual-3b19d046d9/0/cache/chakra-ui-contextmenu-npm-1.0.5-0d4647a2ca-021d146857.zip/node_modules/chakra-ui-contextmenu/",\
+          "packageDependencies": [\
+            ["chakra-ui-contextmenu", "virtual:656141524fab26d76b9a0de37412b0bd8d68b112a7ae5bb3607d411763274ecb93d754bd2292ee7cee1844b867cae11a6a7be00b96f1e87fd47684b593faaa6e#npm:1.0.5"],\
+            ["@chakra-ui/react", "virtual:656141524fab26d76b9a0de37412b0bd8d68b112a7ae5bb3607d411763274ecb93d754bd2292ee7cee1844b867cae11a6a7be00b96f1e87fd47684b593faaa6e#npm:2.7.1"],\
+            ["@types/chakra-ui__react", null],\
+            ["@types/react", "npm:18.2.14"],\
+            ["react", "npm:18.2.0"]\
+          ],\
+          "packagePeers": [\
+            "@chakra-ui/react",\
+            "@types/chakra-ui__react",\
+            "@types/react",\
+            "react"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["chalk", [\
         ["npm:2.4.2", {\
           "packageLocation": "./.yarn/cache/chalk-npm-2.4.2-3ea16dd91e-ec3661d38f.zip/node_modules/chalk/",\
@@ -8923,6 +8949,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["array-move", "npm:4.0.0"],\
             ["axios", "npm:1.4.0"],\
             ["canvas-confetti", "npm:1.6.0"],\
+            ["chakra-ui-contextmenu", "virtual:656141524fab26d76b9a0de37412b0bd8d68b112a7ae5bb3607d411763274ecb93d754bd2292ee7cee1844b867cae11a6a7be00b96f1e87fd47684b593faaa6e#npm:1.0.5"],\
             ["formik", "virtual:656141524fab26d76b9a0de37412b0bd8d68b112a7ae5bb3607d411763274ecb93d754bd2292ee7cee1844b867cae11a6a7be00b96f1e87fd47684b593faaa6e#npm:2.4.2"],\
             ["framer-motion", "virtual:656141524fab26d76b9a0de37412b0bd8d68b112a7ae5bb3607d411763274ecb93d754bd2292ee7cee1844b867cae11a6a7be00b96f1e87fd47684b593faaa6e#npm:10.12.18"],\
             ["lodash", "npm:4.17.21"],\

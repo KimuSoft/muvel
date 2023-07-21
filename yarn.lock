@@ -5407,6 +5407,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chakra-ui-contextmenu@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "chakra-ui-contextmenu@npm:1.0.5"
+  peerDependencies:
+    "@chakra-ui/react": ">=1.6.7"
+    react: ">=16.8.6"
+  checksum: 021d146857e9c6ba59c8aa946f38aacc573198363aac6a80f62aef738d65818d454ce7d2b0fb48b5db3b75acc00314b9b127f31ed3669c02e48d82473115c7e9
+  languageName: node
+  linkType: hard
+
 "chalk@npm:4.1.2, chalk@npm:^4.0.0, chalk@npm:^4.1.0, chalk@npm:^4.1.1, chalk@npm:^4.1.2":
   version: 4.1.2
   resolution: "chalk@npm:4.1.2"
@@ -5582,6 +5592,7 @@ __metadata:
     array-move: ^4.0.0
     axios: ^1.4.0
     canvas-confetti: ^1.6.0
+    chakra-ui-contextmenu: ^1.0.5
     formik: ^2.4.2
     framer-motion: ^10.12.16
     lodash: ^4.17.21

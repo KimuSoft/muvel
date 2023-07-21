@@ -46,12 +46,12 @@ export const Widgets = styled.div`
   flex-direction: column-reverse;
   align-items: center;
 
-  padding: 30px;
+  padding: 0 30px 30px 0;
 
-  width: 400px;
+  //width: 300px;
   height: calc(100vh - 80px);
 
-  @media (max-width: 1600px) {
+  @media (max-width: 1400px) {
     display: none;
   }
 `
