@@ -32,13 +32,17 @@ const _SortableContainer = SortableContainer<React.PropsWithChildren>(
   }
 )
 
-const Editor: React.FC = () => {
+const Editor: React.FC<{ initialFocusedBlockId?: string }> = ({
+  initialFocusedBlockId,
+}) => {
   const [episode, setEpisode] = useRecoilState(episodeState)
   const [blocks, setBlocks] = useRecoilState(blocksState)
 
   const [isLoading] = useRecoilState(isLoadingState)
 
-  const [currentBlockId, setCurrentBlockId] = useState<string>("1")
+  const [focusedBlockId, setFocusedBlockId] = useState<string | null>(
+    initialFocusedBlockId ?? null
+  )
   const [episodeDescription, setEpisodeDescription] = useState<string>(
     episode.description
   )
@@ -57,63 +61,44 @@ const Editor: React.FC = () => {
       .indexOf(b)
   }
 
-  const getFocusIndexOnPrevBlock = (id: string) => {
-    if (!prevBlocks) return -1
-    const b = prevBlocks.find((b) => b.id === id)
-
-    if (!b) {
-      console.warn("Block not found")
-      return -1
-    }
-    return prevBlocks
-      .filter((b) => ![BlockType.Divider].includes(b.blockType))
-      .indexOf(b)
-  }
-
-  // Handling the cursor and focus on adding and deleting blocks
+  // ID를 통해 특정 블록에 포커스를 준다.
   useEffect(() => {
-    // If a new block was added, move the caret to it
-    if (prevBlocks && prevBlocks.length + 1 === blocks.length) {
-      const nextBlockPosition = getFocusIndex(currentBlockId) + 1
-      const nextBlock = document.querySelector(
-        `.data_position_${nextBlockPosition}`
-      ) as HTMLElement
-      if (!nextBlock) return console.log("nextBlock is null")
-      nextBlock.focus()
-    }
+    if (!focusedBlockId) return
 
-    // If a block was deleted, move the caret to the end of the last block
-    if (prevBlocks && prevBlocks.length - 1 === blocks.length) {
-      const lastBlockPosition = getFocusIndexOnPrevBlock(currentBlockId) - 1
-      console.log("deleted from: " + lastBlockPosition)
-      const lastBlock = document.querySelector(
-        `.data_position_${lastBlockPosition}`
-      ) as HTMLElement
+    const focusBlockIndex = getFocusIndex(focusedBlockId)
+    const focusBlock = document.querySelector(
+      `.data_position_${focusBlockIndex}`
+    ) as HTMLDivElement | null
 
-      if (!lastBlock) {
-        window.confirm("삭제하시겠습니까?")
-        return console.log("lastBlock is null")
-      }
-      setCaretToEnd(lastBlock)
+    if (!focusBlock) return console.log("Cannot find block: " + focusedBlockId)
+    setFocusedBlockId(null)
+
+    if (!prevBlocks) {
+      focusBlock.focus()
+    } else if (prevBlocks.length > blocks.length) {
+      setCaretToEnd(focusBlock)
+    } else {
+      focusBlock.focus()
     }
-  }, [blocks, prevBlocks, currentBlockId])
+  }, [focusedBlockId])
 
   useEffect(() => {
     setEpisode((e) => ({ ...e, description: episodeDescription }))
   }, [episodeDescription])
 
-  const addBlockHandler = (block: Block) => {
-    setCurrentBlockId(block.id)
-
+  const addBlockHandler = (blockId?: string, content?: string) => {
     const id = v4()
+    setFocusedBlockId(id)
 
     setBlocks((b) => {
       const _blocks = b.map((bl) => ({ ...bl, focus: false }))
 
-      _blocks.splice(_blocks.findIndex((b) => b.id === block.id) + 1, 0, {
+      const index = _blocks.findIndex((b) => b.id === blockId) + 1 || 0
+
+      _blocks.splice(index, 0, {
         id,
         blockType: BlockType.Describe,
-        content: "",
+        content: content || "",
         focus: true,
       })
 
@@ -122,11 +107,12 @@ const Editor: React.FC = () => {
   }
 
   const deleteBlockHandler = ({ id }: { id: string }) => {
-    setCurrentBlockId(id)
     const index = blocks.findIndex((b) => b.id === id)
+    const prevBlockId = blocks[index - 1]?.id
 
-    // 첫 블록은 지울 수 없음
-    if (!index) return
+    if (!prevBlockId) return console.warn("prevBlockIndex is null")
+    setFocusedBlockId(prevBlockId)
+
     setBlocks((b) => b.filter((b) => b.id !== id))
   }
 
@@ -140,12 +126,10 @@ const Editor: React.FC = () => {
     direction: -1 | 1,
     preserveCaretPosition: boolean
   ) => {
-    console.log("MOVE!!")
     const lastBlock = document.querySelector(
       `.data_position_${currentPos + direction}`
-    ) as HTMLElement
+    ) as HTMLElement | null
 
-    console.log(currentPos, direction, lastBlock)
     if (!lastBlock)
       return console.log(`data_position ${currentPos + direction} is null`)
 
@@ -247,6 +231,15 @@ const Editor: React.FC = () => {
     setEpisodeDescription(e.target.value)
   }
 
+  const addLastBlock = () => {
+    if (!blocks.length) return addBlockHandler()
+
+    const lastBlock = blocks[blocks.length - 1]!
+    if (!lastBlock.content) return setFocusedBlockId(lastBlock.id)
+
+    addBlockHandler(lastBlock?.id)
+  }
+
   return (
     <Container maxW="3xl">
       {isLoading ? (
@@ -276,7 +269,7 @@ const Editor: React.FC = () => {
           </_SortableContainer>
         </>
       )}
-      <Box w="100%" h="500px" />
+      <Box w="100%" h="500px" onClick={addLastBlock} />
     </Container>
   )
 }

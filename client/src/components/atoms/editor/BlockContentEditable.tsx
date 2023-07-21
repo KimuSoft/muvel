@@ -115,7 +115,7 @@ const BlockContentEditable: React.FC<BlockContentEditableProps> = ({
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       if (!contentWithoutHtmlTags.current) return
-      return addBlock?.(block)
+      return addBlock?.(block.id)
     }
 
     // 주의: 이 뒤에서는 e.preventDefault()가 정상적으로 작동하지 않는 듯함
@@ -195,7 +195,7 @@ const BlockContentEditable: React.FC<BlockContentEditableProps> = ({
           ...(bl.id === block.id && { blockType: BlockType.Divider }),
         }))
       )
-      addBlock?.(block)
+      addBlock?.(block.id)
       moveToRelativeBlock?.(position, 1, false)
     }
     // 쌍따옴표 블록 생성
@@ -261,7 +261,7 @@ const BlockContentEditable: React.FC<BlockContentEditableProps> = ({
 export interface BlockContentEditableProps {
   block: Block
   position: number
-  addBlock?: (block: Block) => void
+  addBlock?: (blockId: string) => void
   deleteBlock?: ({ id }: { id: string }) => void
   updateBlock?: (block: Block) => void
   moveToRelativeBlock?: (

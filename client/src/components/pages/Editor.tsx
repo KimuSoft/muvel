@@ -67,7 +67,7 @@ const EditorPage: React.FC = () => {
     episode.chapter !== episodeCache?.chapter
 
   // 변경사항 자동 저장 (Debounce)
-  React.useEffect(() => {
+  useEffect(() => {
     // 변경사항이 아직 서버에 올라가지 않았다면 경고
     // if (isEpisodeUpdated() || getBlocksChange().length) {
     //   window.onbeforeunload = () => 0
