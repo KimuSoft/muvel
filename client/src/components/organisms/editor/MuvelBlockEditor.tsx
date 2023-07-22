@@ -269,7 +269,13 @@ const Editor: React.FC<{ initialFocusedBlockId?: string }> = ({
           </_SortableContainer>
         </>
       )}
-      <Box w="100%" h="500px" onClick={addLastBlock} />
+      <Box w="100%" h="500px" onClick={addLastBlock}>
+        {blocks.length ? null : (
+          <Text color={useColorModeValue("gray.200", "gray.600")}>
+            빈 공간을 클릭해서 새 블록을 생성해 보세요
+          </Text>
+        )}
+      </Box>
     </Container>
   )
 }
