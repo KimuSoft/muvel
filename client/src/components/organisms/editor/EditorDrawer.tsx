@@ -45,16 +45,32 @@ const EditorDrawer: React.FC = () => {
 
   const toast = useToast()
 
-  const addEpisodeClickHandler = async (episodeType: EpisodeType) => {
+  const addEpisode = async () => {
     setLoading(true)
     const { data } = await api.post<Episode>(`novels/${novel.id}/episodes`, {
       title: "새 에피소드",
-      episodeType,
+      episodeType: EpisodeType.Episode,
     })
 
     navigate(`/episodes/${data.id}`)
     toast({
       title: "새 에피소드를 생성했어요!",
+      status: "success",
+    })
+    setLoading(false)
+  }
+
+  const addChapter = async () => {
+    setLoading(true)
+    const { data } = await api.post<Episode>(`novels/${novel.id}/episodes`, {
+      title: "새 챕터",
+      episodeType: EpisodeType.EpisodeGroup,
+    })
+
+    navigate(`/episodes/${data.id}`)
+    toast({
+      title:
+        "새 챕터를 생성했어요! (챕터 내 블록 편집 기능은 비활성화될 예정입니다)",
       status: "success",
     })
     setLoading(false)
@@ -89,9 +105,7 @@ const EditorDrawer: React.FC = () => {
                 <Button
                   colorScheme={"gray"}
                   isLoading={loading}
-                  onClick={() =>
-                    addEpisodeClickHandler(EpisodeType.EpisodeGroup)
-                  }
+                  onClick={addChapter}
                 >
                   <HiOutlineRectangleGroup style={{ marginRight: 10 }} />새 챕터
                   생성
@@ -100,7 +114,7 @@ const EditorDrawer: React.FC = () => {
               <Button
                 colorScheme={"purple"}
                 isLoading={loading}
-                onClick={() => addEpisodeClickHandler(EpisodeType.Episode)}
+                onClick={addEpisode}
               >
                 <FaFeatherAlt style={{ marginRight: 10 }} />새 편 쓰기
               </Button>
