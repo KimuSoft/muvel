@@ -1,7 +1,8 @@
-import React, { ReactElement, useEffect, useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import {
   Box,
   HStack,
+  Skeleton,
   Text,
   Tooltip,
   useColorMode,
@@ -30,10 +31,27 @@ const _SortableContainer = SortableContainer<React.PropsWithChildren>(
   }
 )
 
+const EpisodeListSkeleton: React.FC = () => {
+  return (
+    <VStack align="baseline" borderRadius={10} gap={3}>
+      <Skeleton w="240px" h="20px" mt={5} />
+      <Skeleton w="120px" h="30px" />
+      <Skeleton w="240px" h="30px" />
+      <Skeleton w="150px" h="30px" />
+      <Skeleton w="300px" h="30px" />
+      <Skeleton w="130px" h="20px" mt={5} />
+      <Skeleton w="250px" h="30px" />
+      <Skeleton w="130px" h="30px" />
+      <Skeleton w="400px" h="30px" />
+    </VStack>
+  )
+}
+
 const EpisodeList: React.FC<{
   novel: Novel
-  refresh?: () => Promise<unknown>
-}> = ({ novel, refresh }) => {
+  onChange?: () => Promise<unknown>
+  isLoading?: boolean
+}> = ({ novel, onChange, isLoading }) => {
   const [episodes, setEpisodes] = useState<PartialEpisode[]>(novel.episodes)
 
   useEffect(() => {
@@ -59,7 +77,7 @@ const EpisodeList: React.FC<{
 
       console.log("패치합니당")
       await api.patch(`/novels/${novel.id}/episodes`, difference)
-      refresh?.().then()
+      onChange?.().then()
     }
     patch().then()
   }, [episodes])
@@ -79,10 +97,12 @@ const EpisodeList: React.FC<{
     })
   }, [novel.episodes])
 
-  return (
+  return !isLoading ? (
     <_SortableContainer onSortEnd={onSortEnd} pressDelay={100} lockAxis="y">
       {episodeRows}
     </_SortableContainer>
+  ) : (
+    <EpisodeListSkeleton />
   )
 }
 

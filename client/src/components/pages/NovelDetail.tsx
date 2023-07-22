@@ -120,7 +120,11 @@ const NovelDetail: React.FC = () => {
           pb={3}
           borderRadius={10}
         >
-          <EpisodeList novel={novel} refresh={fetchNovel} />
+          <EpisodeList
+            novel={novel}
+            onChange={fetchNovel}
+            isLoading={isLoading}
+          />
         </Box>
       </Container>
     </>
