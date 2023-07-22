@@ -87,7 +87,7 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
             </InputGroup>
           </ModalHeader>
           <ModalBody>
-            {hitItems.length ? (
+            {hitItems?.length ? (
               <VStack h={"430px"} overflowY={"auto"}>
                 {hitItems.map((item) => (
                   <SearchHitItem key={item.id} item={item} />
@@ -150,7 +150,7 @@ const SearchHitItem: React.FC<{ item: HitItem }> = ({ item }) => {
       <VStack align={"baseline"} gap={1}>
         <Tooltip label={item.content} openDelay={1000}>
           <Text>
-            {item.content.length > 70
+            {item.content?.length > 70
               ? item.content.slice(0, 70) + " ..."
               : item.content}
           </Text>
