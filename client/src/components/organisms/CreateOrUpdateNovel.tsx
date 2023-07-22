@@ -47,9 +47,13 @@ const CreateOrUpdateNovel: React.FC<{
     title: string
     description: string
     share: string | number
-    thumbnail: string
+    thumbnail: string | null
   }) => {
-    values = { ...values, share: parseInt(values.share.toString()) }
+    values = {
+      ...values,
+      share: parseInt(values.share.toString()),
+      thumbnail: values.thumbnail || null,
+    }
 
     if (novel) {
       // Update Novel
@@ -133,8 +137,8 @@ const CreateOrUpdateNovel: React.FC<{
                   </Field>
 
                   {/* 소설 설명 필드 */}
-                  <Field name="description" validate={validateTitle}>
-                    {({ field }: FieldProps) => (
+                  <Field name="description">
+                    {({ field, form }: FieldProps) => (
                       <FormControl mt={4}>
                         <FormLabel>설명</FormLabel>
                         <Textarea
@@ -142,6 +146,9 @@ const CreateOrUpdateNovel: React.FC<{
                           ref={initialRef}
                           placeholder="소설의 설명을 입력해 주세요"
                         />
+                        <FormErrorMessage>
+                          {form.errors.title as string}
+                        </FormErrorMessage>
                       </FormControl>
                     )}
                   </Field>
@@ -185,12 +192,15 @@ const CreateOrUpdateNovel: React.FC<{
                             },
                           ]}
                         />
+                        <FormErrorMessage>
+                          {form.errors.title as string}
+                        </FormErrorMessage>
                       </FormControl>
                     )}
                   </Field>
 
                   {/* 소설 썸네일 필드 */}
-                  <Field name="thumbnail" validate={validateTitle}>
+                  <Field name="thumbnail">
                     {({ field, form }: FieldProps) => (
                       <FormControl
                         isInvalid={!!(form.errors.title && form.touched.title)}
