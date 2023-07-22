@@ -1,13 +1,14 @@
 import { Block, BlockType } from "../types/block.type"
 
 const blocksToText = (blocks: Block[], option?: ConvertOption): string => {
+  if (!option?.exportComment) {
+    blocks = blocks.filter((block) => block.blockType !== BlockType.Comment)
+  }
+
   let content = ""
 
   let index = 0
   for (const block of blocks) {
-    if (block.blockType === BlockType.Comment && !option?.exportComment)
-      continue
-
     if (block.blockType === BlockType.Divider)
       content += option?.divider ?? "------------------\n"
 
