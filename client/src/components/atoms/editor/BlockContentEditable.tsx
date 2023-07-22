@@ -225,18 +225,12 @@ const BlockContentEditable: React.FC<BlockContentEditableProps> = ({
       setBlocks((b) =>
         b.map((bl) => ({
           ...bl,
-          ...(bl.id === block.id && { blockType: BlockType.Comment }),
+          ...(bl.id === block.id && {
+            blockType: BlockType.Comment,
+            content: "",
+          }),
         }))
       )
-
-      // set caret to 0
-      const range = document.createRange()
-      const sel = window.getSelection()
-      range.setStart(contenteditable.current.childNodes[0], 0)
-      range.collapse(true)
-      sel?.removeAllRanges()
-      sel?.addRange(range)
-      contenteditable.current.focus()
     }
   }
 
