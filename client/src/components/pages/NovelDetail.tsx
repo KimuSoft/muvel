@@ -61,10 +61,7 @@ const NovelDetail: React.FC = () => {
     <>
       <Header />
       <Center
-        pl={10}
-        pr={10}
-        pb={10}
-        pt={10}
+        p={10}
         mb={7}
         h="300px"
         bgColor={theme.colors.gray[700]}

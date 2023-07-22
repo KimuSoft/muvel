@@ -7,7 +7,7 @@ import {
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react"
-import { PartialEpisode } from "../../types/episode.type"
+import { EpisodeType, PartialEpisode } from "../../types/episode.type"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Novel } from "../../types/novel.type"
 import {
@@ -74,11 +74,6 @@ const EpisodeList: React.FC<{
       if (novel.episodes[idx - 1]?.chapter !== e.chapter) {
         return (
           <React.Fragment key={"ct" + e.id}>
-            {e.chapter ? (
-              <Text mt="10px" p="10px" pl={3} color="gray.500">
-                {e.chapter}
-              </Text>
-            ) : null}
             <SortableEpisodeRow episode={e} order={idx + 1} index={idx} />
           </React.Fragment>
         )
@@ -113,10 +108,23 @@ const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
   const date = useMemo(() => new Date(episode.createdAt), [episode.createdAt])
   const { colorMode } = useColorMode()
 
+  const indexName = useMemo(() => {
+    switch (episode.episodeType) {
+      case EpisodeType.Prologue:
+        return "Pro."
+      case EpisodeType.Epilogue:
+        return "Ep."
+      default:
+        return `${order}편`
+    }
+  }, [episode])
+
   const isNow = (episodeId: string) =>
     location.pathname === `/episodes/${episodeId}`
 
   const onClick = () => navigate(`/episodes/${episode.id}`)
+
+  const hoverColor = useColorModeValue("gray.200", "gray.600")
 
   return (
     // 100글자까지만 보여주고 이후에 ...
@@ -130,45 +138,55 @@ const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
       }
       openDelay={500}
     >
-      <VStack
-        onClick={onClick}
-        pl={3}
-        pr={3}
-        pt={2}
-        pb={2}
-        borderRadius={5}
-        cursor="pointer"
-        w="100%"
-        _hover={{
-          backgroundColor: useColorModeValue("gray.200", "gray.600"),
-        }}
-        transition={"background-color 0.1s ease"}
-        align="baseline"
-      >
-        <HStack>
-          <Text
-            as={isNow(episode.id) ? "b" : undefined}
-            color={
-              isNow(episode.id)
-                ? colorMode === "light"
-                  ? "purple.500"
-                  : "purple.200"
-                : "gray.500"
-            }
-            fontSize="sm"
-            w={8}
-          >
-            {order}편
-          </Text>
-          <Text fontSize="xl">{episode.title}</Text>
-        </HStack>
-        {/*<HStack color={useColorModeValue("gray.300", "gray.500")}>*/}
-        {/*  <FaClock />*/}
-        {/*  <Text fontSize="sm">*/}
-        {/*    {date.getFullYear()}년 {date.getMonth() + 1}월 {date.getDate()}일*/}
-        {/*  </Text>*/}
-        {/*</HStack>*/}
-      </VStack>
+      {episode.episodeType !== EpisodeType.EpisodeGroup ? (
+        <VStack
+          onClick={onClick}
+          px={3}
+          py={2}
+          borderRadius={5}
+          cursor="pointer"
+          w="100%"
+          _hover={{ backgroundColor: hoverColor }}
+          transition={"background-color 0.1s ease"}
+          align="baseline"
+        >
+          <HStack>
+            <Text
+              as={isNow(episode.id) ? "b" : undefined}
+              color={
+                isNow(episode.id)
+                  ? colorMode === "light"
+                    ? "purple.500"
+                    : "purple.200"
+                  : "gray.500"
+              }
+              fontSize="sm"
+              w={8}
+            >
+              {indexName}
+            </Text>
+            <Text fontSize="xl">{episode.title}</Text>
+          </HStack>
+          {/*<HStack color={useColorModeValue("gray.300", "gray.500")}>*/}
+          {/*  <FaClock />*/}
+          {/*  <Text fontSize="sm">*/}
+          {/*    {date.getFullYear()}년 {date.getMonth() + 1}월 {date.getDate()}일*/}
+          {/*  </Text>*/}
+          {/*</HStack>*/}
+        </VStack>
+      ) : (
+        <Text
+          onClick={onClick}
+          mt="10px"
+          p="10px"
+          pl={3}
+          color="gray.500"
+          _hover={{ backgroundColor: hoverColor }}
+          transition={"background-color 0.1s ease"}
+        >
+          {episode.title}
+        </Text>
+      )}
     </Tooltip>
   )
 }

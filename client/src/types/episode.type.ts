@@ -7,6 +7,7 @@ export interface PartialEpisode extends PartialData {
   chapter: string
   novelId: string
   order: number
+  episodeType: EpisodeType
   createdAt: Date
   updatedAt: Date
 }
@@ -16,6 +17,14 @@ export interface Episode extends PartialEpisode {
   blocks: Block[]
 }
 
+export enum EpisodeType {
+  Episode,
+  EpisodeGroup,
+  Prologue,
+  Epilogue,
+  Special,
+}
+
 export const initialPartialEpisode: PartialEpisode = {
   id: "",
   title: "",
@@ -23,6 +32,7 @@ export const initialPartialEpisode: PartialEpisode = {
   description: "",
   novelId: "",
   order: 0,
+  episodeType: EpisodeType.Episode,
   createdAt: new Date(),
   updatedAt: new Date(),
 }
