@@ -69,6 +69,7 @@ const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
       status: "success",
     })
     setLoading(false)
+    refreshNovel().then()
   }
 
   const addChapter = async () => {
@@ -84,11 +85,12 @@ const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
     navigate(`/episodes/${data.id}`)
 
     toast({
-      title:
-        "새 챕터를 생성했어요! (챕터 내 블록 편집 기능은 비활성화될 예정입니다)",
+      title: "새 챕터를 생성했어요!",
+      description: "목록에서 드래그하여 챕터 위치를 바꿀 수 있어요",
       status: "success",
     })
     setLoading(false)
+    refreshNovel().then()
   }
 
   const _onOpen = () => {
@@ -120,7 +122,10 @@ const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
             <HStack w="100%">
               <Spacer />
               <Tooltip
-                label={"(미완성) 챕터 내 블록 편집 기능은 비활성될 예정입니다."}
+                label={
+                  "새 챕터를 추가한 후, 목록에서 드래그하여 순서를 변경할 수 있어요!"
+                }
+                openDelay={500}
               >
                 <Button
                   colorScheme={"gray"}

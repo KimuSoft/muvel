@@ -22,7 +22,7 @@ const BlockQuote: React.FC<
   PropsWithChildren<{
     node: { children: { value: string; children: { value: string }[] }[] }
   }>
-> = ({ children, node }) => {
+> = ({ node }) => {
   return (
     <Box borderLeft="4px solid" borderColor="gray.500" pl={5} py={2} my={3}>
       <Text>
