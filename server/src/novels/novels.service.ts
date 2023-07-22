@@ -107,6 +107,7 @@ export class NovelsService {
   }
 
   async findOne(id: string, relations: string[] = []) {
+    if (!id) return null
     const novel = await this.novelsRepository.findOne({
       where: { id },
       relations,

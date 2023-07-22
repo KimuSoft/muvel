@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Injectable,
   Param,
@@ -119,7 +120,9 @@ export class NovelsController {
     isArray: true,
   })
   @RequirePermission(NovelPermission.ReadNovel)
-  async getEpisodes(@Param("id") id: string) {}
+  async getEpisodes(@Param("id") id: string) {
+    throw new ForbiddenException("Not implemented yet")
+  }
 
   @Patch(":id/episodes")
   @ApiOperation({
