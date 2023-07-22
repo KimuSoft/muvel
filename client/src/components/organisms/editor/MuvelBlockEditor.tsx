@@ -32,13 +32,11 @@ const _SortableContainer = SortableContainer<React.PropsWithChildren>(
   }
 )
 
-const Editor: React.FC<{ initialFocusedBlockId?: string }> = ({
+const MuvelBlockEditor: React.FC<{ initialFocusedBlockId?: string }> = ({
   initialFocusedBlockId,
 }) => {
   const [episode, setEpisode] = useRecoilState(episodeState)
   const [blocks, setBlocks] = useRecoilState(blocksState)
-
-  const [isLoading] = useRecoilState(isLoadingState)
 
   const [focusedBlockId, setFocusedBlockId] = useState<string | null>(
     initialFocusedBlockId ?? null
@@ -244,33 +242,23 @@ const Editor: React.FC<{ initialFocusedBlockId?: string }> = ({
 
   return (
     <Container maxW="3xl">
-      {isLoading ? (
-        <EditorSkeleton />
-      ) : (
-        <>
-          <Text color="gray.500" mb={3}>
-            에피소드 설명
-          </Text>
-          <Textarea
-            defaultValue={episode.description}
-            bgColor={useColorModeValue("gray.200", "gray.900")}
-            border="none"
-            _focus={{ border: "none" }}
-            mb={10}
-            onChange={onEpisodeDescriptionChange}
-          />
-          <Text color="gray.500" mb={3}>
-            본문
-          </Text>
-          <_SortableContainer
-            onSortEnd={onSortEnd}
-            pressDelay={100}
-            lockAxis="y"
-          >
-            {getBlockNodes()}
-          </_SortableContainer>
-        </>
-      )}
+      <Text color="gray.500" mb={3}>
+        에피소드 설명
+      </Text>
+      <Textarea
+        defaultValue={episode.description}
+        bgColor={useColorModeValue("gray.200", "gray.900")}
+        border="none"
+        _focus={{ border: "none" }}
+        mb={10}
+        onChange={onEpisodeDescriptionChange}
+      />
+      <Text color="gray.500" mb={3}>
+        본문
+      </Text>
+      <_SortableContainer onSortEnd={onSortEnd} pressDelay={100} lockAxis="y">
+        {getBlockNodes()}
+      </_SortableContainer>
       <Box w="100%" h="500px" onClick={addLastBlock}>
         {blocks.length ? null : (
           <Text color={noBlockTextColor}>
@@ -282,30 +270,9 @@ const Editor: React.FC<{ initialFocusedBlockId?: string }> = ({
   )
 }
 
-const EditorSkeleton = () => {
-  return (
-    <VStack gap={10} align={"baseline"}>
-      <Skeleton height="20px" width="100%" />
-      <Skeleton height="20px" width="80%" />
-      <Skeleton height="20px" width="60%" />
-      <Skeleton height="20px" width="100%" />
-      <Skeleton height="20px" width="60%" />
-      <Skeleton height="20px" width="100%" />
-      <Skeleton height="22px" width="90%" />
-      <Skeleton height="20px" width="100%" />
-      <Skeleton height="20px" width="80%" />
-      <Skeleton height="20px" width="40%" />
-      <Skeleton height="20px" width="100%" />
-      <Skeleton height="20px" width="60%" />
-      <Skeleton height="20px" width="30%" />
-      <Skeleton height="20px" width="60%" />
-    </VStack>
-  )
-}
-
 const PaddingBlock = styled.div<{ height: number }>`
   height: ${({ height }) => height}px;
   transition: height 0.5s ease;
 `
 
-export default Editor
+export default MuvelBlockEditor

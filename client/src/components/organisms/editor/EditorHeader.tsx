@@ -5,17 +5,22 @@ import EditorDrawer from "./EditorDrawer"
 import { HStack, Spinner } from "@chakra-ui/react"
 import ToggleColorModeButton from "../../atoms/ToggleColorModeButton"
 import SearchModal from "../SearchModal"
-import { isAutoSavingState, novelState } from "../../../recoil/editor"
+import {
+  episodeState,
+  isAutoSavingState,
+  novelState,
+} from "../../../recoil/editor"
 import { useRecoilState } from "recoil"
 
 const EditorHeader: React.FC = () => {
   const [novel] = useRecoilState(novelState)
+  const [episode] = useRecoilState(episodeState)
   const [isAutoSaving] = useRecoilState(isAutoSavingState)
 
   return (
     <HStack pl={10} pr={10} h="70px">
       <HStack w={200}>
-        <EditorDrawer />
+        <EditorDrawer episode={episode} />
         {isAutoSaving && <Spinner flexShrink={0} />}
       </HStack>
       <EpisodeTitle />

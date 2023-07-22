@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react"
-import EditorTemplate from "../templates/editor"
+import React, { useEffect, useMemo, useState } from "react"
+import EditorTemplate, { EditorType } from "../templates/editor"
 import EditorContext from "../../context/EditorContext"
 import { useNavigate, useParams } from "react-router-dom"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import { api } from "../../utils/api"
 import { toast } from "react-toastify"
 import { Novel } from "../../types/novel.type"
-import { Episode, PartialEpisode } from "../../types/episode.type"
+import { Episode, EpisodeType, PartialEpisode } from "../../types/episode.type"
 import _ from "lodash"
 import { Block } from "../../types/block.type"
 import { useRecoilState } from "recoil"
@@ -109,7 +109,6 @@ const EditorPage: React.FC = () => {
 
   const refreshNovel = async () => {
     const { data } = await api.get<Novel>(`novels/${episode.novelId}`)
-    data?.episodes?.sort((a, b) => a.order - b.order)
     setNovel(data)
   }
 
@@ -137,11 +136,18 @@ const EditorPage: React.FC = () => {
 
   useEffect(() => {
     refreshNovel().then()
-  }, [episode])
+  }, [episode.novelId])
+
+  const editorType = useMemo(() => {
+    if (isLoading) return EditorType.MuvelBlock
+    if (episode.episodeType === EpisodeType.EpisodeGroup)
+      return EditorType.Markdown
+    return EditorType.MuvelBlock
+  }, [episode.episodeType, isLoading])
 
   return (
     <EditorContext.Provider value={{ refreshNovel }}>
-      <EditorTemplate />
+      <EditorTemplate isLoading={isLoading} editorType={editorType} />
     </EditorContext.Provider>
   )
 }
