@@ -240,6 +240,8 @@ const Editor: React.FC<{ initialFocusedBlockId?: string }> = ({
     addBlockHandler(lastBlock?.id)
   }
 
+  const noBlockTextColor = useColorModeValue("gray.200", "gray.600")
+
   return (
     <Container maxW="3xl">
       {isLoading ? (
@@ -271,7 +273,7 @@ const Editor: React.FC<{ initialFocusedBlockId?: string }> = ({
       )}
       <Box w="100%" h="500px" onClick={addLastBlock}>
         {blocks.length ? null : (
-          <Text color={useColorModeValue("gray.200", "gray.600")}>
+          <Text color={noBlockTextColor}>
             빈 공간을 클릭해서 새 블록을 생성해 보세요
           </Text>
         )}
