@@ -8,8 +8,7 @@ import { NovelsService } from "../novels/novels.service"
 export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
-    private usersRepository: Repository<UserEntity>,
-    private novelsService: NovelsService
+    private usersRepository: Repository<UserEntity>
   ) {}
 
   async findOne(id: string): Promise<UserEntity | null> {
@@ -38,15 +37,6 @@ export class UsersService {
     _user.avatar = avatar
 
     const user = await this.usersRepository.save(_user)
-
-    const novel = await this.novelsService.create(
-      _user.id,
-      "샘플 소설",
-      "샘플 소설입니다."
-    )
-
-    user.recentEpisodeId = novel.episodes[0].id
-
     return this.usersRepository.save(user)
   }
 

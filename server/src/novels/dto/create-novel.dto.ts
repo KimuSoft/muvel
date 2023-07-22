@@ -10,7 +10,7 @@ export class CreateNovelDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  description: string
+  description: string = ""
 
   @ApiProperty({
     description: "소설의 공개 범위",
@@ -18,5 +18,6 @@ export class CreateNovelDto {
     enum: ShareType,
   })
   @IsEnum(ShareType)
-  share: ShareType
+  @IsOptional()
+  share: ShareType = ShareType.Private
 }

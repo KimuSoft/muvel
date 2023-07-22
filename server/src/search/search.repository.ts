@@ -1,8 +1,10 @@
 import { Injectable } from "@nestjs/common"
 import { MeiliSearch } from "meilisearch"
+import { BlockCache, ISearchRepository } from "./isearch.repository"
+import { SearchInNovelDto } from "./dto/search-in-novel.dto"
 
 @Injectable()
-export class SearchService {
+export class SearchRepository implements ISearchRepository {
   private readonly client: MeiliSearch
 
   constructor() {
@@ -15,47 +17,26 @@ export class SearchService {
     this.updateFilterableAttributes().then()
   }
 
-  async searchInNovel(
+  async searchBlocksByNovel(
     novelId: string,
-    query: string,
-    limit: number = 20,
-    offset: number = 0
+    searchInNovelDto: SearchInNovelDto
   ) {
     const index = await this.client.getIndex("blocks")
-    const result = await index.search(query, {
-      offset,
-      limit,
+    const result = await index.search(searchInNovelDto.q, {
+      offset: searchInNovelDto.start,
+      limit: searchInNovelDto.display,
       filter: `novelId=${novelId}`,
     })
     return result.hits
   }
 
-  async searchBlock(query: string) {
-    const index = await this.client.getIndex("blocks")
-    const result = await index.search(query)
-    return result.hits
-  }
-
-  async insertBlocks(
-    blockCaches: {
-      id: string
-      content: string
-      novelId: string
-      episodeId: string
-      episodeName: string
-      episodeNumber: number
-      index: number
-    }[]
-  ) {
+  async insertBlocks(blockCaches: BlockCache[]) {
     const result = await this.client.index("blocks").addDocuments(blockCaches)
 
     // 5초 대기
     await new Promise((resolve) => setTimeout(resolve, 5000))
 
-    const res = await this.client.getTask(result.taskUid)
-
-    console.log(res)
-    console.log("와아 추가 완료!", blockCaches)
+    await this.client.getTask(result.taskUid)
   }
 
   async updateFilterableAttributes() {

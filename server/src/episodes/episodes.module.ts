@@ -2,18 +2,18 @@ import { Module } from "@nestjs/common"
 import { TypeOrmModule } from "@nestjs/typeorm"
 import { EpisodeEntity } from "./episode.entity"
 import { EpisodesService } from "./episodes.service"
-import { BlocksModule } from "../blocks/blocks.module"
 import { EpisodesController } from "./episodes.controller"
-import { SearchModule } from "../search/search.module"
+import { SearchRepository } from "../search/search.repository"
+import { BlocksService } from "../blocks/blocks.service"
+import { NovelEntity } from "../novels/novel.entity"
+import { BlockEntity } from "../blocks/block.entity"
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([EpisodeEntity]),
-    BlocksModule,
-    SearchModule,
+    TypeOrmModule.forFeature([NovelEntity, EpisodeEntity, BlockEntity]),
   ],
   exports: [EpisodesService],
-  providers: [EpisodesService],
+  providers: [EpisodesService, BlocksService, SearchRepository],
   controllers: [EpisodesController],
 })
 export class EpisodesModule {}

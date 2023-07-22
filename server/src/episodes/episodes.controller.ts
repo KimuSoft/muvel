@@ -17,11 +17,15 @@ import { PatchBlocksDto } from "./dto/patch-blocks.dto"
 import { EpisodeDto } from "./dto/episode.dto"
 import { RequirePermission } from "../novels/novels.decorator"
 import { NovelPermission } from "../types"
+import { BlocksService } from "../blocks/blocks.service"
 
 @Controller("api/episodes")
 @ApiTags("Episodes")
 export class EpisodesController {
-  constructor(private readonly episodesService: EpisodesService) {}
+  constructor(
+    private readonly episodesService: EpisodesService,
+    private readonly blocksService: BlocksService
+  ) {}
 
   @Get(":id")
   @ApiOperation({
@@ -90,7 +94,7 @@ export class EpisodesController {
     @Param("id") id: string,
     @Body() blockDiffs: PatchBlocksDto[]
   ) {
-    this.episodesService.patchBlocks(id, blockDiffs).then()
+    this.blocksService.patchBlocks(id, blockDiffs).then()
   }
 
   @Get(":id/search")

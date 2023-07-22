@@ -2,49 +2,95 @@ import { Injectable } from "@nestjs/common"
 import { NovelEntity } from "./novel.entity"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
-import { EpisodesService } from "../episodes/episodes.service"
 import { SearchNovelsDto } from "./dto/search-novels.dto"
 import { UserEntity } from "../users/user.entity"
-import { NovelPermission, ShareType } from "../types"
-import { PatchEpisodesDto } from "./dto/patch-episodes.dto"
+import { BlockType, NovelPermission, ShareType } from "../types"
 import { UpdateNovelDto } from "./dto/update-novel.dto"
+import { EpisodeEntity } from "../episodes/episode.entity"
+import { BlockEntity } from "../blocks/block.entity"
+import { CreateNovelDto } from "./dto/create-novel.dto"
 
 @Injectable()
 export class NovelsService {
   constructor(
-    @InjectRepository(NovelEntity)
-    private novelsRepository: Repository<NovelEntity>,
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
-    private episodesService: EpisodesService
+    @InjectRepository(NovelEntity)
+    private novelsRepository: Repository<NovelEntity>,
+    @InjectRepository(EpisodeEntity)
+    private episodesRepository: Repository<EpisodeEntity>,
+    @InjectRepository(BlockEntity)
+    private blocksRepository: Repository<BlockEntity>
   ) {}
 
-  async delete(id: string) {
-    return this.novelsRepository.softDelete({ id })
-  }
-
-  async create(
-    authorId: string,
-    title: string,
-    description: string,
-    share?: ShareType
-  ) {
+  async createNovel(authorId: string, createNovelDto: CreateNovelDto) {
     const user = await this.usersRepository.findOneBy({ id: authorId })
     const novel = new NovelEntity()
-    novel.title = title || ""
-    novel.description = description || ""
+
+    novel.title = createNovelDto.title
+    novel.description = createNovelDto.description
     novel.author = user
-    novel.share = share || ShareType.Private
+    novel.share = createNovelDto.share
 
     // 에피소드 생성
     novel.episodes = [
-      await this.episodesService.create(
+      await this.createInitialEpisode(
         "시작하기",
         "뮤블의 사용법을 배워 보아요!"
       ),
     ]
 
     return this.novelsRepository.save(novel)
+  }
+
+  private async createInitialEpisode(
+    title: string,
+    description = "",
+    chapter = "",
+    novelId?: string
+  ) {
+    let order = 1
+    if (novelId) {
+      const lastBlock: { order: number }[] =
+        await this.episodesRepository.query(
+          'SELECT * FROM "episode" WHERE "novelId" = $1 ORDER BY "order" DESC LIMIT 1',
+          [novelId]
+        )
+      order = lastBlock?.[0].order + 1
+    }
+
+    const episode = new EpisodeEntity()
+    episode.title = title
+    episode.description = description
+    episode.chapter = chapter
+    episode.order = order
+
+    // 블록 생성
+    episode.blocks = [await this.createBlock("샘플 블록입니다.")]
+
+    return this.episodesRepository.save(episode)
+  }
+
+  private async createBlock(content: string, order?: number) {
+    if (!order) {
+      const lastBlock = await this.blocksRepository
+        .findOne({
+          order: { order: "DESC" },
+        })
+        .catch(() => ({ order: 0 }))
+      order = lastBlock.order + 1
+    }
+
+    const block = new BlockEntity()
+    block.blockType = BlockType.Describe
+    block.content = content
+    block.order = order
+
+    return this.blocksRepository.save(block)
+  }
+
+  async delete(id: string) {
+    return this.novelsRepository.softDelete({ id })
   }
 
   async updateNovel(id: string, updateNovelDto: UpdateNovelDto) {
@@ -58,24 +104,6 @@ export class NovelsService {
     novel.thumbnail = updateNovelDto.thumbnail ?? novel.thumbnail
 
     return this.novelsRepository.save(novel)
-  }
-
-  async addEpisode(
-    novelId: string,
-    title: string,
-    description: string,
-    chapter: string
-  ) {
-    const novel = await this.findOne(novelId, ["episodes"])
-    const episode = await this.episodesService.create(
-      title,
-      description,
-      chapter,
-      novelId
-    )
-    novel.episodes.push(episode)
-    await this.novelsRepository.save(novel)
-    return episode
   }
 
   async findOne(id: string, relations: string[] = []) {
@@ -151,10 +179,6 @@ export class NovelsService {
       if (novel.share === ShareType.Private) return []
       else return [NovelPermission.ReadNovel]
     }
-  }
-
-  async patchEpisodes(id: string, episodesDiff: PatchEpisodesDto[]) {
-    await this.episodesService.upsert(episodesDiff)
   }
 
   async getNovelByEpisodeId(episodeId: string) {

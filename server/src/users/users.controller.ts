@@ -13,7 +13,7 @@ import { RequireAuth } from "../auth/auth.decorator"
 import { NovelDto } from "../novels/dto/novel.dto"
 import { UsersService } from "./users.service"
 import { NovelsService } from "../novels/novels.service"
-import { CreateNovelDto } from "./dto/create-novel.dto"
+import { CreateNovelDto } from "../novels/dto/create-novel.dto"
 
 @Controller("api/users")
 @ApiTags("Users")
@@ -61,11 +61,6 @@ export class UsersController {
   ) {
     if (req.user.id !== userId) throw new ForbiddenException()
 
-    return this.novelsService.create(
-      userId,
-      createNovelDto.title,
-      createNovelDto.description,
-      createNovelDto.share
-    )
+    return this.novelsService.createNovel(userId, createNovelDto)
   }
 }

@@ -17,7 +17,7 @@ import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
 import { NovelDto, NovelDtoWithEpisodes } from "./dto/novel.dto"
 import { UpdateNovelDto } from "./dto/update-novel.dto"
 import { EpisodeDto } from "../episodes/dto/episode.dto"
-import { CreateEpisodeDto } from "./dto/create-episode.dto"
+import { CreateEpisodeDto } from "../episodes/dto/create-episode.dto"
 import { RequirePermission } from "./novels.decorator"
 import {
   SearchNovelsDto,
@@ -25,15 +25,17 @@ import {
 } from "./dto/search-novels.dto"
 import { PatchEpisodesDto } from "./dto/patch-episodes.dto"
 import { NovelPermission } from "../types"
-import { SearchService } from "../search/search.service"
-import { SearchInNovelDto } from "./dto/search-in-novel.dto"
+import { SearchRepository } from "../search/search.repository"
+import { SearchInNovelDto } from "../search/dto/search-in-novel.dto"
+import { EpisodesService } from "../episodes/episodes.service"
 
 @ApiTags("Novels")
 @Controller("api/novels")
 export class NovelsController {
   constructor(
     private readonly novelsService: NovelsService,
-    private readonly searchService: SearchService
+    private readonly episodesService: EpisodesService,
+    private readonly searchService: SearchRepository
   ) {}
 
   @Get()
@@ -102,14 +104,9 @@ export class NovelsController {
   @RequirePermission(NovelPermission.EditNovel)
   async addEpisode(
     @Param("id") id: string,
-    @Body() addEpisodeDto: CreateEpisodeDto
+    @Body() createEpisodeDto: CreateEpisodeDto
   ) {
-    return this.novelsService.addEpisode(
-      id,
-      addEpisodeDto.title,
-      addEpisodeDto.description,
-      addEpisodeDto.chapter
-    )
+    return this.episodesService.createEpisode(id, createEpisodeDto)
   }
 
   @Get(":id/episodes")
@@ -130,11 +127,11 @@ export class NovelsController {
     description: "해당 소설의 에피소드를 수정합니다. (현재는 order만 가능)",
   })
   @RequirePermission(NovelPermission.EditNovel)
-  async updateEpisode(
+  async patchEpisodes(
     @Param("id") id: string,
     @Body() patchEpisodesDtos: PatchEpisodesDto[]
   ) {
-    return this.novelsService.patchEpisodes(id, patchEpisodesDtos)
+    return this.episodesService.patchEpisodes(id, patchEpisodesDtos)
   }
 
   @Get(":id/search")
@@ -152,12 +149,7 @@ export class NovelsController {
     @Param("id") id: string,
     @Query() searchInNovelDto: SearchInNovelDto
   ) {
-    return this.searchService.searchInNovel(
-      id,
-      searchInNovelDto.q,
-      searchInNovelDto.display,
-      searchInNovelDto.start
-    )
+    return this.searchService.searchBlocksByNovel(id, searchInNovelDto)
   }
 }
 

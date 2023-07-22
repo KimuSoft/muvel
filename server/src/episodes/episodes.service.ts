@@ -1,48 +1,58 @@
-import { Injectable } from "@nestjs/common"
+import { Inject, Injectable } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
 import { EpisodeEntity } from "./episode.entity"
-import { BlocksService } from "../blocks/blocks.service"
-import { PatchBlocksDto } from "./dto/patch-blocks.dto"
 import { PatchEpisodesDto } from "../novels/dto/patch-episodes.dto"
-import { SearchService } from "../search/search.service"
-import { BlockEntity } from "../blocks/block.entity"
+import { CreateEpisodeDto } from "./dto/create-episode.dto"
+import { NovelEntity } from "../novels/novel.entity"
+import { ISearchRepository } from "../search/isearch.repository"
+import { SearchRepository } from "src/search/search.repository"
 
 @Injectable()
 export class EpisodesService {
   constructor(
+    @InjectRepository(NovelEntity)
+    private novelsRepository: Repository<NovelEntity>,
     @InjectRepository(EpisodeEntity)
     private episodesRepository: Repository<EpisodeEntity>,
-    private blocksService: BlocksService,
-    private searchService: SearchService
+    @Inject(SearchRepository)
+    private readonly searchRepository: ISearchRepository
   ) {}
 
-  async create(
-    title: string,
-    description = "",
-    chapter = "",
-    novelId?: string
-  ) {
-    let order = 1
-    if (novelId) {
-      const lastBlock: { order: number }[] =
-        await this.episodesRepository.query(
-          'SELECT * FROM "episode" WHERE "novelId" = $1 ORDER BY "order" DESC LIMIT 1',
-          [novelId]
-        )
-      order = lastBlock?.[0].order + 1
-    }
+  private async getNextOrder(novelId?: string) {
+    if (!novelId) return 1
+
+    const lastBlock: { order: number }[] = await this.episodesRepository.query(
+      'SELECT * FROM "episode" WHERE "novelId" = $1 ORDER BY "order" DESC LIMIT 1',
+      [novelId]
+    )
+    return lastBlock?.[0].order + 1
+  }
+
+  async createEpisode(novelId: string, createEpisodeDto: CreateEpisodeDto) {
+    const novel = await this.novelsRepository.findOne({
+      where: { id: novelId },
+      relations: ["episodes"],
+    })
+    if (!novel) return null
+
+    const order = createEpisodeDto.order ?? (await this.getNextOrder(novelId))
 
     const episode = new EpisodeEntity()
-    episode.title = title
-    episode.description = description
-    episode.chapter = chapter
+    episode.title = createEpisodeDto.title
+    episode.description = createEpisodeDto.description
+    episode.episodeType = createEpisodeDto.episodeType
     episode.order = order
+    await this.episodesRepository.save(episode)
 
-    // 블록 생성
-    episode.blocks = [await this.blocksService.create("샘플 블록입니다.")]
+    novel.episodes.push(episode)
+    await this.novelsRepository.save(novel)
 
-    return this.episodesRepository.save(episode)
+    return episode
+  }
+
+  async patchEpisodes(id: string, episodesDiff: PatchEpisodesDto[]) {
+    await this.upsert(episodesDiff)
   }
 
   async findOne(id: string, relations: string[] = []) {
@@ -55,43 +65,6 @@ export class EpisodesService {
   async deleteEpisode(id: string) {
     await this.findOne(id, ["blocks"])
     await this.episodesRepository.delete(id)
-  }
-
-  async patchBlocks(id: string, blockDiffs: PatchBlocksDto[]) {
-    const episode = await this.findOne(id)
-
-    await this.blocksService.upsert(
-      blockDiffs
-        .filter((b) => !b.isDeleted)
-        .map((b) => ({
-          id: b.id,
-          content: b.content,
-          blockType: b.blockType,
-          order: b.order,
-          episode,
-        }))
-    )
-
-    this.searchService
-      .insertBlocks(
-        blockDiffs.map((b) => ({
-          id: b.id,
-          content: b.content,
-          blockType: b.blockType,
-          order: b.order,
-          episodeId: id,
-          episodeName: episode.title,
-          episodeNumber: episode.order,
-          index: b.order,
-          novelId: episode.novelId,
-        }))
-      )
-      .then()
-
-    for (const i of blockDiffs.filter((b) => b.isDeleted)) {
-      console.log("삭제", i)
-      await this.blocksService.delete(i.id)
-    }
   }
 
   async update(
@@ -137,6 +110,6 @@ export class EpisodesService {
       }
     }
 
-    return this.searchService.insertBlocks(blocks)
+    return this.searchRepository.insertBlocks(blocks)
   }
 }
