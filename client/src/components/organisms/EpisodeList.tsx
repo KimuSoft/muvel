@@ -1,5 +1,6 @@
 import React, { ReactElement, useEffect, useMemo, useState } from "react"
 import {
+  Box,
   HStack,
   Text,
   Tooltip,
@@ -33,7 +34,6 @@ const EpisodeList: React.FC<{
   novel: Novel
   refresh?: () => Promise<unknown>
 }> = ({ novel, refresh }) => {
-  const [episodeList, setEpisodeList] = useState<ReactElement[]>([])
   const [episodes, setEpisodes] = useState<PartialEpisode[]>(novel.episodes)
 
   useEffect(() => {
@@ -69,30 +69,19 @@ const EpisodeList: React.FC<{
     newIndex,
   }) => setEpisodes(arrayMoveImmutable(episodes, oldIndex, newIndex))
 
-  useEffect(() => {
-    const el = novel?.episodes?.map((e, idx) => {
-      if (novel.episodes[idx - 1]?.chapter !== e.chapter) {
-        return (
-          <React.Fragment key={"ct" + e.id}>
-            <SortableEpisodeRow episode={e} order={idx + 1} index={idx} />
-          </React.Fragment>
-        )
-      }
+  const episodeRows = useMemo(() => {
+    let order = 0
+    return novel?.episodes?.map((e, idx) => {
+      if (e.episodeType === EpisodeType.Episode) order++
       return (
-        <SortableEpisodeRow
-          episode={e}
-          order={idx + 1}
-          key={e.id}
-          index={idx}
-        />
+        <SortableEpisodeRow episode={e} order={order} key={e.id} index={idx} />
       )
     })
-    setEpisodeList(el)
-  }, [novel])
+  }, [novel.episodes])
 
   return (
     <_SortableContainer onSortEnd={onSortEnd} pressDelay={100} lockAxis="y">
-      {episodeList}
+      {episodeRows}
     </_SortableContainer>
   )
 }
@@ -114,13 +103,17 @@ const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
         return "Pro."
       case EpisodeType.Epilogue:
         return "Ep."
+      case EpisodeType.Special:
+        return "Sp."
       default:
         return `${order}편`
     }
   }, [episode])
 
-  const isNow = (episodeId: string) =>
-    location.pathname === `/episodes/${episodeId}`
+  const isNow = useMemo(
+    () => location.pathname === `/episodes/${episode.id}`,
+    [location.pathname, episode.id]
+  )
 
   const onClick = () => navigate(`/episodes/${episode.id}`)
 
@@ -152,9 +145,9 @@ const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
         >
           <HStack>
             <Text
-              as={isNow(episode.id) ? "b" : undefined}
+              as={isNow ? "b" : undefined}
               color={
-                isNow(episode.id)
+                isNow
                   ? colorMode === "light"
                     ? "purple.500"
                     : "purple.200"
@@ -175,17 +168,29 @@ const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
           {/*</HStack>*/}
         </VStack>
       ) : (
-        <Text
-          onClick={onClick}
+        <Box
+          w="100%"
           mt="10px"
-          p="10px"
-          pl={3}
-          color="gray.500"
+          onClick={onClick}
           _hover={{ backgroundColor: hoverColor }}
           transition={"background-color 0.1s ease"}
+          userSelect={"none"}
+          cursor="pointer"
         >
-          {episode.title}
-        </Text>
+          <Text
+            p="10px"
+            pl={3}
+            color={
+              isNow
+                ? colorMode === "light"
+                  ? "purple.500"
+                  : "purple.200"
+                : "gray.500"
+            }
+          >
+            {episode.title}
+          </Text>
+        </Box>
       )}
     </Tooltip>
   )

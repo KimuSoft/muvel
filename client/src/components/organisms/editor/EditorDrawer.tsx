@@ -5,6 +5,7 @@ import { MdChevronLeft, MdMenu } from "react-icons/md"
 import EditorContext from "../../../context/EditorContext"
 import EpisodeList from "../EpisodeList"
 import {
+  Button,
   Divider,
   Drawer,
   DrawerBody,
@@ -16,7 +17,9 @@ import {
   Heading,
   HStack,
   Spacer,
+  Tooltip,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
 import ExportEpisode from "../../molecules/editor/ExportEpisode"
@@ -25,6 +28,10 @@ import DeleteEpisode from "../DeleteEpisode"
 import EditorSetting from "./EditorSetting"
 import { useRecoilState } from "recoil"
 import { episodeState, novelState } from "../../../recoil/editor"
+import { Episode, EpisodeType } from "../../../types/episode.type"
+import { api } from "../../../utils/api"
+import { HiOutlineRectangleGroup } from "react-icons/hi2"
+import { FaFeatherAlt } from "react-icons/fa"
 
 const EditorDrawer: React.FC = () => {
   const [novel] = useRecoilState(novelState)
@@ -34,6 +41,24 @@ const EditorDrawer: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const navigate = useNavigate()
+  const [loading, setLoading] = React.useState(false)
+
+  const toast = useToast()
+
+  const addEpisodeClickHandler = async (episodeType: EpisodeType) => {
+    setLoading(true)
+    const { data } = await api.post<Episode>(`novels/${novel.id}/episodes`, {
+      title: "새 에피소드",
+      episodeType,
+    })
+
+    navigate(`/episodes/${data.id}`)
+    toast({
+      title: "새 에피소드를 생성했어요!",
+      status: "success",
+    })
+    setLoading(false)
+  }
 
   return (
     <>
@@ -56,6 +81,30 @@ const EditorDrawer: React.FC = () => {
           </DrawerHeader>
           <DrawerBody>
             <NovelProfile />
+            <HStack w="100%">
+              <Spacer />
+              <Tooltip
+                label={"(미완성) 챕터 내 블록 편집 기능은 비활성될 예정입니다."}
+              >
+                <Button
+                  colorScheme={"gray"}
+                  isLoading={loading}
+                  onClick={() =>
+                    addEpisodeClickHandler(EpisodeType.EpisodeGroup)
+                  }
+                >
+                  <HiOutlineRectangleGroup style={{ marginRight: 10 }} />새 챕터
+                  생성
+                </Button>
+              </Tooltip>
+              <Button
+                colorScheme={"purple"}
+                isLoading={loading}
+                onClick={() => addEpisodeClickHandler(EpisodeType.Episode)}
+              >
+                <FaFeatherAlt style={{ marginRight: 10 }} />새 편 쓰기
+              </Button>
+            </HStack>
             <Divider mt={10} mb={10} />
             <Heading fontSize="xl" pl={4} mb={3}>
               에피소드 목록
