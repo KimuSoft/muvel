@@ -1,13 +1,11 @@
 import DiceWidget from "./DiceWidget"
 import GoalWidget from "./GoalWidget"
 import SymbolWidget from "./SymbolWidget"
-import DictWidget from "./DictWidget"
 import React from "react"
 import { IconType } from "react-icons"
 import { ImCalculator } from "react-icons/im"
 import { BsDice6Fill } from "react-icons/bs"
 import { RiCharacterRecognitionFill } from "react-icons/ri"
-import { AiOutlineBook } from "react-icons/ai"
 
 export const widgetData: IWidget[] = [
   {
@@ -33,14 +31,21 @@ export const widgetData: IWidget[] = [
       "키보드로 입력하기 힘들지만 자주 사용하는 특수문자를 손쉽게 복사할 수 있는 위젯이에요.",
     icon: RiCharacterRecognitionFill,
   },
-  {
-    id: "dict",
-    component: <DictWidget key={"dict-widget"} />,
-    name: "빠른 사전 위젯",
-    description:
-      "이 단어는 띄어써야 하는 걸까? 빠른 사전을 통해 단어를 찾아보세요.",
-    icon: AiOutlineBook,
-  },
+  // {
+  //   id: "dict",
+  //   component: <DictWidget key={"dict-widget"} />,
+  //   name: "빠른 사전 위젯",
+  //   description:
+  //     "이 단어는 띄어써야 하는 걸까? 빠른 사전을 통해 단어를 찾아보세요.",
+  //   icon: AiOutlineBook,
+  // },
+  // {
+  //   id: "speed",
+  //   component: <SpeedWidget key={"speed-widget"} />,
+  //   name: "타속 위젯",
+  //   description: "현재 내 작성 속도는?",
+  //   icon: BsSpeedometer,
+  // },
 ]
 
 export interface IWidget {
