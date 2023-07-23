@@ -1,8 +1,6 @@
-import styled from "styled-components"
 import React, { useEffect, useState } from "react"
-import ProgressBar from "../../../atoms/ProgressBar"
+import ProgressBar from "../../atoms/ProgressBar"
 import {
-  useColorModeValue,
   VStack,
   Text,
   Heading,
@@ -10,21 +8,17 @@ import {
   Spacer,
   MenuList,
   MenuItem,
+  Menu,
+  MenuButton,
+  IconButton,
 } from "@chakra-ui/react"
-import blocksToText from "../../../../utils/blocksToText"
+import blocksToText from "../../../utils/blocksToText"
 import confetti from "canvas-confetti"
-import { blocksState } from "../../../../recoil/editor"
+import { blocksState } from "../../../recoil/editor"
 import { useRecoilState } from "recoil"
-import { ContextMenu } from "chakra-ui-contextmenu"
-
-const GoalPercent = styled.h3`
-  margin: 0 0;
-  font-size: 24px;
-  font-weight: 700;
-  text-align: right;
-
-  width: 70px;
-`
+import { ImCalculator } from "react-icons/im"
+import { Widget, WidgetBody, WidgetHeader } from "./Widget"
+import { IoSettings } from "react-icons/io5"
 
 const GoalWidget: React.FC = () => {
   const [blocks] = useRecoilState(blocksState)
@@ -101,7 +95,7 @@ const GoalWidget: React.FC = () => {
     }, 250)
   })
 
-  const countTypeText = ["공백 포함", "공백 제외", ""]
+  const countTypeText = ["공백 포함", "공백 제외", "KB"]
   const countTypeUnit = ["자", "자", "KB"]
 
   const getCheeringText = () => {
@@ -123,59 +117,59 @@ const GoalWidget: React.FC = () => {
       : {}
 
   return (
-    <ContextMenu
-      renderMenu={() => (
-        <MenuList>
-          <MenuItem
-            command={"노벨피아"}
-            onClick={() => setType(CountType.NoSpacing)}
-            {...getSelectedProps(CountType.NoSpacing)}
-          >
-            공백 제외 3,000자
-          </MenuItem>
-          <MenuItem
-            command={"문피아"}
-            onClick={() => setType(CountType.All)}
-            {...getSelectedProps(CountType.All)}
-          >
-            공백 포함 5,000자
-          </MenuItem>
-          <MenuItem
-            command={"조아라"}
-            onClick={() => setType(CountType.KB)}
-            {...getSelectedProps(CountType.KB)}
-          >
-            14KB
-          </MenuItem>
-        </MenuList>
-      )}
-    >
-      {(ref) => (
-        <VStack
-          bgColor={useColorModeValue("gray.200", "gray.700")}
-          p={25}
-          gap={2}
-          w={300}
-          borderRadius={10}
-          ref={ref as unknown as React.RefObject<HTMLDivElement>}
-        >
-          <HStack w="100%">
-            <VStack align="baseline" gap={0}>
-              <Text fontSize="sm">{countTypeText[type]}</Text>
-              <Heading fontSize="lg">
-                {getCurrentLength().toLocaleString()}
-                {countTypeUnit[type]} / {getGoal().toLocaleString()}
-                {countTypeUnit[type]}
-              </Heading>
-            </VStack>
-            <Spacer />
-            <GoalPercent>{Math.floor(percentage)}%</GoalPercent>
-          </HStack>
-          <ProgressBar value={percentage / 100} />
-          <Text fontSize="sm">{getCheeringText()}</Text>
-        </VStack>
-      )}
-    </ContextMenu>
+    <Widget>
+      <WidgetHeader>
+        <ImCalculator size={12} />
+        <Text>글자 수 세기 ({countTypeText[type]})</Text>
+        <Spacer />
+        <Menu>
+          <MenuButton
+            size="xs"
+            variant="outline"
+            as={IconButton}
+            icon={<IoSettings size={9} />}
+          />
+          <MenuList>
+            <MenuItem
+              command={"노벨피아"}
+              onClick={() => setType(CountType.NoSpacing)}
+              {...getSelectedProps(CountType.NoSpacing)}
+            >
+              공백 제외 3,000자
+            </MenuItem>
+            <MenuItem
+              command={"문피아"}
+              onClick={() => setType(CountType.All)}
+              {...getSelectedProps(CountType.All)}
+            >
+              공백 포함 5,000자
+            </MenuItem>
+            <MenuItem
+              command={"조아라"}
+              onClick={() => setType(CountType.KB)}
+              {...getSelectedProps(CountType.KB)}
+            >
+              14KB
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      </WidgetHeader>
+      <WidgetBody>
+        <HStack w="100%" px={1}>
+          <VStack align="baseline" gap={0}>
+            <Text fontSize="md">
+              {getCurrentLength().toLocaleString()}
+              {countTypeUnit[type]} / {getGoal().toLocaleString()}
+              {countTypeUnit[type]}
+            </Text>
+          </VStack>
+          <Spacer />
+          <Heading fontSize={"xl"}>{Math.floor(percentage)}%</Heading>
+        </HStack>
+        <ProgressBar value={percentage / 100} />
+        <Text fontSize="xs">{getCheeringText()}</Text>
+      </WidgetBody>
+    </Widget>
   )
 }
 

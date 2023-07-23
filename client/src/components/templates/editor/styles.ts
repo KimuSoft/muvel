@@ -14,7 +14,7 @@ export const Body = styled.div`
 
   height: calc(100vh - 80px);
 
-  padding: 20px 20px 0px;
+  padding: 20px 20px 0;
 
   overflow-y: scroll;
 
@@ -46,12 +46,14 @@ export const Widgets = styled.div`
   flex-direction: column-reverse;
   align-items: center;
 
+  gap: 10px;
+
   padding: 0 30px 30px 0;
 
-  //width: 300px;
+  width: 300px;
   height: calc(100vh - 80px);
 
-  @media (max-width: 1400px) {
+  @media (max-width: 1350px) {
     display: none;
   }
 `

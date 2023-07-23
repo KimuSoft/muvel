@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React, { ReactNode, useEffect, useMemo, useState } from "react"
 import EditorTemplate, { EditorType } from "../templates/editor"
 import EditorContext from "../../context/EditorContext"
 import { useNavigate, useParams } from "react-router-dom"
@@ -12,11 +12,14 @@ import { Block } from "../../types/block.type"
 import { useRecoilState } from "recoil"
 import {
   blocksState,
+  editorOptionsState,
   episodeState,
   isAutoSavingState,
   isLoadingState,
   novelState,
+  widgetsState,
 } from "../../recoil/editor"
+import { widgetData } from "../organisms/widget"
 
 const EditorPage: React.FC = () => {
   // Hooks
@@ -28,6 +31,9 @@ const EditorPage: React.FC = () => {
   const [_novel, setNovel] = useRecoilState(novelState)
   const [episode, setEpisode] = useRecoilState(episodeState)
   const [blocks, setBlocks] = useRecoilState(blocksState)
+
+  const [editorOptions] = useRecoilState(editorOptionsState)
+  const [widgets] = useRecoilState(widgetsState)
 
   // State (Cache) :업데이트 시 변경 사항을 비교하는 용도
   const [episodeCache, setEpisodeCache] = useState<PartialEpisode>()
@@ -138,6 +144,14 @@ const EditorPage: React.FC = () => {
     refreshNovel().then()
   }, [episode.novelId])
 
+  useEffect(() => {
+    localStorage.setItem("widgets", JSON.stringify(Array.from(widgets)))
+  }, [widgets])
+
+  useEffect(() => {
+    localStorage.setItem("editor_options", JSON.stringify(editorOptions))
+  }, [editorOptions])
+
   const editorType = useMemo(() => {
     if (isLoading) return EditorType.MuvelBlock
     if (episode.episodeType === EpisodeType.EpisodeGroup)
@@ -145,9 +159,28 @@ const EditorPage: React.FC = () => {
     return EditorType.MuvelBlock
   }, [episode.episodeType, isLoading])
 
+  const activeWidgets = useMemo(() => {
+    const activeWidgets_: ReactNode[] = []
+
+    for (const w of widgets) {
+      const widgetComponent = widgetData.find((wd) => wd.id === w)?.component
+      if (!widgetComponent) {
+        console.warn("Widget Component not found: " + w)
+        continue
+      }
+      activeWidgets_.push(widgetComponent)
+    }
+
+    return activeWidgets_
+  }, [widgets])
+
   return (
     <EditorContext.Provider value={{ refreshNovel }}>
-      <EditorTemplate isLoading={isLoading} editorType={editorType} />
+      <EditorTemplate
+        isLoading={isLoading}
+        editorType={editorType}
+        widgets={activeWidgets}
+      />
     </EditorContext.Provider>
   )
 }

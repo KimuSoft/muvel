@@ -1,7 +1,6 @@
-import React from "react"
+import React, { ReactNode } from "react"
 import EditorHeader from "../../organisms/editor/EditorHeader"
 import MuvelBlockEditor from "../../organisms/editor/MuvelBlockEditor"
-import GoalWidget from "../../organisms/widget/goal/GoalWidget"
 import { Body, MainStyle, Widgets } from "./styles"
 import EditorSkeleton from "./EditorSkeleton"
 import MarkdownEditor from "../../organisms/editor/MarkdownEditor"
@@ -14,7 +13,8 @@ export enum EditorType {
 const EditorTemplate: React.FC<{
   isLoading: boolean
   editorType: EditorType
-}> = ({ isLoading, editorType }) => {
+  widgets: ReactNode[]
+}> = ({ isLoading, editorType, widgets }) => {
   return (
     <MainStyle>
       <EditorHeader />
@@ -29,9 +29,7 @@ const EditorTemplate: React.FC<{
           <EditorSkeleton />
         )}
       </Body>
-      <Widgets>
-        <GoalWidget />
-      </Widgets>
+      <Widgets>{widgets}</Widgets>
     </MainStyle>
   )
 }

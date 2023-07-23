@@ -3,7 +3,8 @@ import { atom } from "recoil"
 import { initialNovel, Novel } from "../types/novel.type"
 import { Block } from "../types/block.type"
 import { EditorOption } from "../types"
-import initEditorOption from "../utils/initEditorOption"
+import getEditorOptions from "../utils/getEditorOptions"
+import { getWidgets } from "../utils/getWidgets"
 
 export const novelState = atom<Novel>({
   key: "novelState",
@@ -34,5 +35,10 @@ export const isLoadingState = atom<boolean>({
 
 export const editorOptionsState = atom<EditorOption>({
   key: "editorOptionsState",
-  default: initEditorOption(),
+  default: getEditorOptions(),
+})
+
+export const widgetsState = atom<Set<string>>({
+  key: "widgetsState",
+  default: getWidgets(),
 })

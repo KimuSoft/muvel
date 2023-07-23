@@ -11,6 +11,7 @@ import {
   novelState,
 } from "../../../recoil/editor"
 import { useRecoilState } from "recoil"
+import WidgetDrawer from "./WidgetDrawer"
 
 const EditorHeader: React.FC = () => {
   const [novel] = useRecoilState(novelState)
@@ -27,6 +28,7 @@ const EditorHeader: React.FC = () => {
       <HStack w={200} flexDir={"row-reverse"}>
         <Auth />
         <ToggleColorModeButton />
+        <WidgetDrawer />
         <SearchModal novelId={novel.id} />
       </HStack>
     </HStack>

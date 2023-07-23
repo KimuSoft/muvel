@@ -46,7 +46,7 @@ const NovelCard: React.FC<{ novel: Novel }> = ({ novel }) => {
           paddingRight="5px"
         >
           <Box w="100%">
-            <HStack>
+            <HStack gap={0}>
               <Text as="b" fontSize="md">
                 {novel.title}
               </Text>
