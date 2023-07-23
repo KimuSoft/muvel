@@ -125,7 +125,6 @@ const GoalWidget: React.FC = () => {
         <Menu>
           <MenuButton
             size="xs"
-            variant="outline"
             as={IconButton}
             icon={<IoSettings size={9} />}
           />

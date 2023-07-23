@@ -1,29 +1,23 @@
 import React from "react"
-import styled from "styled-components"
-
-const Track = styled.div`
-  height: 6px;
-  width: 100%;
-  background-color: #27272a;
-  border-radius: 5px;
-  overflow: hidden;
-`
-
-const Bar = styled.div<{ value: number }>`
-  height: 100%;
-  width: ${(props) => props.value * 100}%;
-  border-radius: 5px;
-
-  transition: width 0.2s ease-in-out;
-
-  background-color: #d9d9d9;
-`
+import { Box, useColorModeValue } from "@chakra-ui/react"
 
 const ProgressBar: React.FC<{ value: number }> = ({ value }) => {
   return (
-    <Track>
-      <Bar value={value} />
-    </Track>
+    <Box
+      w="100%"
+      h="6px"
+      borderRadius={5}
+      overflow="hidden"
+      bgColor={useColorModeValue("gray.300", "gray.600")}
+    >
+      <Box
+        w={`${value * 100}%`}
+        h="100%"
+        borderRadius={5}
+        transition={"width 0.2s ease-in-out"}
+        bgColor={useColorModeValue("gray.500", "gray.400")}
+      />
+    </Box>
   )
 }
 

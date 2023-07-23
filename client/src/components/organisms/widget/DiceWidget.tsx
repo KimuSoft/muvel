@@ -180,7 +180,7 @@ const DiceWidget: React.FC = () => {
               />
             ))
           ) : (
-            <Text fontSize={"sm"} color={"gray.500"}>
+            <Text fontSize={"sm"} color={"gray.500"} userSelect={"none"}>
               + 버튼을 눌러 주사위를 추가해주세요
             </Text>
           )}
