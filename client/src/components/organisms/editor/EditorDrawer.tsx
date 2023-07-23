@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import NovelProfile from "../../molecules/NovelProfile"
-import IconButton from "../../atoms/IconButton"
 import { MdChevronLeft, MdMenu } from "react-icons/md"
 import EpisodeList from "../EpisodeList"
 import {
@@ -15,6 +14,7 @@ import {
   DrawerOverlay,
   Heading,
   HStack,
+  IconButton,
   Spacer,
   Tooltip,
   useDisclosure,
@@ -100,22 +100,25 @@ const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
 
   return (
     <>
-      <IconButton onClick={_onOpen} style={{ backgroundColor: "transparent" }}>
-        <MdMenu style={{ fontSize: 24 }} />
-      </IconButton>
+      <IconButton
+        aria-label={"menu"}
+        icon={<MdMenu style={{ fontSize: 24 }} />}
+        onClick={_onOpen}
+        variant={"ghost"}
+      />
 
       <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="sm">
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
           <DrawerHeader>
-            <IconButton
+            <Button
               onClick={() => navigate(`/novels/${episode.novelId}`)}
-              text={"소설 페이지로 돌아가기"}
-              style={{ backgroundColor: "transparent", marginRight: "auto" }}
+              variant={"ghost"}
             >
-              <MdChevronLeft />
-            </IconButton>
+              <MdChevronLeft size={24} style={{ marginRight: 10 }} />
+              소설 페이지로 돌아가기
+            </Button>
           </DrawerHeader>
           <DrawerBody>
             <NovelProfile />

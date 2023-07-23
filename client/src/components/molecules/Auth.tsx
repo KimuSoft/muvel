@@ -1,8 +1,7 @@
 import React from "react"
 import { MdLock } from "react-icons/md"
 import useCurrentUser from "../../hooks/useCurrentUser"
-import IconButton from "../atoms/IconButton"
-import { Avatar } from "@chakra-ui/react"
+import { Avatar, IconButton } from "@chakra-ui/react"
 
 const Auth: React.FC = () => {
   const user = useCurrentUser()
@@ -29,9 +28,11 @@ const Auth: React.FC = () => {
           />
         </>
       ) : (
-        <IconButton onClick={loginClickHandler}>
-          <MdLock />
-        </IconButton>
+        <IconButton
+          aria-label={"lock"}
+          onClick={loginClickHandler}
+          icon={<MdLock />}
+        />
       )}
     </>
   )
