@@ -1,7 +1,7 @@
 import { IsUUID } from "class-validator"
 import { ApiProperty } from "@nestjs/swagger"
 
-export class EpisodeDto {
+export class PartialEpisodeDto {
   @ApiProperty({
     description: "에피소드 아이디",
     example: "123e4567-e89b-12d3-a456-426614174000",
@@ -19,9 +19,6 @@ export class EpisodeDto {
   description: string
 
   @ApiProperty()
-  chapter: string
-
-  @ApiProperty()
   novelId: string
 
   @ApiProperty()
@@ -32,4 +29,9 @@ export class EpisodeDto {
 
   @ApiProperty()
   order: number
+}
+
+export class EpisodeDto extends PartialEpisodeDto {
+  @ApiProperty()
+  editable: boolean
 }

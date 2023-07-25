@@ -64,22 +64,22 @@ export class EpisodesService {
 
   async deleteEpisode(id: string) {
     await this.findOne(id, ["blocks"])
-    await this.episodesRepository.delete(id)
+    return this.episodesRepository.delete(id)
   }
 
-  async update(
+  async updateEpisode(
     id: string,
     chapter: string,
     title: string,
     description: string
-  ) {
+  ): Promise<EpisodeEntity> {
     const episode = await this.findOne(id)
 
     episode.chapter = chapter
     episode.title = title
     episode.description = description
 
-    await this.episodesRepository.save(episode)
+    return this.episodesRepository.save(episode)
   }
 
   async upsert(episodes: PatchEpisodesDto[]) {

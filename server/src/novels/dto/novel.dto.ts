@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { IsUrl, IsUUID } from "class-validator"
-import { EpisodeDto } from "../../episodes/dto/episode.dto"
+import { PartialEpisodeDto } from "../../episodes/dto/episode.dto"
 import { ShareType } from "../../types"
 
 export class NovelDto {
@@ -48,7 +48,7 @@ export class NovelDto {
 export class NovelDtoWithEpisodes extends NovelDto {
   @ApiProperty({
     description: "소설의 에피소드로 회차 순서로 정렬되어 있습니다.",
-    type: [EpisodeDto],
+    type: [PartialEpisodeDto],
   })
-  episodes: EpisodeDto[]
+  episodes: PartialEpisodeDto[]
 }

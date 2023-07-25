@@ -17,7 +17,7 @@ import { NovelsService } from "./novels.service"
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
 import { NovelDto, NovelDtoWithEpisodes } from "./dto/novel.dto"
 import { UpdateNovelDto } from "./dto/update-novel.dto"
-import { EpisodeDto } from "../episodes/dto/episode.dto"
+import { PartialEpisodeDto } from "../episodes/dto/episode.dto"
 import { CreateEpisodeDto } from "../episodes/dto/create-episode.dto"
 import { RequirePermission } from "./novels.decorator"
 import {
@@ -66,6 +66,13 @@ export class NovelsController {
   async getNovels(@Request() req, @Param("id") id: string) {
     const novel = await this.novelsService.findOne(id, ["episodes", "author"])
     novel.episodes.sort((a, b) => a.order - b.order)
+
+    novel.episodes = novel.episodes.map((episode) => {
+      return {
+        ...episode,
+        editable: req.user.novelIds.includes(episode.novelId),
+      }
+    })
 
     return novel
   }
@@ -116,7 +123,7 @@ export class NovelsController {
     description: "해당 소설의 에피소드 목록을 불러옵니다.",
   })
   @ApiOkResponse({
-    type: EpisodeDto,
+    type: PartialEpisodeDto,
     isArray: true,
   })
   @RequirePermission(NovelPermission.ReadNovel)
