@@ -3,7 +3,6 @@ import Header from "../organisms/Header"
 import { useNavigate, useParams } from "react-router-dom"
 import {
   Box,
-  Button,
   Center,
   Container,
   Heading,
@@ -14,24 +13,28 @@ import {
   Text,
   theme,
   useColorModeValue,
+  useToast,
   VStack,
 } from "@chakra-ui/react"
 import { initialNovel, Novel, ShareType } from "../../types/novel.type"
 import { api } from "../../utils/api"
-import { toast } from "react-toastify"
 import styled from "styled-components"
 import { MdNavigateBefore } from "react-icons/md"
-import { AiFillLock, AiFillRead, AiOutlineLink } from "react-icons/ai"
+import { AiFillLock, AiOutlineLink } from "react-icons/ai"
 import EpisodeList from "../organisms/EpisodeList"
 import CreateOrUpdateNovel from "../organisms/CreateOrUpdateNovel"
 import { AxiosError } from "axios"
+import useCurrentUser from "../../hooks/useCurrentUser"
 
 const NovelDetail: React.FC = () => {
   const novelId = useParams<{ id: string }>().id || ""
+  const user = useCurrentUser()
+
   const [novel, setNovel] = React.useState<Novel>(initialNovel)
   const [isLoading, setIsLoading] = React.useState(false)
 
   const navigate = useNavigate()
+  const toast = useToast()
 
   const fetchNovel = async () => {
     setIsLoading(true)
@@ -42,26 +45,44 @@ const NovelDetail: React.FC = () => {
     } catch (e) {
       if (!(e instanceof AxiosError)) return
       switch (e.response?.status) {
+        case 401:
+          toast({
+            title: "로그인이 필요해요!",
+            description: "로그인을 하고 다시 시도해주세요.",
+            status: "info",
+          })
+          window.location.href = import.meta.env.VITE_API_BASE + "/auth/login"
+          return
         case 403:
-          toast.error("이 소설을 볼 권한이 부족해요!")
+          toast({
+            title: "권한 부족",
+            description: "이 소설을 볼 권한이 부족해요!",
+            status: "error",
+          })
           break
         case 404:
-          toast.error("어... 그런 소설이 있나요?")
+          toast({
+            title: "소설 찾기 실패",
+            description: "어... 그런 소설이 있나요?",
+            status: "error",
+          })
           break
         case 500:
-          toast.error("서버 오류가 발생했어요...")
+          toast({
+            title: "서버 오류",
+            description: "서버에서 오류가 발생했어요!",
+            status: "error",
+          })
           break
         default:
-          toast.error("알 수 없는 오류가 발생했습니다")
+          toast({
+            title: "알 수 없는 오류가 발생했어요!",
+            description: e.message,
+            status: "error",
+          })
       }
 
       return navigate("/novels")
-    }
-
-    if (!novel) {
-      navigate("/novels")
-      toast.error("소설을 찾을 수 없습니다")
-      return
     }
 
     setNovel(novel)
