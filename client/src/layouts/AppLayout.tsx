@@ -1,19 +1,22 @@
-import React from "react"
+import React, { FC, useEffect } from "react"
 import { Outlet } from "react-router-dom"
 import GlobalContext from "../context/GlobalContext"
 import { api } from "../utils/api"
 import { User } from "../types/user.type"
 import { Center, Spinner, useToast } from "@chakra-ui/react"
-import { AiOutlineLoading3Quarters } from "react-icons/ai"
 import { AxiosError } from "axios"
 
-export const AppLayout: React.FC = () => {
+export const AppLayout: FC = () => {
   const [loading, setLoading] = React.useState(true)
   const [user, setUser] = React.useState<User | null>(null)
 
   const toast = useToast()
 
-  React.useEffect(() => {
+  useEffect(() => {
+    if (!localStorage.getItem("accessToken")) {
+      setLoading(false)
+      return console.log("no token")
+    }
     ;(async () => {
       let user: User | null = null
       try {
