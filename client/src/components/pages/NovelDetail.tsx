@@ -137,7 +137,12 @@ const NovelDetail: React.FC = () => {
               icon={<MdNavigateBefore style={{ fontSize: 30 }} />}
             />
             <Spacer />
-            <CreateOrUpdateNovel novel={novel} onCreateOrUpdate={fetchNovel} />
+            {novel.authorId === user?.id ? (
+              <CreateOrUpdateNovel
+                novel={novel}
+                onCreateOrUpdate={fetchNovel}
+              />
+            ) : null}
           </VStack>
         </HStack>
       </Center>
