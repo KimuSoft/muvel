@@ -34,7 +34,7 @@ const NovelsPage: React.FC = () => {
 
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "range",
-    defaultValue: "내 소설",
+    defaultValue: user ? "내 소설" : "모든 소설",
     onChange: (value: string) => {
       setSearchRange(value as "내 소설" | "모든 소설")
       return
@@ -44,10 +44,9 @@ const NovelsPage: React.FC = () => {
   const group = getRootProps()
 
   const fetchNovels = async () => {
-    if (!user) return
     setLoading(true)
     const { data } = await api.get<Novel[]>(
-      searchRange === "내 소설" ? `users/${user.id}/novels` : "novels"
+      searchRange === "내 소설" ? `users/${user?.id}/novels` : "novels"
     )
     setNovels(data)
     setLoading(false)
