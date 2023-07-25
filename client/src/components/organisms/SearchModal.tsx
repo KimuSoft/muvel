@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import {
   Center,
+  Highlight,
   HStack,
   IconButton,
   Input,
@@ -31,7 +32,7 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
 
   const [hitItems, setHitItems] = useState<HitItem[]>([])
   const [query, setQuery] = useState<string>("")
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [_isLoading, setIsLoading] = useState<boolean>(false)
 
   const fetch = async () => {
     setIsLoading(true)
@@ -90,7 +91,7 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
             {hitItems?.length ? (
               <VStack h={"430px"} overflowY={"auto"}>
                 {hitItems.map((item) => (
-                  <SearchHitItem key={item.id} item={item} />
+                  <SearchHitItem key={item.id} item={item} highlight={query} />
                 ))}
               </VStack>
             ) : !query ? (
@@ -118,7 +119,10 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
   )
 }
 
-const SearchHitItem: React.FC<{ item: HitItem }> = ({ item }) => {
+const SearchHitItem: React.FC<{ item: HitItem; highlight: string }> = ({
+  item,
+  highlight,
+}) => {
   const navigate = useNavigate()
 
   const onClick = () => {
@@ -150,9 +154,17 @@ const SearchHitItem: React.FC<{ item: HitItem }> = ({ item }) => {
       <VStack align={"baseline"} gap={1}>
         <Tooltip label={item.content} openDelay={1000}>
           <Text>
-            {item.content?.length > 70
-              ? item.content.slice(0, 70) + " ..."
-              : item.content}
+            <Highlight
+              query={highlight}
+              styles={{
+                color: useColorModeValue("purple.600", "purple.100"),
+                fontWeight: 800,
+              }}
+            >
+              {item.content?.length > 70
+                ? item.content.slice(0, 70) + " ..."
+                : item.content}
+            </Highlight>
           </Text>
         </Tooltip>
         <HStack w="100%">
