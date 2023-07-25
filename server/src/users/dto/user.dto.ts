@@ -9,6 +9,9 @@ export class PartialUserDto {
 
   @ApiProperty()
   avatar: string
+
+  @ApiProperty()
+  admin: boolean
 }
 
 export class UserDto extends PartialUserDto {
@@ -17,7 +20,4 @@ export class UserDto extends PartialUserDto {
 
   @ApiProperty()
   recentEpisodeId: string
-
-  @ApiProperty()
-  admin: boolean
 }
