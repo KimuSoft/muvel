@@ -57,6 +57,16 @@ const BlockContentEditable: React.FC<BlockContentEditableProps> = ({
     content.current = block.content
   }, [block.blockType])
 
+  // 외부에서 수정된 경우
+  useEffect(() => {
+    if (block.content === content.current) return
+    console.log("외부 수정 감지!")
+    content.current = block.content
+
+    if (!contenteditable.current) return
+    contenteditable.current.innerText = block.content
+  }, [block.content])
+
   const getBlockType = (content: string): BlockType => {
     if (block.blockType === BlockType.Comment) return BlockType.Comment
 
@@ -105,6 +115,7 @@ const BlockContentEditable: React.FC<BlockContentEditableProps> = ({
     "ArrowDown",
     "/",
     '"',
+    "-",
   ]
 
   const keyDownHandler = async (e: React.KeyboardEvent<HTMLDivElement>) => {

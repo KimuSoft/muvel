@@ -7,6 +7,8 @@ import { ImCalculator } from "react-icons/im"
 import { BsDice6Fill, BsSpeedometer } from "react-icons/bs"
 import { RiCharacterRecognitionFill } from "react-icons/ri"
 import SpeedWidget from "./SpeedWidget"
+import ReplaceWidget from "./ReplaceWidget"
+import { MdFindReplace } from "react-icons/md"
 
 export const widgetData: IWidget[] = [
   {
@@ -47,6 +49,14 @@ export const widgetData: IWidget[] = [
     description:
       "현재 글을 쓰는 속도와 그 속도로 한 편을 작성하는데 걸리는 시간을 계산해 주는 위젯이에요.",
     icon: BsSpeedometer,
+  },
+  {
+    id: "replace",
+    component: <ReplaceWidget key={"replace-widget"} />,
+    name: "텍스트 바꾸기 위젯",
+    description:
+      "글을 쓰다 보면 일괄적으로 표현을 모두 교체해야 하는 경우가 있죠. 아 참고로 Ctrl + Z는 안 되니 신중하게 쓰세요!",
+    icon: MdFindReplace,
   },
 ]
 
