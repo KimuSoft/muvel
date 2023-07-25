@@ -73,7 +73,6 @@ const MuvelViewer: React.FC<{ initialFocusedBlockId?: string }> = ({
   return (
     <Container maxW="3xl">
       <VStack w="100%" gap={0}>
-        <Box w="100%" h="100px" />
         {getBlockNodes()}
         {blocks.length ? null : (
           <Text color={noBlockTextColor}>내용이 없어요...</Text>
