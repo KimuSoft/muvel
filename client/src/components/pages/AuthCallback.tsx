@@ -19,12 +19,12 @@ const AuthCallback: React.FC = () => {
 
     if (!accessToken) {
       toast.error("액세스 토큰을 찾을 수 없습니다")
-      navigate("/")
+      navigate("/novels")
       return
     }
 
     localStorage.accessToken = accessToken
-    navigate("/")
+    navigate("/novels")
   }, [isFirst.current, location.search])
 
   return <>Redirecting...</>
