@@ -25,3 +25,10 @@ export enum BlockType {
   Comment,
   Divider,
 }
+
+export const sampleBlock: Block = {
+  id: "1",
+  content: "테스트용 블록입니다.",
+  blockType: BlockType.Describe,
+  episodeId: "1",
+}

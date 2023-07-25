@@ -1,5 +1,6 @@
 import React from "react"
 import {
+  Box,
   Button,
   FormControl,
   FormLabel,
@@ -16,12 +17,15 @@ import {
   SliderThumb,
   SliderTrack,
   Tooltip,
+  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react"
 import { defaultOption } from "../../../types"
 import { AiFillSetting } from "react-icons/ai"
 import { useRecoilState } from "recoil"
 import { editorOptionsState } from "../../../recoil/editor"
+import { sampleBlock } from "../../../types/block.type"
+import BlockContentEditable from "../../atoms/editor/BlockContentEditable"
 
 const EditorSetting: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -43,6 +47,16 @@ const EditorSetting: React.FC = () => {
           <ModalHeader>에디터 설정하기</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
+            <FormControl mb={7}>
+              <FormLabel>블록 미리보기</FormLabel>
+              <Box w="100%" bgColor={useColorModeValue("gray.100", "gray.800")}>
+                <BlockContentEditable
+                  block={sampleBlock}
+                  position={-7}
+                  disabled
+                />
+              </Box>
+            </FormControl>
             <FormControl mb={3}>
               <FormLabel>줄 높이: {options.lineHeight}px</FormLabel>
               <Slider
