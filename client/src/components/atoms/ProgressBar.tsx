@@ -1,21 +1,26 @@
 import React from "react"
 import { Box, useColorModeValue } from "@chakra-ui/react"
 
-const ProgressBar: React.FC<{ value: number }> = ({ value }) => {
+const ProgressBar: React.FC<{
+  value: number
+  min?: number
+  max?: number
+  colorSchema?: "gray"
+}> = ({ value, min = 0, max = 1, colorSchema = "gray" }) => {
   return (
     <Box
       w="100%"
       h="6px"
       borderRadius={5}
       overflow="hidden"
-      bgColor={useColorModeValue("gray.300", "gray.600")}
+      bgColor={useColorModeValue(`gray.300`, `gray.600`)}
     >
       <Box
-        w={`${value * 100}%`}
+        w={`${(value / (max - min)) * 100}%`}
         h="100%"
         borderRadius={5}
-        transition={"width 0.2s ease-in-out"}
-        bgColor={useColorModeValue("gray.500", "gray.400")}
+        transition={"width 0.2s ease-in-out, background-color 0.2s ease-in-out"}
+        bgColor={useColorModeValue(`${colorSchema}.500`, `${colorSchema}.400`)}
       />
     </Box>
   )

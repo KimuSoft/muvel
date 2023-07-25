@@ -4,8 +4,9 @@ import SymbolWidget from "./SymbolWidget"
 import React from "react"
 import { IconType } from "react-icons"
 import { ImCalculator } from "react-icons/im"
-import { BsDice6Fill } from "react-icons/bs"
+import { BsDice6Fill, BsSpeedometer } from "react-icons/bs"
 import { RiCharacterRecognitionFill } from "react-icons/ri"
+import SpeedWidget from "./SpeedWidget"
 
 export const widgetData: IWidget[] = [
   {
@@ -39,13 +40,14 @@ export const widgetData: IWidget[] = [
   //     "이 단어는 띄어써야 하는 걸까? 빠른 사전을 통해 단어를 찾아보세요.",
   //   icon: AiOutlineBook,
   // },
-  // {
-  //   id: "speed",
-  //   component: <SpeedWidget key={"speed-widget"} />,
-  //   name: "타속 위젯",
-  //   description: "현재 내 작성 속도는?",
-  //   icon: BsSpeedometer,
-  // },
+  {
+    id: "speed",
+    component: <SpeedWidget key={"speed-widget"} />,
+    name: "속도계 위젯",
+    description:
+      "현재 글을 쓰는 속도와 그 속도로 한 편을 작성하는데 걸리는 시간을 계산해 주는 위젯이에요.",
+    icon: BsSpeedometer,
+  },
 ]
 
 export interface IWidget {
