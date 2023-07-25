@@ -150,6 +150,7 @@ export class NovelsService {
         "novel.authorId",
         "novel.createdAt",
         "novel.updatedAt",
+        "novel.thumbnail",
         "author.username",
         "author.id",
         "author.avatar",
