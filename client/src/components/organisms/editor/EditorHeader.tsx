@@ -2,7 +2,7 @@ import React from "react"
 import EpisodeTitle from "../../atoms/editor/EpisodeTitle"
 import Auth from "../../molecules/Auth"
 import EditorDrawer from "./EditorDrawer"
-import { HStack, Spinner } from "@chakra-ui/react"
+import { Hide, HStack, Spinner } from "@chakra-ui/react"
 import ToggleColorModeButton from "../../atoms/ToggleColorModeButton"
 import SearchModal from "../SearchModal"
 import {
@@ -19,18 +19,28 @@ const EditorHeader: React.FC = () => {
   const [isAutoSaving] = useRecoilState(isAutoSavingState)
 
   return (
-    <HStack pl={10} pr={10} h="70px">
-      <HStack w={200}>
-        <EditorDrawer episode={episode} />
-        {isAutoSaving && <Spinner flexShrink={0} />}
-      </HStack>
+    <HStack px={8} h="70px">
+      <Hide below={"md"}>
+        <HStack w={200}>
+          <EditorDrawer episode={episode} />
+          {isAutoSaving && <Spinner flexShrink={0} />}
+        </HStack>
+      </Hide>
+      <Hide above={"md"}>
+        <HStack w={5}>
+          <EditorDrawer episode={episode} />
+          {isAutoSaving && <Spinner flexShrink={0} />}
+        </HStack>
+      </Hide>
       <EpisodeTitle />
-      <HStack w={200} flexDir={"row-reverse"}>
-        <Auth />
-        <ToggleColorModeButton />
-        <WidgetDrawer />
-        <SearchModal novelId={novel.id} />
-      </HStack>
+      <Hide below={"md"}>
+        <HStack w={200} flexDir={"row-reverse"}>
+          <Auth />
+          <ToggleColorModeButton />
+          <WidgetDrawer />
+          <SearchModal novelId={novel.id} />
+        </HStack>
+      </Hide>
     </HStack>
   )
 }

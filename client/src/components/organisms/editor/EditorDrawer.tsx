@@ -13,12 +13,14 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Heading,
+  Hide,
   HStack,
   IconButton,
   Spacer,
   Tooltip,
   useDisclosure,
   useToast,
+  VStack,
 } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
 import ExportEpisode from "../../molecules/editor/ExportEpisode"
@@ -34,6 +36,10 @@ import { api } from "../../../utils/api"
 import { HiOutlineRectangleGroup } from "react-icons/hi2"
 import { FaFeatherAlt } from "react-icons/fa"
 import { initialNovel, Novel } from "../../../types/novel.type"
+import Auth from "../../molecules/Auth"
+import ToggleColorModeButton from "../../atoms/ToggleColorModeButton"
+import WidgetDrawer from "./WidgetDrawer"
+import SearchModal from "../SearchModal"
 
 const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
   const [novel, setNovel] = useState<Novel>(initialNovel)
@@ -112,17 +118,34 @@ const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
         <DrawerContent>
           <DrawerCloseButton />
           <DrawerHeader>
-            <Button
-              onClick={() => navigate(`/novels/${episode.novelId}`)}
-              variant={"ghost"}
-            >
-              <MdChevronLeft size={24} style={{ marginRight: 10 }} />
-              소설 페이지로 돌아가기
-            </Button>
+            <Hide below={"md"}>
+              <Button
+                onClick={() => navigate(`/novels/${episode.novelId}`)}
+                variant={"ghost"}
+              >
+                <MdChevronLeft size={24} style={{ marginRight: 10 }} />
+                소설 페이지로 돌아가기
+              </Button>
+            </Hide>
+
+            <Hide above={"md"}>
+              <HStack w={"100%"}>
+                <IconButton
+                  aria-label={"back"}
+                  icon={<MdChevronLeft size={24} />}
+                  variant={"ghost"}
+                  onClick={() => navigate(`/novels/${episode.novelId}`)}
+                />
+                <ToggleColorModeButton />
+                <WidgetDrawer />
+                <SearchModal novelId={novel.id} />
+                <Auth />
+              </HStack>
+            </Hide>
           </DrawerHeader>
           <DrawerBody>
             <NovelProfile />
-            <HStack w="100%">
+            <HStack w="100%" mt={3}>
               <Spacer />
               <Tooltip
                 label={
@@ -147,7 +170,7 @@ const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
                 <FaFeatherAlt style={{ marginRight: 10 }} />새 편 쓰기
               </Button>
             </HStack>
-            <Divider mt={10} mb={10} />
+            <Divider mt={5} mb={10} />
             <Heading fontSize="xl" pl={4} mb={3}>
               에피소드 목록
             </Heading>

@@ -3,6 +3,7 @@ import {
   Box,
   Center,
   Container,
+  Hide,
   HStack,
   Input,
   InputGroup,
@@ -27,7 +28,7 @@ const NovelsPage: React.FC = () => {
 
   const [novels, setNovels] = React.useState<Novel[]>([])
   const [searchRange, setSearchRange] = React.useState<"내 소설" | "모든 소설">(
-    "내 소설"
+    user ? "내 소설" : "모든 소설"
   )
   const [loading, setLoading] = React.useState<boolean>(false)
 
@@ -65,10 +66,11 @@ const NovelsPage: React.FC = () => {
         maxW="7xl"
         gap={10}
         pt={5}
+        px={10}
       >
         <HStack spacing={5}>
           <HStack {...group} flexShrink="0">
-            {["모든 소설", "내 소설"].map((value) => {
+            {(user ? ["모든 소설", "내 소설"] : ["모든 소설"]).map((value) => {
               const radio = getRadioProps({ value })
               return (
                 <RadioCard key={value} {...radio}>
@@ -77,27 +79,24 @@ const NovelsPage: React.FC = () => {
               )
             })}
           </HStack>
-          <InputGroup maxW="2xl">
-            <Input placeholder="검색어를 입력해보세요. 아 참고로 작동은 안 해요" />
-            <InputRightElement>
-              <BiSearch />
-            </InputRightElement>
-          </InputGroup>
+          <Hide below={"md"}>
+            <InputGroup maxW="100%">
+              <Input placeholder="검색어를 입력해보세요. 아 참고로 작동은 안 해요" />
+              <InputRightElement>
+                <BiSearch />
+              </InputRightElement>
+            </InputGroup>
+          </Hide>
           <Spacer />
           <CreateOrUpdateNovel />
         </HStack>
         {!loading ? (
           novels.length ? (
-            <Box
-              display="flex"
-              flexWrap="wrap"
-              gap="20px"
-              justifyContent="center"
-            >
+            <HStack flexWrap="wrap" gap="10px" justifyContent="space-between">
               {novels.map((novel) => (
                 <NovelCard novel={novel} key={novel.id} />
               ))}
-            </Box>
+            </HStack>
           ) : (
             <Center h="400px">
               <Text color="gray.500" fontSize="2xl">
@@ -125,8 +124,8 @@ const NovelCardsSkeleton: React.FC = () => {
     <>
       {Array.from({ length: 12 }).map((_, i) => (
         <VStack key={`novel-card-skeleton-${i}`}>
-          <Skeleton w={187} h="250px"></Skeleton>
-          <Skeleton w={187} h="20px"></Skeleton>
+          <Skeleton w="220px" h="300px"></Skeleton>
+          <Skeleton w="220px" h="45px"></Skeleton>
         </VStack>
       ))}
     </>

@@ -22,15 +22,14 @@ const NovelCard: React.FC<{ novel: Novel }> = ({ novel }) => {
     <Tooltip label={novel.description} openDelay={500}>
       <Box
         display="flex"
-        w={187}
         gap={2}
         flexDir="column"
         cursor="pointer"
         onClick={onClick}
       >
         <Box
-          w="100%"
-          h="250px"
+          w="220px"
+          h="300px"
           borderRadius="5px"
           backgroundColor={useColorModeValue("gray.200", "gray.700")}
           backgroundImage={novel.thumbnail || ""}

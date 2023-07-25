@@ -4,6 +4,7 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  Hide,
   HStack,
   Input,
   Modal,
@@ -86,14 +87,14 @@ const CreateOrUpdateNovel: React.FC<{
 
   return (
     <>
-      <Button gap={2.5} colorScheme="purple" onClick={_onOpen}>
+      <Button gap={2.5} colorScheme="purple" onClick={_onOpen} flexShrink={0}>
         {novel ? (
           <>
-            <AiFillEdit /> 소설 수정하기
+            <AiFillEdit /> <Hide below={"md"}> 소설 수정하기</Hide>
           </>
         ) : (
           <>
-            <AiFillFileAdd /> 소설 추가하기
+            <AiFillFileAdd /> <Hide below={"md"}> 소설 추가하기</Hide>
           </>
         )}
       </Button>

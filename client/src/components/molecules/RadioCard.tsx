@@ -1,11 +1,5 @@
 import React, { PropsWithChildren } from "react"
-import {
-  Box,
-  HStack,
-  useColorModeValue,
-  useRadio,
-  useRadioGroup,
-} from "@chakra-ui/react"
+import { Box, useColorModeValue, useRadio } from "@chakra-ui/react"
 
 const RadioCard: React.FC<PropsWithChildren<{}>> = (props) => {
   // @ts-ignore

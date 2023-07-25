@@ -14,7 +14,7 @@ export const Body = styled.div`
 
   height: calc(100vh - 80px);
 
-  padding: 20px 20px 0;
+  padding: 20px 14px 0;
 
   overflow-y: scroll;
 

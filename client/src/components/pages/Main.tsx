@@ -3,7 +3,16 @@ import { MdLogin } from "react-icons/md"
 import { useNavigate } from "react-router-dom"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import styled from "styled-components"
-import { Button, Center, Heading, HStack, Text, VStack } from "@chakra-ui/react"
+import {
+  Button,
+  Center,
+  Heading,
+  Hide,
+  HStack,
+  Show,
+  Text,
+  VStack,
+} from "@chakra-ui/react"
 import { AiFillRead } from "react-icons/ai"
 
 const Main: React.FC = () => {
@@ -22,6 +31,25 @@ const Main: React.FC = () => {
     window.location.href = import.meta.env.VITE_API_BASE + "/auth/login"
   }
 
+  const buttons = (
+    <>
+      <Button onClick={loginClickHandler} colorScheme={"purple"} w="180px">
+        <MdLogin style={{ marginRight: 8 }} />
+        로그인하고 글쓰기
+      </Button>
+      <Button
+        onClick={() => {
+          navigate("/novels")
+        }}
+        w="180px"
+        colorScheme={"purple"}
+      >
+        <AiFillRead style={{ marginRight: 8 }} />
+        소설 보러 가기
+      </Button>
+    </>
+  )
+
   return (
     <Center w="100vw" h="100vh">
       <MainBackground />
@@ -32,21 +60,12 @@ const Main: React.FC = () => {
           </Heading>
           <Text size="4xl">당신과 당신의 이야기를 위한 작은 방</Text>
         </VStack>
-        <HStack>
-          <Button onClick={loginClickHandler} colorScheme={"purple"}>
-            <MdLogin style={{ marginRight: 8 }} />
-            로그인하고 글쓰기
-          </Button>
-          <Button
-            onClick={() => {
-              navigate("/novels")
-            }}
-            colorScheme={"purple"}
-          >
-            <AiFillRead style={{ marginRight: 8 }} />
-            소설 보러 가기
-          </Button>
-        </HStack>
+        <Hide below={"md"}>
+          <HStack>{buttons}</HStack>
+        </Hide>
+        <Show below={"md"}>
+          <VStack>{buttons}</VStack>
+        </Show>
       </VStack>
     </Center>
   )
