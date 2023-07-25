@@ -9,20 +9,14 @@ import styled from "styled-components"
 import {
   Box,
   Container,
-  Skeleton,
   Text,
   Textarea,
   useColorModeValue,
-  VStack,
 } from "@chakra-ui/react"
 import { arrayMoveImmutable } from "array-move"
 import { useRecoilState } from "recoil"
-import {
-  blocksState,
-  episodeState,
-  isLoadingState,
-} from "../../../recoil/editor"
-import MuvelBlock from "../../molecules/editor/MuvelBlock"
+import { blocksState, episodeState } from "../../../recoil/editor"
+import EditableMuvelBlock from "../../molecules/editor/MuvelBlock/EditableMuvelBlock"
 
 const canvas = document.createElement("canvas").getContext("2d")!
 
@@ -202,7 +196,7 @@ const MuvelBlockEditor: React.FC<{ initialFocusedBlockId?: string }> = ({
 
       return (
         <React.Fragment key={b.id}>
-          <MuvelBlock
+          <EditableMuvelBlock
             key={`${b.id}-block`}
             index={index}
             block={b}

@@ -51,7 +51,8 @@ const EpisodeList: React.FC<{
   novel: Novel
   onChange?: () => Promise<unknown>
   isLoading?: boolean
-}> = ({ novel, onChange, isLoading }) => {
+  disableSort?: boolean
+}> = ({ novel, onChange, isLoading, disableSort = false }) => {
   const [episodes, setEpisodes] = useState<PartialEpisode[]>(novel.episodes)
 
   useEffect(() => {
@@ -92,7 +93,13 @@ const EpisodeList: React.FC<{
     return novel?.episodes?.map((e, idx) => {
       if (e.episodeType === EpisodeType.Episode) order++
       return (
-        <SortableEpisodeRow episode={e} order={order} key={e.id} index={idx} />
+        <SortableEpisodeRow
+          episode={e}
+          order={order}
+          key={e.id}
+          index={idx}
+          disabled={disableSort}
+        />
       )
     })
   }, [novel.episodes])
@@ -131,11 +138,15 @@ const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
   }, [episode])
 
   const isNow = useMemo(
-    () => location.pathname === `/episodes/${episode.id}`,
+    () =>
+      [`/episodes/${episode.id}`, `/episodes/${episode.id}/viewer`].includes(
+        location.pathname
+      ),
     [location.pathname, episode.id]
   )
 
-  const onClick = () => navigate(`/episodes/${episode.id}`)
+  const onClick = () =>
+    navigate(`/episodes/${episode.id}` + (episode?.editable ? "" : "/viewer"))
 
   const hoverColor = useColorModeValue("gray.200", "gray.600")
 

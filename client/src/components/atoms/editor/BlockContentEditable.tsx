@@ -13,6 +13,7 @@ const BlockContentEditable: React.FC<BlockContentEditableProps> = ({
   updateBlock,
   position,
   moveToRelativeBlock,
+  disabled = false,
 }) => {
   // Ctrl + V 기능 전용으로 사용
   const [blocks, setBlocks] = useRecoilState(blocksState)
@@ -248,6 +249,7 @@ const BlockContentEditable: React.FC<BlockContentEditableProps> = ({
       html={content.current}
       placeholder={"내용을 입력해 주세요."}
       style={style}
+      disabled={disabled}
     />
   )
 }
@@ -263,6 +265,7 @@ export interface BlockContentEditableProps {
     direction: -1 | 1,
     preserveCaretPosition: boolean
   ) => void
+  disabled?: boolean
 }
 
 export default BlockContentEditable

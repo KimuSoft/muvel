@@ -5,7 +5,9 @@ import { HStack } from "@chakra-ui/react"
 import { useRecoilState } from "recoil"
 import { episodeState } from "../../../recoil/editor"
 
-const EpisodeTitle: React.FC = () => {
+const EpisodeTitle: React.FC<{ disabled?: boolean }> = ({
+  disabled = false,
+}) => {
   const [episode, setEpisode] = useRecoilState(episodeState)
 
   const titleChangeHandler = (e: ContentEditableEvent) =>
@@ -21,6 +23,7 @@ const EpisodeTitle: React.FC = () => {
         onKeyDown={(e) => {
           if (e.key === "Enter") e.preventDefault()
         }}
+        disabled={disabled}
       />
     </HStack>
   )
