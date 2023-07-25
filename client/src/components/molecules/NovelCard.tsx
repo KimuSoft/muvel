@@ -19,7 +19,7 @@ const NovelCard: React.FC<{ novel: Novel }> = ({ novel }) => {
   }
 
   return (
-    <Tooltip label={novel.description} openDelay={500}>
+    <Tooltip label={`[${novel.title}] ${novel.description}`} openDelay={500}>
       <Box
         display="flex"
         gap={2}
@@ -47,7 +47,9 @@ const NovelCard: React.FC<{ novel: Novel }> = ({ novel }) => {
           <Box w="100%">
             <HStack gap={0}>
               <Text as="b" fontSize="md">
-                {novel.title}
+                {novel.title.length > 12
+                  ? novel.title.slice(0, 12) + "..."
+                  : novel.title}
               </Text>
               <Spacer />
               <Text
