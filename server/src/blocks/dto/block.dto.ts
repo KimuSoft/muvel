@@ -15,13 +15,4 @@ export class BlockDto {
 
   @ApiProperty()
   order: number
-
-  @ApiProperty()
-  episodeId: string
-
-  @ApiProperty()
-  createdAt: Date
-
-  @ApiProperty()
-  updatedAt: Date
 }
