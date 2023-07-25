@@ -24,6 +24,7 @@ import { MdNavigateBefore } from "react-icons/md"
 import { AiFillLock, AiFillRead, AiOutlineLink } from "react-icons/ai"
 import EpisodeList from "../organisms/EpisodeList"
 import CreateOrUpdateNovel from "../organisms/CreateOrUpdateNovel"
+import { AxiosError } from "axios"
 
 const NovelDetail: React.FC = () => {
   const novelId = useParams<{ id: string }>().id || ""
@@ -39,8 +40,22 @@ const NovelDetail: React.FC = () => {
     try {
       novel = (await api.get<Novel>(`/novels/${novelId}`)).data
     } catch (e) {
-      navigate("/novels")
-      toast.error("이 소설은 주인님만 볼 수 있어요!")
+      if (!(e instanceof AxiosError)) return
+      switch (e.response?.status) {
+        case 403:
+          toast.error("이 소설을 볼 권한이 부족해요!")
+          break
+        case 404:
+          toast.error("어... 그런 소설이 있나요?")
+          break
+        case 500:
+          toast.error("서버 오류가 발생했어요...")
+          break
+        default:
+          toast.error("알 수 없는 오류가 발생했습니다")
+      }
+
+      return navigate("/novels")
     }
 
     if (!novel) {
@@ -102,10 +117,6 @@ const NovelDetail: React.FC = () => {
             />
             <Spacer />
             <CreateOrUpdateNovel novel={novel} onCreateOrUpdate={fetchNovel} />
-            <Button colorScheme="purple">
-              <AiFillRead style={{ marginRight: 10 }} />
-              1편부터 보기
-            </Button>
           </VStack>
         </HStack>
       </Center>

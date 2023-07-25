@@ -4,7 +4,6 @@ import EditorContext from "../../context/EditorContext"
 import { useNavigate, useParams } from "react-router-dom"
 import useCurrentUser from "../../hooks/useCurrentUser"
 import { api } from "../../utils/api"
-import { toast } from "react-toastify"
 import { Novel } from "../../types/novel.type"
 import { Episode, EpisodeType, PartialEpisode } from "../../types/episode.type"
 import _ from "lodash"
@@ -20,12 +19,15 @@ import {
   widgetsState,
 } from "../../recoil/editor"
 import { widgetData } from "../organisms/widget"
+import { AxiosError } from "axios"
+import { useToast } from "@chakra-ui/react"
 
 const EditorPage: React.FC = () => {
   // Hooks
   const episodeId = useParams<{ id: string }>().id || ""
   const user = useCurrentUser()
   const navigate = useNavigate()
+  const toast = useToast()
 
   // States (Data)
   const [_novel, setNovel] = useRecoilState(novelState)
@@ -120,18 +122,52 @@ const EditorPage: React.FC = () => {
 
   const initEpisode = async () => {
     setIsLoading(true)
-    const episodeRes = await api.get<Episode>(`episodes/${episodeId}`)
 
-    if (!episodeRes.data) {
-      toast.error("해당 에피소드를 찾을 수 없습니다.")
+    let episode_: Episode
+    try {
+      episode_ = (await api.get<Episode>(`episodes/${episodeId}`)).data
+    } catch (e) {
+      if (!(e instanceof AxiosError)) return
+      switch (e.response?.status) {
+        case 403:
+          toast({
+            title: "열람 권한 부족",
+            description: "이 에피소드를 볼 권한이 부족해요!",
+            status: "error",
+          })
+          break
+        case 404:
+          toast({
+            title: "에피소드를 찾을 수 없음",
+            description: "어... 그런 에피소드가 있나요?",
+            status: "error",
+          })
+          break
+        case 500:
+          toast({
+            title: "서버 오류",
+            description: "서버 오류가 발생했어요...",
+            status: "error",
+          })
+          break
+        default:
+          toast({
+            title: "알 수 없는 오류",
+            description: "알 수 없는 오류가 발생했습니다",
+            status: "error",
+          })
+      }
+
       return navigate("/")
     }
+    if (!episode_) return navigate("/")
+    if (!episode.editable) return navigate("/viewer")
 
     const blocksRes = await api.get<Block[]>(`episodes/${episodeId}/blocks`)
 
-    setEpisode(episodeRes.data)
+    setEpisode(episode_)
     setBlocks(blocksRes.data)
-    setEpisodeCache(episodeRes.data)
+    setEpisodeCache(episode_)
     setBlocksCache(blocksRes.data)
     setIsLoading(false)
   }
