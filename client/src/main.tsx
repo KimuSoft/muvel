@@ -17,6 +17,7 @@ import {
 import NovelsPage from "./components/pages/Novels"
 import NovelDetail from "./components/pages/NovelDetail"
 import { RecoilRoot } from "recoil"
+import NotFoundPage from "./components/pages/NotFound"
 
 const config: ThemeConfig = {
   initialColorMode: "dark",
@@ -40,6 +41,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             <Route path={"novels/:id"} element={<NovelDetail />}></Route>
           </Route>
           <Route path="auth/callback" element={<AuthCallback />}></Route>
+          <Route path={"*"} element={<NotFoundPage />}></Route>
         </Routes>
       </BrowserRouter>
     </RecoilRoot>
