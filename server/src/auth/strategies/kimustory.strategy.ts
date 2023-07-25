@@ -43,8 +43,6 @@ export class KimustoryStrategy extends PassportStrategy(
     refreshToken: string,
     profile: KimustoryProfile
   ) {
-    console.log("까꿍꿍")
-    console.log(profile)
     return this.authService.validateUser(
       "kimustory",
       profile.id,
