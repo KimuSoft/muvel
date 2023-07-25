@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common"
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common"
 import { NovelsService } from "./novels.service"
 import { Reflector } from "@nestjs/core"
 
@@ -27,6 +32,9 @@ export class NovelsGuard implements CanActivate {
 
     if (!endpoints.includes(endpoint))
       endpoint = paths[paths.length - 3] as "novels" | "episodes"
+
+    if (!id.match(/^[a-f\d]{8}(-[a-f\d]{4}){4}[a-f\d]{8}$/i))
+      throw new NotFoundException()
 
     let novelId: string
     switch (endpoint) {
