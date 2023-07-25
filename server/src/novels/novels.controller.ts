@@ -63,7 +63,10 @@ export class NovelsController {
     type: NovelDtoWithEpisodes,
   })
   @RequirePermission(NovelPermission.ReadNovel)
-  async getNovels(@Request() req, @Param("id") id: string) {
+  async getNovels(
+    @Request() req,
+    @Param("id") id: string
+  ): Promise<NovelDtoWithEpisodes> {
     const novel = await this.novelsService.findOne(id, ["episodes", "author"])
     novel.episodes.sort((a, b) => a.order - b.order)
 
@@ -90,7 +93,7 @@ export class NovelsController {
   async updateNovel(
     @Param("id") id: string,
     @Body() novelUpdateDto: UpdateNovelDto
-  ) {
+  ): Promise<NovelDto> {
     return this.novelsService.updateNovel(id, novelUpdateDto)
   }
 
