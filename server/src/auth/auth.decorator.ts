@@ -6,11 +6,7 @@ import {
   UseGuards,
 } from "@nestjs/common"
 import { AuthGuard } from "@nestjs/passport"
-import {
-  ApiBearerAuth,
-  ApiForbiddenResponse,
-  ApiUnauthorizedResponse,
-} from "@nestjs/swagger"
+import { ApiBearerAuth, ApiUnauthorizedResponse } from "@nestjs/swagger"
 import { UserEntity } from "../users/user.entity"
 
 export const RequireAuth = () => {
