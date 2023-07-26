@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import ProgressBar from "../../atoms/ProgressBar"
 import {
   VStack,
@@ -24,6 +24,7 @@ const GoalWidget: React.FC = () => {
   const [blocks] = useRecoilState(blocksState)
   const [type, setType] = useState<CountType>(CountType.NoSpacing)
   const [percentage, setPercentage] = useState(0)
+  const [currentLength, setCurrentLength] = useState(0)
 
   const getGoal = () => [5000, 3000, 14][type]
 
@@ -39,6 +40,10 @@ const GoalWidget: React.FC = () => {
     }
     return totalByte
   }
+
+  useEffect(() => {
+    setCurrentLength(getCurrentLength())
+  }, [blocks])
 
   const getCurrentLength = () => {
     switch (type) {
@@ -93,19 +98,19 @@ const GoalWidget: React.FC = () => {
         })
       )?.then()
     }, 250)
-  })
+  }, [percentage])
 
   const countTypeText = ["공백 포함", "공백 제외", "KB"]
   const countTypeUnit = ["자", "자", "KB"]
 
-  const getCheeringText = () => {
+  const cheeringText = useMemo(() => {
     if (percentage < 20) return "열심히 써봐요!"
     if (percentage < 40) return "조금만 더 써봐요!"
     if (percentage < 60) return "좋아요!"
     if (percentage < 80) return "잘하고 있어요!"
     if (percentage < 100) return "앞으로 조금만 더!"
     if (percentage < 120) return "다 채웠어요!"
-  }
+  }, [percentage])
 
   const getSelectedProps = (menuCountType: CountType) =>
     menuCountType === type
@@ -157,7 +162,7 @@ const GoalWidget: React.FC = () => {
         <HStack w="100%" px={1}>
           <VStack align="baseline" gap={0}>
             <Text fontSize="md">
-              {getCurrentLength().toLocaleString()}
+              {currentLength.toLocaleString()}
               {countTypeUnit[type]} / {getGoal().toLocaleString()}
               {countTypeUnit[type]}
             </Text>
@@ -166,7 +171,7 @@ const GoalWidget: React.FC = () => {
           <Heading fontSize={"xl"}>{Math.floor(percentage)}%</Heading>
         </HStack>
         <ProgressBar value={percentage / 100} />
-        <Text fontSize="xs">{getCheeringText()}</Text>
+        <Text fontSize="xs">{cheeringText}</Text>
       </WidgetBody>
     </Widget>
   )
