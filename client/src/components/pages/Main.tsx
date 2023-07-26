@@ -13,9 +13,11 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { AiFillRead } from "react-icons/ai"
+import useCurrentUser from "../../hooks/useCurrentUser"
 
 const Main: React.FC = () => {
   const navigate = useNavigate()
+  const user = useCurrentUser()
 
   useEffect(() => {
     // 메인 페이지에 접속했을 때 로그인이 되어 있다면 가장 최근의 소설 작업 페이지로 리다이렉트
@@ -31,10 +33,12 @@ const Main: React.FC = () => {
 
   const buttons = (
     <>
-      <Button onClick={loginClickHandler} colorScheme={"purple"} w="180px">
-        <MdLogin style={{ marginRight: 8 }} />
-        로그인하고 글쓰기
-      </Button>
+      {!user ? (
+        <Button onClick={loginClickHandler} colorScheme={"purple"} w="180px">
+          <MdLogin style={{ marginRight: 8 }} />
+          로그인하고 글쓰기
+        </Button>
+      ) : null}
       <Button
         onClick={() => {
           navigate("/novels")
