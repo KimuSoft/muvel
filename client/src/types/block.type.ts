@@ -1,9 +1,12 @@
 import { PartialData } from "./index"
+import { PartialCharacter } from "./character.type"
 
 export interface Block extends PartialData {
   content: string
   blockType: BlockType
   episodeId?: string
+  characterId?: string
+  character?: PartialCharacter
 }
 
 export enum BlockType {
