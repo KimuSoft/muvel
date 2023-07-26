@@ -4,11 +4,12 @@ import SymbolWidget from "./SymbolWidget"
 import React from "react"
 import { IconType } from "react-icons"
 import { ImCalculator } from "react-icons/im"
-import { BsDice6Fill, BsSpeedometer } from "react-icons/bs"
+import { BsDice6Fill, BsDiscord, BsSpeedometer } from "react-icons/bs"
 import { RiCharacterRecognitionFill } from "react-icons/ri"
 import SpeedWidget from "./SpeedWidget"
 import ReplaceWidget from "./ReplaceWidget"
 import { MdFindReplace } from "react-icons/md"
+import ChatToNovelWidget from "./ChatToNovelWidget"
 
 export const widgetData: IWidget[] = [
   {
@@ -57,6 +58,14 @@ export const widgetData: IWidget[] = [
     description:
       "글을 쓰다 보면 일괄적으로 표현을 모두 교체해야 하는 경우가 있죠. 아 참고로 Ctrl + Z는 안 되니 신중하게 쓰세요!",
     icon: MdFindReplace,
+  },
+  {
+    id: "chat-to-novel",
+    component: <ChatToNovelWidget key={"chat-to-novel-widget"} />,
+    name: "디스코드 채팅 소설 변환기",
+    description:
+      "이 위젯은 디스코드 채팅에서 한 상황극을 소설로 옮겨 줄 거예요!",
+    icon: BsDiscord,
   },
 ]
 
