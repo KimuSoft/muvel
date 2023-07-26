@@ -59,8 +59,13 @@ const BlockContentEditable: React.FC<BlockContentEditableProps> = ({
 
   // 외부에서 수정된 경우
   useEffect(() => {
-    if (block.content === content.current) return
-    console.log("외부 수정 감지!")
+    if (block.content === contentWithoutHtmlTags.current) return
+
+    console.log(
+      "외부 수정 감지!",
+      `'${block.content}'`,
+      `'${contentWithoutHtmlTags.current}'`
+    )
     content.current = block.content
 
     if (!contenteditable.current) return
@@ -80,15 +85,14 @@ const BlockContentEditable: React.FC<BlockContentEditableProps> = ({
   }
 
   const handleChange = (e: ContentEditableEvent) => {
-    const value = (e.currentTarget as HTMLDivElement).innerText.trim()
-    const blockType = getBlockType(value)
-    if (block.blockType !== blockType) console.log("바뀜!!!")
-
     content.current = e.target.value
+
+    const value = (e.currentTarget as HTMLDivElement).innerText.trim()
     contentWithoutHtmlTags.current = value
 
     if (!value) content.current = value
 
+    const blockType = getBlockType(value)
     updateBlock?.({ id: block.id, blockType, content: value })
   }
 
