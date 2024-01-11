@@ -119,9 +119,9 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
   )
 }
 
-const SearchHitItem: React.FC<{ item: HitItem; highlight: string }> = ({
+const SearchHitItem: React.FC<{ item: HitItem; highlight?: string }> = ({
   item,
-  highlight,
+  highlight = "",
 }) => {
   const navigate = useNavigate()
 

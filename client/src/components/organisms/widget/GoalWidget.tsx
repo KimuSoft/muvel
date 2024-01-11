@@ -49,7 +49,7 @@ const GoalWidget: React.FC = () => {
     switch (type) {
       case CountType.NoSpacing:
         return blocks.reduce(
-          (acc, cur) => acc + cur.content.replace(/\s/g, "").length,
+          (acc, cur) => acc + (cur.content || "").replace(/\s/g, "").length,
           0
         )
 
