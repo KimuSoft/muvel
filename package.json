@@ -1,17 +1,9 @@
 {
   "name": "muvel",
   "private": true,
-  "main": "index.js",
   "license": "MIT",
-  "devDependencies": {
-    "prettier": "^2.7.1"
-  },
   "scripts": {
-    "dev": "yarn workspaces foreach -pi run dev"
+    "dev": "pnpm run -rp dev"
   },
-  "workspaces": [
-    "./client",
-    "./server"
-  ],
-  "packageManager": "yarn@3.2.4"
+  "packageManager": "pnpm@8.14.1"
 }

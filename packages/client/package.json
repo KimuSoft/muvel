@@ -1,0 +1,50 @@
+{
+  "name": "client",
+  "private": true,
+  "version": "0.4.4",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^2.7.1",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "array-move": "^4.0.0",
+    "axios": "^1.4.0",
+    "canvas-confetti": "^1.6.0",
+    "chakra-ui-contextmenu": "^1.0.5",
+    "formik": "^2.4.2",
+    "framer-motion": "^10.12.16",
+    "lodash": "^4.17.21",
+    "react": "^18.2.0",
+    "react-contenteditable": "^3.3.7",
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.10.1",
+    "react-is": "^18.2.0",
+    "react-markdown": "^8.0.7",
+    "react-router-dom": "^6.14.1",
+    "react-sortable-hoc": "^2.0.0",
+    "react-toastify": "^9.1.1",
+    "recoil": "^0.7.7",
+    "remark-gfm": "^3.0.1",
+    "styled-components": "^6.0.2",
+    "uuid": "^9.0.0",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.6.0",
+    "@types/lodash": "^4.14.195",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
+    "@types/uuid": "^9",
+    "@vitejs/plugin-react": "^4.0.1",
+    "typescript": "4.8",
+    "vite": "^4.3.9",
+    "prettier": "^2.7.1"
+  },
+  "main": "index.js",
+  "license": "MIT"
+}

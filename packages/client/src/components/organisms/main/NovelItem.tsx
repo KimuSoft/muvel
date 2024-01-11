@@ -1,0 +1,71 @@
+import React from "react"
+import {
+  Box,
+  Heading,
+  HStack,
+  Text,
+  useColorModeValue,
+  VStack,
+} from "@chakra-ui/react"
+import { Novel } from "../../../types/novel.type"
+import TagChip from "../../atoms/TagChip"
+import { useNavigate } from "react-router-dom"
+
+const NovelItem: React.FC<{ novel: Novel }> = ({ novel }) => {
+  const navigate = useNavigate()
+
+  return (
+    <HStack
+      px={2}
+      py={2}
+      rounded={5}
+      gap={5}
+      minW={"350px"}
+      cursor={"pointer"}
+      transition={"background-color 0.2s ease-in-out"}
+      onClick={() => navigate(`/novels/${novel.id}`)}
+      userSelect={"none"}
+      _hover={{
+        backgroundColor: useColorModeValue("gray.200", "gray.700"),
+      }}
+    >
+      <Box
+        w="100px"
+        h="150px"
+        borderRadius="5px"
+        backgroundColor={"gray.500"}
+        backgroundImage={novel.thumbnail || ""}
+        backgroundRepeat={"no-repeat"}
+        backgroundSize={"cover"}
+        backgroundPosition={"center"}
+        flexShrink={0}
+      />
+      <VStack h={"100%"} gap={2} py={1}>
+        <HStack w={"100%"}>
+          <Heading size={"sm"}>{novel.title}</Heading>
+          <Text fontSize={"xs"} color={"gray.500"} flexShrink={0}>
+            {novel.episodeIds.length}편
+          </Text>
+        </HStack>
+        <Box w={"100%"}>
+          {novel.description ? (
+            <Text fontSize={"sm"}>{novel.description}</Text>
+          ) : (
+            <Text color={"gray.500"} fontSize={"sm"}>
+              설명이 없습니다.
+            </Text>
+          )}
+        </Box>
+
+        <HStack w={"100%"} flexWrap={"wrap"} gap={1}>
+          <TagChip>판타지</TagChip>
+          <TagChip>중세</TagChip>
+          <TagChip>TS</TagChip>
+          <TagChip>드래곤</TagChip>
+        </HStack>
+      </VStack>
+    </HStack>
+  )
+}
+
+export default NovelItem
