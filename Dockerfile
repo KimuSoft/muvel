@@ -8,7 +8,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN corepack enable && pnpm install --immutable
+RUN corepack enable && pnpm install
 
 ENV VITE_API_BASE=/api
 
