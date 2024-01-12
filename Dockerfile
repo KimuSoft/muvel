@@ -8,12 +8,12 @@ WORKDIR /app
 
 COPY . .
 
-RUN corepack enable && yarn install --immutable
+RUN corepack enable && pnpm install --immutable
 
 ENV VITE_API_BASE=/api
 
-RUN yarn workspace client build && \
-    yarn workspace server build
+RUN pnpm workspace client build && \
+    pnpm workspace server build
 
-CMD ["yarn", "workspace", "server", "migrateandstart"]
+CMD ["pnpm", "workspace", "server", "migrateandstart"]
 
