@@ -1,5 +1,4 @@
 import NovelDetailTemplate from "../templates/NovelDetailTemplate"
-import useCurrentUser from "../../hooks/useCurrentUser"
 import React, { useEffect } from "react"
 import { initialNovel, Novel } from "../../types/novel.type"
 import { api } from "../../utils/api"
@@ -11,8 +10,6 @@ const NovelDetailPage = () => {
   const toast = useToast()
   const navigate = useNavigate()
   const novelId = useParams<{ id: string }>().id || ""
-
-  const user = useCurrentUser()
 
   const [novel, setNovel] = React.useState<Novel>(initialNovel)
   const [isLoading, setIsLoading] = React.useState(false)
@@ -74,7 +71,13 @@ const NovelDetailPage = () => {
     fetchNovel().then()
   }, [])
 
-  return <NovelDetailTemplate novel={novel} isLoading={isLoading} />
+  return (
+    <NovelDetailTemplate
+      novel={novel}
+      isLoading={isLoading}
+      updateHandler={fetchNovel}
+    />
+  )
 }
 
 export const NovelDetailPageSkeleton = () => {

@@ -33,6 +33,15 @@ export class UpdateNovelDto {
   share?: ShareType
 
   @ApiProperty({
+    description: "소설 태그",
+    example: ["모험", "판타지"],
+  })
+  @IsString({ each: true })
+  @Transform(({ value }) => [...new Set(value)])
+  @IsOptional()
+  tags?: string[]
+
+  @ApiProperty({
     description: "소설 썸네일 이미지 URL",
     example: "파링의 모험",
   })

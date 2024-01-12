@@ -10,11 +10,11 @@ import {
   ModalOverlay,
   useDisclosure,
 } from "@chakra-ui/react"
-import { AiTwotoneDelete } from "react-icons/ai"
 import { toast } from "react-toastify"
 import { api } from "../../utils/api"
 import { useNavigate } from "react-router-dom"
 import { Novel } from "../../types/novel.type"
+import { TbTrash } from "react-icons/tb"
 
 const DeleteEpisode: React.FC<{ novel: Novel; episodeId: string }> = ({
   novel,
@@ -38,7 +38,7 @@ const DeleteEpisode: React.FC<{ novel: Novel; episodeId: string }> = ({
     <>
       {novel?.episodeIds?.length > 1 ? (
         <Button onClick={onOpen} colorScheme="red">
-          <AiTwotoneDelete style={{ marginRight: 10 }} /> 에피소드 삭제
+          <TbTrash style={{ marginRight: 10 }} /> 에피소드 삭제
         </Button>
       ) : null}
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -56,7 +56,7 @@ const DeleteEpisode: React.FC<{ novel: Novel; episodeId: string }> = ({
               isLoading={isLoading}
               onClick={onClick}
             >
-              <AiTwotoneDelete style={{ marginRight: 10 }} />네 삭제할게요
+              <TbTrash style={{ marginRight: 10 }} />네 삭제할게요
             </Button>
             <Button onClick={onClose}>취소</Button>
           </ModalFooter>

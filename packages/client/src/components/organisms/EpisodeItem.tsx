@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo } from "react"
 import { EpisodeType, PartialEpisode } from "../../types/episode.type"
 import {
   Box,
@@ -16,6 +16,20 @@ const EpisodeItem: React.FC<{ episode: PartialEpisode; index: number }> = ({
   index,
 }) => {
   const navigate = useNavigate()
+
+  const prefix = useMemo(() => {
+    switch (episode.episodeType) {
+      case EpisodeType.EpisodeGroup:
+        return
+      case EpisodeType.Episode:
+        // TODO: 임시, 이후 편수를 따로 추가해야 함
+        return `${(index + 1).toString().padStart(3, "0")}`
+      case EpisodeType.Prologue:
+        return "PR."
+      case EpisodeType.Epilogue:
+        return "EP."
+    }
+  }, [episode.episodeType, index])
 
   const clickHandler = () => {
     navigate(`/episodes/${episode.id}`)
@@ -62,7 +76,7 @@ const EpisodeItem: React.FC<{ episode: PartialEpisode; index: number }> = ({
         fontWeight={200}
         fontSize={"36px"}
       >
-        888
+        {prefix}
       </Text>
       <VStack gap={0} alignItems={"baseline"}>
         <Text>{episode.title}</Text>

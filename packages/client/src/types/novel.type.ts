@@ -11,6 +11,9 @@ export interface PartialNovel extends PartialData {
   createdAt: Date
   updatedAt: Date
   share: ShareType
+
+  // 아직 서버에 반영되지 않은 사항
+  tags: string[]
 }
 
 export interface Novel extends PartialNovel {
@@ -26,14 +29,15 @@ export enum ShareType {
 
 export const initialNovel: Novel = {
   id: "",
-  title: "와 샌즈",
-  description: "키뮤는 너무 귀엽다 꺄르륵",
+  title: "",
+  description: "",
   episodeIds: [],
   episodes: [],
   createdAt: new Date(),
   updatedAt: new Date(),
   authorId: "",
-  author: { id: "", avatar: "", username: "키뮤키뮤" },
+  author: { id: "", avatar: "", username: "" },
   thumbnail: "",
   share: ShareType.Public,
+  tags: [],
 }

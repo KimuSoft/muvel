@@ -27,8 +27,8 @@ export class NovelEntity {
   @Column({ nullable: true })
   thumbnail: string
 
-  // @Column("text", { array: true })
-  // tags: string[]
+  @Column("text", { array: true, default: [] })
+  tags: string[] = []
 
   @OneToMany(() => EpisodeEntity, (episode) => episode.novel, {
     cascade: true,
