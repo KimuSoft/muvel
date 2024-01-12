@@ -76,6 +76,7 @@ const GoalWidget: React.FC = () => {
       return Math.random() * (max - min) + min
     }
 
+    // @ts-ignore
     const interval = setInterval(() => {
       const timeLeft = animationEnd - Date.now()
 

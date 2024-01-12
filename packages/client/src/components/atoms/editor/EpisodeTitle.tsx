@@ -18,6 +18,7 @@ const EpisodeTitle: React.FC<{ disabled?: boolean }> = ({
       <Title
         html={episode.title}
         onChange={titleChangeHandler}
+        // @ts-ignore
         placeholder="제목 없음"
         // @ts-ignore
         onKeyDown={(e) => {
