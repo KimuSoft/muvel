@@ -6,7 +6,7 @@ RUN mkdir -p /app
 
 WORKDIR /app
 
-COPY . .
+COPY . ./app
 
 RUN corepack enable && pnpm install
 
