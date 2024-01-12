@@ -17,7 +17,7 @@
     "canvas-confetti": "^1.6.0",
     "chakra-ui-contextmenu": "^1.0.5",
     "formik": "^2.4.2",
-    "framer-motion": "^10.12.16",
+    "framer-motion": "^10.18.0",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-contenteditable": "^3.3.7",
@@ -41,9 +41,9 @@
     "@types/react-dom": "^18.2.6",
     "@types/uuid": "^9",
     "@vitejs/plugin-react": "^4.0.1",
+    "prettier": "^2.7.1",
     "typescript": "4.8",
-    "vite": "^4.3.9",
-    "prettier": "^2.7.1"
+    "vite": "^4.3.9"
   },
   "main": "index.js",
   "license": "MIT"

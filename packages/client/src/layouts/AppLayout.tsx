@@ -1,14 +1,16 @@
 import React, { FC, useEffect } from "react"
-import { Outlet } from "react-router-dom"
+import { Outlet, useLocation } from "react-router-dom"
 import GlobalContext from "../context/GlobalContext"
 import { api } from "../utils/api"
 import { User } from "../types/user.type"
 import { Center, Spinner, useToast } from "@chakra-ui/react"
 import { AxiosError } from "axios"
+import { motion } from "framer-motion"
 
 export const AppLayout: FC = () => {
   const [loading, setLoading] = React.useState(true)
   const [user, setUser] = React.useState<User | null>(null)
+  const location = useLocation()
 
   const toast = useToast()
 
@@ -39,7 +41,12 @@ export const AppLayout: FC = () => {
   }, [])
 
   return (
-    <>
+    <motion.div
+      key={location.pathname.replace(/sodes\/.*/, "")}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       {loading ? (
         <Center w="100vw" h="100vh">
           <Spinner />
@@ -49,6 +56,6 @@ export const AppLayout: FC = () => {
           <Outlet />
         </GlobalContext.Provider>
       )}
-    </>
+    </motion.div>
   )
 }

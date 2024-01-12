@@ -95,7 +95,7 @@ const NovelDetail: React.FC = () => {
 
   return (
     <>
-      <Header />
+      <Header logo={false} />
       <Center
         p={10}
         mb={7}

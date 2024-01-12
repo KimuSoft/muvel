@@ -26,6 +26,7 @@ import { Novel } from "../../types/novel.type"
 import { User } from "../../types/user.type"
 import NovelItemSkeleton from "../organisms/main/NovelItemSkeleton"
 import CreateOrUpdateNovel from "../organisms/CreateOrUpdateNovel"
+import { motion } from "framer-motion"
 
 const MainLogo: React.FC = () => {
   return (
@@ -98,7 +99,12 @@ const MainTemplate: React.FC<{
         {!isLoading ? (
           novels.length ? (
             searchedNovels.length ? (
-              <SimpleGrid w={"100%"} columns={column} gap={2}>
+              <SimpleGrid
+                w={"100%"}
+                columns={column}
+                gridColumnGap={4}
+                gridRowGap={0}
+              >
                 {searchedNovels.map((novel) => (
                   <NovelItem novel={novel} />
                 ))}

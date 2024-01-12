@@ -23,12 +23,7 @@ import { useNavigate } from "react-router-dom"
 import { api } from "../../utils/api"
 import { Novel, ShareType } from "../../types/novel.type"
 import { toast } from "react-toastify"
-import {
-  AiFillEdit,
-  AiFillFileAdd,
-  AiFillLock,
-  AiOutlineLink,
-} from "react-icons/ai"
+import { AiFillEdit, AiFillLock, AiOutlineLink } from "react-icons/ai"
 import { Field, FieldProps, Form, Formik } from "formik"
 import RadioCardGroup from "../molecules/RadioCardGroup"
 import { MdPublic } from "react-icons/md"
