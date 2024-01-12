@@ -14,6 +14,7 @@ import { AiTwotoneDelete } from "react-icons/ai"
 import { toast } from "react-toastify"
 import { api } from "../../utils/api"
 import { useNavigate } from "react-router-dom"
+import { TbTrash } from "react-icons/tb"
 
 const DeleteNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -33,7 +34,7 @@ const DeleteNovel: React.FC<{ novelId: string }> = ({ novelId }) => {
   return (
     <>
       <Button onClick={onOpen} colorScheme="red">
-        <AiTwotoneDelete style={{ marginRight: 10 }} /> 소설 삭제
+        <TbTrash style={{ marginRight: 10 }} /> 소설 삭제
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

@@ -29,11 +29,11 @@ const BlockContentEditable: React.FC<BlockContentEditableProps> = ({
     switch (block.blockType) {
       case BlockType.Comment:
         return {
-          color: theme.colors.gray["500"],
+          color: "var(--chakra-colors-gray-500)",
           backgroundColor:
             colorMode === "light"
-              ? theme.colors.gray["100"]
-              : theme.colors.gray["900"],
+              ? "var(--chakra-colors-gray-100)"
+              : "var(--chakra-colors-gray-900)",
         }
       default:
         return {
@@ -43,8 +43,8 @@ const BlockContentEditable: React.FC<BlockContentEditableProps> = ({
           textIndent: option.indent + "em",
           color:
             colorMode === "light"
-              ? theme.colors.gray["700"]
-              : theme.colors.gray["300"],
+              ? "var(--chakra-colors-gray-700)"
+              : "var(--chakra-colors-gray-300)",
           fontWeight: colorMode === "light" ? 500 : 50,
         }
     }

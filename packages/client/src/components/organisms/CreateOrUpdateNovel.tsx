@@ -23,12 +23,13 @@ import { useNavigate } from "react-router-dom"
 import { api } from "../../utils/api"
 import { Novel, ShareType } from "../../types/novel.type"
 import { toast } from "react-toastify"
-import { AiFillEdit, AiFillLock, AiOutlineLink } from "react-icons/ai"
+import { AiFillLock, AiOutlineLink } from "react-icons/ai"
 import { Field, FieldProps, Form, Formik } from "formik"
 import RadioCardGroup from "../molecules/RadioCardGroup"
 import { MdPublic } from "react-icons/md"
 import DeleteNovel from "./DeleteNovel"
 import { RiQuillPenFill } from "react-icons/ri"
+import { TbEdit } from "react-icons/tb"
 
 const CreateOrUpdateNovel: React.FC<{
   novel?: Novel
@@ -92,7 +93,7 @@ const CreateOrUpdateNovel: React.FC<{
       >
         {novel ? (
           <>
-            <AiFillEdit /> <Hide below={"md"}> 소설 수정하기</Hide>
+            <TbEdit /> <Hide below={"md"}> 소설 수정하기</Hide>
           </>
         ) : (
           <>

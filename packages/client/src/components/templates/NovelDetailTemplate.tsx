@@ -24,6 +24,7 @@ import {
 } from "react-icons/tb"
 import EpisodeItem from "../organisms/EpisodeItem"
 import { NovelDetailPageSkeleton } from "../pages/NovelDetailPage"
+import CreateOrUpdateNovel from "../organisms/CreateOrUpdateNovel"
 
 const NovelDetailTemplate: React.FC<{ novel: Novel; isLoading: boolean }> = ({
   novel,
@@ -63,13 +64,7 @@ const NovelDetailTemplate: React.FC<{ novel: Novel; isLoading: boolean }> = ({
                 <Button variant={"outline"} leftIcon={<TbPlayerPlay />}>
                   1편부터 보기
                 </Button>
-                <Button
-                  colorScheme={"purple"}
-                  variant={"outline"}
-                  leftIcon={<TbEdit />}
-                >
-                  작품 정보 수정
-                </Button>
+                <CreateOrUpdateNovel novel={novel} />
                 <Button
                   colorScheme={"purple"}
                   variant={"outline"}
