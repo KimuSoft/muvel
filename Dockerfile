@@ -12,7 +12,8 @@ RUN corepack enable && pnpm install
 
 ENV VITE_API_BASE=/api
 
-RUN pnpm --filter * build
+RUN pnpm --filter client build
+RUN pnpm --filter server build
 
 CMD ["pnpm", "--filter", "server", "migrateandstart"]
 
