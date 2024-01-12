@@ -5,6 +5,7 @@ import { api } from "../../utils/api"
 import { Skeleton, useToast } from "@chakra-ui/react"
 import { useNavigate, useParams } from "react-router-dom"
 import { isAxiosError } from "axios"
+import { Episode, EpisodeType } from "../../types/episode.type"
 
 const NovelDetailPage = () => {
   const toast = useToast()
@@ -67,6 +68,21 @@ const NovelDetailPage = () => {
     setIsLoading(false)
   }
 
+  // 임시
+  const addEpisode = async () => {
+    setIsLoading(true)
+    const { data } = await api.post<Episode>(`novels/${novelId}/episodes`, {
+      title: "새 에피소드",
+      episodeType: EpisodeType.Episode,
+    })
+
+    navigate(`/episodes/${data.id}`)
+    toast({
+      title: "새 에피소드를 생성했어요!",
+      status: "success",
+    })
+  }
+
   useEffect(() => {
     fetchNovel().then()
   }, [])
@@ -75,7 +91,8 @@ const NovelDetailPage = () => {
     <NovelDetailTemplate
       novel={novel}
       isLoading={isLoading}
-      updateHandler={fetchNovel}
+      updateNovelHandler={fetchNovel}
+      createNovelHandler={addEpisode}
     />
   )
 }

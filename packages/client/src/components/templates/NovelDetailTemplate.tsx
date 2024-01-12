@@ -5,6 +5,7 @@ import {
   Center,
   Container,
   Heading,
+  Hide,
   HStack,
   IconButton,
   Skeleton,
@@ -36,8 +37,9 @@ import CreateOrUpdateNovel from "../organisms/CreateOrUpdateNovel"
 const NovelDetailTemplate: React.FC<{
   novel: Novel
   isLoading: boolean
-  updateHandler(): Promise<unknown>
-}> = ({ novel, updateHandler, isLoading }) => {
+  updateNovelHandler(): Promise<unknown>
+  createNovelHandler(): Promise<unknown>
+}> = ({ novel, updateNovelHandler, createNovelHandler, isLoading }) => {
   const [sort, setSort] = React.useState<1 | -1>(1)
 
   return (
@@ -98,7 +100,7 @@ const NovelDetailTemplate: React.FC<{
                     </Button>
                     <CreateOrUpdateNovel
                       novel={novel}
-                      onCreateOrUpdate={updateHandler}
+                      onCreateOrUpdate={updateNovelHandler}
                     />
                     <Button
                       colorScheme={"purple"}
@@ -130,23 +132,25 @@ const NovelDetailTemplate: React.FC<{
                 </>
               )}
             </VStack>
-            <Box
-              w="260px"
-              h="390px"
-              borderRadius="14px"
-              backgroundColor={"gray.500"}
-              backgroundImage={novel.thumbnail || ""}
-              backgroundRepeat={"no-repeat"}
-              backgroundSize={"cover"}
-              backgroundPosition={"center"}
-              boxShadow={"0px 4px 30px 1px rgba(0, 0, 0, 0.25)"}
-              flexShrink={0}
-            />
+            <Hide below={"md"}>
+              <Box
+                w="260px"
+                h="390px"
+                borderRadius="14px"
+                backgroundColor={"gray.500"}
+                backgroundImage={novel.thumbnail || ""}
+                backgroundRepeat={"no-repeat"}
+                backgroundSize={"cover"}
+                backgroundPosition={"center"}
+                boxShadow={"0px 4px 30px 1px rgba(0, 0, 0, 0.25)"}
+                flexShrink={0}
+              />
+            </Hide>
           </HStack>
         </Container>
       </Center>
 
-      <Container w={"80%"} maxW={"900px"}>
+      <Container w={"80%"} maxW={"900px"} userSelect={"none"}>
         <HStack>
           <Heading size={"md"}>에피소드 목록</Heading>
           <Spacer />
@@ -170,7 +174,12 @@ const NovelDetailTemplate: React.FC<{
               }
             />
           </Tooltip>
-          <Button colorScheme={"purple"} leftIcon={<TbPlus />}>
+          <Button
+            colorScheme={"purple"}
+            leftIcon={<TbPlus />}
+            disabled={isLoading}
+            onClick={createNovelHandler}
+          >
             새 편 쓰기
           </Button>
         </HStack>

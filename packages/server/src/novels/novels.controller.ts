@@ -68,7 +68,6 @@ export class NovelsController {
     @Param("id") id: string
   ): Promise<NovelDtoWithEpisodes> {
     const novel = await this.novelsService.findOne(id, ["episodes", "author"])
-    novel.episodes.sort((a, b) => a.order - b.order)
 
     novel.episodes = novel.episodes.map((episode) => {
       return {

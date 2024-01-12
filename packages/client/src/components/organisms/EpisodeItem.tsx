@@ -2,14 +2,56 @@ import React, { useMemo } from "react"
 import { EpisodeType, PartialEpisode } from "../../types/episode.type"
 import {
   Box,
+  Hide,
   HStack,
+  Show,
   Spacer,
   Text,
+  Tooltip,
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react"
 import { TbBrandZapier, TbRefresh, TbTypography } from "react-icons/tb"
 import { useNavigate } from "react-router-dom"
+
+const SideData: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
+  const updatedAt = useMemo(() => {
+    return new Date(episode.updatedAt)
+  }, [episode.updatedAt])
+
+  const createdAt = useMemo(() => {
+    return new Date(episode.createdAt)
+  }, [episode.createdAt])
+
+  return (
+    <HStack gap={4} flexShrink={0}>
+      <HStack gap={1}>
+        <TbTypography color={"var(--chakra-colors-purple-400)"} size={12} />
+        <Text flexShrink={0} fontSize={"xs"} color={"gray.500"}>
+          1,400자
+        </Text>
+      </HStack>
+      <Tooltip label={createdAt.toLocaleString() + "에 생성"} openDelay={1000}>
+        <HStack gap={1}>
+          <TbBrandZapier color={"var(--chakra-colors-purple-400)"} size={12} />
+          <Text fontSize={"xs"} color={"gray.500"}>
+            {createdAt.getFullYear()}.{createdAt.getMonth() + 1}.
+            {createdAt.getDate()}
+          </Text>
+        </HStack>
+      </Tooltip>
+      <Tooltip label={createdAt.toLocaleString() + "에 수정"} openDelay={1000}>
+        <HStack gap={1}>
+          <TbRefresh color={"var(--chakra-colors-purple-400)"} size={12} />
+          <Text fontSize={"xs"} color={"gray.500"}>
+            {updatedAt.getFullYear()}.{updatedAt.getMonth() + 1}.
+            {updatedAt.getDate()}
+          </Text>
+        </HStack>
+      </Tooltip>
+    </HStack>
+  )
+}
 
 const EpisodeItem: React.FC<{ episode: PartialEpisode; index: number }> = ({
   episode,
@@ -83,28 +125,14 @@ const EpisodeItem: React.FC<{ episode: PartialEpisode; index: number }> = ({
         <Text fontSize={"xs"} color={"gray.500"}>
           {episode.description}
         </Text>
+        <Show below={"md"}>
+          <SideData episode={episode} />
+        </Show>
       </VStack>
       <Spacer />
-      <HStack gap={4} flexShrink={0}>
-        <HStack gap={1}>
-          <TbTypography color={"var(--chakra-colors-purple-400)"} size={12} />
-          <Text fontSize={"xs"} color={"gray.500"}>
-            1,400자
-          </Text>
-        </HStack>
-        <HStack gap={1}>
-          <TbBrandZapier color={"var(--chakra-colors-purple-400)"} size={12} />
-          <Text fontSize={"xs"} color={"gray.500"}>
-            2024.01.01
-          </Text>
-        </HStack>
-        <HStack gap={1}>
-          <TbRefresh color={"var(--chakra-colors-purple-400)"} size={12} />
-          <Text fontSize={"xs"} color={"gray.500"}>
-            2024.12.31
-          </Text>
-        </HStack>
-      </HStack>
+      <Hide below={"md"}>
+        <SideData episode={episode} />
+      </Hide>
     </HStack>
   )
 }

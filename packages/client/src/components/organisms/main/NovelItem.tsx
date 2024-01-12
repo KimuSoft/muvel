@@ -58,10 +58,9 @@ const NovelItem: React.FC<{ novel: Novel }> = ({ novel }) => {
         </Box>
 
         <HStack w={"100%"} flexWrap={"wrap"} gap={1}>
-          <TagChip>판타지</TagChip>
-          <TagChip>중세</TagChip>
-          <TagChip>TS</TagChip>
-          <TagChip>드래곤</TagChip>
+          {novel.tags.map((tag, idx) => (
+            <TagChip key={idx}>{tag}</TagChip>
+          ))}
         </HStack>
       </VStack>
     </HStack>
