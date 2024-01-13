@@ -1,10 +1,11 @@
 import React, { useState } from "react"
 import BlockNoteEditorTemplate from "../templates/BlockNoteEditorTemplate"
 import { Block as BlockNoteBlock, BlockNoteEditor } from "@blocknote/core"
-import { useMediaQuery } from "@chakra-ui/react"
 
 const BlockNoteEditorPage: React.FC = () => {
-  const [blockNoteBlocks, setBlockNoteBlocks] = useState<BlockNoteBlock[]>([])
+  const [blockNoteBlocks, setBlockNoteBlocks] = useState<
+    BlockNoteBlock<any, any, any>[]
+  >([])
 
   const onEditorContentChange = (blocks: BlockNoteEditor) => {
     setBlockNoteBlocks(blocks.topLevelBlocks)
