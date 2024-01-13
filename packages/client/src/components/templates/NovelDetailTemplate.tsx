@@ -18,6 +18,7 @@ import {
   Text,
   Tooltip,
   useColorModeValue,
+  useMediaQuery,
   VStack,
 } from "@chakra-ui/react"
 import Header from "../organisms/Header"
@@ -41,6 +42,7 @@ const NovelDetailTemplate: React.FC<{
   createNovelHandler(): Promise<unknown>
 }> = ({ novel, updateNovelHandler, createNovelHandler, isLoading }) => {
   const [sort, setSort] = React.useState<1 | -1>(1)
+  const [isPC] = useMediaQuery("(min-width: 800px)")
 
   return (
     <VStack w={"100vw"} gap={12} pb={100}>
@@ -53,7 +55,7 @@ const NovelDetailTemplate: React.FC<{
           "linear-gradient(90deg, rgba(24, 24, 27) 0%, #434145 100%)"
         )}
       >
-        <Container w={"80%"} maxW={"900px"}>
+        <Container w={"90%"} maxW={"900px"}>
           <HStack gap={10}>
             <VStack w={"100%"} alignItems={"baseline"} gap={3}>
               {!isLoading ? (
@@ -105,10 +107,11 @@ const NovelDetailTemplate: React.FC<{
                     <Button
                       colorScheme={"purple"}
                       variant={"outline"}
-                      leftIcon={<TbShare />}
                       disabled={isLoading}
+                      gap={3}
                     >
-                      공유 설정
+                      <TbShare />
+                      {isPC ? "공유 설정" : null}
                     </Button>
                   </HStack>
                 </>
@@ -150,7 +153,7 @@ const NovelDetailTemplate: React.FC<{
         </Container>
       </Center>
 
-      <Container w={"80%"} maxW={"900px"} userSelect={"none"}>
+      <Container w={"100%"} maxW={"900px"} userSelect={"none"}>
         <HStack>
           <Heading size={"md"}>에피소드 목록</Heading>
           <Spacer />
@@ -176,11 +179,12 @@ const NovelDetailTemplate: React.FC<{
           </Tooltip>
           <Button
             colorScheme={"purple"}
-            leftIcon={<TbPlus />}
+            gap={3}
             disabled={isLoading}
             onClick={createNovelHandler}
           >
-            새 편 쓰기
+            <TbPlus />
+            {isPC ? "새 편 쓰기" : null}
           </Button>
         </HStack>
         <VStack gap={1} py={5} alignItems={"baseline"}>

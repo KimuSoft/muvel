@@ -32,6 +32,7 @@ export const AppLayout: FC = () => {
             toast({
               title: "알 수 없는 오류가 발생했습니다",
               description: e.message,
+              status: "error",
             })
         }
       }

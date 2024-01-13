@@ -81,7 +81,7 @@ const MainTemplate: React.FC<{
         maxW={"1200px"}
         gap={10}
         my={100}
-        px={5}
+        px={3}
       >
         <MainLogo />
         <HStack w={isPC ? "80%" : "100%"} maxW="700px" mb={10}>
@@ -116,12 +116,15 @@ const MainTemplate: React.FC<{
             )
           ) : user ? (
             <Text color={"gray.500"}>
-              소설이 없네요... 오른쪽 위의 깃펜 모양의 버튼을 눌러 새 소설을 써
-              보세요!
+              소설이 없네요...
+              <br />
+              오른쪽 위의 깃펜 모양의 버튼을 눌러 새 소설을 써 보세요!
             </Text>
           ) : (
             <Text color={"gray.500"}>
-              소설이 없네요... 뮤블에{" "}
+              소설이 없네요...
+              <br />
+              뮤블에{" "}
               <Link
                 fontWeight={"800"}
                 color={"purple.500"}

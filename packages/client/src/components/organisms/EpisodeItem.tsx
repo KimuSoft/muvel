@@ -9,6 +9,7 @@ import {
   Text,
   Tooltip,
   useColorModeValue,
+  useMediaQuery,
   VStack,
 } from "@chakra-ui/react"
 import { TbBrandZapier, TbRefresh, TbTypography } from "react-icons/tb"
@@ -26,7 +27,11 @@ const SideData: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
   return (
     <HStack gap={4} flexShrink={0}>
       <HStack gap={1}>
-        <TbTypography color={"var(--chakra-colors-purple-400)"} size={12} />
+        <TbTypography
+          color={"var(--chakra-colors-purple-400)"}
+          size={12}
+          style={{ flexShrink: 0 }}
+        />
         <Text flexShrink={0} fontSize={"xs"} color={"gray.500"}>
           1,400자
         </Text>
@@ -58,6 +63,7 @@ const EpisodeItem: React.FC<{ episode: PartialEpisode; index: number }> = ({
   index,
 }) => {
   const navigate = useNavigate()
+  const [isPC] = useMediaQuery("(min-width: 800px)")
 
   const prefix = useMemo(() => {
     switch (episode.episodeType) {
@@ -111,15 +117,17 @@ const EpisodeItem: React.FC<{ episode: PartialEpisode; index: number }> = ({
       }}
     >
       <Box flexShrink={0} w={"4px"} h={"44px"} backgroundColor={"purple.500"} />
-      <Text
-        flexShrink={0}
-        color={"purple.500"}
-        w={"65px"}
-        fontWeight={200}
-        fontSize={"36px"}
-      >
-        {prefix}
-      </Text>
+      {isPC ? (
+        <Text
+          flexShrink={0}
+          color={"purple.500"}
+          w={"65px"}
+          fontWeight={200}
+          fontSize={"36px"}
+        >
+          {prefix}
+        </Text>
+      ) : null}
       <VStack gap={0} alignItems={"baseline"}>
         <Text>{episode.title}</Text>
         <Text fontSize={"xs"} color={"gray.500"}>

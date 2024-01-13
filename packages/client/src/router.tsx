@@ -7,6 +7,7 @@ import ViewerPage from "./components/pages/Viewer"
 import AuthCallback from "./components/pages/AuthCallback"
 import NotFoundPage from "./components/pages/NotFound"
 import NovelDetailPage from "./components/pages/NovelDetailPage"
+import BlockNoteEditorPage from "./components/pages/BlockNoteEditorPage"
 
 const Router: React.FC = () => {
   return (
@@ -16,6 +17,10 @@ const Router: React.FC = () => {
           <Route index element={<MainPage />}></Route>
           <Route path={"episodes/:id"} element={<EditorPage />}></Route>
           <Route path={"episodes/:id/viewer"} element={<ViewerPage />}></Route>
+          <Route
+            path={"episodes/:id/blocknote"}
+            element={<BlockNoteEditorPage />}
+          ></Route>
           <Route path={"novels"} element={<MainPage />}></Route>
           <Route path={"novels/:id"} element={<NovelDetailPage />}></Route>
         </Route>

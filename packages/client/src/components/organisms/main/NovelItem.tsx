@@ -20,7 +20,6 @@ const NovelItem: React.FC<{ novel: Novel }> = ({ novel }) => {
       py={2}
       rounded={5}
       gap={5}
-      minW={"350px"}
       cursor={"pointer"}
       transition={"background-color 0.2s ease-in-out"}
       onClick={() => navigate(`/novels/${novel.id}`)}
@@ -49,7 +48,12 @@ const NovelItem: React.FC<{ novel: Novel }> = ({ novel }) => {
         </HStack>
         <Box w={"100%"}>
           {novel.description ? (
-            <Text fontSize={"sm"}>{novel.description}</Text>
+            <Text
+              color={useColorModeValue("gray.700", "gray.300")}
+              fontSize={"sm"}
+            >
+              {novel.description}
+            </Text>
           ) : (
             <Text color={"gray.500"} fontSize={"sm"}>
               설명이 없습니다.
