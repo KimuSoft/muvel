@@ -2,7 +2,7 @@ import React from "react"
 import EpisodeTitle from "../../atoms/editor/EpisodeTitle"
 import Auth from "../../molecules/Auth"
 import EditorDrawer from "./EditorDrawer"
-import { Hide, HStack, Spinner } from "@chakra-ui/react"
+import { Hide, HStack, Spinner, useColorModeValue } from "@chakra-ui/react"
 import ToggleColorModeButton from "../../atoms/ToggleColorModeButton"
 import SearchModal from "../SearchModal"
 import {
@@ -19,7 +19,18 @@ const EditorHeader: React.FC = () => {
   const [isAutoSaving] = useRecoilState(isAutoSavingState)
 
   return (
-    <HStack px={8} h="70px">
+    <HStack
+      position={"sticky"}
+      top={0}
+      w={"100%"}
+      px={5}
+      h="50px"
+      zIndex={99}
+      backgroundColor={useColorModeValue("white", "gray.900")}
+      // 아래에 1px border
+      borderBottom={"1px solid"}
+      borderColor={useColorModeValue("gray.200", "gray.800")}
+    >
       <Hide below={"md"}>
         <HStack w={200}>
           <EditorDrawer episode={episode} />
@@ -34,9 +45,9 @@ const EditorHeader: React.FC = () => {
       </Hide>
       <EpisodeTitle />
       <Hide below={"md"}>
-        <HStack w={200} flexDir={"row-reverse"}>
+        <HStack w={200} flexDir={"row-reverse"} gap={1}>
           <Auth />
-          <ToggleColorModeButton />
+          <ToggleColorModeButton size={"sm"} mr={3} />
           <WidgetDrawer />
           <SearchModal novelId={novel.id} />
         </HStack>

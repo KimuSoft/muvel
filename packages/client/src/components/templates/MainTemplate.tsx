@@ -1,20 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react"
 import {
-  Box,
-  Button,
-  Center,
-  Container,
   Heading,
-  Highlight,
   HStack,
-  IconButton,
   Input,
   InputGroup,
   InputRightElement,
   Link,
   SimpleGrid,
   Text,
-  Tooltip,
   useMediaQuery,
   VStack,
 } from "@chakra-ui/react"
@@ -26,7 +19,6 @@ import { Novel } from "../../types/novel.type"
 import { User } from "../../types/user.type"
 import NovelItemSkeleton from "../organisms/main/NovelItemSkeleton"
 import CreateOrUpdateNovel from "../organisms/CreateOrUpdateNovel"
-import { motion } from "framer-motion"
 
 const MainLogo: React.FC = () => {
   return (
@@ -106,7 +98,7 @@ const MainTemplate: React.FC<{
                 gridRowGap={0}
               >
                 {searchedNovels.map((novel) => (
-                  <NovelItem novel={novel} />
+                  <NovelItem novel={novel} key={novel.id} />
                 ))}
               </SimpleGrid>
             ) : (

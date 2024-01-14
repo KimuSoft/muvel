@@ -5,9 +5,9 @@ export const Widget: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <VStack
       w="100%"
-      bgColor={useColorModeValue("gray.100", "gray.700")}
+      bgColor={useColorModeValue("gray.100", "gray.800")}
       gap={0}
-      borderRadius={10}
+      borderRadius={5}
       overflow={"hidden"}
       shadow={"lg"}
     >
@@ -21,9 +21,10 @@ export const WidgetHeader: React.FC<PropsWithChildren> = ({ children }) => {
     <HStack
       w="100%"
       px={5}
-      py={2}
-      bgColor={useColorModeValue("gray.50", "gray.600")}
+      py={1}
+      bgColor={useColorModeValue("gray.50", "gray.700")}
       fontSize={"xs"}
+      userSelect={"none"}
     >
       {children}
     </HStack>

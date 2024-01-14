@@ -58,12 +58,14 @@ const SideData: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
   )
 }
 
-const EpisodeItem: React.FC<{ episode: PartialEpisode; index: number }> = ({
-  episode,
-  index,
-}) => {
+const EpisodeItem: React.FC<{
+  episode: PartialEpisode
+  index: number
+  isDrawer?: boolean
+}> = ({ episode, index, isDrawer = false }) => {
   const navigate = useNavigate()
-  const [isPC] = useMediaQuery("(min-width: 800px)")
+  const [_isPC] = useMediaQuery("(min-width: 800px)")
+  const isPC = isDrawer ? false : _isPC
 
   const prefix = useMemo(() => {
     switch (episode.episodeType) {
@@ -108,6 +110,7 @@ const EpisodeItem: React.FC<{ episode: PartialEpisode; index: number }> = ({
       w={"100%"}
       gap={5}
       px={2}
+      py={1}
       cursor={"pointer"}
       onClick={clickHandler}
       borderRadius={4}
@@ -133,14 +136,10 @@ const EpisodeItem: React.FC<{ episode: PartialEpisode; index: number }> = ({
         <Text fontSize={"xs"} color={"gray.500"}>
           {episode.description}
         </Text>
-        <Show below={"md"}>
-          <SideData episode={episode} />
-        </Show>
+        {!isPC ? <SideData episode={episode} /> : null}
       </VStack>
       <Spacer />
-      <Hide below={"md"}>
-        <SideData episode={episode} />
-      </Hide>
+      {isPC ? <SideData episode={episode} /> : null}
     </HStack>
   )
 }

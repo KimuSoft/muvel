@@ -38,6 +38,7 @@ const EditorSetting: React.FC = () => {
           aria-label={"에디터 설정"}
           icon={<AiFillSetting />}
           onClick={onOpen}
+          variant={"outline"}
         />
       </Tooltip>
 

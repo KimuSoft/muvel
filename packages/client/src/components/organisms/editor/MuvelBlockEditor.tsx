@@ -236,18 +236,18 @@ const MuvelBlockEditor: React.FC<{ initialFocusedBlockId?: string }> = ({
 
   return (
     <Container maxW="3xl">
-      <Text color="gray.500" mb={3}>
+      <Text color="gray.500" mb={3} fontSize={"sm"} userSelect={"none"}>
         에피소드 설명
       </Text>
       <Textarea
         defaultValue={episode.description}
-        bgColor={useColorModeValue("gray.200", "gray.900")}
+        bgColor={useColorModeValue("gray.200", "gray.800")}
         border="none"
         _focus={{ border: "none" }}
         mb={10}
         onChange={onEpisodeDescriptionChange}
       />
-      <Text color="gray.500" mb={3}>
+      <Text color="gray.500" mb={3} fontSize={"sm"} userSelect={"none"}>
         본문
       </Text>
       <_SortableContainer onSortEnd={onSortEnd} pressDelay={100} lockAxis="y">

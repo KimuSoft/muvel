@@ -1,8 +1,15 @@
 import React from "react"
-import { IconButton, Tooltip, useColorMode } from "@chakra-ui/react"
+import {
+  IconButton,
+  IconButtonProps,
+  Tooltip,
+  useColorMode,
+} from "@chakra-ui/react"
 import { TbMoonFilled, TbSunFilled } from "react-icons/tb"
 
-const ToggleColorModeButton: React.FC = () => {
+const ToggleColorModeButton: React.FC<Omit<IconButtonProps, "aria-label">> = (
+  props
+) => {
   const { colorMode, toggleColorMode } = useColorMode()
 
   return (
@@ -14,12 +21,9 @@ const ToggleColorModeButton: React.FC = () => {
         aria-label={"change color mode"}
         onClick={toggleColorMode}
         variant="ghost"
+        {...props}
       >
-        {colorMode === "light" ? (
-          <TbSunFilled style={{ fontSize: 16 }} />
-        ) : (
-          <TbMoonFilled style={{ fontSize: 16 }} />
-        )}
+        {colorMode === "light" ? <TbSunFilled /> : <TbMoonFilled />}
       </IconButton>
     </Tooltip>
   )

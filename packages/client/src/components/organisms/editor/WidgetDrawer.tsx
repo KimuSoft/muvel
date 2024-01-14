@@ -93,9 +93,10 @@ const WidgetDrawer: React.FC = () => {
     <>
       <IconButton
         aria-label={"widget"}
-        icon={<BiSolidWidget style={{ fontSize: 24 }} />}
+        icon={<BiSolidWidget />}
         onClick={onOpen}
         variant={"ghost"}
+        size={"sm"}
       />
 
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="sm">

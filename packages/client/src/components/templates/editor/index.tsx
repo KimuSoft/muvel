@@ -4,6 +4,7 @@ import MuvelBlockEditor from "../../organisms/editor/MuvelBlockEditor"
 import { Body, MainStyle, Widgets } from "./styles"
 import EditorSkeleton from "./EditorSkeleton"
 import MarkdownEditor from "../../organisms/editor/MarkdownEditor"
+import { Container, useColorModeValue, VStack } from "@chakra-ui/react"
 
 export enum EditorType {
   MuvelBlock,
@@ -16,9 +17,13 @@ const EditorTemplate: React.FC<{
   widgets: ReactNode[]
 }> = ({ isLoading, editorType, widgets }) => {
   return (
-    <MainStyle>
+    <VStack
+      minH={"100vh"}
+      w={"100vw"}
+      backgroundColor={useColorModeValue("#fff", "gray.900")}
+    >
       <EditorHeader />
-      <Body>
+      <Container w={"80%"} maxW={"3xl"} my={30}>
         {!isLoading ? (
           editorType === EditorType.MuvelBlock ? (
             <MuvelBlockEditor />
@@ -28,9 +33,9 @@ const EditorTemplate: React.FC<{
         ) : (
           <EditorSkeleton />
         )}
-      </Body>
+      </Container>
       <Widgets>{widgets}</Widgets>
-    </MainStyle>
+    </VStack>
   )
 }
 

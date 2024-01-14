@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import NovelProfile from "../../molecules/NovelProfile"
 import { MdChevronLeft, MdMenu } from "react-icons/md"
-import EpisodeList from "../EpisodeList"
 import {
   Button,
   Divider,
@@ -16,8 +15,12 @@ import {
   Hide,
   HStack,
   IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Spacer,
-  Tooltip,
+  useColorModeValue,
   useDisclosure,
   useToast,
   VStack,
@@ -33,13 +36,14 @@ import {
   PartialEpisode,
 } from "../../../types/episode.type"
 import { api } from "../../../utils/api"
-import { HiOutlineRectangleGroup } from "react-icons/hi2"
-import { FaFeatherAlt } from "react-icons/fa"
 import { initialNovel, Novel } from "../../../types/novel.type"
 import Auth from "../../molecules/Auth"
 import ToggleColorModeButton from "../../atoms/ToggleColorModeButton"
 import WidgetDrawer from "./WidgetDrawer"
 import SearchModal from "../SearchModal"
+import EpisodeItem from "../EpisodeItem"
+import { NovelDetailPageSkeleton } from "../../pages/NovelDetailPage"
+import { TbBook, TbCategory, TbPlus } from "react-icons/tb"
 
 const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
   const [novel, setNovel] = useState<Novel>(initialNovel)
@@ -108,14 +112,17 @@ const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
     <>
       <IconButton
         aria-label={"menu"}
-        icon={<MdMenu style={{ fontSize: 24 }} />}
+        icon={<MdMenu style={{ fontSize: 20 }} />}
         onClick={_onOpen}
+        size={"sm"}
         variant={"ghost"}
       />
 
       <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="sm">
         <DrawerOverlay />
-        <DrawerContent>
+        <DrawerContent
+          backgroundColor={useColorModeValue("gray.100", "gray.800")}
+        >
           <DrawerCloseButton />
           <DrawerHeader>
             <Hide below={"md"}>
@@ -145,40 +152,53 @@ const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
           </DrawerHeader>
           <DrawerBody>
             <NovelProfile />
-            <HStack w="100%" mt={3}>
-              <Spacer />
-              <Tooltip
-                label={
-                  "새 챕터를 추가한 후, 목록에서 드래그하여 순서를 변경할 수 있어요!"
-                }
-                openDelay={500}
-              >
-                <Button
-                  colorScheme={"gray"}
-                  isLoading={loading}
-                  onClick={addChapter}
-                >
-                  <HiOutlineRectangleGroup style={{ marginRight: 10 }} />새 챕터
-                  생성
-                </Button>
-              </Tooltip>
-              <Button
-                colorScheme={"purple"}
-                isLoading={loading}
-                onClick={addEpisode}
-              >
-                <FaFeatherAlt style={{ marginRight: 10 }} />새 편 쓰기
-              </Button>
-            </HStack>
             <Divider mt={5} mb={10} />
-            <Heading fontSize="xl" pl={4} mb={3}>
-              에피소드 목록
-            </Heading>
-            <EpisodeList
-              novel={novel}
-              onChange={refreshNovel}
-              isLoading={loading}
-            />
+            <HStack px={2}>
+              <Heading fontSize="xl" mb={3}>
+                에피소드 목록
+              </Heading>
+              <Spacer />
+              <Menu>
+                <MenuButton
+                  as={IconButton}
+                  aria-label={"create"}
+                  icon={<TbPlus />}
+                  variant={"outline"}
+                  size={"sm"}
+                  colorScheme={"purple"}
+                />
+                <MenuList>
+                  <MenuItem icon={<TbBook />} onClick={addEpisode}>
+                    새 편 쓰기
+                  </MenuItem>
+                  <MenuItem onClick={addChapter} icon={<TbCategory />}>
+                    새 카테고리 만들기
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+            </HStack>
+
+            <VStack gap={1} py={5} alignItems={"baseline"}>
+              {!loading ? (
+                // TODO: 임시조치
+                novel.episodes.map((episode, idx) => (
+                  <EpisodeItem
+                    episode={episode}
+                    index={idx}
+                    key={idx}
+                    isDrawer={true}
+                  />
+                ))
+              ) : (
+                <>
+                  <NovelDetailPageSkeleton />
+                  <NovelDetailPageSkeleton />
+                  <NovelDetailPageSkeleton />
+                  <NovelDetailPageSkeleton />
+                  <NovelDetailPageSkeleton />
+                </>
+              )}
+            </VStack>
           </DrawerBody>
           <DrawerFooter>
             <HStack w="100%">

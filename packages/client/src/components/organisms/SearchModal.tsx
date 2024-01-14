@@ -22,10 +22,10 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react"
-import { BiSearch } from "react-icons/bi"
 import { api } from "../../utils/api"
 import { useNavigate } from "react-router-dom"
 import { MdMessage } from "react-icons/md"
+import { TbSearch } from "react-icons/tb"
 
 const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -67,7 +67,8 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
       <Tooltip label={"소설 안에서 검색하기"} openDelay={500}>
         <IconButton
           aria-label={"search"}
-          icon={<BiSearch size={22} />}
+          icon={<TbSearch />}
+          size={"sm"}
           variant="ghost"
           onClick={onOpen}
         />
@@ -79,7 +80,7 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
           <ModalHeader>
             <InputGroup>
               <InputLeftElement pointerEvents="none">
-                <BiSearch color="gray.300" />
+                <TbSearch color="gray.300" />
               </InputLeftElement>
               <Input
                 placeholder="소설 내 블록, 등장인물, 설정 검색하기..."

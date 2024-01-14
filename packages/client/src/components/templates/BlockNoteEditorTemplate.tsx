@@ -1,5 +1,5 @@
 import React from "react"
-import { Block, BlockNoteEditor } from "@blocknote/core"
+import { BlockNoteEditor, PartialBlock } from "@blocknote/core"
 import { BlockNoteView, useBlockNote } from "@blocknote/react"
 import "@blocknote/react/style.css"
 import { useParams } from "react-router-dom"
@@ -7,22 +7,22 @@ import {
   Container,
   HStack,
   Spacer,
+  Spinner,
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react"
-import Header from "../organisms/Header"
-import Logo from "../molecules/Logo"
 import ToggleColorModeButton from "../atoms/ToggleColorModeButton"
 import Auth from "../molecules/Auth"
 
 const BlockNoteEditorTemplate: React.FC<{
   onEditorContentChange(blocks: BlockNoteEditor): unknown
-}> = ({ onEditorContentChange }) => {
-  // Hooks
-  const episodeId = useParams<{ id: string }>().id || ""
-
+  initialBlocks: PartialBlock<any, any, any>[] | null
+  isLoading?: boolean
+}> = ({ onEditorContentChange, initialBlocks, isLoading }) => {
   const editor: BlockNoteEditor = useBlockNote({
     onEditorContentChange: onEditorContentChange,
+    // @ts-ignore
+    initialContent: initialBlocks,
   })
 
   return (
@@ -43,29 +43,33 @@ const BlockNoteEditorTemplate: React.FC<{
         <Auth />
       </HStack>
       <Container w={"90%"} maxW={"2xl"}>
-        <BlockNoteView
-          editor={editor}
-          theme={{
-            light: {
-              colors: {
-                editor: {
-                  background: "var(--chakra-colors-gray-100)",
+        {!isLoading && initialBlocks ? (
+          <BlockNoteView
+            editor={editor}
+            theme={{
+              light: {
+                colors: {
+                  editor: {
+                    background: "var(--chakra-colors-gray-100)",
+                  },
                 },
+                fontFamily:
+                  'KoPubWorldBatang, GowunBatang-Regular, "Noto Serif KR" ,sans-serif',
               },
-              fontFamily:
-                'KoPubWorldBatang, GowunBatang-Regular, "Noto Serif KR" ,sans-serif',
-            },
-            dark: {
-              colors: {
-                editor: {
-                  background: "var(--chakra-colors-gray-900)",
+              dark: {
+                colors: {
+                  editor: {
+                    background: "var(--chakra-colors-gray-900)",
+                  },
                 },
+                fontFamily:
+                  'KoPubWorldBatang, GowunBatang-Regular, "Noto Serif KR" ,sans-serif',
               },
-              fontFamily:
-                'KoPubWorldBatang, GowunBatang-Regular, "Noto Serif KR" ,sans-serif',
-            },
-          }}
-        />
+            }}
+          />
+        ) : (
+          <Spinner />
+        )}
       </Container>
     </VStack>
   )

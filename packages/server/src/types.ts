@@ -23,20 +23,36 @@ export enum ShareType {
   Public,
 }
 
-// 숫자가 적을 수록 상위 권한 (일반적으로)
 export enum NovelPermission {
-  // 소설의 작가
+  // 작가만 읽을 수 있음 (기본값)
+  Private,
+  // 작품 링크를 통해서만 읽을 수 있음
+  Unlisted,
+  // 검색이 가능함 (클라이언트 단에서는 현재 의미 없음)
+  Public,
+}
+
+export enum EpisodePermission {
+  // 설정 상속
+  Inherit,
+  // 공개
+  Public,
+  // 비공개
+  Private,
+}
+
+// 소설, 에피소드에 대한 접근자의 권한
+export enum Permission {
+  // 권한 없음
+  None,
+  // 읽기 전용 (주석 및 회차 정보 제외)
+  ReadOnlyContent,
+  // 읽기 전용 (주석 및 모든 정보 포함)
+  Read,
+  // 작성 가능 (주석 및 모든 정보 포함) - Collaboration 관련 권한
+  Edit,
+  // 소설의 주인 (수정 가능)
   Author,
-  // 소설의 작가
-  DeleteNovel,
-  // 소설의 작가
-  EditNovel,
-  // 소설의 작가
-  CreateNovel,
-  // 주석을 읽을 수 있음, 일반적으로 작가
-  ReadNovelComments,
-  // 공개 설정에 따라 일반 유저 또는 작가
-  ReadNovel,
 }
 
 // 캐릭터의 스토리적 중요도

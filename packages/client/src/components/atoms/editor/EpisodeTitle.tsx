@@ -4,6 +4,7 @@ import ContentEditable, { ContentEditableEvent } from "react-contenteditable"
 import { HStack } from "@chakra-ui/react"
 import { useRecoilState } from "recoil"
 import { episodeState } from "../../../recoil/editor"
+import { TbBook } from "react-icons/tb"
 
 const EpisodeTitle: React.FC<{ disabled?: boolean }> = ({
   disabled = false,
@@ -15,6 +16,7 @@ const EpisodeTitle: React.FC<{ disabled?: boolean }> = ({
 
   return (
     <HStack w="100%" justifyContent="center">
+      <TbBook />
       <Title
         html={episode.title}
         onChange={titleChangeHandler}
@@ -31,7 +33,7 @@ const EpisodeTitle: React.FC<{ disabled?: boolean }> = ({
 }
 
 const Title = styled(ContentEditable)`
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 500;
 
   @media (max-width: 1000px) {
@@ -53,7 +55,7 @@ const Title = styled(ContentEditable)`
   box-shadow: none;
   resize: none;
 
-  padding: 10px 20px;
+  padding: 6px 12px;
   border-radius: 5px;
   cursor: text;
 

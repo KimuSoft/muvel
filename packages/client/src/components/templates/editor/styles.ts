@@ -12,6 +12,7 @@ export const Body = styled.div`
   display: flex;
   justify-content: center;
 
+  background-color: var(--chakra-colors-gray-900);
   height: calc(100vh - 80px);
 
   padding: 20px 14px 0;

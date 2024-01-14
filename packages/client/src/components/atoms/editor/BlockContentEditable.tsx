@@ -33,7 +33,7 @@ const BlockContentEditable: React.FC<BlockContentEditableProps> = ({
           backgroundColor:
             colorMode === "light"
               ? "var(--chakra-colors-gray-100)"
-              : "var(--chakra-colors-gray-900)",
+              : "var(--chakra-colors-gray-800)",
         }
       default:
         return {

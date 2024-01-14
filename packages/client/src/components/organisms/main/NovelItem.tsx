@@ -32,7 +32,7 @@ const NovelItem: React.FC<{ novel: Novel }> = ({ novel }) => {
         w="100px"
         h="150px"
         borderRadius="5px"
-        backgroundColor={"gray.500"}
+        backgroundColor={useColorModeValue("gray.200", "gray.700")}
         backgroundImage={novel.thumbnail || ""}
         backgroundRepeat={"no-repeat"}
         backgroundSize={"cover"}
