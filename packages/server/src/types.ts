@@ -24,6 +24,20 @@ export enum ShareType {
 }
 
 export enum NovelPermission {
+  Author,
+  // 소설의 작가
+  DeleteNovel,
+  // 소설의 작가
+  EditNovel,
+  // 소설의 작가
+  CreateNovel,
+  // 주석을 읽을 수 있음, 일반적으로 작가
+  ReadNovelComments,
+  // 공개 설정에 따라 일반 유저 또는 작가
+  ReadNovel,
+}
+
+export enum _NovelPermission {
   // 작가만 읽을 수 있음 (기본값)
   Private,
   // 작품 링크를 통해서만 읽을 수 있음
