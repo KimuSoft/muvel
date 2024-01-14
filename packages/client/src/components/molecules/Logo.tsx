@@ -17,7 +17,7 @@ const Logo: React.FC = () => {
         fontWeight={"bold"}
         userSelect="none"
       >
-        v1.0.0
+        v1.0.2
       </Text>
     </HStack>
   )

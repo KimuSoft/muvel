@@ -107,13 +107,13 @@ const MainTemplate: React.FC<{
               </Text>
             )
           ) : user ? (
-            <Text color={"gray.500"}>
+            <Text color={"gray.500"} textAlign={"center"}>
               소설이 없네요...
               <br />
               오른쪽 위의 깃펜 모양의 버튼을 눌러 새 소설을 써 보세요!
             </Text>
           ) : (
-            <Text color={"gray.500"}>
+            <Text color={"gray.500"} textAlign={"center"}>
               소설이 없네요...
               <br />
               뮤블에{" "}
