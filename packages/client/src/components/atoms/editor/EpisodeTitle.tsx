@@ -1,7 +1,7 @@
 import React from "react"
 import styled from "styled-components"
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable"
-import { HStack } from "@chakra-ui/react"
+import { HStack, useMediaQuery } from "@chakra-ui/react"
 import { useRecoilState } from "recoil"
 import { episodeState } from "../../../recoil/editor"
 import { TbBook } from "react-icons/tb"
@@ -9,6 +9,8 @@ import { TbBook } from "react-icons/tb"
 const EpisodeTitle: React.FC<{ disabled?: boolean }> = ({
   disabled = false,
 }) => {
+  const [isPC] = useMediaQuery("(min-width: 800px)")
+
   const [episode, setEpisode] = useRecoilState(episodeState)
 
   const titleChangeHandler = (e: ContentEditableEvent) =>
@@ -16,7 +18,7 @@ const EpisodeTitle: React.FC<{ disabled?: boolean }> = ({
 
   return (
     <HStack w="100%" justifyContent="center">
-      <TbBook />
+      {isPC ? <TbBook /> : null}
       <Title
         html={episode.title}
         onChange={titleChangeHandler}
