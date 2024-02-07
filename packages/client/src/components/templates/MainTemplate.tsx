@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react"
 import {
+  Button,
   Heading,
+  Hide,
   HStack,
   Input,
   InputGroup,
@@ -8,6 +10,8 @@ import {
   Link,
   SimpleGrid,
   Text,
+  useColorModeValue,
+  useDisclosure,
   useMediaQuery,
   VStack,
 } from "@chakra-ui/react"
@@ -18,7 +22,7 @@ import NovelItem from "../organisms/main/NovelItem"
 import { Novel } from "../../types/novel.type"
 import { User } from "../../types/user.type"
 import NovelItemSkeleton from "../organisms/main/NovelItemSkeleton"
-import CreateOrUpdateNovel from "../organisms/CreateOrUpdateNovel"
+import CreateNovelModal from "../organisms/forms/CreateNovelModal"
 
 const MainLogo: React.FC = () => {
   return (
@@ -42,6 +46,8 @@ const MainTemplate: React.FC<{
   const [innerWidth, setInnerWidth] = useState(window.innerWidth)
   const [isPC] = useMediaQuery("(min-width: 800px)")
   const [searchQuery, setSearchQuery] = useState<string>("")
+
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   const searchedNovels = useMemo(() => {
     if (searchQuery === "") return novels
@@ -79,6 +85,8 @@ const MainTemplate: React.FC<{
         <HStack w={isPC ? "80%" : "100%"} maxW="700px" mb={10}>
           <InputGroup w={"100%"}>
             <Input
+              bgColor={useColorModeValue("gray.200", "gray.700")}
+              borderColor={useColorModeValue("gray.200", "gray.700")}
               placeholder="내 소설 검색하기"
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -86,7 +94,16 @@ const MainTemplate: React.FC<{
               <BiSearch />
             </InputRightElement>
           </InputGroup>
-          <CreateOrUpdateNovel />
+          <Button
+            gap={2.5}
+            colorScheme="purple"
+            onClick={onOpen}
+            flexShrink={0}
+            variant={"outline"}
+          >
+            <RiQuillPenFill /> <Hide below={"md"}>새 소설 쓰기</Hide>
+          </Button>
+          <CreateNovelModal isOpen={isOpen} onClose={onClose} />
         </HStack>
         {!isLoading ? (
           novels.length ? (

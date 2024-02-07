@@ -52,6 +52,12 @@ const EditorPage: React.FC = () => {
     }
   }, [])
 
+  const onEpisodeDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setEpisode((episode) => ({ ...episode, description: e.target.value }))
+  }
+
   // 블록 변경사항을 로드하는 메서드
   const getBlocksChange = () => {
     if (!episodeCache) return []
@@ -216,6 +222,8 @@ const EditorPage: React.FC = () => {
         isLoading={isLoading}
         editorType={editorType}
         widgets={activeWidgets}
+        episode={episode}
+        onEpisodeDescriptionChange={onEpisodeDescriptionChange}
       />
     </EditorContext.Provider>
   )

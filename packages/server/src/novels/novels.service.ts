@@ -51,19 +51,19 @@ export class NovelsService {
   ) {
     let order = 1
     if (novelId) {
-      const lastBlock: { order: number }[] =
+      const lastBlock: { order: string }[] =
         await this.episodesRepository.query(
           'SELECT * FROM "episode" WHERE "novelId" = $1 ORDER BY "order" DESC LIMIT 1',
           [novelId]
         )
-      order = lastBlock?.[0].order + 1
+      order = parseFloat(lastBlock?.[0].order) + 1
     }
 
     const episode = new EpisodeEntity()
     episode.title = title
     episode.description = description
     episode.chapter = chapter
-    episode.order = order
+    episode.order = order.toString()
 
     // 블록 생성
     episode.blocks = [await this.createBlock("샘플 블록입니다.")]
@@ -120,7 +120,7 @@ export class NovelsService {
     }
 
     // 에피소드 정렬
-    novel.episodes?.sort((a, b) => a.order - b.order)
+    novel.episodes?.sort((a, b) => parseFloat(a.order) - parseFloat(b.order))
     return novel
   }
 

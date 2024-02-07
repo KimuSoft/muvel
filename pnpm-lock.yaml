@@ -10,6 +10,9 @@ importers:
 
   packages/client:
     dependencies:
+      '@air/react-drag-to-select':
+        specifier: ^5.0.8
+        version: 5.0.8(react-dom@18.2.0)(react@18.2.0)
       '@blocknote/core':
         specifier: ^0.11.0
         version: 0.11.0
@@ -19,6 +22,9 @@ importers:
       '@chakra-ui/react':
         specifier: ^2.7.1
         version: 2.8.2(@emotion/react@11.11.3)(@emotion/styled@11.11.0)(@types/react@18.2.47)(framer-motion@10.18.0)(react-dom@18.2.0)(react@18.2.0)
+      '@chakra-ui/theme-tools':
+        specifier: ^2.1.2
+        version: 2.1.2(@chakra-ui/styled-system@2.9.2)
       '@emotion/react':
         specifier: ^11.11.1
         version: 11.11.3(@types/react@18.2.47)(react@18.2.0)
@@ -271,6 +277,17 @@ packages:
     resolution: {integrity: sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /@air/react-drag-to-select@5.0.8(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-Nf53SQ6SDx7HDVmsIBINrVMKnGktXFRPeLS2WS80/pmJl6Ie5xY3sz0Ga2fLvlY9N3DWucY1pXY7mfHXBFd9KQ==}
+    peerDependencies:
+      react: 16 - 18
+      react-dom: 16 - 18
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-style-object-to-css: 1.1.2
+    dev: false
 
   /@ampproject/remapping@2.2.1:
     resolution: {integrity: sha512-lFMjJTrFL3j7L9yBxwYfCq2k6qqwHyzuUl/XBnif78PWTJYyL/dfowQHWE3sp6U6ZzqWiiIZnpTMO96zhkjwtg==}
@@ -8236,6 +8253,10 @@ packages:
       prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /react-style-object-to-css@1.1.2:
+    resolution: {integrity: sha512-+5MFULqCCj7wwJJ/ISKFP91ZlHVF1Rv8o0neiTKvt21XDTU5e34tc8hy+XPLeYWYOupdHt25HxxwocvYm3HM6A==}
     dev: false
 
   /react-style-singleton@2.2.1(@types/react@18.2.47)(react@18.2.0):

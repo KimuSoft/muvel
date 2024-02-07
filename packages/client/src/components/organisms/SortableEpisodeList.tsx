@@ -47,7 +47,7 @@ const EpisodeListSkeleton: React.FC = () => {
   )
 }
 
-const EpisodeList: React.FC<{
+const SortableEpisodeList: React.FC<{
   novel: Novel
   onChange?: () => Promise<unknown>
   isLoading?: boolean
@@ -56,27 +56,52 @@ const EpisodeList: React.FC<{
   const [episodes, setEpisodes] = useState<PartialEpisode[]>(novel.episodes)
 
   useEffect(() => {
+    console.log(novel.episodes)
     setEpisodes(novel.episodes)
   }, [novel.episodes])
 
   useEffect(() => {
     const patch = async () => {
-      const _episodes = episodes.map((e, idx) => ({ ...e, order: idx }))
+      let order_ = 0
+      let subOrder = 0
+      const afterEpisodes = episodes.map((e) => {
+        if (e.episodeType === EpisodeType.Episode) {
+          order_++
+          subOrder = 0
+        } else subOrder++
 
-      const difference = _.differenceWith(
-        _episodes.map((b, order) => ({ ...b, order })),
-        novel.episodes.map((b, order) => ({ ...b, order })),
-        _.isEqual
-      ).map((e) => ({
+        return {
+          id: e.id,
+          title: e.title,
+          chapter: e.chapter,
+          order: (order_ + subOrder / 10000).toString(),
+        }
+      })
+
+      console.log("afterEpisodes")
+      console.log(afterEpisodes)
+
+      const beforeEpisodes = novel.episodes.map((e) => ({
         id: e.id,
         title: e.title,
+        chapter: e.chapter,
         order: e.order,
-        description: e.description,
       }))
 
-      if (!difference.length) return
+      console.log("beforeEpisodes")
+      console.log(beforeEpisodes)
 
-      console.log("패치합니당")
+      const difference = _.differenceWith(
+        afterEpisodes,
+        beforeEpisodes,
+        _.isEqual
+      )
+
+      if (!difference.length) return console.log("no difference")
+
+      console.log("diff")
+      console.log(difference)
+
       await api.patch(`/novels/${novel.id}/episodes`, difference)
       onChange?.().then()
     }
@@ -89,13 +114,11 @@ const EpisodeList: React.FC<{
   }) => setEpisodes(arrayMoveImmutable(episodes, oldIndex, newIndex))
 
   const episodeRows = useMemo(() => {
-    let order = 0
     return novel?.episodes?.map((e, idx) => {
-      if (e.episodeType === EpisodeType.Episode) order++
       return (
         <SortableEpisodeRow
           episode={e}
-          order={order}
+          order={e.order}
           key={e.id}
           index={idx}
           disabled={disableSort}
@@ -145,9 +168,6 @@ const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
     [location.pathname, episode.id]
   )
 
-  const onClick = () =>
-    navigate(`/episodes/${episode.id}` + (episode?.editable ? "" : "/viewer"))
-
   const hoverColor = useColorModeValue("gray.200", "gray.600")
 
   return (
@@ -164,7 +184,6 @@ const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
     >
       {episode.episodeType !== EpisodeType.EpisodeGroup ? (
         <VStack
-          onClick={onClick}
           px={3}
           py={2}
           borderRadius={5}
@@ -191,18 +210,11 @@ const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
             </Text>
             <Text fontSize="xl">{episode.title}</Text>
           </HStack>
-          {/*<HStack color={useColorModeValue("gray.300", "gray.500")}>*/}
-          {/*  <FaClock />*/}
-          {/*  <Text fontSize="sm">*/}
-          {/*    {date.getFullYear()}년 {date.getMonth() + 1}월 {date.getDate()}일*/}
-          {/*  </Text>*/}
-          {/*</HStack>*/}
         </VStack>
       ) : (
         <Box
           w="100%"
           mt="10px"
-          onClick={onClick}
           _hover={{ backgroundColor: hoverColor }}
           transition={"background-color 0.1s ease"}
           userSelect={"none"}
@@ -232,4 +244,4 @@ interface EpisodeRowProps {
   order: number
 }
 
-export default EpisodeList
+export default SortableEpisodeList

@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import NovelProfile from "../../molecules/NovelProfile"
-import EpisodeList from "../EpisodeList"
+import SortableEpisodeList from "../SortableEpisodeList"
 import EditorSetting from "../editor/EditorSetting"
 import {
   Button,
@@ -70,7 +70,7 @@ const ViewerDrawer: React.FC<{ novelId: string }> = ({ novelId }) => {
             <Heading fontSize="xl" pl={4} mb={3}>
               에피소드 목록
             </Heading>
-            <EpisodeList
+            <SortableEpisodeList
               novel={novel}
               onChange={refreshNovel}
               isLoading={loading}

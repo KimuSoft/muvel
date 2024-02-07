@@ -11,12 +11,12 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { toast } from "react-toastify"
-import { api } from "../../utils/api"
+import { api } from "../../../utils/api"
 import { useNavigate } from "react-router-dom"
-import { Novel } from "../../types/novel.type"
+import { Novel } from "../../../types/novel.type"
 import { TbTrash } from "react-icons/tb"
 
-const DeleteEpisode: React.FC<{ novel: Novel; episodeId: string }> = ({
+const DeleteEpisodeDialog: React.FC<{ novel: Novel; episodeId: string }> = ({
   novel,
   episodeId,
 }) => {
@@ -66,4 +66,4 @@ const DeleteEpisode: React.FC<{ novel: Novel; episodeId: string }> = ({
   )
 }
 
-export default DeleteEpisode
+export default DeleteEpisodeDialog

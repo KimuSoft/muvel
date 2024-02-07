@@ -73,7 +73,7 @@ const EpisodeItem: React.FC<{
         return
       case EpisodeType.Episode:
         // TODO: 임시, 이후 편수를 따로 추가해야 함
-        return `${(index + 1).toString().padStart(3, "0")}`
+        return `${episode.order.toString().padStart(3, "0")}`
       case EpisodeType.Prologue:
         return "PR."
       case EpisodeType.Epilogue:

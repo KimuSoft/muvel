@@ -3,7 +3,7 @@ import { Box, BoxProps, Tag } from "@chakra-ui/react"
 
 const TagChip: React.FC<BoxProps> = (props) => {
   return (
-    <Tag size={"sm"} colorScheme={"purple"} borderRadius={"full"} {...props} />
+    <Tag size={"sm"} bgColor={"purple.500"} borderRadius={"full"} {...props} />
   )
 }
 

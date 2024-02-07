@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsNumber, IsString } from "class-validator"
+import { IsNumber, IsNumberString, IsOptional, IsString } from "class-validator"
+import { Transform } from "class-transformer"
 
 export class PatchEpisodesDto {
   @ApiProperty()
@@ -15,6 +16,7 @@ export class PatchEpisodesDto {
   chapter: string
 
   @ApiProperty()
-  @IsNumber()
-  order: number
+  @Transform((value) => value.toString())
+  @IsNumberString()
+  order: string
 }

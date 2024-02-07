@@ -8,23 +8,20 @@ import {
   Hide,
   HStack,
   IconButton,
-  Skeleton,
   SkeletonText,
   Spacer,
-  Tag,
-  TagCloseButton,
-  TagLabel,
-  TagRightIcon,
   Text,
   Tooltip,
   useColorModeValue,
+  useDisclosure,
   useMediaQuery,
   VStack,
 } from "@chakra-ui/react"
 import Header from "../organisms/Header"
 import { Novel } from "../../types/novel.type"
-import TagChip from "../atoms/TagChip"
 import {
+  TbArrowsSort,
+  TbEdit,
   TbPlayerPlay,
   TbPlus,
   TbShare,
@@ -33,14 +30,32 @@ import {
 } from "react-icons/tb"
 import EpisodeItem from "../organisms/EpisodeItem"
 import { NovelDetailPageSkeleton } from "../pages/NovelDetailPage"
-import CreateOrUpdateNovel from "../organisms/CreateOrUpdateNovel"
+import ModifyNovelModal from "../organisms/forms/ModifyNovelModal"
+import NovelTagList from "../organisms/NovelTagList"
+import SortEpisodeModal from "../organisms/forms/SortEpisodeModal"
 
 const NovelDetailTemplate: React.FC<{
   novel: Novel
   isLoading: boolean
   updateNovelHandler(): Promise<unknown>
   createNovelHandler(): Promise<unknown>
-}> = ({ novel, updateNovelHandler, createNovelHandler, isLoading }) => {
+  changeTagsHandler(values: string[]): Promise<unknown>
+  editable: boolean
+}> = ({
+  novel,
+  updateNovelHandler,
+  createNovelHandler,
+  isLoading,
+  changeTagsHandler,
+  editable,
+}) => {
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const {
+    isOpen: isSortOpen,
+    onOpen: onSortOpen,
+    onClose: onSortClose,
+  } = useDisclosure()
+
   const [sort, setSort] = React.useState<1 | -1>(1)
   const [isPC] = useMediaQuery("(min-width: 800px)")
 
@@ -66,29 +81,11 @@ const NovelDetailTemplate: React.FC<{
                       {novel.episodeIds.length}편
                     </Text>
                   </HStack>
-                  <HStack gap={1}>
-                    {novel.tags.map((tag) => (
-                      <TagChip>{tag}</TagChip>
-                    ))}
-                    <Tag
-                      size={"sm"}
-                      borderRadius={"full"}
-                      cursor={"pointer"}
-                      _hover={{
-                        backgroundColor: useColorModeValue(
-                          "gray.200",
-                          "gray.700"
-                        ),
-                      }}
-                      userSelect={"none"}
-                      transition={"background-color 0.2s"}
-                    >
-                      {!novel.tags.length ? (
-                        <TagLabel>태그 추가</TagLabel>
-                      ) : null}
-                      <TagRightIcon as={TbPlus} />
-                    </Tag>
-                  </HStack>
+                  <NovelTagList
+                    tags={novel.tags}
+                    editable={editable}
+                    onChange={changeTagsHandler}
+                  />
                   <Text my={7} textIndent={"15px"}>
                     {novel.description}
                   </Text>
@@ -100,19 +97,36 @@ const NovelDetailTemplate: React.FC<{
                     >
                       1편부터 보기
                     </Button>
-                    <CreateOrUpdateNovel
+                    {editable ? (
+                      <Button
+                        gap={2.5}
+                        colorScheme="purple"
+                        flexShrink={0}
+                        variant={"outline"}
+                        onClick={onOpen}
+                      >
+                        <TbEdit /> <Hide below={"md"}> 소설 수정하기</Hide>
+                      </Button>
+                    ) : null}
+
+                    <ModifyNovelModal
+                      isOpen={isOpen}
+                      onClose={onClose}
                       novel={novel}
-                      onCreateOrUpdate={updateNovelHandler}
+                      onModify={updateNovelHandler}
                     />
-                    <Button
-                      colorScheme={"purple"}
-                      variant={"outline"}
-                      disabled={isLoading}
-                      gap={3}
-                    >
-                      <TbShare />
-                      {isPC ? "공유 설정" : null}
-                    </Button>
+
+                    {editable ? (
+                      <Button
+                        colorScheme={"purple"}
+                        variant={"outline"}
+                        disabled={isLoading}
+                        gap={3}
+                      >
+                        <TbShare />
+                        {isPC ? "공유 설정" : null}
+                      </Button>
+                    ) : null}
                   </HStack>
                 </>
               ) : (
@@ -177,15 +191,35 @@ const NovelDetailTemplate: React.FC<{
               }
             />
           </Tooltip>
-          <Button
-            colorScheme={"purple"}
-            gap={3}
-            disabled={isLoading}
-            onClick={createNovelHandler}
-          >
-            <TbPlus />
-            {isPC ? "새 편 쓰기" : null}
-          </Button>
+          <SortEpisodeModal
+            isOpen={isSortOpen}
+            onClose={onSortClose}
+            onSort={updateNovelHandler}
+            novel={novel}
+          />
+
+          {editable ? (
+            <>
+              <Tooltip label={"에피소드 순서 바꾸기"}>
+                <IconButton
+                  aria-label={"에피소드 정렬"}
+                  icon={<TbArrowsSort />}
+                  disabled={isLoading}
+                  onClick={onSortOpen}
+                />
+              </Tooltip>
+
+              <Button
+                colorScheme={"purple"}
+                gap={3}
+                disabled={isLoading}
+                onClick={createNovelHandler}
+              >
+                <TbPlus />
+                {isPC ? "새 편 쓰기" : null}
+              </Button>
+            </>
+          ) : null}
         </HStack>
         <VStack gap={1} py={5} alignItems={"baseline"}>
           {!isLoading ? (
@@ -194,6 +228,7 @@ const NovelDetailTemplate: React.FC<{
               (episode, idx) => (
                 <EpisodeItem
                   episode={episode}
+                  key={episode.id}
                   index={sort === 1 ? idx : novel.episodes.length - idx - 1}
                 />
               )

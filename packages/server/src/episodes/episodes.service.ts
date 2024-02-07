@@ -7,6 +7,7 @@ import { CreateEpisodeDto } from "./dto/create-episode.dto"
 import { NovelEntity } from "../novels/novel.entity"
 import { ISearchRepository } from "../search/isearch.repository"
 import { SearchRepository } from "src/search/search.repository"
+import { EpisodeType } from "../types"
 
 @Injectable()
 export class EpisodesService {
@@ -19,14 +20,21 @@ export class EpisodesService {
     private readonly searchRepository: ISearchRepository
   ) {}
 
-  private async getNextOrder(novelId?: string) {
-    if (!novelId) return 1
+  private async getNextOrder(
+    epsiodeType: EpisodeType,
+    novelId?: string
+  ): Promise<string> {
+    if (!novelId) return (1).toString()
 
-    const lastBlock: { order: number }[] = await this.episodesRepository.query(
+    const lastBlock: { order: string }[] = await this.episodesRepository.query(
       'SELECT * FROM "episode" WHERE "novelId" = $1 ORDER BY "order" DESC LIMIT 1',
       [novelId]
     )
-    return lastBlock?.[0].order + 1
+    return (
+      epsiodeType === EpisodeType.Episode
+        ? Math.floor(parseFloat(lastBlock?.[0].order)) + 1
+        : parseFloat(lastBlock?.[0].order) + 1 / 10000
+    ).toString()
   }
 
   async createEpisode(novelId: string, createEpisodeDto: CreateEpisodeDto) {
@@ -36,7 +44,9 @@ export class EpisodesService {
     })
     if (!novel) return null
 
-    const order = createEpisodeDto.order ?? (await this.getNextOrder(novelId))
+    const order =
+      createEpisodeDto.order ??
+      (await this.getNextOrder(createEpisodeDto.episodeType, novelId))
 
     const episode = new EpisodeEntity()
     episode.title = createEpisodeDto.title

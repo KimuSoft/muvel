@@ -28,7 +28,7 @@ export class PartialEpisodeDto {
   updatedAt: Date
 
   @ApiProperty()
-  order: number
+  order: string
 }
 
 export class EpisodeDto extends PartialEpisodeDto {

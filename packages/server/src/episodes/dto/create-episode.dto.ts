@@ -1,5 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsEnum, IsInt, IsOptional, IsString } from "class-validator"
+import {
+  IsEnum,
+  IsInt,
+  IsNumberString,
+  IsOptional,
+  IsString,
+} from "class-validator"
 import { EpisodeType, ShareType } from "../../types"
 import { Transform } from "class-transformer"
 
@@ -27,6 +33,7 @@ export class CreateEpisodeDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsInt()
-  order?: number
+  @Transform(({ value }) => value.toString())
+  @IsNumberString()
+  order?: string
 }

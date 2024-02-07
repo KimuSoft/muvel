@@ -6,17 +6,12 @@ import _ from "lodash"
 import { v4 } from "uuid"
 import { SortableContainer, SortableContainerProps } from "react-sortable-hoc"
 import styled from "styled-components"
-import {
-  Box,
-  Container,
-  Text,
-  Textarea,
-  useColorModeValue,
-} from "@chakra-ui/react"
+import { Box, Text, useColorModeValue } from "@chakra-ui/react"
 import { arrayMoveImmutable } from "array-move"
 import { useRecoilState } from "recoil"
-import { blocksState, episodeState } from "../../../recoil/editor"
-import EditableMuvelBlock from "../../molecules/editor/MuvelBlock/EditableMuvelBlock"
+import { blocksState } from "../../../recoil/editor"
+import MuvelBlock from "../../atoms/editor/MuvelBlock"
+import { useSelectionContainer } from "@air/react-drag-to-select"
 
 const canvas = document.createElement("canvas").getContext("2d")!
 
@@ -29,14 +24,10 @@ const _SortableContainer = SortableContainer<React.PropsWithChildren>(
 const MuvelBlockEditor: React.FC<{ initialFocusedBlockId?: string }> = ({
   initialFocusedBlockId,
 }) => {
-  const [episode, setEpisode] = useRecoilState(episodeState)
   const [blocks, setBlocks] = useRecoilState(blocksState)
 
   const [focusedBlockId, setFocusedBlockId] = useState<string | null>(
     initialFocusedBlockId ?? null
-  )
-  const [episodeDescription, setEpisodeDescription] = useState<string>(
-    episode.description
   )
 
   const prevBlocks = usePrevious<Block[]>(blocks)
@@ -73,10 +64,6 @@ const MuvelBlockEditor: React.FC<{ initialFocusedBlockId?: string }> = ({
       focusBlock.focus()
     }
   }, [focusedBlockId])
-
-  useEffect(() => {
-    setEpisode((e) => ({ ...e, description: episodeDescription }))
-  }, [episodeDescription])
 
   const addBlockHandler = (blockId?: string, content?: string) => {
     const id = v4()
@@ -196,7 +183,7 @@ const MuvelBlockEditor: React.FC<{ initialFocusedBlockId?: string }> = ({
 
       return (
         <React.Fragment key={b.id}>
-          <EditableMuvelBlock
+          <MuvelBlock
             key={`${b.id}-block`}
             index={index}
             block={b}
@@ -217,12 +204,6 @@ const MuvelBlockEditor: React.FC<{ initialFocusedBlockId?: string }> = ({
     newIndex,
   }) => setBlocks(arrayMoveImmutable(blocks, oldIndex, newIndex))
 
-  const onEpisodeDescriptionChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    setEpisodeDescription(e.target.value)
-  }
-
   const addLastBlock = () => {
     if (!blocks.length) return addBlockHandler()
 
@@ -234,22 +215,13 @@ const MuvelBlockEditor: React.FC<{ initialFocusedBlockId?: string }> = ({
 
   const noBlockTextColor = useColorModeValue("gray.200", "gray.600")
 
+  // const { DragSelection } = useSelectionContainer({
+  //   eventsElement: document.getElementById("root"),
+  // })
+
   return (
-    <Container maxW="3xl">
-      <Text color="gray.500" mb={3} fontSize={"sm"} userSelect={"none"}>
-        에피소드 설명
-      </Text>
-      <Textarea
-        defaultValue={episode.description}
-        bgColor={useColorModeValue("gray.200", "gray.800")}
-        border="none"
-        _focus={{ border: "none" }}
-        mb={10}
-        onChange={onEpisodeDescriptionChange}
-      />
-      <Text color="gray.500" mb={3} fontSize={"sm"} userSelect={"none"}>
-        본문
-      </Text>
+    <>
+      {/*<DragSelection />*/}
       <_SortableContainer onSortEnd={onSortEnd} pressDelay={100} lockAxis="y">
         {getBlockNodes()}
       </_SortableContainer>
@@ -260,7 +232,7 @@ const MuvelBlockEditor: React.FC<{ initialFocusedBlockId?: string }> = ({
           </Text>
         )}
       </Box>
-    </Container>
+    </>
   )
 }
 

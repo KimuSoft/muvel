@@ -6,11 +6,14 @@ import { Skeleton, useToast } from "@chakra-ui/react"
 import { useNavigate, useParams } from "react-router-dom"
 import { isAxiosError } from "axios"
 import { Episode, EpisodeType } from "../../types/episode.type"
+import useCurrentUser from "../../hooks/useCurrentUser"
 
 const NovelDetailPage = () => {
   const toast = useToast()
   const navigate = useNavigate()
   const novelId = useParams<{ id: string }>().id || ""
+
+  const user = useCurrentUser()
 
   const [novel, setNovel] = React.useState<Novel>(initialNovel)
   const [isLoading, setIsLoading] = React.useState(false)
@@ -68,6 +71,13 @@ const NovelDetailPage = () => {
     setIsLoading(false)
   }
 
+  const updateTags = async (values: string[]) => {
+    await api.patch<Novel>(`/novels/${novel.id}`, {
+      tags: values,
+    })
+    fetchNovel().then()
+  }
+
   // 임시
   const addEpisode = async () => {
     setIsLoading(true)
@@ -93,6 +103,8 @@ const NovelDetailPage = () => {
       isLoading={isLoading}
       updateNovelHandler={fetchNovel}
       createNovelHandler={addEpisode}
+      changeTagsHandler={updateTags}
+      editable={!!(user && novel.authorId === user.id)}
     />
   )
 }

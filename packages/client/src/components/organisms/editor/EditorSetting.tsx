@@ -25,7 +25,7 @@ import { AiFillSetting } from "react-icons/ai"
 import { useRecoilState } from "recoil"
 import { editorOptionsState } from "../../../recoil/editor"
 import { sampleBlock } from "../../../types/block.type"
-import BlockContentEditable from "../../atoms/editor/BlockContentEditable"
+import ContentEditableBlock from "../../atoms/editor/MuvelBlock/ContentEditableBlock"
 
 const EditorSetting: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -51,7 +51,7 @@ const EditorSetting: React.FC = () => {
             <FormControl mb={7}>
               <FormLabel>블록 미리보기</FormLabel>
               <Box w="100%" bgColor={useColorModeValue("gray.100", "gray.800")}>
-                <BlockContentEditable
+                <ContentEditableBlock
                   block={sampleBlock}
                   position={-7}
                   disabled

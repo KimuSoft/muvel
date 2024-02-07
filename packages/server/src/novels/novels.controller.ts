@@ -14,7 +14,7 @@ import {
   Request,
 } from "@nestjs/common"
 import { NovelsService } from "./novels.service"
-import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
+import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
 import { NovelDto, NovelDtoWithEpisodes } from "./dto/novel.dto"
 import { UpdateNovelDto } from "./dto/update-novel.dto"
 import { PartialEpisodeDto } from "../episodes/dto/episode.dto"
@@ -137,6 +137,10 @@ export class NovelsController {
   @ApiOperation({
     summary: "에피소드 수정하기",
     description: "해당 소설의 에피소드를 수정합니다. (현재는 order만 가능)",
+  })
+  @ApiBody({
+    type: PatchEpisodesDto,
+    isArray: true,
   })
   @RequirePermission(NovelPermission.EditNovel)
   async patchEpisodes(

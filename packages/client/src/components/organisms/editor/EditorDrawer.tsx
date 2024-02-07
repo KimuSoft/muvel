@@ -28,7 +28,7 @@ import {
 import { useNavigate } from "react-router-dom"
 import ExportEpisode from "../../molecules/editor/ExportEpisode"
 import ImportEpisode from "../../molecules/editor/ImportEpisode"
-import DeleteEpisode from "../DeleteEpisode"
+import DeleteEpisodeDialog from "../forms/DeleteEpisodeDialog"
 import EditorSetting from "./EditorSetting"
 import {
   Episode,
@@ -43,7 +43,13 @@ import WidgetDrawer from "./WidgetDrawer"
 import SearchModal from "../SearchModal"
 import EpisodeItem from "../EpisodeItem"
 import { NovelDetailPageSkeleton } from "../../pages/NovelDetailPage"
-import { TbBook, TbCategory, TbPlus } from "react-icons/tb"
+import {
+  TbBook,
+  TbCategory,
+  TbChevronLeft,
+  TbHome,
+  TbPlus,
+} from "react-icons/tb"
 
 const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
   const [novel, setNovel] = useState<Novel>(initialNovel)
@@ -129,8 +135,9 @@ const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
               <Button
                 onClick={() => navigate(`/novels/${episode.novelId}`)}
                 variant={"ghost"}
+                size={"sm"}
               >
-                <MdChevronLeft size={24} style={{ marginRight: 10 }} />
+                <TbChevronLeft size={20} style={{ marginRight: 10 }} />
                 소설 페이지로 돌아가기
               </Button>
             </Hide>
@@ -185,7 +192,7 @@ const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
                   <EpisodeItem
                     episode={episode}
                     index={idx}
-                    key={idx}
+                    key={episode.id}
                     isDrawer={true}
                   />
                 ))
@@ -202,7 +209,7 @@ const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
           </DrawerBody>
           <DrawerFooter>
             <HStack w="100%">
-              <DeleteEpisode novel={novel} episodeId={episode.id} />
+              <DeleteEpisodeDialog novel={novel} episodeId={episode.id} />
               <Spacer />
               <EditorSetting />
               <ExportEpisode />

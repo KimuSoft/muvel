@@ -1,12 +1,13 @@
-import { blocksState, editorOptionsState } from "../../../recoil/editor"
-import { Block, BlockType } from "../../../types/block.type"
-import stringToBlock from "../../../utils/stringToBlock"
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable"
 import { useRecoilState } from "recoil"
 import React, { useEffect, useMemo, useRef } from "react"
-import { theme, useColorMode } from "@chakra-ui/react"
+import { useColorMode } from "@chakra-ui/react"
+import { blocksState, editorOptionsState } from "../../../../recoil/editor"
+import { Block, BlockType } from "../../../../types/block.type"
+import stringToBlock from "../../../../utils/stringToBlock"
+import "./block.css"
 
-const BlockContentEditable: React.FC<BlockContentEditableProps> = ({
+const ContentEditableBlock: React.FC<BlockContentEditableProps> = ({
   block,
   addBlock,
   deleteBlock,
@@ -283,4 +284,4 @@ export interface BlockContentEditableProps {
   disabled?: boolean
 }
 
-export default BlockContentEditable
+export default ContentEditableBlock

@@ -15,6 +15,6 @@ export interface BlockCache {
   novelId: string
   episodeId: string
   episodeName: string
-  episodeNumber: number
+  episodeNumber: string
   index: number
 }

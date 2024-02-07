@@ -46,7 +46,6 @@
     "typeorm": "^0.3.11"
   },
   "devDependencies": {
-    "prettier": "^2.7.1",
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",

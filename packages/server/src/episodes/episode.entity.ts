@@ -49,8 +49,8 @@ export class EpisodeEntity {
   })
   blocks: BlockEntity[]
 
-  @Column({ default: 0 })
-  order: number
+  @Column({ default: 0, type: "numeric" })
+  order: string
 
   @Column({ default: EpisodeType.Episode })
   episodeType: EpisodeType

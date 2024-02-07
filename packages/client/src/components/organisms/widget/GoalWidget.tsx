@@ -43,13 +43,14 @@ const GoalWidget: React.FC = () => {
 
   useEffect(() => {
     setCurrentLength(getCurrentLength())
-  }, [blocks])
+  }, [blocks, type])
 
   const getCurrentLength = () => {
     switch (type) {
       case CountType.NoSpacing:
         return blocks.reduce(
-          (acc, cur) => acc + (cur.content || "").replace(/\s/g, "").length,
+          (acc, cur) =>
+            acc + (cur.content || "").replace(/[\s\.,!\?]/g, "").length,
           0
         )
 
@@ -99,7 +100,7 @@ const GoalWidget: React.FC = () => {
         })
       )?.then()
     }, 250)
-  }, [percentage])
+  }, [currentLength])
 
   const countTypeText = ["공백 포함", "공백 제외", "KB"]
   const countTypeUnit = ["자", "자", "KB"]
