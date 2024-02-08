@@ -79,6 +79,23 @@ export class NovelsController {
     return novel
   }
 
+  @Get(":id/export")
+  @ApiOperation({
+    summary: "소설 백업하기",
+    description: "소설의 전체 내용을 json으로 다운받습니다.",
+  })
+  @ApiOkResponse({
+    description: "소설 전체 정보를 반환합니다.",
+    type: NovelDtoWithEpisodes,
+  })
+  @RequirePermission(NovelPermission.Author)
+  async exportNovels(
+    @Request() req,
+    @Param("id") id: string
+  ): Promise<NovelDtoWithEpisodes> {
+    return this.novelsService.findOne(id, ["episodes", "episodes.blocks"])
+  }
+
   @Patch(":id")
   @ApiOperation({
     summary: "소설 정보 수정하기",

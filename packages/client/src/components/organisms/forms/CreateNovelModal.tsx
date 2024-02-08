@@ -128,7 +128,6 @@ const CreateNovelModal: React.FC<
                               {...field}
                               onChange={(e) => {
                                 field.onChange(e)
-                                console.log(!validateTitle(e.target.value))
                                 setIsError(!validateTitle(e.target.value))
                               }}
                               placeholder="소설의 제목을 지어주세요."

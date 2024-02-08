@@ -10,7 +10,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { EpisodeType, PartialEpisode } from "../../types/episode.type"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import { Novel } from "../../types/novel.type"
 import {
   SortableContainer,
@@ -56,7 +56,6 @@ const SortableEpisodeList: React.FC<{
   const [episodes, setEpisodes] = useState<PartialEpisode[]>(novel.episodes)
 
   useEffect(() => {
-    console.log(novel.episodes)
     setEpisodes(novel.episodes)
   }, [novel.episodes])
 
@@ -78,18 +77,12 @@ const SortableEpisodeList: React.FC<{
         }
       })
 
-      console.log("afterEpisodes")
-      console.log(afterEpisodes)
-
       const beforeEpisodes = novel.episodes.map((e) => ({
         id: e.id,
         title: e.title,
         chapter: e.chapter,
         order: e.order,
       }))
-
-      console.log("beforeEpisodes")
-      console.log(beforeEpisodes)
 
       const difference = _.differenceWith(
         afterEpisodes,
@@ -98,9 +91,6 @@ const SortableEpisodeList: React.FC<{
       )
 
       if (!difference.length) return console.log("no difference")
-
-      console.log("diff")
-      console.log(difference)
 
       await api.patch(`/novels/${novel.id}/episodes`, difference)
       onChange?.().then()
@@ -142,7 +132,6 @@ const SortableEpisodeRow = SortableElement<EpisodeRowProps>(
 
 const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
   const location = useLocation()
-  const navigate = useNavigate()
 
   const date = useMemo(() => new Date(episode.createdAt), [episode.createdAt])
   const { colorMode } = useColorMode()
@@ -241,7 +230,7 @@ const EpisodeRow: React.FC<EpisodeRowProps> = ({ episode, order }) => {
 
 interface EpisodeRowProps {
   episode: PartialEpisode
-  order: number
+  order: string
 }
 
 export default SortableEpisodeList

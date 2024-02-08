@@ -33,6 +33,7 @@ import { NovelDetailPageSkeleton } from "../pages/NovelDetailPage"
 import ModifyNovelModal from "../organisms/forms/ModifyNovelModal"
 import NovelTagList from "../organisms/NovelTagList"
 import SortEpisodeModal from "../organisms/forms/SortEpisodeModal"
+import { useNavigate } from "react-router-dom"
 
 const NovelDetailTemplate: React.FC<{
   novel: Novel
@@ -49,6 +50,8 @@ const NovelDetailTemplate: React.FC<{
   changeTagsHandler,
   editable,
 }) => {
+  const navigate = useNavigate()
+
   const { isOpen, onOpen, onClose } = useDisclosure()
   const {
     isOpen: isSortOpen,
@@ -94,6 +97,13 @@ const NovelDetailTemplate: React.FC<{
                       variant={"outline"}
                       leftIcon={<TbPlayerPlay />}
                       disabled={isLoading}
+                      onClick={() =>
+                        navigate(
+                          `/episodes/${
+                            novel.episodes.find((e) => e.order === "1")?.id
+                          }`
+                        )
+                      }
                     >
                       1편부터 보기
                     </Button>

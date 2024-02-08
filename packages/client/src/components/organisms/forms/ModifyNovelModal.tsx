@@ -28,7 +28,7 @@ import { Field, FieldProps, Form, Formik } from "formik"
 import RadioCardGroup from "../../molecules/RadioCardGroup"
 import { MdPublic } from "react-icons/md"
 import DeleteNovelDialog from "./DeleteNovelDialog"
-import { TbCheck, TbEdit, TbTrash } from "react-icons/tb"
+import { TbCheck, TbEdit, TbFileExport, TbTrash } from "react-icons/tb"
 
 const ModifyNovelModal: React.FC<
   {
@@ -192,6 +192,30 @@ const ModifyNovelModal: React.FC<
                     aria-label={"delete novel"}
                     onClick={onDeleteOpen}
                     colorScheme="red"
+                    variant={"outline"}
+                  />
+                </Tooltip>
+
+                <Tooltip label={"소설 전체 다운받기"}>
+                  <IconButton
+                    icon={<TbFileExport />}
+                    aria-label={"delete novel"}
+                    onClick={async () => {
+                      const res = await api.get<Novel>(
+                        `/novels/${novel.id}/export`
+                      )
+
+                      const data = JSON.stringify(res.data, null, 2)
+                      const blob = new Blob([data], {
+                        type: "application/json",
+                      })
+                      const url = URL.createObjectURL(blob)
+                      const a = document.createElement("a")
+                      a.href = url
+                      a.download = `${novel.title}.json`
+                      a.click()
+                    }}
+                    colorScheme="blue"
                     variant={"outline"}
                   />
                 </Tooltip>
