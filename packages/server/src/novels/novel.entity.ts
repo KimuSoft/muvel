@@ -49,6 +49,9 @@ export class NovelEntity {
   @Column({ default: ShareType.Private })
   share: ShareType
 
+  @Column({ default: 0, type: "numeric" })
+  order: number
+
   @CreateDateColumn()
   createdAt: Date
 

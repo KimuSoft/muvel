@@ -7,7 +7,7 @@ const Logo: React.FC = () => {
   const navigate = useNavigate()
 
   return (
-    <HStack cursor="pointer" onClick={() => navigate("/novels")} gap={3}>
+    <HStack cursor="pointer" onClick={() => navigate("/")} gap={3}>
       <RiQuillPenFill size={31} />
       <Heading size="lg" userSelect="none">
         Muvel
@@ -17,7 +17,7 @@ const Logo: React.FC = () => {
         fontWeight={"bold"}
         userSelect="none"
       >
-        v1.0.3
+        v1.1.0
       </Text>
     </HStack>
   )

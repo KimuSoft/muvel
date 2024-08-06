@@ -1,28 +1,25 @@
 import React, { useEffect, useMemo, useState } from "react"
 import {
   Button,
+  Center,
   Heading,
-  Hide,
   HStack,
   Input,
   InputGroup,
   InputRightElement,
-  Link,
-  SimpleGrid,
+  Stack,
   Text,
   useColorModeValue,
-  useDisclosure,
   useMediaQuery,
   VStack,
 } from "@chakra-ui/react"
 import { RiQuillPenFill } from "react-icons/ri"
 import Header from "../organisms/Header"
 import { BiSearch } from "react-icons/bi"
-import NovelItem from "../organisms/main/NovelItem"
 import { Novel } from "../../types/novel.type"
 import { User } from "../../types/user.type"
-import NovelItemSkeleton from "../organisms/main/NovelItemSkeleton"
-import CreateNovelModal from "../organisms/forms/CreateNovelModal"
+import { useNavigate } from "react-router-dom"
+import { FaPenFancy } from "react-icons/fa"
 
 const MainLogo: React.FC = () => {
   return (
@@ -47,7 +44,7 @@ const MainTemplate: React.FC<{
   const [isPC] = useMediaQuery("(min-width: 800px)")
   const [searchQuery, setSearchQuery] = useState<string>("")
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const navigate = useNavigate()
 
   const searchedNovels = useMemo(() => {
     if (searchQuery === "") return novels
@@ -67,94 +64,45 @@ const MainTemplate: React.FC<{
     return 1
   }, [innerWidth])
 
-  const loginClickHandler = () => {
-    window.location.href = import.meta.env.VITE_API_BASE + "/auth/login"
-  }
-
   return (
-    <VStack w={"100vw"}>
+    <VStack w={"100vw"} h={"100vh"} px={3}>
       <Header logo={false} />
-      <VStack
-        w={isPC ? "80%" : "100%"}
+      <Center
+        flexDir={"column"}
+        w={"100%"}
+        h={"100%"}
         maxW={"1200px"}
         gap={10}
         my={100}
         px={3}
       >
         <MainLogo />
-        <HStack w={isPC ? "80%" : "100%"} maxW="700px" mb={10}>
-          <InputGroup w={"100%"}>
+        <Stack w={isPC ? "700px" : "100%"} flexDir={isPC ? "row" : "column"}>
+          <InputGroup>
             <Input
               bgColor={useColorModeValue("gray.200", "gray.700")}
               borderColor={useColorModeValue("gray.200", "gray.700")}
-              placeholder="내 소설 검색하기"
+              placeholder="소설 검색하기 (작동 안 함)"
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key !== "Enter") return
+                navigate("/search?q=" + searchQuery)
+              }}
             />
             <InputRightElement>
               <BiSearch />
             </InputRightElement>
           </InputGroup>
           <Button
-            gap={2.5}
-            colorScheme="purple"
-            onClick={onOpen}
             flexShrink={0}
-            variant={"outline"}
+            colorScheme={"purple"}
+            leftIcon={<FaPenFancy />}
+            onClick={() => navigate("/my-novels")}
           >
-            <RiQuillPenFill /> <Hide below={"md"}>새 소설 쓰기</Hide>
+            내 소설 쓰러가기
           </Button>
-          <CreateNovelModal isOpen={isOpen} onClose={onClose} />
-        </HStack>
-        {!isLoading ? (
-          novels.length ? (
-            searchedNovels.length ? (
-              <SimpleGrid
-                w={"100%"}
-                columns={column}
-                gridColumnGap={4}
-                gridRowGap={0}
-              >
-                {searchedNovels.map((novel) => (
-                  <NovelItem novel={novel} key={novel.id} />
-                ))}
-              </SimpleGrid>
-            ) : (
-              <Text color={"gray.500"}>
-                '{searchQuery}'이(가) 들어가는 소설은 없네요...
-              </Text>
-            )
-          ) : user ? (
-            <Text color={"gray.500"} textAlign={"center"}>
-              소설이 없네요...
-              <br />
-              오른쪽 위의 깃펜 모양의 버튼을 눌러 새 소설을 써 보세요!
-            </Text>
-          ) : (
-            <Text color={"gray.500"} textAlign={"center"}>
-              소설이 없네요...
-              <br />
-              뮤블에{" "}
-              <Link
-                fontWeight={"800"}
-                color={"purple.500"}
-                onClick={loginClickHandler}
-              >
-                로그인
-              </Link>
-              해서 저랑 같이 새 소설을 써 보아요!
-            </Text>
-          )
-        ) : (
-          <SimpleGrid w={"100%"} columns={column} gap={2}>
-            <NovelItemSkeleton />
-            <NovelItemSkeleton />
-            <NovelItemSkeleton />
-            <NovelItemSkeleton />
-            <NovelItemSkeleton />
-            <NovelItemSkeleton />
-          </SimpleGrid>
-        )}
-      </VStack>
+        </Stack>
+      </Center>
     </VStack>
   )
 }

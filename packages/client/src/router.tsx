@@ -7,7 +7,7 @@ import ViewerPage from "./components/pages/Viewer"
 import AuthCallback from "./components/pages/AuthCallback"
 import NotFoundPage from "./components/pages/NotFound"
 import NovelDetailPage from "./components/pages/NovelDetailPage"
-import BlockNoteEditorPage from "./components/pages/BlockNoteEditorPage"
+import MyNovelPage from "./components/pages/MyNovelPage"
 
 const Router: React.FC = () => {
   return (
@@ -15,13 +15,9 @@ const Router: React.FC = () => {
       <Routes>
         <Route element={<AppLayout />}>
           <Route index element={<MainPage />}></Route>
+          <Route path={"my-novels"} element={<MyNovelPage />}></Route>
           <Route path={"episodes/:id"} element={<EditorPage />}></Route>
           <Route path={"episodes/:id/viewer"} element={<ViewerPage />}></Route>
-          <Route
-            path={"episodes/:id/blocknote"}
-            element={<BlockNoteEditorPage />}
-          ></Route>
-          <Route path={"novels"} element={<MainPage />}></Route>
           <Route path={"novels/:id"} element={<NovelDetailPage />}></Route>
         </Route>
         <Route path="auth/callback" element={<AuthCallback />}></Route>

@@ -1,6 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { ShareType } from "../../types"
-import { IsEnum, IsOptional, IsString, IsUrl, Length } from "class-validator"
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Length,
+} from "class-validator"
 import { Transform } from "class-transformer"
 
 export class UpdateNovelDto {
@@ -48,4 +55,11 @@ export class UpdateNovelDto {
   @IsUrl()
   @IsOptional()
   thumbnail?: string
+
+  @ApiProperty({
+    description: "소설 정렬 순서",
+  })
+  @IsOptional()
+  @IsNumber()
+  order?: number
 }

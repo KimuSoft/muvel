@@ -103,6 +103,7 @@ export class NovelsService {
     novel.share = updateNovelDto.share ?? novel.share
     novel.thumbnail = updateNovelDto.thumbnail ?? novel.thumbnail
     novel.tags = updateNovelDto.tags ?? novel.tags
+    novel.order = updateNovelDto.order ?? novel.order
 
     return this.novelsRepository.save(novel)
   }

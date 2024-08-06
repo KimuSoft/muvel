@@ -10,7 +10,6 @@ import { AuthModule } from "./auth/auth.module"
 import * as process from "process"
 import { ServeStaticModule } from "@nestjs/serve-static"
 import { join } from "path"
-import { ImagesModule } from './images/images.module';
 import { SearchModule } from './search/search.module';
 
 @Module({
@@ -28,7 +27,6 @@ import { SearchModule } from './search/search.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "..", "client", "dist"),
     }),
-    ImagesModule,
     SearchModule,
   ],
   controllers: [AppController],
