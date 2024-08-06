@@ -4,38 +4,23 @@ import {
   Container,
   Divider,
   Heading,
-  Hide,
   HStack,
-  Input,
-  InputGroup,
-  InputRightElement,
   Link,
   SimpleGrid,
   Spacer,
   Text,
-  useColorModeValue,
   useDisclosure,
   useMediaQuery,
   VStack,
 } from "@chakra-ui/react"
 import { RiQuillPenFill } from "react-icons/ri"
 import Header from "../organisms/Header"
-import { BiSearch } from "react-icons/bi"
-import NovelItem from "../organisms/main/NovelItem"
 import { Novel } from "../../types/novel.type"
 import { User } from "../../types/user.type"
 import NovelItemSkeleton from "../organisms/main/NovelItemSkeleton"
 import CreateNovelModal from "../organisms/forms/CreateNovelModal"
 import { FaBookBookmark } from "react-icons/fa6"
-import {
-  DndContext,
-  MouseSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core"
-import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable"
-import SortableNovelItem from "../organisms/main/SortableNovelItem"
+import SortableNovelGrid from "../organisms/SortableNovelGrid"
 
 const MyNovelTemplate: React.FC<{
   user: User
@@ -64,20 +49,6 @@ const MyNovelTemplate: React.FC<{
     window.location.href = import.meta.env.VITE_API_BASE + "/auth/login"
   }
 
-  const sensors = useSensors(
-    useSensor(MouseSensor, {
-      activationConstraint: {
-        distance: 50,
-      },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 250,
-        tolerance: 1,
-      },
-    })
-  )
-
   return (
     <VStack w={"100vw"}>
       <Header />
@@ -105,28 +76,7 @@ const MyNovelTemplate: React.FC<{
         <Divider mb={5} />
         {!isLoading ? (
           novels.length ? (
-            <DndContext
-              sensors={sensors}
-              onDragStart={() => {
-                console.log("drag start")
-              }}
-              onDragEnd={() => {
-                console.log("drag end")
-              }}
-            >
-              <SortableContext items={novels} strategy={rectSortingStrategy}>
-                <SimpleGrid
-                  w={"100%"}
-                  columns={column}
-                  gridColumnGap={4}
-                  gridRowGap={0}
-                >
-                  {novels.map((novel) => (
-                    <SortableNovelItem novel={novel} key={novel.id} />
-                  ))}
-                </SimpleGrid>
-              </SortableContext>
-            </DndContext>
+            <SortableNovelGrid novels={novels} column={column} />
           ) : user ? (
             <Text color={"gray.500"} textAlign={"center"}>
               소설이 없네요...

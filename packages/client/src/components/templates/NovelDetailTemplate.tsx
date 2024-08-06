@@ -4,14 +4,13 @@ import {
   Button,
   Center,
   Container,
+  Divider,
   Heading,
   Hide,
   HStack,
-  IconButton,
   SkeletonText,
   Spacer,
   Text,
-  Tooltip,
   useColorModeValue,
   useDisclosure,
   useMediaQuery,
@@ -19,21 +18,11 @@ import {
 } from "@chakra-ui/react"
 import Header from "../organisms/Header"
 import { Novel } from "../../types/novel.type"
-import {
-  TbArrowsSort,
-  TbEdit,
-  TbPlayerPlay,
-  TbPlus,
-  TbShare,
-  TbSortAscendingNumbers,
-  TbSortDescendingNumbers,
-} from "react-icons/tb"
-import EpisodeItem from "../organisms/EpisodeItem"
-import { NovelDetailPageSkeleton } from "../pages/NovelDetailPage"
+import { TbEdit, TbPlayerPlay, TbPlus, TbShare } from "react-icons/tb"
 import ModifyNovelModal from "../organisms/forms/ModifyNovelModal"
 import NovelTagList from "../organisms/NovelTagList"
-import SortEpisodeModal from "../organisms/forms/SortEpisodeModal"
 import { useNavigate } from "react-router-dom"
+import SortableEpisodeList2 from "../organisms/SortableEpisodeList2"
 
 const NovelDetailTemplate: React.FC<{
   novel: Novel
@@ -178,81 +167,45 @@ const NovelDetailTemplate: React.FC<{
       </Center>
 
       <Container w={"100%"} maxW={"900px"} userSelect={"none"}>
-        <HStack>
+        <HStack mb={3} px={3}>
           <Heading size={"md"}>에피소드 목록</Heading>
           <Spacer />
-          <Tooltip label={sort === 1 ? "1편부터 정렬" : "최신 편부터 정렬"}>
-            <IconButton
-              aria-label={"에피소드 추가"}
-              variant="ghost"
-              onClick={() => setSort(sort === 1 ? -1 : 1)}
-              icon={
-                sort === 1 ? (
-                  <TbSortAscendingNumbers
-                    size={24}
-                    color={"var(--chakra-colors-purple-400)"}
-                  />
-                ) : (
-                  <TbSortDescendingNumbers
-                    size={24}
-                    color={"var(--chakra-colors-purple-400)"}
-                  />
-                )
-              }
-            />
-          </Tooltip>
-          <SortEpisodeModal
-            isOpen={isSortOpen}
-            onClose={onSortClose}
-            onSort={updateNovelHandler}
-            novel={novel}
-          />
+          {/*<Tooltip label={sort === 1 ? "1편부터 정렬" : "최신 편부터 정렬"}>*/}
+          {/*  <IconButton*/}
+          {/*    aria-label={"에피소드 추가"}*/}
+          {/*    variant="ghost"*/}
+          {/*    onClick={() => setSort(sort === 1 ? -1 : 1)}*/}
+          {/*    icon={*/}
+          {/*      sort === 1 ? (*/}
+          {/*        <TbSortAscendingNumbers*/}
+          {/*          size={24}*/}
+          {/*          color={"var(--chakra-colors-purple-400)"}*/}
+          {/*        />*/}
+          {/*      ) : (*/}
+          {/*        <TbSortDescendingNumbers*/}
+          {/*          size={24}*/}
+          {/*          color={"var(--chakra-colors-purple-400)"}*/}
+          {/*        />*/}
+          {/*      )*/}
+          {/*    }*/}
+          {/*  />*/}
+          {/*</Tooltip>*/}
 
           {editable ? (
-            <>
-              <Tooltip label={"에피소드 순서 바꾸기"}>
-                <IconButton
-                  aria-label={"에피소드 정렬"}
-                  icon={<TbArrowsSort />}
-                  disabled={isLoading}
-                  onClick={onSortOpen}
-                />
-              </Tooltip>
-
-              <Button
-                colorScheme={"purple"}
-                gap={3}
-                disabled={isLoading}
-                onClick={createNovelHandler}
-              >
-                <TbPlus />
-                {isPC ? "새 편 쓰기" : null}
-              </Button>
-            </>
+            <Button
+              colorScheme={"purple"}
+              gap={3}
+              disabled={isLoading}
+              onClick={createNovelHandler}
+              size={"sm"}
+            >
+              <TbPlus />
+              {isPC ? "새 편 쓰기" : null}
+            </Button>
           ) : null}
         </HStack>
-        <VStack gap={1} py={5} alignItems={"baseline"}>
-          {!isLoading ? (
-            // TODO: 임시조치
-            (sort === 1 ? novel.episodes : novel.episodes.reverse()).map(
-              (episode, idx) => (
-                <EpisodeItem
-                  episode={episode}
-                  key={episode.id}
-                  index={sort === 1 ? idx : novel.episodes.length - idx - 1}
-                />
-              )
-            )
-          ) : (
-            <>
-              <NovelDetailPageSkeleton />
-              <NovelDetailPageSkeleton />
-              <NovelDetailPageSkeleton />
-              <NovelDetailPageSkeleton />
-              <NovelDetailPageSkeleton />
-            </>
-          )}
-        </VStack>
+        <Divider mb={5} />
+        <SortableEpisodeList2 novel={novel} isLoading={isLoading} />
       </Container>
     </VStack>
   )

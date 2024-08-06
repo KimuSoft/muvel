@@ -2,10 +2,10 @@ import React, { useMemo } from "react"
 import { EpisodeType, PartialEpisode } from "../../types/episode.type"
 import {
   Box,
-  Hide,
+  forwardRef,
   HStack,
-  Show,
   Spacer,
+  StackProps,
   Text,
   Tooltip,
   useColorModeValue,
@@ -58,11 +58,14 @@ const SideData: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
   )
 }
 
-const EpisodeItem: React.FC<{
-  episode: PartialEpisode
-  index: number
-  isDrawer?: boolean
-}> = ({ episode, index, isDrawer = false }) => {
+const EpisodeItem = forwardRef<
+  {
+    episode: PartialEpisode
+    index: number
+    isDrawer?: boolean
+  } & StackProps,
+  "div"
+>(({ episode, index, isDrawer = false, ...props }, ref) => {
   const navigate = useNavigate()
   const [_isPC] = useMediaQuery("(min-width: 800px)")
   const isPC = isDrawer ? false : _isPC
@@ -86,24 +89,26 @@ const EpisodeItem: React.FC<{
   }
 
   return episode.episodeType === EpisodeType.EpisodeGroup ? (
-    <HStack
-      px={3}
-      py={0.5}
-      borderRadius={14}
-      border={"1px solid var(--chakra-colors-purple-500)"}
-      userSelect={"none"}
-      mt={index ? 4 : 0}
-      cursor={"pointer"}
-      transition={"background-color 0.2s"}
-      onClick={clickHandler}
-      _hover={{
-        backgroundColor: useColorModeValue("gray.100", "gray.700"),
-      }}
-    >
-      <Text fontSize={"sm"} color={"purple.500"}>
-        {episode.title}
-      </Text>
-    </HStack>
+    <Box w={"100%"} ref={ref} {...props}>
+      <Box
+        px={3}
+        py={0.5}
+        borderRadius={14}
+        border={"1px solid var(--chakra-colors-purple-500)"}
+        userSelect={"none"}
+        mt={index ? 4 : 0}
+        cursor={"pointer"}
+        transition={"background-color 0.2s"}
+        onClick={clickHandler}
+        _hover={{
+          backgroundColor: useColorModeValue("gray.100", "gray.700"),
+        }}
+      >
+        <Text fontSize={"sm"} color={"purple.500"}>
+          {episode.title}
+        </Text>
+      </Box>
+    </Box>
   ) : (
     <HStack
       userSelect={"none"}
@@ -118,6 +123,8 @@ const EpisodeItem: React.FC<{
       _hover={{
         backgroundColor: useColorModeValue("gray.100", "gray.700"),
       }}
+      ref={ref}
+      {...props}
     >
       <Box flexShrink={0} w={"4px"} h={"44px"} backgroundColor={"purple.500"} />
       {isPC ? (
@@ -142,6 +149,6 @@ const EpisodeItem: React.FC<{
       {isPC ? <SideData episode={episode} /> : null}
     </HStack>
   )
-}
+})
 
 export default EpisodeItem

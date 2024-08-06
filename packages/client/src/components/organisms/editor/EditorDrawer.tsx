@@ -41,7 +41,7 @@ import Auth from "../../molecules/Auth"
 import ToggleColorModeButton from "../../atoms/ToggleColorModeButton"
 import WidgetDrawer from "./WidgetDrawer"
 import SearchModal from "../SearchModal"
-import EpisodeItem from "../EpisodeItem"
+import EpisodeItem from "../../molecules/EpisodeItem"
 import { NovelDetailPageSkeleton } from "../../pages/NovelDetailPage"
 import {
   TbBook,
@@ -50,6 +50,7 @@ import {
   TbHome,
   TbPlus,
 } from "react-icons/tb"
+import SortableEpisodeList2 from "../SortableEpisodeList2"
 
 const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
   const [novel, setNovel] = useState<Novel>(initialNovel)
@@ -185,27 +186,7 @@ const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
               </Menu>
             </HStack>
 
-            <VStack gap={1} py={5} alignItems={"baseline"}>
-              {!loading ? (
-                // TODO: 임시조치
-                novel.episodes.map((episode, idx) => (
-                  <EpisodeItem
-                    episode={episode}
-                    index={idx}
-                    key={episode.id}
-                    isDrawer={true}
-                  />
-                ))
-              ) : (
-                <>
-                  <NovelDetailPageSkeleton />
-                  <NovelDetailPageSkeleton />
-                  <NovelDetailPageSkeleton />
-                  <NovelDetailPageSkeleton />
-                  <NovelDetailPageSkeleton />
-                </>
-              )}
-            </VStack>
+            <SortableEpisodeList2 novel={novel} isLoading={loading} isNarrow />
           </DrawerBody>
           <DrawerFooter>
             <HStack w="100%">

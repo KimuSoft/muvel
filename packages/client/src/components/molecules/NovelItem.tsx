@@ -9,8 +9,8 @@ import {
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react"
-import { Novel } from "../../../types/novel.type"
-import TagChip from "../../atoms/TagChip"
+import { Novel } from "../../types/novel.type"
+import TagChip from "../atoms/TagChip"
 import { useNavigate } from "react-router-dom"
 
 const NovelItem = forwardRef<{ novel: Novel } & StackProps, "div">(

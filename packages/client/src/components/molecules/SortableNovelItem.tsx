@@ -1,4 +1,4 @@
-import { Novel } from "../../../types/novel.type"
+import { Novel } from "../../types/novel.type"
 import { StackProps } from "@chakra-ui/react"
 import NovelItem from "./NovelItem"
 import { useSortable } from "@dnd-kit/sortable"
