@@ -23,12 +23,11 @@ services:
 
   meilisearch:
     image: getmeili/meilisearch:latest
-    restart: always
+    restart: unless-stopped
     volumes:
       - meili_data:/meili_data
     ports:
       - "7700:7700"
-    restart: unless-stopped
 
 volumes:
   pg-data:
