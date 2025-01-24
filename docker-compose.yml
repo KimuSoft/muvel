@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - db
-    restart: always
+    restart: unless-stopped
 
   db:
     image: postgres
@@ -19,6 +19,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=paring
       - POSTGRES_DB=muvel
+    restart: unless-stopped
 
   meilisearch:
     image: getmeili/meilisearch:latest
@@ -27,6 +28,7 @@ services:
       - meili_data:/meili_data
     ports:
       - "7700:7700"
+    restart: unless-stopped
 
 volumes:
   pg-data:
