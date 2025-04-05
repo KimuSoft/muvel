@@ -3,6 +3,8 @@ import { MeiliSearch } from "meilisearch"
 import { BlockCache, ISearchRepository } from "./isearch.repository"
 import { SearchInNovelDto } from "./dto/search-in-novel.dto"
 
+export const BLOCKS_INDEX = "muvel-blocks"
+
 @Injectable()
 export class SearchRepository implements ISearchRepository {
   private readonly client: MeiliSearch
@@ -21,7 +23,7 @@ export class SearchRepository implements ISearchRepository {
     novelId: string,
     searchInNovelDto: SearchInNovelDto
   ) {
-    const index = await this.client.getIndex("blocks")
+    const index = await this.client.getIndex(BLOCKS_INDEX)
     const result = await index.search(searchInNovelDto.q, {
       offset: searchInNovelDto.start,
       limit: searchInNovelDto.display,
@@ -31,7 +33,9 @@ export class SearchRepository implements ISearchRepository {
   }
 
   async insertBlocks(blockCaches: BlockCache[]) {
-    const result = await this.client.index("blocks").addDocuments(blockCaches)
+    const result = await this.client
+      .index(BLOCKS_INDEX)
+      .addDocuments(blockCaches)
 
     // 5초 대기
     await new Promise((resolve) => setTimeout(resolve, 5000))
@@ -40,13 +44,15 @@ export class SearchRepository implements ISearchRepository {
   }
 
   async updateFilterableAttributes() {
-    await this.client.createIndex("blocks", {
+    await this.client.createIndex(BLOCKS_INDEX, {
       primaryKey: "id",
     })
-    await this.client.updateIndex("blocks", {
+    await this.client.updateIndex(BLOCKS_INDEX, {
       primaryKey: "id",
     })
-    await this.client.index("blocks").updateFilterableAttributes(["novelId"])
+    await this.client
+      .index(BLOCKS_INDEX)
+      .updateFilterableAttributes(["novelId"])
     console.info("filterable attributes updated!")
   }
 }
