@@ -1,0 +1,140 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Request,
+} from "@nestjs/common"
+import { EpisodesService } from "./episodes.service"
+import {
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger"
+import { BlockDto } from "../blocks/dto/block.dto"
+import { UpdateEpisodeDto } from "./dto/update-episode.dto"
+import { PatchBlocksDto } from "./dto/patch-blocks.dto"
+import { EpisodeDto, PartialEpisodeDto } from "./dto/episode.dto"
+import { RequirePermission } from "../novels/novels.decorator"
+import { NovelPermission } from "../types"
+import { BlocksService } from "../blocks/blocks.service"
+import { EpisodeIdParamDto } from "./dto/episode-id-param.dto"
+
+@Controller("api/episodes")
+@ApiTags("Episodes")
+export class EpisodesController {
+  constructor(
+    private readonly episodesService: EpisodesService,
+    private readonly blocksService: BlocksService
+  ) {}
+
+  @Get(":id")
+  @ApiOperation({
+    summary: "에피소드 정보 불러오기",
+    description: "에피소드의 정보를 불러옵니다.",
+  })
+  @ApiNotFoundResponse()
+  @ApiOkResponse({ type: PartialEpisodeDto })
+  @RequirePermission(NovelPermission.ReadNovel)
+  async getEpisodes(
+    @Request() req,
+    @Param() { id }: EpisodeIdParamDto
+  ): Promise<EpisodeDto> {
+    const episode = await this.episodesService.findOne(id, [])
+
+    if (!episode) throw new NotFoundException()
+
+    return {
+      ...episode,
+      editable: req.user.novelIds.includes(episode.novelId),
+    }
+  }
+
+  @Put(":id")
+  @ApiOperation({
+    summary: "에피소드 정보 수정하기",
+    description: "에피소드의 정보를 수정합니다.",
+  })
+  @ApiOkResponse({ type: PartialEpisodeDto })
+  @RequirePermission(NovelPermission.EditNovel)
+  async updateEpisode(
+    @Request() req,
+    @Param() { id }: EpisodeIdParamDto,
+    @Body() updateEpisodeDto: UpdateEpisodeDto
+  ): Promise<PartialEpisodeDto> {
+    return this.episodesService.updateEpisode(
+      id,
+      updateEpisodeDto.chapter,
+      updateEpisodeDto.title,
+      updateEpisodeDto.description
+    )
+  }
+
+  @Delete(":id")
+  @ApiOperation({
+    summary: "에피소드 삭제하기",
+    description: "에피소드를 삭제합니다.",
+  })
+  @RequirePermission(NovelPermission.EditNovel)
+  async deleteEpisode(@Request() req, @Param() { id }: EpisodeIdParamDto) {
+    return this.episodesService.deleteEpisode(id)
+  }
+
+  @Get(":id/blocks")
+  @ApiOperation({
+    summary: "에피소드 내 블록 불러오기",
+    description: "에피소드의 블록을 불러옵니다.",
+  })
+  @ApiOkResponse({ type: BlockDto, isArray: true })
+  @RequirePermission(NovelPermission.ReadNovel)
+  async getBlocks(@Param() { id }: EpisodeIdParamDto): Promise<BlockDto[]> {
+    const episode = await this.episodesService.findOne(id, ["blocks"])
+    episode.blocks.sort((a, b) => a.order - b.order)
+    return episode.blocks
+  }
+
+  @Patch(":id/blocks")
+  @ApiOperation({
+    summary: "에피소드 내 블록 변경사항 적용하기",
+    description: "에피소드의 블록을 수정합니다.",
+  })
+  @RequirePermission(NovelPermission.EditNovel)
+  async patchBlocks(
+    @Request() req,
+    @Param() { id }: EpisodeIdParamDto,
+    @Body() blockDiffs: PatchBlocksDto[]
+  ) {
+    this.blocksService.patchBlocks(id, blockDiffs).then()
+  }
+
+  @Get(":id/search")
+  @ApiOperation({
+    summary: "에피소드 내 블록 검색하기",
+    description: "에피소드의 블록, 캐릭터, 설정 등을 종합적으로 검색합니다.",
+  })
+  @ApiOkResponse({ type: BlockDto, isArray: true })
+  @RequirePermission(NovelPermission.ReadNovel)
+  async searchBlocks(
+    @Param() { id }: EpisodeIdParamDto,
+    @Body() query: string
+  ): Promise<BlockDto[]> {
+    const episode = await this.episodesService.findOne(id, ["blocks"])
+    episode.blocks.sort((a, b) => a.order - b.order)
+    return episode.blocks
+  }
+
+  @Post("cache/refresh")
+  @ApiOperation({
+    summary: "에피소드 meilisearch 검색 캐시 갱신하기",
+  })
+  async refreshCache() {
+    await this.episodesService.insertAllBlocksToCache()
+    return "done!"
+  }
+}

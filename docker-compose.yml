@@ -2,22 +2,33 @@ version: "3"
 services:
   muvel:
     ports:
-      - "127.0.0.1:1338:3000"
+      - "127.0.0.1:1338:2556"
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
       - db
+    restart: unless-stopped
 
   db:
     image: postgres
     ports:
       - "2345:5432"
     volumes:
-      - pg-data:/data/db
+      - pg-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=paring
       - POSTGRES_DB=muvel
+    restart: unless-stopped
+
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    restart: unless-stopped
+    volumes:
+      - meili_data:/meili_data
+    ports:
+      - "7700:7700"
 
 volumes:
   pg-data:
+  meili_data:

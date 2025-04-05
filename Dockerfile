@@ -1,4 +1,4 @@
-FROM node:17
+FROM node:20
 
 ENV TZ=Asia/Seoul
 
@@ -8,11 +8,12 @@ WORKDIR /app
 
 COPY . .
 
-RUN corepack enable && yarn install --immutable
+RUN corepack enable && pnpm install
 
 ENV VITE_API_BASE=/api
 
-RUN yarn workspace client build && \
-    yarn workspace server build
+RUN pnpm --filter client build
+RUN pnpm --filter server build
 
-CMD yarn workspace server start:prod
+CMD ["pnpm", "--filter", "server", "migrateandstart"]
+

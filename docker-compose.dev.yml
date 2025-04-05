@@ -5,10 +5,18 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pg-data:/data/db
+      - pg-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=paring
       - POSTGRES_DB=muvel
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.1.1
+    restart: always
+    volumes:
+      - ./meili_data:/meili_data
+    ports:
+      - "7700:7700"
 
 volumes:
   pg-data:
