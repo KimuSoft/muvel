@@ -1,7 +1,4 @@
 .env
 dist
 node_modules
-convertedWords.json
-words.json
-config.json
 server/.tmp

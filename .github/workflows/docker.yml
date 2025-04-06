@@ -34,7 +34,7 @@ jobs:
         with:
           images: ghcr.io/kimusoft/muvel
       - name: Build and push Docker image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: .
           tags: ${{ steps.meta.outputs.tags }}
