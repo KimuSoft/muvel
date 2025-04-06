@@ -4,19 +4,3 @@
 
 - 기획·개발·디자인: 키뮤 (@Kimu-Latilus)
 - 기술 및 개발 자문: 파링 (@paring)
-
-### TypeORM 마이그레이션
-
-```shell
-# pwd: /packages/server
-pnpm build
-pnpm typeorm migration:generate src/migrations/init -d datasource.js
-pnpm build
-pnpm typeorm migration:run -d datasource.js
-```
-
-- 디버깅 시 db 열기
-
-```shell
-docker-compose -f docker-compose.dev.yml up -d --build
-```
