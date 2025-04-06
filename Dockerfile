@@ -15,5 +15,4 @@ ENV VITE_API_BASE=/api
 RUN pnpm --filter client build
 RUN pnpm --filter server build
 
-CMD ["pnpm", "--filter", "server", "migrateandstart"]
-
+CMD ["pnpm", "--filter", "server", "start"]

@@ -24,6 +24,10 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config)
 
+  if (process.env.AUTO_SYNC_DB === "true") {
+    console.info("Auto sync db is enabled")
+  }
+
   // api 대신 다른 루트를 넣어도 됨 (ex: swagger, api/swagger, api/docs)
   SwaggerModule.setup("api", app, document)
 

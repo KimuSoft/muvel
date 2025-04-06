@@ -10,7 +10,7 @@ import { AuthModule } from "./auth/auth.module"
 import * as process from "process"
 import { ServeStaticModule } from "@nestjs/serve-static"
 import { join } from "path"
-import { SearchModule } from './search/search.module';
+import { SearchModule } from "./search/search.module"
 
 @Module({
   imports: [
@@ -18,6 +18,7 @@ import { SearchModule } from './search/search.module';
       type: "postgres",
       url: process.env.DB_URL,
       autoLoadEntities: true,
+      synchronize: process.env.AUTO_SYNC_DB === "true",
     }),
     UsersModule,
     NovelsModule,
