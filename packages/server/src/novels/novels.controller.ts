@@ -29,6 +29,7 @@ import { NovelPermission } from "../types"
 import { SearchRepository } from "../search/search.repository"
 import { SearchInNovelDto } from "../search/dto/search-in-novel.dto"
 import { EpisodesService } from "../episodes/episodes.service"
+import { MuvelRequest } from "../auth/auth.decorator"
 
 @ApiTags("Novels")
 @Controller("api/novels")
@@ -63,20 +64,11 @@ export class NovelsController {
     type: NovelDtoWithEpisodes,
   })
   @RequirePermission(NovelPermission.ReadNovel)
-  async getNovels(
-    @Request() req,
+  async getNovel(
+    @Request() req: MuvelRequest,
     @Param("id") id: string
   ): Promise<NovelDtoWithEpisodes> {
-    const novel = await this.novelsService.findOne(id, ["episodes", "author"])
-
-    novel.episodes = novel.episodes.map((episode) => {
-      return {
-        ...episode,
-        editable: req.user.novelIds.includes(episode.novelId),
-      }
-    })
-
-    return novel
+    return this.novelsService.findNovelById(id, req.user.id)
   }
 
   @Get(":id/export")

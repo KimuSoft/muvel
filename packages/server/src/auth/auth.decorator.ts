@@ -5,14 +5,15 @@ import {
   ForbiddenException,
   UseGuards,
 } from "@nestjs/common"
-import { AuthGuard } from "@nestjs/passport"
-import { ApiBearerAuth, ApiUnauthorizedResponse } from "@nestjs/swagger"
+import { ApiSecurity, ApiUnauthorizedResponse } from "@nestjs/swagger"
 import { UserEntity } from "../users/user.entity"
+import { JwtAuthGuard } from "./jwt-auth.guard"
 
 export const RequireAuth = () => {
   return applyDecorators(
-    UseGuards(AuthGuard("jwt")),
-    ApiBearerAuth("access-token"),
+    UseGuards(JwtAuthGuard), // 👉 커스텀 가드 적용
+    ApiSecurity("access-token"), // Bearer
+    ApiSecurity("auth_token"), // Cookie
     ApiUnauthorizedResponse({
       description: "인증에 실패했을 경우 발생",
     })
@@ -28,4 +29,4 @@ export const AdminOnly = createParamDecorator(
   }
 )
 
-export type EpRequest = Request & { user: UserEntity }
+export type MuvelRequest = Request & { user: UserEntity }

@@ -1,4 +1,8 @@
-import { Injectable } from "@nestjs/common"
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common"
 import { NovelEntity } from "./novel.entity"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
@@ -41,6 +45,29 @@ export class NovelsService {
     ]
 
     return this.novelsRepository.save(novel)
+  }
+
+  async findNovelById(id: string, userId: string) {
+    // 소설 정보 불러오기
+    const novel = await this.novelsRepository.findOne({
+      where: { id },
+      relations: ["author", "episodes"],
+    })
+    if (!novel) throw new NotFoundException("소설을 찾을 수 없습니다.")
+
+    // 소설이 비공개 이고 주인이 아닌 경우
+    if (novel.share === ShareType.Private) {
+      // 유저 정보 불러오기
+      const user = await this.usersRepository.findOneBy({ id: userId })
+      if (!user) throw new NotFoundException("유저를 찾을 수 없습니다.")
+
+      if (novel.author.id !== userId) {
+        throw new ForbiddenException("비공개 소설은 작성자만 볼 수 있습니다.")
+      }
+    }
+
+    console.log(`소설 정보: ${JSON.stringify(novel)}`)
+    return novel
   }
 
   private async createInitialEpisode(
