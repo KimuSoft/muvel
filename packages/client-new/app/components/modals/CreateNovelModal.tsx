@@ -2,252 +2,208 @@ import React, { useState } from "react"
 import {
   Box,
   Button,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
+  CloseButton,
+  Dialog,
+  DialogBackdrop,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Field,
   HStack,
+  Icon,
   Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  ModalProps,
-  Step,
-  StepDescription,
-  StepIcon,
-  StepIndicator,
-  StepNumber,
-  Stepper,
-  StepSeparator,
-  StepStatus,
-  StepTitle,
-  TabPanel,
-  TabPanels,
-  Tabs,
+  Portal,
+  RadioCard,
   Text,
-  Textarea,
+  VStack,
 } from "@chakra-ui/react"
-import useCurrentUser from "../../../hooks/useCurrentUser"
-import { api } from "../../../utils/api"
-import { Novel, ShareType } from "../../../types/novel.type"
+import { Field as FormikField, type FieldProps, Form, Formik } from "formik"
 import { AiFillLock, AiOutlineLink } from "react-icons/ai"
-import { Field, FieldProps, Form, Formik } from "formik"
-import RadioCardGroup from "../../molecules/RadioCardGroup"
 import { MdPublic } from "react-icons/md"
-import { TbArrowLeft, TbArrowRight, TbCheck } from "react-icons/tb"
-import { RiQuillPenFill } from "react-icons/ri"
+import { useUser } from "~/context/UserContext"
 import { useNavigate } from "react-router"
+import { type Novel, ShareType } from "~/types/novel.type"
+import { api } from "~/utils/api"
 
-const steps = [
-  { title: "제목 짓기", description: "소설 제목 짓기" },
-  { title: "공개 범위", description: "볼 수 있는 사람은?" },
-]
-
-const CreateNovelModal: React.FC<
-  {
-    novel?: Novel
-    onModify?: () => Promise<unknown>
-  } & Omit<ModalProps, "children">
-> = ({ novel, onModify, ...props }) => {
-  const user = useCurrentUser()
-
-  const initialRef = React.useRef(null)
+const CreateNovelModal: React.FC<{
+  children: React.ReactNode
+  onCreated?: (novel: Novel) => void
+}> = ({ children, onCreated }) => {
+  const user = useUser()
   const navigate = useNavigate()
-
-  const [stepIndex, setStepIndex] = useState(0)
-  const [isError, setIsError] = useState(false)
+  const [open, setOpen] = useState(false)
 
   const validateTitle = (value: string) => {
-    let error
-    if (!value) {
-      error = "제목을 입력해 주세요."
-    }
-    return error
+    if (!value) return "제목을 입력해 주세요."
   }
 
   const onSubmit = async (values: {
     title: string
     share: string | number
   }) => {
-    values = {
-      ...values,
-      share: parseInt(values.share.toString()),
-    }
-
-    // Create Novel
+    values = { ...values, share: parseInt(values.share.toString()) }
+    console.log(
+      typeof window === "undefined"
+        ? process.env.VITE_API_BASE
+        : import.meta.env.VITE_API_BASE,
+    )
     const { data } = await api.post<Novel>(`/users/${user?.id}/novels`, values)
-    navigate(`/novels/${data.id}`)
+    setOpen(false)
+    if (onCreated) onCreated(data)
+    else navigate(`/novels/${data.id}`)
   }
 
   return (
-    <Modal
-      initialFocusRef={initialRef}
-      isOpen={props.isOpen}
-      onClose={props.onClose}
-    >
-      <ModalOverlay />
-      <ModalContent>
-        <Formik
-          initialValues={{
-            title: "",
-            description: "",
-            share: ShareType.Private.toString(),
-            thumbnail: "",
-          }}
-          onSubmit={onSubmit}
-        >
-          {(formProps) => (
-            <Form>
-              <ModalHeader
-                display={"flex"}
-                flexDir={"row"}
-                alignItems={"center"}
-                gap={3}
-              >
-                <RiQuillPenFill />새 소설 만들기
-              </ModalHeader>
-              <ModalCloseButton />
-              <ModalBody pb={6}>
-                <Tabs index={stepIndex} h={"150px"}>
-                  <TabPanels>
-                    <TabPanel px={0}>
-                      <Field name="title" validate={validateTitle}>
+    <Dialog.Root open={open} onOpenChange={(e) => setOpen(e.open)}>
+      <Dialog.Trigger asChild>{children}</Dialog.Trigger>
+      <Portal>
+        <DialogBackdrop />
+        <Dialog.Positioner>
+          <DialogContent maxW={"3xl"}>
+            <DialogHeader>
+              <DialogTitle>새 소설 만들기</DialogTitle>
+              <DialogCloseTrigger asChild>
+                <CloseButton />
+              </DialogCloseTrigger>
+            </DialogHeader>
+            <Formik
+              initialValues={{
+                title: "",
+                share: ShareType.Private.toString(),
+              }}
+              onSubmit={onSubmit}
+            >
+              {(formProps) => (
+                <Form>
+                  <DialogBody>
+                    <VStack gap={4} align="stretch">
+                      <FormikField name="title" validate={validateTitle}>
                         {({ field, form }: FieldProps) => (
-                          <FormControl
-                            isInvalid={
-                              !!(form.errors.title && form.touched.title)
+                          <Field.Root
+                            invalid={
+                              !!form.errors.title && !!form.touched.title
                             }
                           >
-                            <FormLabel>
-                              소설의 제목은 무엇으로 하실 건가요?
-                            </FormLabel>
+                            <Field.Label>소설 제목</Field.Label>
                             <Input
                               {...field}
-                              onChange={(e) => {
-                                field.onChange(e)
-                                setIsError(!validateTitle(e.target.value))
-                              }}
-                              placeholder="소설의 제목을 지어주세요."
+                              placeholder="소설의 제목을 입력하세요."
+                              disabled={formProps.isSubmitting}
                             />
-                            <FormErrorMessage>
-                              {form.errors.title as string}
-                            </FormErrorMessage>
-                          </FormControl>
+                            <Field.ErrorText>
+                              {form.errors.title?.toString()}
+                            </Field.ErrorText>
+                          </Field.Root>
                         )}
-                      </Field>
-                    </TabPanel>
-                    <TabPanel px={0}>
-                      <Field name="share">
+                      </FormikField>
+                      <FormikField name="share">
                         {({ field, form }: FieldProps) => (
-                          <FormControl>
-                            <FormLabel>누구한테 볼 수 있게 할까요?</FormLabel>
-                            <RadioCardGroup
-                              onChange={(value) => {
-                                form.setFieldValue("share", value).then()
-                              }}
-                              defaultValue={field.value}
-                              options={[
-                                {
-                                  value: ShareType.Public.toString(),
-                                  label: (
-                                    <HStack gap={2}>
+                          <Field.Root>
+                            <Field.Label>공개 범위 {field.value}</Field.Label>
+                            <RadioCard.Root
+                              value={field.value.toString()}
+                              onValueChange={(value) =>
+                                form.setFieldValue("share", value.value)
+                              }
+                            >
+                              <RadioCard.Item
+                                value={ShareType.Public.toString()}
+                              >
+                                <RadioCard.ItemHiddenInput />
+                                <RadioCard.ItemControl>
+                                  <RadioCard.ItemContent>
+                                    <Icon
+                                      fontSize="2xl"
+                                      color="fg.muted"
+                                      mb="2"
+                                    >
                                       <MdPublic />
-                                      <Text>공개</Text>
-                                    </HStack>
-                                  ),
-                                },
-                                {
-                                  value: ShareType.Unlisted.toString(),
-                                  label: (
-                                    <HStack gap={2}>
+                                    </Icon>
+                                    <RadioCard.ItemText>
+                                      공개
+                                    </RadioCard.ItemText>
+                                    <RadioCard.ItemDescription>
+                                      누구나 볼 수 있어요
+                                    </RadioCard.ItemDescription>
+                                  </RadioCard.ItemContent>
+                                  <RadioCard.ItemIndicator />
+                                </RadioCard.ItemControl>
+                              </RadioCard.Item>
+
+                              <RadioCard.Item
+                                value={ShareType.Unlisted.toString()}
+                              >
+                                <RadioCard.ItemHiddenInput />
+                                <RadioCard.ItemControl>
+                                  <RadioCard.ItemContent>
+                                    <Icon
+                                      fontSize="2xl"
+                                      color="fg.muted"
+                                      mb="2"
+                                    >
                                       <AiOutlineLink />
-                                      <Text>일부 공개</Text>
-                                    </HStack>
-                                  ),
-                                },
-                                {
-                                  value: ShareType.Private.toString(),
-                                  label: (
-                                    <HStack gap={2}>
+                                    </Icon>
+                                    <RadioCard.ItemText>
+                                      일부 공개
+                                    </RadioCard.ItemText>
+                                    <RadioCard.ItemDescription>
+                                      링크로 공유할 수 있어요
+                                    </RadioCard.ItemDescription>
+                                  </RadioCard.ItemContent>
+                                  <RadioCard.ItemIndicator />
+                                </RadioCard.ItemControl>
+                              </RadioCard.Item>
+
+                              <RadioCard.Item
+                                value={ShareType.Private.toString()}
+                              >
+                                <RadioCard.ItemHiddenInput />
+                                <RadioCard.ItemControl>
+                                  <RadioCard.ItemContent>
+                                    <Icon
+                                      fontSize="2xl"
+                                      color="fg.muted"
+                                      mb="2"
+                                    >
                                       <AiFillLock />
-                                      <Text>비공개</Text>
-                                    </HStack>
-                                  ),
-                                },
-                              ]}
-                            />
-                          </FormControl>
+                                    </Icon>
+                                    <RadioCard.ItemText>
+                                      비공개
+                                    </RadioCard.ItemText>
+                                    <RadioCard.ItemDescription>
+                                      나만 볼 수 있어요
+                                    </RadioCard.ItemDescription>
+                                  </RadioCard.ItemContent>
+                                  <RadioCard.ItemIndicator />
+                                </RadioCard.ItemControl>
+                              </RadioCard.Item>
+                            </RadioCard.Root>
+                          </Field.Root>
                         )}
-                      </Field>
-                    </TabPanel>
-                  </TabPanels>
-                </Tabs>
-
-                <Stepper index={stepIndex} colorScheme={"purple"}>
-                  {steps.map((step, index) => (
-                    <Step key={index}>
-                      <StepIndicator>
-                        <StepStatus
-                          complete={<StepIcon />}
-                          incomplete={<StepNumber />}
-                          active={<StepNumber />}
-                        />
-                      </StepIndicator>
-
-                      {index === stepIndex ? (
-                        <Box flexShrink="0">
-                          <StepTitle>{step.title}</StepTitle>
-                          <StepDescription>{step.description}</StepDescription>
-                        </Box>
-                      ) : null}
-
-                      <StepSeparator />
-                    </Step>
-                  ))}
-                </Stepper>
-              </ModalBody>
-
-              <ModalFooter gap={2}>
-                <Button
-                  leftIcon={stepIndex ? <TbArrowLeft /> : undefined}
-                  onClick={() => {
-                    if (!stepIndex) return props.onClose()
-                    setStepIndex(stepIndex - 1)
-                  }}
-                >
-                  {stepIndex ? "이전" : "취소"}
-                </Button>
-                {stepIndex !== steps.length - 1 ? (
-                  <Button
-                    key={"next-button"}
-                    colorScheme="purple"
-                    rightIcon={<TbArrowRight />}
-                    disabled={!formProps.values.title}
-                    onClick={() => setStepIndex(stepIndex + 1)}
-                  >
-                    다음
-                  </Button>
-                ) : (
-                  <Button
-                    key={"submit-button"}
-                    colorScheme="blue"
-                    disabled={!formProps.values.title}
-                    isLoading={formProps.isSubmitting}
-                    type="submit"
-                    leftIcon={<TbCheck />}
-                  >
-                    만들기
-                  </Button>
-                )}
-              </ModalFooter>
-            </Form>
-          )}
-        </Formik>
-      </ModalContent>
-    </Modal>
+                      </FormikField>
+                    </VStack>
+                  </DialogBody>
+                  <DialogFooter>
+                    <Dialog.CloseTrigger />
+                    <Button
+                      type="submit"
+                      colorScheme="blue"
+                      loading={formProps.isSubmitting}
+                      ml={3}
+                    >
+                      만들기
+                    </Button>
+                  </DialogFooter>
+                </Form>
+              )}
+            </Formik>
+          </DialogContent>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog.Root>
   )
 }
 

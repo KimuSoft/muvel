@@ -1,15 +1,19 @@
 import {
   isRouteErrorResponse,
   Links,
+  type LoaderFunctionArgs,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "react-router"
 
 import type { Route } from "./+types/root"
-import "./app.css"
 import { Provider } from "./components/ui/provider"
+import { UserProvider } from "~/context/UserContext"
+import { getUserFromRequest } from "~/utils/session.server"
+import { Toaster } from "~/components/ui/toaster"
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -42,11 +46,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
   )
 }
 
+export async function loader({ request }: LoaderFunctionArgs) {
+  return { user: await getUserFromRequest(request) }
+}
+
 export default function App() {
+  const { user } = useLoaderData<typeof loader>()
+
   return (
-    <Provider>
-      <Outlet />
-    </Provider>
+    <UserProvider user={user}>
+      <Provider>
+        <Toaster />
+        <Outlet />
+      </Provider>
+    </UserProvider>
   )
 }
 

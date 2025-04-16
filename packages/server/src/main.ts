@@ -5,11 +5,13 @@ import { AppModule } from "./app.module"
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
 import { ValidationPipe } from "@nestjs/common"
 import * as express from "express"
+import * as cookieParser from "cookie-parser"
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
   app.useGlobalPipes(new ValidationPipe())
+  app.use(cookieParser())
 
   const config = new DocumentBuilder()
     .setTitle("Muvel API")
@@ -20,6 +22,11 @@ async function bootstrap() {
       { type: "http", scheme: "bearer", bearerFormat: "JWT", in: "header" },
       "access-token"
     )
+    .addCookieAuth("auth_token", {
+      type: "apiKey",
+      in: "cookie",
+      name: "auth_token",
+    })
     .build()
 
   const document = SwaggerModule.createDocument(app, config)
@@ -34,4 +41,5 @@ async function bootstrap() {
   app.use(express.json({ limit: "50mb" }))
   await app.listen(2556)
 }
-bootstrap().then()
+
+void bootstrap()
