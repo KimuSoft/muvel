@@ -7,7 +7,7 @@ const Auth: React.FC = () => {
   const user = useCurrentUser()
 
   const loginClickHandler = () => {
-    window.location.href = import.meta.env.VITE_API_BASE + "/auth/login"
+    window.location.href = "api/auth/login"
   }
 
   const logoutClickHandler = () => {

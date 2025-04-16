@@ -6,7 +6,7 @@ import { ColorModeButton } from "~/components/ui/color-mode"
 
 const Header: React.FC<{ logo?: boolean }> = ({ logo = true }) => {
   return (
-    <HStack px={5} h="70px" position={"absolute"} w={"100vw"}>
+    <HStack px={5} gap={3} h="70px" position={"absolute"} w={"100vw"}>
       {logo ? <Logo /> : null}
       <Spacer />
       <ColorModeButton />

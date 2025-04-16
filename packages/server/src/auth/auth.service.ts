@@ -21,7 +21,7 @@ export class AuthService {
     if (user) return await this.usersService.update(userId, username, avatar)
 
     // 처음 가입한 유저의 경우 새로 생성
-    return await this.usersService.create(userId, username, avatar)
+    return this.usersService.create(userId, username, avatar)
   }
 
   async login(user: UserEntity) {
@@ -29,5 +29,11 @@ export class AuthService {
     return {
       accessToken: await this.jwtService.signAsync(payload),
     }
+  }
+
+  async getUserById(id: string) {
+    const user = await this.usersService.findOne(id)
+    if (!user) throw new Error("User not found")
+    return user
   }
 }

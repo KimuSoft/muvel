@@ -2,12 +2,13 @@ import React from "react"
 import { Avatar, IconButton } from "@chakra-ui/react"
 import { TbLogin2 } from "react-icons/tb"
 import { Tooltip } from "~/components/ui/tooltip"
+import { useUser } from "~/context/UserContext"
 
 const Auth: React.FC = () => {
-  // const user = useCurrentUser()
+  const user = useUser()
 
   const loginClickHandler = () => {
-    window.location.href = import.meta.env.VITE_API_BASE + "/auth/login"
+    window.location.href = "api/auth/login"
   }
 
   const logoutClickHandler = () => {
@@ -19,13 +20,9 @@ const Auth: React.FC = () => {
     <>
       {user ? (
         <>
-          <Avatar
-            cursor="pointer"
-            size="sm"
-            onClick={logoutClickHandler}
-            name={user.username}
-            src={user.avatar}
-          />
+          <Avatar.Root cursor="pointer" size="sm" onClick={logoutClickHandler}>
+            <Avatar.Image src={user.avatar} />
+          </Avatar.Root>
         </>
       ) : (
         <Tooltip content={"로그인하기"}>

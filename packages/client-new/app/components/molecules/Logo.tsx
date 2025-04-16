@@ -7,9 +7,9 @@ const Logo: React.FC = () => {
   const navigate = useNavigate()
 
   return (
-    <HStack cursor="pointer" onClick={() => navigate("/")} gap={3}>
+    <HStack cursor="pointer" onClick={() => navigate("/")} gap={2}>
       <RiQuillPenFill size={31} />
-      <Heading size="lg" userSelect="none">
+      <Heading size="2xl" userSelect="none">
         Muvel
       </Heading>
       <Text
@@ -17,7 +17,7 @@ const Logo: React.FC = () => {
         fontWeight={"bold"}
         userSelect="none"
       >
-        v1.1.0
+        v2
       </Text>
     </HStack>
   )
