@@ -2,18 +2,18 @@ import type { Route } from "./+types/novel"
 import NovelDetailTemplate from "~/components/templates/NovelDetailTemplate"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { api } from "~/utils/api"
-import type { Novel } from "~/types/novel.type"
+import type { Novel, NovelPermissions } from "~/types/novel.type"
 
 export function meta({ data }: Route.MetaArgs) {
   if (!data?.novel) {
     return [
-      { title: "소설을 찾을 수 없습니다" },
+      { title: "Muvel" },
       { name: "description", content: "존재하지 않는 소설이에요." },
     ]
   }
 
   return [
-    { title: `${data.novel.title} - 뮤블` },
+    { title: `${data.novel.title} - Muvel` },
     {
       name: "description",
       content: data.novel.description || "새로운 소설을 감상해보세요!",
@@ -29,7 +29,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     throw new Response("Not Found", { status: 404 })
   }
 
-  const { data: novel } = await api.get<Novel>(`/novels/${id}`, {
+  const { data: novel } = await api.get<
+    Novel & { permissions: NovelPermissions }
+  >(`/novels/${id}`, {
     headers: {
       cookie, // ✅ SSR 쿠키 인증
     },
@@ -42,5 +44,5 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export default function Novel() {
   const { novel } = useLoaderData<typeof loader>()
 
-  return <NovelDetailTemplate novel={novel} editable={false} />
+  return <NovelDetailTemplate novel={novel} />
 }

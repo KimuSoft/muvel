@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import {
-  Box,
   Button,
   CloseButton,
   Dialog,
@@ -12,21 +11,17 @@ import {
   DialogHeader,
   DialogTitle,
   Field,
-  HStack,
-  Icon,
   Input,
   Portal,
-  RadioCard,
-  Text,
   VStack,
 } from "@chakra-ui/react"
 import { Field as FormikField, type FieldProps, Form, Formik } from "formik"
-import { AiFillLock, AiOutlineLink } from "react-icons/ai"
-import { MdPublic } from "react-icons/md"
 import { useUser } from "~/context/UserContext"
 import { useNavigate } from "react-router"
 import { type Novel, ShareType } from "~/types/novel.type"
-import { api } from "~/utils/api"
+import ShareSelect from "~/components/molecules/ShareSelect"
+import { frontApi } from "~/utils/frontApi"
+import { createNovel } from "~/api/api.novel"
 
 const CreateNovelModal: React.FC<{
   children: React.ReactNode
@@ -44,13 +39,14 @@ const CreateNovelModal: React.FC<{
     title: string
     share: string | number
   }) => {
-    values = { ...values, share: parseInt(values.share.toString()) }
-    console.log(
-      typeof window === "undefined"
-        ? process.env.VITE_API_BASE
-        : import.meta.env.VITE_API_BASE,
-    )
-    const { data } = await api.post<Novel>(`/users/${user?.id}/novels`, values)
+    if (!user) return
+
+    const data = await createNovel({
+      ...values,
+      share: parseInt(values.share.toString()),
+      userId: user.id,
+    })
+
     setOpen(false)
     if (onCreated) onCreated(data)
     else navigate(`/novels/${data.id}`)
@@ -62,7 +58,7 @@ const CreateNovelModal: React.FC<{
       <Portal>
         <DialogBackdrop />
         <Dialog.Positioner>
-          <DialogContent maxW={"3xl"}>
+          <DialogContent>
             <DialogHeader>
               <DialogTitle>새 소설 만들기</DialogTitle>
               <DialogCloseTrigger asChild>
@@ -102,85 +98,14 @@ const CreateNovelModal: React.FC<{
                       <FormikField name="share">
                         {({ field, form }: FieldProps) => (
                           <Field.Root>
-                            <Field.Label>공개 범위 {field.value}</Field.Label>
-                            <RadioCard.Root
+                            <Field.Label>공개 범위</Field.Label>
+                            <ShareSelect
+                              w={"100%"}
                               value={field.value.toString()}
                               onValueChange={(value) =>
                                 form.setFieldValue("share", value.value)
                               }
-                            >
-                              <RadioCard.Item
-                                value={ShareType.Public.toString()}
-                              >
-                                <RadioCard.ItemHiddenInput />
-                                <RadioCard.ItemControl>
-                                  <RadioCard.ItemContent>
-                                    <Icon
-                                      fontSize="2xl"
-                                      color="fg.muted"
-                                      mb="2"
-                                    >
-                                      <MdPublic />
-                                    </Icon>
-                                    <RadioCard.ItemText>
-                                      공개
-                                    </RadioCard.ItemText>
-                                    <RadioCard.ItemDescription>
-                                      누구나 볼 수 있어요
-                                    </RadioCard.ItemDescription>
-                                  </RadioCard.ItemContent>
-                                  <RadioCard.ItemIndicator />
-                                </RadioCard.ItemControl>
-                              </RadioCard.Item>
-
-                              <RadioCard.Item
-                                value={ShareType.Unlisted.toString()}
-                              >
-                                <RadioCard.ItemHiddenInput />
-                                <RadioCard.ItemControl>
-                                  <RadioCard.ItemContent>
-                                    <Icon
-                                      fontSize="2xl"
-                                      color="fg.muted"
-                                      mb="2"
-                                    >
-                                      <AiOutlineLink />
-                                    </Icon>
-                                    <RadioCard.ItemText>
-                                      일부 공개
-                                    </RadioCard.ItemText>
-                                    <RadioCard.ItemDescription>
-                                      링크로 공유할 수 있어요
-                                    </RadioCard.ItemDescription>
-                                  </RadioCard.ItemContent>
-                                  <RadioCard.ItemIndicator />
-                                </RadioCard.ItemControl>
-                              </RadioCard.Item>
-
-                              <RadioCard.Item
-                                value={ShareType.Private.toString()}
-                              >
-                                <RadioCard.ItemHiddenInput />
-                                <RadioCard.ItemControl>
-                                  <RadioCard.ItemContent>
-                                    <Icon
-                                      fontSize="2xl"
-                                      color="fg.muted"
-                                      mb="2"
-                                    >
-                                      <AiFillLock />
-                                    </Icon>
-                                    <RadioCard.ItemText>
-                                      비공개
-                                    </RadioCard.ItemText>
-                                    <RadioCard.ItemDescription>
-                                      나만 볼 수 있어요
-                                    </RadioCard.ItemDescription>
-                                  </RadioCard.ItemContent>
-                                  <RadioCard.ItemIndicator />
-                                </RadioCard.ItemControl>
-                              </RadioCard.Item>
-                            </RadioCard.Root>
+                            />
                           </Field.Root>
                         )}
                       </FormikField>

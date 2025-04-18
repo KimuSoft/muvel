@@ -1,17 +1,33 @@
 import React from "react"
-import { HStack, Spacer, useMediaQuery } from "@chakra-ui/react"
+import {
+  Center,
+  HStack,
+  LinkBox,
+  Spacer,
+  useMediaQuery,
+} from "@chakra-ui/react"
 import Auth from "../molecules/Auth"
 import Logo from "../molecules/Logo"
 import { ColorModeButton } from "~/components/ui/color-mode"
+import BlockLink from "~/components/atoms/BlockLink"
 
-const Header: React.FC<{ logo?: boolean }> = ({ logo = true }) => {
+const Header: React.FC<{ logo?: boolean; nonWide?: boolean }> = ({
+  nonWide,
+  logo = true,
+}) => {
   return (
-    <HStack px={5} gap={3} h="70px" position={"absolute"} w={"100vw"}>
-      {logo ? <Logo /> : null}
-      <Spacer />
-      <ColorModeButton />
-      <Auth />
-    </HStack>
+    <Center h="70px" position={"absolute"} w={"100vw"} zIndex={1} px={5}>
+      <HStack w={"100%"} maxW={!nonWide ? undefined : "4xl"} gap={3} h={"70px"}>
+        {logo ? (
+          <BlockLink to={"/"}>
+            <Logo w={128} cursor={"pointer"} />
+          </BlockLink>
+        ) : null}
+        <Spacer />
+        <ColorModeButton />
+        <Auth />
+      </HStack>
+    </Center>
   )
 }
 

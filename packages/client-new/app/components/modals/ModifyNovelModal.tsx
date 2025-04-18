@@ -1,6 +1,5 @@
 import React from "react"
 import {
-  Box,
   Button,
   CloseButton,
   Dialog,
@@ -14,6 +13,7 @@ import {
   Field,
   HStack,
   IconButton,
+  Image,
   Input,
   Portal,
   Spacer,
@@ -21,16 +21,16 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react"
-import { Formik, Form, Field as FormikField, type FieldProps } from "formik"
-import { AiFillLock, AiOutlineLink } from "react-icons/ai"
-import { MdPublic } from "react-icons/md"
+import { Field as FormikField, type FieldProps, Form, Formik } from "formik"
 import { TbCheck, TbEdit, TbFileExport, TbTrash } from "react-icons/tb"
-import { useDisclosure } from "@chakra-ui/react"
-import { RadioCard } from "@chakra-ui/react"
-import { ShareType, type Novel } from "~/types/novel.type"
-import { api } from "~/utils/api"
+import { type Novel, ShareType } from "~/types/novel.type"
 import { Tooltip } from "~/components/ui/tooltip"
 import DeleteNovelDialog from "./DeleteNovelDialog"
+import ShareSelect from "~/components/molecules/ShareSelect"
+import ImageUploader from "~/components/molecules/ImageUploader"
+import { useRevalidator } from "react-router"
+import { updateNovel } from "~/api/api.novel"
+import ExportNovelMenu from "~/components/modals/ExportNovelMenu"
 
 const ModifyNovelModal: React.FC<{
   novel: Novel
@@ -38,6 +38,7 @@ const ModifyNovelModal: React.FC<{
   children: React.ReactNode
 }> = ({ novel, onModify, children }) => {
   const [open, setOpen] = React.useState(false)
+  const { revalidate } = useRevalidator()
 
   const onSubmit = async (values: {
     title: string
@@ -45,13 +46,13 @@ const ModifyNovelModal: React.FC<{
     share: string | number
     thumbnail: string | null
   }) => {
-    values = {
+    await updateNovel({
+      id: novel.id,
       ...values,
       share: parseInt(values.share.toString()),
-      thumbnail: values.thumbnail || null,
-    }
-
-    await api.patch<Novel>(`/novels/${novel.id}`, values)
+      thumbnail: values.thumbnail || undefined,
+    })
+    await revalidate()
     setOpen(false)
     onModify?.().then()
   }
@@ -75,8 +76,8 @@ const ModifyNovelModal: React.FC<{
               {(formProps) => (
                 <Form>
                   <DialogHeader>
-                    <DialogTitle display="flex" alignItems="center" gap={2}>
-                      <TbEdit /> 소설 수정하기
+                    <DialogTitle display="flex" alignItems="center" gap={3}>
+                      <TbEdit size={28} /> 소설 수정하기
                     </DialogTitle>
                     <DialogCloseTrigger asChild>
                       <CloseButton />
@@ -119,78 +120,13 @@ const ModifyNovelModal: React.FC<{
                         {({ field, form }: FieldProps) => (
                           <Field.Root>
                             <Field.Label>공개 범위</Field.Label>
-                            <RadioCard.Root
+                            <ShareSelect
+                              w={"100%"}
                               value={field.value}
                               onValueChange={(value) =>
-                                form.setFieldValue("share", value)
+                                form.setFieldValue("share", value.value)
                               }
-                            >
-                              <RadioCard.Item
-                                value={ShareType.Public.toString()}
-                              >
-                                <RadioCard.ItemHiddenInput />
-                                <RadioCard.ItemControl>
-                                  <RadioCard.ItemContent>
-                                    <RadioCard.ItemText>
-                                      공개
-                                    </RadioCard.ItemText>
-                                    <RadioCard.ItemDescription>
-                                      <HStack gap={2}>
-                                        <MdPublic />{" "}
-                                        <Text fontSize="sm">
-                                          누구나 볼 수 있어요
-                                        </Text>
-                                      </HStack>
-                                    </RadioCard.ItemDescription>
-                                  </RadioCard.ItemContent>
-                                  <RadioCard.ItemIndicator />
-                                </RadioCard.ItemControl>
-                              </RadioCard.Item>
-
-                              <RadioCard.Item
-                                value={ShareType.Unlisted.toString()}
-                              >
-                                <RadioCard.ItemHiddenInput />
-                                <RadioCard.ItemControl>
-                                  <RadioCard.ItemContent>
-                                    <RadioCard.ItemText>
-                                      일부 공개
-                                    </RadioCard.ItemText>
-                                    <RadioCard.ItemDescription>
-                                      <HStack gap={2}>
-                                        <AiOutlineLink />{" "}
-                                        <Text fontSize="sm">
-                                          링크로 공유할 수 있어요
-                                        </Text>
-                                      </HStack>
-                                    </RadioCard.ItemDescription>
-                                  </RadioCard.ItemContent>
-                                  <RadioCard.ItemIndicator />
-                                </RadioCard.ItemControl>
-                              </RadioCard.Item>
-
-                              <RadioCard.Item
-                                value={ShareType.Private.toString()}
-                              >
-                                <RadioCard.ItemHiddenInput />
-                                <RadioCard.ItemControl>
-                                  <RadioCard.ItemContent>
-                                    <RadioCard.ItemText>
-                                      비공개
-                                    </RadioCard.ItemText>
-                                    <RadioCard.ItemDescription>
-                                      <HStack gap={2}>
-                                        <AiFillLock />{" "}
-                                        <Text fontSize="sm">
-                                          나만 볼 수 있어요
-                                        </Text>
-                                      </HStack>
-                                    </RadioCard.ItemDescription>
-                                  </RadioCard.ItemContent>
-                                  <RadioCard.ItemIndicator />
-                                </RadioCard.ItemControl>
-                              </RadioCard.Item>
-                            </RadioCard.Root>
+                            />
                           </Field.Root>
                         )}
                       </FormikField>
@@ -198,11 +134,24 @@ const ModifyNovelModal: React.FC<{
                       <FormikField name="thumbnail">
                         {({ field }: FieldProps) => (
                           <Field.Root>
-                            <Field.Label>소설 썸네일 이미지</Field.Label>
-                            <Input
-                              {...field}
-                              placeholder="소설의 썸네일 이미지 URL을 입력해 주세요."
-                            />
+                            <Field.Label>소설 표지 이미지</Field.Label>
+                            <Text fontSize={"sm"} color={"gray.500"} mb={3}>
+                              표지 이미지는 가로 260px 이상의 2:3 비율을
+                              권장합니다.
+                            </Text>
+                            <HStack gap={3} alignItems={"flex-start"}>
+                              <Image
+                                src={
+                                  field.value
+                                    ? `${field.value}/thumbnail`
+                                    : undefined
+                                }
+                                mb={3}
+                                w={"100px"}
+                                h={"150px"}
+                              />
+                              <ImageUploader onUploaded={field.onChange} />
+                            </HStack>
                           </Field.Root>
                         )}
                       </FormikField>
@@ -214,7 +163,7 @@ const ModifyNovelModal: React.FC<{
                       <DeleteNovelDialog novelId={novel.id}>
                         <IconButton
                           aria-label="delete novel"
-                          colorScheme="red"
+                          colorPalette="red"
                           variant="outline"
                         >
                           <TbTrash />
@@ -222,37 +171,22 @@ const ModifyNovelModal: React.FC<{
                       </DeleteNovelDialog>
                     </Tooltip>
 
-                    <Tooltip content="소설 전체 다운받기">
-                      <IconButton
+                    <ExportNovelMenu novelId={novel.id}>
+                      <Button
                         aria-label="export novel"
-                        onClick={async () => {
-                          const res = await api.get<Novel>(
-                            `/novels/${novel.id}/export`,
-                          )
-                          const data = JSON.stringify(res.data, null, 2)
-                          const blob = new Blob([data], {
-                            type: "application/json",
-                          })
-                          const url = URL.createObjectURL(blob)
-                          const a = document.createElement("a")
-                          a.href = url
-                          a.download = `${novel.title}.json`
-                          a.click()
-                        }}
+                        onClick={async () => {}}
                         colorScheme="blue"
                         variant="outline"
                       >
                         <TbFileExport />
-                      </IconButton>
-                    </Tooltip>
+                        소설 내보내기
+                      </Button>
+                    </ExportNovelMenu>
 
                     <Spacer />
-                    <DialogCloseTrigger asChild>
-                      <Button variant="ghost">취소</Button>
-                    </DialogCloseTrigger>
                     <Button
                       type="submit"
-                      colorScheme="blue"
+                      colorPalette="purple"
                       loading={formProps.isSubmitting}
                     >
                       <TbCheck /> 수정하기

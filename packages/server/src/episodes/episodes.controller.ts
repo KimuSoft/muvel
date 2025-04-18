@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   Patch,
   Post,
@@ -20,11 +19,12 @@ import {
 import { BlockDto } from "../blocks/dto/block.dto"
 import { UpdateEpisodeDto } from "./dto/update-episode.dto"
 import { PatchBlocksDto } from "./dto/patch-blocks.dto"
-import { EpisodeDto, PartialEpisodeDto } from "./dto/episode.dto"
+import { PartialEpisodeDto } from "./dto/episode.dto"
 import { RequirePermission } from "../novels/novels.decorator"
 import { NovelPermission } from "../types"
 import { BlocksService } from "../blocks/blocks.service"
 import { EpisodeIdParamDto } from "./dto/episode-id-param.dto"
+import { MuvelRequest } from "../auth/auth.decorator"
 
 @Controller("api/episodes")
 @ApiTags("Episodes")
@@ -43,17 +43,10 @@ export class EpisodesController {
   @ApiOkResponse({ type: PartialEpisodeDto })
   @RequirePermission(NovelPermission.ReadNovel)
   async getEpisodes(
-    @Request() req,
+    @Request() req: MuvelRequest,
     @Param() { id }: EpisodeIdParamDto
-  ): Promise<EpisodeDto> {
-    const episode = await this.episodesService.findOne(id, [])
-
-    if (!episode) throw new NotFoundException()
-
-    return {
-      ...episode,
-      editable: req.user.novelIds.includes(episode.novelId),
-    }
+  ) {
+    return this.episodesService.findEpisodeById(id, req.user.id)
   }
 
   @Put(":id")

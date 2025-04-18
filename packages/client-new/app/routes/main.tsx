@@ -1,18 +1,18 @@
 import type { Route } from "./+types/main"
-import MainLayout from "~/features/my-novels/MainLayout"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { api } from "~/utils/api"
 import type { Novel } from "~/types/novel.type"
 import { getUserFromRequest } from "~/utils/session.server"
+import MainTemplate from "~/components/templates/MainTemplate"
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "뮤블" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "Muvel" },
+    { name: "description", content: "뮤블: 당신의 이야기를 위한 작은 방" },
   ]
 }
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const cookie = request.headers.get("cookie") ?? ""
 
   const user = await getUserFromRequest(request)
@@ -32,5 +32,5 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export default function Main() {
   const { myNovels } = useLoaderData<typeof loader>()
 
-  return <MainLayout novels={myNovels} />
+  return <MainTemplate novels={myNovels} />
 }

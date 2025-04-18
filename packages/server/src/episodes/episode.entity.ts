@@ -10,7 +10,7 @@ import {
 } from "typeorm"
 import { BlockEntity } from "../blocks/block.entity"
 import { NovelEntity } from "../novels/novel.entity"
-import { EpisodeType } from "../types"
+import { EditorType, EpisodeType } from "../types"
 
 @Entity("episode")
 export class EpisodeEntity {
@@ -54,4 +54,7 @@ export class EpisodeEntity {
 
   @Column({ default: EpisodeType.Episode })
   episodeType: EpisodeType
+
+  @Column({ default: EditorType.RichText })
+  editor: EditorType
 }
