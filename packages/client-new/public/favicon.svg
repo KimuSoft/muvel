@@ -1,0 +1,16 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        @media (prefers-color-scheme: dark) {
+        path {
+        fill: #A78BFA;
+        }
+        }
+
+        @media (prefers-color-scheme: light) {
+        path {
+        fill: #8B5CF6;
+        }
+        }
+    </style>
+    <path d="M53.2001 8C17.2 8 12.4 41.6001 10 56.0001C11.6 56.0001 13.1986 56.0001 14.7958 56.0001C16.3941 48.0006 20.3955 43.6007 26.8 42.8001C36.4 41.6001 43.6001 33.2001 46.0001 26L42.4001 23.6C43.2 22.8 44.0001 22 44.8001 21.2C47.2001 18.8 49.6101 15.2 53.2001 8Z"/>
+</svg>

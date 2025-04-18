@@ -11,7 +11,7 @@ import { type StackProps, VStack } from "@chakra-ui/react"
 import type { Novel } from "~/types/novel.type"
 import SortableEpisodeItem from "../molecules/SortableEpisodeItem"
 
-const SortableEpisodeList2: React.FC<
+const SortableEpisodeList: React.FC<
   { novel: Novel; isNarrow?: boolean; isLoading?: boolean } & StackProps
 > = ({ novel, isNarrow, isLoading, ...props }) => {
   const sensors = useSensors(
@@ -35,8 +35,12 @@ const SortableEpisodeList2: React.FC<
         console.log("drag end", e)
       }}
     >
-      <SortableContext items={novel.episodes} strategy={rectSortingStrategy}>
-        <VStack alignItems={"baseline"} {...props}>
+      <SortableContext
+        id={"episode-sort"}
+        items={novel.episodes}
+        strategy={rectSortingStrategy}
+      >
+        <VStack alignItems={"baseline"} p={0} {...props}>
           {novel.episodes.map((episode, idx) => (
             <SortableEpisodeItem
               episode={episode}
@@ -51,4 +55,4 @@ const SortableEpisodeList2: React.FC<
   )
 }
 
-export default SortableEpisodeList2
+export default SortableEpisodeList

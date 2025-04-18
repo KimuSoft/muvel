@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo } from "react"
 import {
   Box,
   Button,
@@ -6,111 +6,146 @@ import {
   Container,
   Heading,
   HStack,
-  Separator,
   Spacer,
   Text,
   VStack,
 } from "@chakra-ui/react"
 import Header from "../organisms/Header"
-import type { Novel } from "~/types/novel.type"
+import {
+  type Novel,
+  type NovelPermissions,
+  ShareType,
+} from "~/types/novel.type"
 import { TbEdit, TbPlayerPlay, TbPlus, TbShare } from "react-icons/tb"
 import NovelTagList from "../organisms/NovelTagList"
 import { useNavigate, useRevalidator } from "react-router"
-import SortableEpisodeList2 from "../organisms/SortableEpisodeList2"
+import SortableEpisodeList from "../organisms/SortableEpisodeList"
 import ModifyNovelModal from "~/components/modals/ModifyNovelModal"
+import { FaList } from "react-icons/fa6"
+import BlockLink from "~/components/atoms/BlockLink"
+import { updateNovel } from "~/api/api.novel"
 
 const NovelDetailTemplate: React.FC<{
-  novel: Novel
-  editable: boolean
-}> = ({ novel, editable }) => {
+  novel: Novel & { permissions: NovelPermissions }
+}> = ({ novel }) => {
   const navigate = useNavigate()
   const { revalidate } = useRevalidator()
+
+  const shareText = useMemo(() => {
+    switch (novel.share) {
+      case ShareType.Private:
+        return "비공개"
+      case ShareType.Unlisted:
+        return "일부 공개"
+      case ShareType.Public:
+        return "공개"
+    }
+  }, [novel.share])
 
   return (
     <VStack w={"100vw"} gap={12} pb={100}>
       <Header logo={true} />
       <Center
         w={"100%"}
-        h={"540px"}
+        py={8}
         background={{
-          base: "linear-gradient(90deg, var(--chakra-colors-gray-200) 0%, var(--chakra-colors-purple-200)  100%)",
+          base: "linear-gradient(90deg, var(--chakra-colors-gray-200) 0%, var(--chakra-colors-gray-300)  100%)",
           _dark: "linear-gradient(90deg, rgba(24, 24, 27) 0%, #434145 100%)",
         }}
       >
-        <Container w={"90%"} maxW={"900px"}>
-          <HStack gap={10}>
-            <VStack w={"100%"} alignItems={"baseline"} gap={3}>
-              <HStack gap={4}>
-                <Heading>{novel.title}</Heading>
+        <Container w={"100%"} px={5} mt={10} maxW={"4xl"}>
+          <HStack gap={8} flexDir={{ base: "row", md: "row-reverse" }}>
+            <Box
+              w={{ base: "130px", md: "260px" }}
+              h={{ base: "195px", md: "390px" }}
+              borderRadius="md"
+              backgroundColor={{ base: "gray.100", _dark: "gray.700" }}
+              backgroundImage={novel.thumbnail || ""}
+              backgroundRepeat={"no-repeat"}
+              backgroundSize={"cover"}
+              backgroundPosition={"center"}
+              boxShadow={"md"}
+              flexShrink={0}
+            />
+            <VStack w={"100%"} alignItems={"baseline"}>
+              <HStack rowGap={1} columnGap={5} flexWrap={"wrap"}>
+                <Heading
+                  fontSize={{ base: "32px", md: "40px" }}
+                  lineHeight={1.4}
+                >
+                  {novel.title}
+                </Heading>
                 <Text flexShrink={0} color={"gray.500"}>
-                  {novel.episodeIds.length}편
+                  {novel.episodeIds.length}편 · {shareText}
                 </Text>
               </HStack>
               <NovelTagList
                 tags={novel.tags}
-                editable={editable}
-                onChange={revalidate}
+                editable={novel.permissions.edit}
+                onChange={async (tags) => {
+                  await updateNovel({ id: novel.id, tags })
+                  await revalidate()
+                }}
               />
-              <Text my={7} textIndent={"15px"}>
-                {novel.description}
-              </Text>
-              <HStack gap={3}>
-                <Button
-                  variant={"outline"}
-                  onClick={() =>
-                    navigate(
-                      `/episodes/${
-                        novel.episodes.find((e) => e.order === "1")?.id
-                      }`,
-                    )
-                  }
+              {novel.description ? (
+                <Text
+                  fontSize={"14px"}
+                  lineHeight={1.5}
+                  my={{ base: 0, md: 3 }}
                 >
-                  <TbPlayerPlay /> 1편부터 보기
-                </Button>
-                {editable ? (
+                  {novel.description}
+                </Text>
+              ) : null}
+
+              <HStack gap={2} mt={4}>
+                <BlockLink
+                  to={`/episodes/${
+                    novel.episodes.find((e) => e.order === "1")?.id
+                  }`}
+                >
+                  <Button
+                    size={"sm"}
+                    variant={"outline"}
+                    colorPalette={"purple"}
+                  >
+                    <TbPlayerPlay /> 처음부터 보기
+                  </Button>
+                </BlockLink>
+                {novel.permissions.edit ? (
                   <ModifyNovelModal novel={novel} onModify={revalidate}>
                     <Button
                       gap={2.5}
-                      colorScheme="purple"
                       flexShrink={0}
-                      variant={"outline"}
+                      size={"sm"}
+                      variant={"subtle"}
                     >
                       <TbEdit />
                       <Box display={{ base: "none", md: "block" }}>
-                        소설 수정하기
+                        수정하기
                       </Box>
                     </Button>
                   </ModifyNovelModal>
                 ) : null}
 
-                {editable ? (
-                  <Button colorScheme={"purple"} variant={"outline"} gap={3}>
-                    <TbShare />
-                    <Box display={{ base: "none", md: "block" }}>공유하기</Box>
-                  </Button>
-                ) : null}
+                {/*{novel.permissions.edit ? (*/}
+                {/*  <Button size={"sm"} variant={"subtle"}>*/}
+                {/*    <TbShare />*/}
+                {/*    <Box display={{ base: "none", md: "block" }}>공유하기</Box>*/}
+                {/*  </Button>*/}
+                {/*) : null}*/}
               </HStack>
             </VStack>
-            <Box
-              w="260px"
-              h="390px"
-              borderRadius="14px"
-              backgroundColor={"gray.500"}
-              backgroundImage={novel.thumbnail || ""}
-              backgroundRepeat={"no-repeat"}
-              backgroundSize={"cover"}
-              backgroundPosition={"center"}
-              boxShadow={"0px 4px 30px 1px rgba(0, 0, 0, 0.25)"}
-              flexShrink={0}
-              display={{ base: "none", md: "block" }}
-            />
           </HStack>
         </Container>
       </Center>
 
-      <Container w={"100%"} maxW={"900px"} userSelect={"none"}>
-        <HStack mb={3} px={3}>
-          <Heading size={"md"}>에피소드 목록</Heading>
+      <Container w={"100%"} maxW={"4xl"} userSelect={"none"}>
+        <HStack mb={4} px={1}>
+          <HStack gap={3}>
+            <FaList />
+            <Heading size={"md"}>에피소드 목록</Heading>
+          </HStack>
+
           <Spacer />
           {/*<Tooltip label={sort === 1 ? "1편부터 정렬" : "최신 편부터 정렬"}>*/}
           {/*  <IconButton*/}
@@ -133,7 +168,7 @@ const NovelDetailTemplate: React.FC<{
           {/*  />*/}
           {/*</Tooltip>*/}
 
-          {editable ? (
+          {novel.permissions.edit ? (
             <Button
               colorScheme={"purple"}
               gap={3}
@@ -145,8 +180,7 @@ const NovelDetailTemplate: React.FC<{
             </Button>
           ) : null}
         </HStack>
-        <Separator mb={5} />
-        <SortableEpisodeList2 novel={novel} />
+        <SortableEpisodeList novel={novel} />
       </Container>
     </VStack>
   )

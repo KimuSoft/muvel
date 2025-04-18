@@ -40,12 +40,7 @@ const SortableNovelGrid: React.FC<{ novels: Novel[]; column?: number }> = ({
       }}
     >
       <SortableContext items={novels} strategy={rectSortingStrategy}>
-        <SimpleGrid
-          w={"100%"}
-          columns={column}
-          gridColumnGap={4}
-          gridRowGap={0}
-        >
+        <SimpleGrid w={"100%"} columns={column} gap={2}>
           {novels.map((novel) => (
             <SortableNovelItem novel={novel} key={novel.id} />
           ))}

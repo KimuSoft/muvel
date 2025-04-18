@@ -1,6 +1,6 @@
-import { Inject, Injectable } from "@nestjs/common"
+import { Inject, Injectable, NotFoundException } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
-import { Repository } from "typeorm"
+import { FindOptionsRelations, Repository } from "typeorm"
 import { EpisodeEntity } from "./episode.entity"
 import { PatchEpisodesDto } from "../novels/dto/patch-episodes.dto"
 import { CreateEpisodeDto } from "./dto/create-episode.dto"
@@ -8,6 +8,7 @@ import { NovelEntity } from "../novels/novel.entity"
 import { ISearchRepository } from "../search/isearch.repository"
 import { SearchRepository } from "src/search/search.repository"
 import { EpisodeType } from "../types"
+import { UserEntity } from "../users/user.entity"
 
 @Injectable()
 export class EpisodesService {
@@ -16,12 +17,14 @@ export class EpisodesService {
     private novelsRepository: Repository<NovelEntity>,
     @InjectRepository(EpisodeEntity)
     private episodesRepository: Repository<EpisodeEntity>,
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
     @Inject(SearchRepository)
     private readonly searchRepository: ISearchRepository
   ) {}
 
   private async getNextOrder(
-    epsiodeType: EpisodeType,
+    episodeType: EpisodeType,
     novelId?: string
   ): Promise<string> {
     if (!novelId) return (1).toString()
@@ -31,10 +34,31 @@ export class EpisodesService {
       [novelId]
     )
     return (
-      epsiodeType === EpisodeType.Episode
+      episodeType === EpisodeType.Episode
         ? Math.floor(parseFloat(lastBlock?.[0].order)) + 1
         : parseFloat(lastBlock?.[0].order) + 1 / 10000
     ).toString()
+  }
+
+  async findEpisodeById(id: string, userId: string) {
+    const episode = await this.episodesRepository.findOne({
+      where: { id },
+      relations: ["novel", "novel.author"],
+    })
+
+    if (!episode) throw new NotFoundException(`Episode with id ${id} not found`)
+
+    // 유저 정보 불러오기
+    const user = await this.usersRepository.findOneBy({ id: userId })
+
+    return {
+      ...episode,
+      permissions: {
+        canRead: true,
+        canEdit: this.canEdit(episode.novel, user),
+        canDelete: this.canEdit(episode.novel, user),
+      },
+    }
   }
 
   async createEpisode(novelId: string, createEpisodeDto: CreateEpisodeDto) {
@@ -61,7 +85,7 @@ export class EpisodesService {
     return episode
   }
 
-  async patchEpisodes(id: string, episodesDiff: PatchEpisodesDto[]) {
+  async patchEpisodes(_id: string, episodesDiff: PatchEpisodesDto[]) {
     await this.upsert(episodesDiff)
   }
 
@@ -121,5 +145,9 @@ export class EpisodesService {
     }
 
     return this.searchRepository.insertBlocks(blocks)
+  }
+
+  canEdit(novel: NovelEntity, user: UserEntity): boolean {
+    return novel.author.id === user.id || user.admin
   }
 }
