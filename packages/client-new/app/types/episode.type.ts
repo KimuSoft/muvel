@@ -10,6 +10,7 @@ export interface PartialEpisode extends PartialData {
   episodeType: EpisodeType
   createdAt: string
   updatedAt: string
+  editor: EditorType
   editable: boolean
 }
 
@@ -26,6 +27,12 @@ export enum EpisodeType {
   Special,
 }
 
+export enum EditorType {
+  Block = 0,
+  RichText = 1,
+  Flow = 2,
+}
+
 export const initialPartialEpisode: PartialEpisode = {
   id: "",
   title: "",
@@ -34,6 +41,7 @@ export const initialPartialEpisode: PartialEpisode = {
   novelId: "",
   order: "0",
   editable: true,
+  editor: EditorType.Block,
   episodeType: EpisodeType.Episode,
   createdAt: new Date().toDateString(),
   updatedAt: new Date().toDateString(),

@@ -55,10 +55,11 @@ export class NovelsService {
     })
     if (!novel) throw new NotFoundException("소설을 찾을 수 없습니다.")
 
+    // 유저 정보 불러오기
+    const user = await this.usersRepository.findOneBy({ id: userId })
+
     // 소설이 비공개 이고 주인이 아닌 경우
     if (novel.share === ShareType.Private) {
-      // 유저 정보 불러오기
-      const user = await this.usersRepository.findOneBy({ id: userId })
       if (!user) throw new NotFoundException("유저를 찾을 수 없습니다.")
 
       if (novel.author.id !== userId) {
@@ -66,8 +67,15 @@ export class NovelsService {
       }
     }
 
-    console.log(`소설 정보: ${JSON.stringify(novel)}`)
-    return novel
+    return {
+      ...novel,
+      permissions: {
+        // 애초에 이 응답을 받았다는 건 읽을 수 있다는 뜻이니까...
+        read: true,
+        edit: this.canEdit(novel, user),
+        delete: this.canEdit(novel, user),
+      },
+    }
   }
 
   private async createInitialEpisode(
@@ -139,7 +147,7 @@ export class NovelsService {
     if (!id) return null
     const novel = await this.novelsRepository.findOne({
       where: { id },
-      relations,
+      relations: ["author", ...relations],
     })
 
     if (!novel) {
@@ -149,7 +157,15 @@ export class NovelsService {
 
     // 에피소드 정렬
     novel.episodes?.sort((a, b) => parseFloat(a.order) - parseFloat(b.order))
-    return novel
+    return {
+      ...novel,
+      permissions: {
+        // 애초에 이 응답을 받았다는 건 읽을 수 있다는 뜻이니까...
+        read: true,
+        edit: this.canEdit(novel, novel.author),
+        delete: this.canEdit(novel, novel.author),
+      },
+    }
   }
 
   async search(searchNovelsDto: SearchNovelsDto) {
@@ -218,5 +234,9 @@ export class NovelsService {
       .leftJoinAndSelect("novel.episodes", "episodes")
       .where("episodes.id = :episodeId", { episodeId })
       .getOne()
+  }
+
+  canEdit(novel: NovelEntity, user: UserEntity): boolean {
+    return novel.author.id === user.id || user.admin
   }
 }

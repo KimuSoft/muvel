@@ -1,13 +1,6 @@
 import React, { forwardRef } from "react"
-import {
-  Box,
-  Heading,
-  HStack,
-  type StackProps,
-  Text,
-  VStack,
-} from "@chakra-ui/react"
-import type { Novel } from "../../../types/novel.type"
+import { Box, Heading, HStack, Tag, Text, VStack } from "@chakra-ui/react"
+import { type Novel, ShareType } from "../../types/novel.type"
 import TagChip from "~/components/atoms/TagChip"
 import { useNavigate } from "react-router"
 
@@ -17,22 +10,23 @@ const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
 
     return (
       <HStack
-        px={2}
-        py={2}
         rounded={5}
-        gap={5}
+        h="152px"
         cursor={"pointer"}
-        transition={"background-color 0.2s ease-in-out"}
         onClick={() => navigate(`/novels/${novel.id}`)}
         userSelect={"none"}
-        _hover={{ bgColor: { base: "gray.100", _dark: "gray.900" } }}
         ref={ref}
+        borderWidth={1}
+        borderColor={"transparent"}
+        overflow={"hidden"}
+        transition={"border-color 0.2s"}
+        _hover={{ borderColor: { base: "gray.100", _dark: "purple.500" } }}
         {...props}
       >
         <Box
           w="100px"
           h="150px"
-          borderRadius="5px"
+          borderRadius={"md"}
           backgroundColor={{ base: "gray.200", _dark: "gray.700" }}
           backgroundImage={novel.thumbnail || ""}
           backgroundRepeat={"no-repeat"}
@@ -40,7 +34,7 @@ const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
           backgroundPosition={"center"}
           flexShrink={0}
         />
-        <VStack h={"100%"} gap={2} py={1}>
+        <VStack h={"100%"} gap={2} px={3} py={1}>
           <HStack w={"100%"}>
             <Heading size={"sm"}>{novel.title}</Heading>
             <Text fontSize={"xs"} color={"gray.500"} flexShrink={0}>
@@ -52,6 +46,12 @@ const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
               <Text
                 color={{ base: "gray.700", _dark: "gray.300" }}
                 fontSize={"sm"}
+                css={{
+                  display: "-webkit-box",
+                  WebkitLineClamp: 3, // 줄 수 조절
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }}
               >
                 {novel.description}
               </Text>
@@ -63,8 +63,30 @@ const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
           </Box>
 
           <HStack w={"100%"} flexWrap={"wrap"} gap={1}>
+            <Tag.Root
+              size={"sm"}
+              colorPalette={
+                novel.share === ShareType.Private ? "gray" : "purple"
+              }
+              variant={"subtle"}
+            >
+              <Tag.Label>
+                {novel.share === ShareType.Private
+                  ? "비공개"
+                  : novel.share === ShareType.Public
+                    ? "공개"
+                    : "일부 공개"}
+              </Tag.Label>
+            </Tag.Root>
             {novel.tags.map((tag, idx) => (
-              <TagChip key={idx}>{tag}</TagChip>
+              <Tag.Root
+                size={"sm"}
+                colorPalette={"gray"}
+                key={idx}
+                variant={"subtle"}
+              >
+                <Tag.Label>{tag}</Tag.Label>
+              </Tag.Root>
             ))}
           </HStack>
         </VStack>

@@ -94,9 +94,8 @@ const EpisodeItem = forwardRef<
     <Box w={"100%"} ref={ref} {...props}>
       <Box
         px={3}
-        py={0.5}
+        py={1}
         borderRadius={14}
-        border={"1px solid var(--chakra-colors-purple-500)"}
         userSelect={"none"}
         mt={index ? 4 : 0}
         cursor={"pointer"}
@@ -116,19 +115,24 @@ const EpisodeItem = forwardRef<
       userSelect={"none"}
       w={"100%"}
       gap={5}
-      px={2}
+      pr={3}
       py={1}
       cursor={"pointer"}
       onClick={clickHandler}
       borderRadius={4}
-      transition={"background-color 0.2s"}
+      border={"1px solid transparent"}
       _hover={{
-        backgroundColor: { base: "gray.100", _dark: "gray.700" },
+        borderColor: { base: "purple.300", _dark: "purple.500" },
       }}
       ref={ref}
       {...props}
     >
-      <Box flexShrink={0} w={"4px"} h={"44px"} backgroundColor={"purple.500"} />
+      <Box
+        flexShrink={0}
+        w={"4px"}
+        h={{ base: "70px", md: "44px" }}
+        backgroundColor={"purple.500"}
+      />
       <Text
         flexShrink={0}
         color={"purple.500"}
@@ -139,8 +143,17 @@ const EpisodeItem = forwardRef<
       >
         {prefix}
       </Text>
-      <VStack gap={0} alignItems={"baseline"}>
-        <Text>{episode.title}</Text>
+      <VStack gap={1} alignItems={"baseline"}>
+        <HStack>
+          <Text
+            display={{ base: "block", md: "none" }}
+            color={"purple.500"}
+            fontWeight={600}
+          >
+            {episode.order}편
+          </Text>
+          <Text>{episode.title}</Text>
+        </HStack>
         <Text fontSize={"xs"} color={"gray.500"}>
           {episode.description}
         </Text>

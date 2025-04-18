@@ -1,16 +1,24 @@
 import {
+  Box,
+  Button,
+  Center,
   CloseButton,
   Field,
   HStack,
   Icon,
+  IconButton,
   Input,
-  Popover,
   Tag,
 } from "@chakra-ui/react"
 import React from "react"
-import { TbPlus, TbTag } from "react-icons/tb"
+import { TbPlus, TbTag, TbX } from "react-icons/tb"
 import TagChip from "../atoms/TagChip"
 import { toaster } from "~/components/ui/toaster"
+import {
+  PopoverContent,
+  PopoverRoot,
+  PopoverTrigger,
+} from "~/components/ui/popover"
 
 const NovelTagList: React.FC<{
   tags: string[]
@@ -47,30 +55,33 @@ const NovelTagList: React.FC<{
     }
   }
 
+  if (!tags.length && !editable) {
+    return null
+  }
+
   return (
-    <HStack gap={1}>
+    <HStack gap={0.5} alignItems={"flex-start"} flexWrap={"wrap"}>
       {tags.map((tag) => (
-        <TagChip key={tag}>
-          {tag}
+        <Tag.Root key={tag}>
+          <Tag.Label>{tag}</Tag.Label>
           {editable && (
-            <CloseButton
-              size="sm"
+            <Icon
+              as={TbX}
               onClick={() => onSubmit(tags.filter((t) => t !== tag))}
-              ml={1}
+              cursor={"pointer"}
             />
           )}
-        </TagChip>
+        </Tag.Root>
       ))}
 
       {editable && (
-        <Popover.Root open={open} onOpenChange={(e) => setOpen(e.open)}>
-          <Popover.Trigger>
+        <PopoverRoot open={open} onOpenChange={(e) => setOpen(e.open)}>
+          <PopoverTrigger>
             <Tag.Root
-              size="sm"
-              borderRadius="full"
               cursor="pointer"
-              userSelect="none"
               transition="background-color 0.1s"
+              colorPalette="purple"
+              variant={"outline"}
               _hover={{
                 bgColor: { base: "gray.200", _dark: "gray.700" },
               }}
@@ -78,8 +89,8 @@ const NovelTagList: React.FC<{
               {!tags.length && <Tag.Label>태그 추가</Tag.Label>}
               <Icon as={TbPlus} />
             </Tag.Root>
-          </Popover.Trigger>
-          <Popover.Content p={4}>
+          </PopoverTrigger>
+          <PopoverContent p={4}>
             <Field.Root>
               <Field.Label display="flex" alignItems="center" gap={2} mb={1}>
                 <TbTag />새 태그 추가하기
@@ -92,8 +103,8 @@ const NovelTagList: React.FC<{
                 placeholder="Enter 키로 추가"
               />
             </Field.Root>
-          </Popover.Content>
-        </Popover.Root>
+          </PopoverContent>
+        </PopoverRoot>
       )}
     </HStack>
   )

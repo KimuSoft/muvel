@@ -2,17 +2,16 @@ import {
   Button,
   Dialog,
   DialogBody,
-  DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   Portal,
 } from "@chakra-ui/react"
-import { useNavigate, useRevalidator } from "react-router"
+import { useNavigate } from "react-router"
 import { TbTrash } from "react-icons/tb"
 import React from "react"
-import { api } from "~/utils/api"
 import { toaster } from "~/components/ui/toaster"
+import { frontApi } from "~/utils/frontApi"
 
 type DeleteNovelDialogProps = {
   novelId: string
@@ -25,17 +24,15 @@ const DeleteNovelDialog: React.FC<DeleteNovelDialogProps> = ({
 }) => {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = React.useState(false)
-  const { revalidate } = useRevalidator()
 
   const handleDelete = async () => {
     try {
       setIsLoading(true)
-      await api.delete(`/novels/${novelId}`)
-      toaster.create({
+      await frontApi.delete(`/novels/${novelId}`)
+      toaster.success({
         title: "소설이 삭제되었어요...",
+        description: "지금까지 즐거웠어... 다음에 또 만나요.",
       })
-      await revalidate()
-      // onOpenChange({ open: false })
       navigate("/")
     } finally {
       setIsLoading(false)

@@ -20,7 +20,7 @@ import SortableNovelGrid from "~/features/my-novels/components/SortableNovelGrid
 import { useUser } from "~/context/UserContext"
 import CreateNovelModal from "~/components/modals/CreateNovelModal"
 
-const MainLayout: React.FC<{
+const MyNovelsTemplates: React.FC<{
   novels: Novel[]
 }> = ({ novels }) => {
   const [innerWidth, setInnerWidth] = useState(0)
@@ -45,10 +45,10 @@ const MainLayout: React.FC<{
       <Container maxW={"4xl"} my={100} px={3}>
         {user && (
           <>
-            <HStack w={"100%"} gap={3} mb={3} px={3}>
-              <FaBookBookmark size={18} />
-              <Heading fontSize={"xl"}>{user?.username}의 소설 목록</Heading>
-              <Text fontSize={"md"} color={"gray.500"}>
+            <HStack w={"100%"} gap={3} mb={5} px={3}>
+              <FaBookBookmark size={16} />
+              <Heading fontSize={"md"}>{user?.username}의 소설 목록</Heading>
+              <Text fontSize={"sm"} color={"gray.500"}>
                 ({novels.length}개)
               </Text>
               <Spacer />
@@ -58,7 +58,6 @@ const MainLayout: React.FC<{
                   size={"sm"}
                   colorScheme="purple"
                   flexShrink={0}
-                  variant={"outline"}
                 >
                   <RiQuillPenFill />
                   <Box display={{ base: "none", md: "block" }}>
@@ -67,7 +66,6 @@ const MainLayout: React.FC<{
                 </Button>
               </CreateNovelModal>
             </HStack>
-            <Separator mb={5} />
           </>
         )}
 
@@ -100,4 +98,4 @@ const MainLayout: React.FC<{
   )
 }
 
-export default MainLayout
+export default MyNovelsTemplates

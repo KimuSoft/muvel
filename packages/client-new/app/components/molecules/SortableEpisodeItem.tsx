@@ -3,7 +3,7 @@ import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import React from "react"
 import EpisodeItem from "./EpisodeItem"
-import type { PartialEpisode } from "../../types/episode.type"
+import type { PartialEpisode } from "~/types/episode.type"
 
 const SortableEpisodeItem: React.FC<
   {
@@ -33,7 +33,6 @@ const SortableEpisodeItem: React.FC<
       episode={episode}
       ref={setNodeRef}
       style={style}
-      borderColor={"purple.500"}
       zIndex={isDragging ? 1 : "auto"}
       boxShadow={isDragging ? "lg" : "none"}
       {...props}
