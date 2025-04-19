@@ -8,7 +8,7 @@ import {
 } from "@dnd-kit/core"
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable"
 import { SimpleGrid } from "@chakra-ui/react"
-import type { Novel } from "~/types/novel.type"
+import type { Novel } from "muvel-api-types"
 import SortableNovelItem from "~/features/my-novels/components/SortableNovelItem"
 
 const SortableNovelGrid: React.FC<{ novels: Novel[]; column?: number }> = ({

@@ -16,10 +16,10 @@ import EditorSetting from "./EditorSetting"
 import {
   type Episode,
   EpisodeType,
-  type PartialEpisode,
-} from "~/types/episode.type"
+  type GetNovelResponseDto,
+} from "muvel-api-types"
 import { api } from "~/utils/api"
-import { initialNovel, type Novel } from "~/types/novel.type"
+import { initialNovel, type Novel } from "muvel-api-types"
 import Auth from "~/components/molecules/Auth"
 import WidgetDrawer from "./WidgetDrawer"
 import { TbBook, TbCategory, TbChevronLeft, TbPlus } from "react-icons/tb"
@@ -32,9 +32,10 @@ import ExportEpisode from "../molecules/ExportEpisode"
 import DeleteEpisodeDialog from "../modals/DeleteEpisodeDialog"
 import ImportEpisode from "~/features/block-editor/components/molecules/ImportEpisode"
 import { MdChevronLeft, MdMenu } from "react-icons/md"
+import { getNovel } from "~/api/api.novel"
 
-const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
-  const [novel, setNovel] = useState<Novel>(initialNovel)
+const EditorDrawer: React.FC<{ episode: Episode }> = ({ episode }) => {
+  const [novel, setNovel] = useState<GetNovelResponseDto | null>(null)
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
 
@@ -42,8 +43,8 @@ const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
 
   const refreshNovel = async () => {
     setLoading(true)
-    const { data } = await api.get<Novel>(`novels/${episode.novelId}`)
-    setNovel(data)
+    const novel = await getNovel(episode.novelId)
+    setNovel(novel)
     setLoading(false)
   }
 
@@ -131,7 +132,7 @@ const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
                 </IconButton>
                 <ColorModeButton />
                 <WidgetDrawer />
-                <SearchModal novelId={novel.id} />
+                {novel && <SearchModal novelId={novel.id} />}
                 <Auth />
               </HStack>
             </Drawer.Header>
@@ -167,12 +168,18 @@ const EditorDrawer: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
                 </Menu.Root>
               </HStack>
 
-              <SortableEpisodeList novel={novel} isLoading={loading} isNarrow />
+              <SortableEpisodeList
+                episodes={novel?.episodes || []}
+                isLoading={loading}
+                isNarrow
+              />
             </Drawer.Body>
 
             <Drawer.Footer>
               <HStack w="100%">
-                <DeleteEpisodeDialog novel={novel} episodeId={episode.id} />
+                {novel && (
+                  <DeleteEpisodeDialog novel={novel} episodeId={episode.id} />
+                )}
                 <Spacer />
                 <EditorSetting />
                 <ExportEpisode />

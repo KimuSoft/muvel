@@ -10,10 +10,10 @@ import {
 } from "typeorm"
 import { BlockEntity } from "../blocks/block.entity"
 import { NovelEntity } from "../novels/novel.entity"
-import { EditorType, EpisodeType } from "../types"
+import { EditorType, Episode, EpisodeType } from "muvel-api-types"
 
 @Entity("episode")
-export class EpisodeEntity {
+export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
   @PrimaryGeneratedColumn("uuid")
   id: string
 

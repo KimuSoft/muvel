@@ -1,6 +1,6 @@
 import React, { forwardRef } from "react"
 import { Box, Heading, HStack, Text, VStack } from "@chakra-ui/react"
-import type { Novel } from "~/types/novel.type"
+import type { Novel } from "muvel-api-types"
 import TagChip from "~/components/atoms/TagChip"
 import { useNavigate } from "react-router"
 

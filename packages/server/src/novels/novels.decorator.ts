@@ -2,7 +2,7 @@ import { applyDecorators, SetMetadata, UseGuards } from "@nestjs/common"
 import { ApiForbiddenResponse } from "@nestjs/swagger"
 import { RequireAuth } from "../auth/auth.decorator"
 import { NovelsGuard } from "./novels.guard"
-import { NovelPermission } from "../types"
+import { NovelPermission } from "./novel.enum"
 
 export const RequirePermission = (permission: NovelPermission) =>
   applyDecorators(

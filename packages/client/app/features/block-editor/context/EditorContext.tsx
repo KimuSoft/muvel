@@ -6,23 +6,24 @@ import React, {
   useState,
 } from "react"
 import { produce } from "immer"
-import { initialNovel, type Novel } from "~/types/novel.type"
+import type { LegacyBlock } from "muvel-api-types"
 import {
+  type Episode,
+  initialNovel,
   initialPartialEpisode,
-  type PartialEpisode,
-} from "~/types/episode.type"
+  type Novel,
+} from "muvel-api-types"
 import { getWidgets } from "../utils/getWidgets"
-import type { Block } from "~/types/block.type"
 
 type EditorContextType = {
   novel: Novel
   updateNovel: (recipe: (draft: Novel) => void) => void
 
-  episode: PartialEpisode
-  updateEpisode: (recipe: (draft: PartialEpisode) => void) => void
+  episode: Episode
+  updateEpisode: (recipe: (draft: Episode) => void) => void
 
-  blocks: Block[]
-  updateBlocks: (recipe: (draft: Block[]) => void) => void
+  blocks: LegacyBlock[]
+  updateBlocks: (recipe: (draft: LegacyBlock[]) => void) => void
 
   isAutoSaving: boolean
   setIsAutoSaving: React.Dispatch<React.SetStateAction<boolean>>
@@ -43,8 +44,8 @@ export const BlockEditorProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [novel, setNovel] = useState<Novel>(initialNovel)
-  const [episode, setEpisode] = useState<PartialEpisode>(initialPartialEpisode)
-  const [blocks, setBlocks] = useState<Block[]>([])
+  const [episode, setEpisode] = useState<Episode>(initialPartialEpisode)
+  const [blocks, setBlocks] = useState<LegacyBlock[]>([])
   const [isAutoSaving, setIsAutoSaving] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [widgets, setWidgets] = useState<Set<string>>(new Set())
@@ -58,11 +59,11 @@ export const BlockEditorProvider: React.FC<{ children: React.ReactNode }> = ({
     setNovel((prev) => produce(prev, recipe))
   }
 
-  const updateEpisode = (recipe: (draft: PartialEpisode) => void) => {
+  const updateEpisode = (recipe: (draft: Episode) => void) => {
     setEpisode((prev) => produce(prev, recipe))
   }
 
-  const updateBlocks = (recipe: (draft: Block[]) => void) => {
+  const updateBlocks = (recipe: (draft: LegacyBlock[]) => void) => {
     setBlocks((prev) => produce(prev, recipe))
   }
 

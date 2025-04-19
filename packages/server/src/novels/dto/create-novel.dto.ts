@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { IsEnum, IsOptional, IsString } from "class-validator"
-import { ShareType } from "../../types"
+import { ShareType } from "muvel-api-types"
 
 export class CreateNovelDto {
   @ApiProperty()

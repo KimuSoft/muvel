@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react"
-import type { User } from "~/types/user.type"
+import type { User } from "muvel-api-types"
 
 const UserContext = createContext<User | null>(null)
 

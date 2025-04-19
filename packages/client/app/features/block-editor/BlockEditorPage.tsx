@@ -1,9 +1,6 @@
 import React, { type ReactNode, useEffect, useMemo, useState } from "react"
 import BlockEditorTemplate from "./BlockEditorTemplate"
 import { useNavigate, useParams } from "react-router"
-import { type Episode, type PartialEpisode } from "~/types/episode.type"
-import _ from "lodash"
-import { type Block } from "~/types/block.type"
 import { widgetData } from "./components/widget"
 import { AxiosError } from "axios"
 import { api } from "~/utils/api"
@@ -11,6 +8,9 @@ import { useUser } from "~/context/UserContext"
 import { toaster } from "~/components/ui/toaster"
 import { useBlockEditor } from "~/features/block-editor/context/EditorContext"
 import { useOption } from "~/context/OptionContext"
+import type { Episode, LegacyBlock } from "muvel-api-types"
+import { getEpisodeLegacyBlocks } from "~/api/api.episode"
+import { differenceWith, isEqual } from "lodash-es"
 
 const BlockEditorPage: React.FC = () => {
   // Hooks
@@ -34,8 +34,8 @@ const BlockEditorPage: React.FC = () => {
   } = useBlockEditor()
 
   // State (Cache) :업데이트 시 변경 사항을 비교하는 용도
-  const [episodeCache, setEpisodeCache] = useState<PartialEpisode>()
-  const [blocksCache, setBlocksCache] = useState<Block[]>([])
+  const [episodeCache, setEpisodeCache] = useState<Episode>()
+  const [blocksCache, setBlocksCache] = useState<LegacyBlock[]>([])
 
   useEffect(() => {
     // 로그인되어 있지 않은 경우 로그인 페이지로 이동
@@ -59,10 +59,10 @@ const BlockEditorPage: React.FC = () => {
       .filter((b) => !blocks.find((b2) => b2.id === b.id))
       .map((b) => ({ id: b.id, isDeleted: true }))
 
-    const difference = _.differenceWith(
+    const difference = differenceWith(
       blocks.map((b, order) => ({ ...b, order })),
       blocksCache.map((b, order) => ({ ...b, order })),
-      _.isEqual,
+      isEqual,
     )
 
     return [...deletedBlocks, ...difference]
@@ -151,14 +151,13 @@ const BlockEditorPage: React.FC = () => {
       return navigate("/")
     }
     if (!episode_) return navigate("/")
-    if (!episode.editable) return navigate("/viewer")
 
-    const blocksRes = await api.get<Block[]>(`episodes/${episodeId}/blocks`)
+    const blocksRes = await getEpisodeLegacyBlocks(episode.id)
 
     updateEpisode(() => episode_)
-    updateBlocks(() => blocksRes.data)
+    updateBlocks(() => blocksRes)
     setEpisodeCache(episode_)
-    setBlocksCache(blocksRes.data)
+    setBlocksCache(blocksRes)
     setIsLoading(false)
   }
 

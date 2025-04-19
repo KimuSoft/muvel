@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { ShareType } from "../../types"
+import { ShareType } from "muvel-api-types"
 import {
   IsEnum,
   IsNumber,

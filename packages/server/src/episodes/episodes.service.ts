@@ -1,13 +1,13 @@
 import { Inject, Injectable, NotFoundException } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
-import { FindOptionsRelations, Repository } from "typeorm"
+import { Repository } from "typeorm"
 import { EpisodeEntity } from "./episode.entity"
 import { PatchEpisodesDto } from "../novels/dto/patch-episodes.dto"
 import { CreateEpisodeDto } from "./dto/create-episode.dto"
 import { NovelEntity } from "../novels/novel.entity"
 import { ISearchRepository } from "../search/isearch.repository"
 import { SearchRepository } from "src/search/search.repository"
-import { EpisodeType } from "../types"
+import { EpisodeType } from "muvel-api-types"
 import { UserEntity } from "../users/user.entity"
 
 @Injectable()
@@ -43,7 +43,7 @@ export class EpisodesService {
   async findEpisodeById(id: string, userId: string) {
     const episode = await this.episodesRepository.findOne({
       where: { id },
-      relations: ["novel", "novel.author"],
+      relations: ["novel", "novel.author", "blocks"],
     })
 
     if (!episode) throw new NotFoundException(`Episode with id ${id} not found`)

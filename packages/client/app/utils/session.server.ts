@@ -1,7 +1,6 @@
 import { parse } from "cookie"
-import axios from "axios"
 import { createCookie } from "react-router"
-import type { User } from "~/types/user.type"
+import type { User } from "muvel-api-types"
 import { api } from "~/utils/api"
 
 export const authCookie = createCookie("auth_token", {

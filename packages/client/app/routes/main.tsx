@@ -1,7 +1,7 @@
 import type { Route } from "./+types/main"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { api } from "~/utils/api"
-import type { Novel } from "~/types/novel.type"
+import type { Novel } from "muvel-api-types"
 import { getUserFromRequest } from "~/utils/session.server"
 import MainTemplate from "~/components/templates/MainTemplate"
 

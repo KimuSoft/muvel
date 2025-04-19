@@ -1,6 +1,6 @@
 import React, { createRef } from "react"
 import { z } from "zod"
-import { BlockType } from "~/types/block.type"
+import { LegacyBlockType } from "muvel-api-types"
 import { IconButton } from "@chakra-ui/react"
 import { FiUpload } from "react-icons/fi"
 import { useBlockEditor } from "~/features/block-editor/context/EditorContext"
@@ -23,7 +23,7 @@ const episodeSchema = z.object({
     z.object({
       id: z.string().uuid(),
       content: z.string(),
-      blockType: z.nativeEnum(BlockType),
+      blockType: z.nativeEnum(LegacyBlockType),
     }),
   ),
 })

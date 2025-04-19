@@ -21,7 +21,6 @@ export class JwtAuthGuard implements CanActivate {
       ? authHeader.split(" ")[1]
       : null
     const cookieToken = req.cookies?.auth_token
-    console.log("cookies", req.cookies)
 
     const token = bearerToken || cookieToken
     if (!token) throw new UnauthorizedException("No token provided")

@@ -4,6 +4,9 @@ import { defineConfig } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
 
 export default defineConfig({
-  server: { proxy: { "/api": "http://localhost:2556" } },
+  server: {
+    allowedHosts: [".kimustory.net"],
+    proxy: { "/api": "http://localhost:2556" },
+  },
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
 })
