@@ -40,7 +40,7 @@ const ContentEditableBlock: React.FC<BlockContentEditableProps> = ({
         }
       default:
         return {
-          padding: `${option.gap / 2}px 0`,
+          padding: `${option.blockGap / 2}px 0`,
           fontSize: option.fontSize + "px",
           lineHeight: option.lineHeight + "px",
           textIndent: option.indent + "em",

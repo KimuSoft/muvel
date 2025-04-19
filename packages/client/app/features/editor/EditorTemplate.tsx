@@ -1,19 +1,18 @@
-import type { Block, GetEpisodeResponseDto } from "muvel-api-types"
+import type { GetEpisodeResponseDto } from "muvel-api-types"
 import React, { useMemo } from "react"
 import NovelEditor from "~/features/editor/components/NovelEditor"
-import { Button, Center, ClientOnly, Container } from "@chakra-ui/react"
-import { useEditorContext } from "~/features/editor/context/EditorContext"
+import { ClientOnly, Container, VStack } from "@chakra-ui/react"
 import type { BlockChange } from "~/features/editor/utils/calculateBlockChanges"
 import { updateEpisodeBlocks } from "~/api/api.episode"
 import { debounce } from "lodash-es"
-import OptionDrawer from "~/features/editor/components/OptionDrawer"
+import { useOption } from "~/context/OptionContext"
+import EditorHeader from "~/features/editor/components/EditorHeader"
 
 const EditorTemplate: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   episode,
 }) => {
-  const { view, getBlocks } = useEditorContext()
-
-  const [blocks, setBlocks] = React.useState<Block[]>([])
+  // const { view, getBlocks } = useEditorContext()
+  const [option] = useOption()
 
   const handleChange = useMemo(
     () =>
@@ -24,9 +23,24 @@ const EditorTemplate: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   )
 
   return (
-    <Center>
-      <Container maxW={"4xl"} my={100} px={3}>
-        <OptionDrawer />
+    <VStack
+      bgColor={option.backgroundColor || undefined}
+      transition="background-color 0.2s ease-in-out"
+      minH={"100vh"}
+      h={"100%"}
+    >
+      <EditorHeader
+        novelId={episode.novelId}
+        transition="background-color 0.2s ease-in-out"
+        bgColor={"inherit"}
+      />
+      <Container
+        maxW={option.editorMaxWidth}
+        transition="max-width 0.2s ease-in-out"
+        minH={"100%"}
+        my={100}
+        px={3}
+      >
         <ClientOnly>
           <NovelEditor
             initialBlocks={episode.blocks}
@@ -35,11 +49,8 @@ const EditorTemplate: React.FC<{ episode: GetEpisodeResponseDto }> = ({
             onChange={handleChange}
           />
         </ClientOnly>
-        <Button onClick={() => setBlocks(getBlocks())}>Refresh</Button>
-        <pre>{JSON.stringify(blocks, null, 2)}</pre>
-        <pre>{JSON.stringify(episode, null, 2)}</pre>
       </Container>
-    </Center>
+    </VStack>
   )
 }
 

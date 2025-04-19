@@ -55,18 +55,16 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
       borderRadius="md"
       p={4}
       tabIndex={0}
+      color={{ base: "gray.700", _dark: "gray.300" }}
       style={
         {
           "--editor-line-height": options.lineHeight,
           "--editor-font-family": `'${options.fontFamily}'`,
+          "--editor-font-weight": `${options.fontWeight}`,
           "--editor-font-size": `${options.fontSize}px`,
           "--editor-color": options.color,
-          // "--editor-line-height": "1.2",
-          // "--editor-font-family": `'RIDIBatang', 'Montserrat', 'Pretendard', 'Noto Sans KR', sans-serif`,
-          // "--editor-font-weight": "400",
-          // "--editor-font-size": `20px`,
-          // "--editor-color": "white",
-          // "--quote-color": options.quoteColor,
+          "--editor-indent": `${options.indent}em`,
+          "--editor-block-gap": `${options.blockGap}px`,
         } as React.CSSProperties
       }
     />
