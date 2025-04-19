@@ -16,7 +16,8 @@ import {
 const fontFamilyCollection = createListCollection({
   items: [
     { label: "리디바탕", value: "RIDIBatang" },
-    { label: "Noto Sans KR", value: "Noto Sans KR" },
+    { label: "KoPubWorld 바탕체", value: "KoPubWorldBatang" },
+    { label: "Inter", value: "Inter" },
     { label: "Pretendard", value: "Pretendard" },
     // 굴림, 돋움
     { label: "굴림", value: "Gulim" },
