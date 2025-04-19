@@ -8,11 +8,13 @@ import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
 import { SearchNovelsDto } from "./dto/search-novels.dto"
 import { UserEntity } from "../users/user.entity"
-import { BlockType, NovelPermission, ShareType } from "../types"
+import { BlockType, PMNodeJSON, ShareType } from "muvel-api-types"
 import { UpdateNovelDto } from "./dto/update-novel.dto"
 import { EpisodeEntity } from "../episodes/episode.entity"
 import { BlockEntity } from "../blocks/block.entity"
 import { CreateNovelDto } from "./dto/create-novel.dto"
+
+import { NovelPermission } from "./novel.enum"
 
 @Injectable()
 export class NovelsService {
@@ -101,12 +103,16 @@ export class NovelsService {
     episode.order = order.toString()
 
     // 블록 생성
-    episode.blocks = [await this.createBlock("샘플 블록입니다.")]
+    episode.blocks = [
+      await this.createBlock([
+        { type: "text", text: "뮤블에 오신 것을 환영합니다!" },
+      ]),
+    ]
 
     return this.episodesRepository.save(episode)
   }
 
-  private async createBlock(content: string, order?: number) {
+  private async createBlock(content: PMNodeJSON[], order?: number) {
     if (!order) {
       const lastBlock = await this.blocksRepository
         .findOne({

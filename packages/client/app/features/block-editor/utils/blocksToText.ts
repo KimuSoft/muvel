@@ -1,15 +1,20 @@
-import { type Block, BlockType } from "~/types/block.type"
+import { type LegacyBlock, LegacyBlockType } from "muvel-api-types"
 
-const blocksToText = (blocks: Block[], option?: ConvertOption): string => {
+const blocksToText = (
+  blocks: LegacyBlock[],
+  option?: ConvertOption,
+): string => {
   if (!option?.exportComment) {
-    blocks = blocks.filter((block) => block.blockType !== BlockType.Comment)
+    blocks = blocks.filter(
+      (block) => block.blockType !== LegacyBlockType.Comment,
+    )
   }
 
   let content = ""
 
   let index = 0
   for (const block of blocks) {
-    if (block.blockType === BlockType.Divider)
+    if (block.blockType === LegacyBlockType.Divider)
       content += option?.divider ?? "------------------\n"
 
     if (index && blocks[index - 1].blockType !== block.blockType)

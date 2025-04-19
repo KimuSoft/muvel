@@ -1,4 +1,4 @@
-import { defaultOption, type EditorOption } from "~/types"
+import { defaultOption, type EditorOption } from "~/providers/OptionProvider"
 
 const getEditorOptions = () => {
   try {

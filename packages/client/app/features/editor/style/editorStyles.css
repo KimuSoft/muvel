@@ -1,0 +1,85 @@
+/* 에디터 기본 구조 */
+.ProseMirror {
+    font-family: var(--editor-font-family, 'Pretendard');
+    font-size: var(--editor-font-size, 16px);
+    font-weight: var(--editor-font-weight, 400);
+    line-height: var(--editor-line-height, 1.4);
+    color: var(--editor-color, inherit);
+    caret-color: auto;
+
+    outline: none;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* 공통 블록 */
+.ProseMirror p {
+    margin: 0;
+    padding: 0.4em 0;
+}
+
+/* Quote (대사 블록) */
+.ProseMirror p[data-quote-style] {
+    position: relative;
+    font-style: italic;
+    padding-left: 1.2em;
+    padding-right: 1.2em;
+    color: var(--quote-color, #444);
+}
+
+/* Quote: 따옴표 삽입 */
+.ProseMirror p[data-quote-style]::before,
+.ProseMirror p[data-quote-style]::after {
+    position: absolute;
+    font-size: 1.2em;
+    color: var(--quote-color, #aaa);
+}
+
+/* 따옴표 위치 조정 */
+.ProseMirror p[data-quote-style]::before {
+    content: "“";
+    left: 0;
+    top: 0;
+}
+.ProseMirror p[data-quote-style]::after {
+    content: "”";
+    right: 0;
+    bottom: 0;
+}
+
+/* 따옴표 스타일 종류별 변경 */
+.ProseMirror p[data-quote-style="single"]::before { content: "‘"; }
+.ProseMirror p[data-quote-style="single"]::after  { content: "’"; }
+
+.ProseMirror p[data-quote-style="scythe-single"]::before { content: "「"; }
+.ProseMirror p[data-quote-style="scythe-single"]::after  { content: "」"; }
+
+.ProseMirror p[data-quote-style="scythe-double"]::before { content: "『"; }
+.ProseMirror p[data-quote-style="scythe-double"]::after  { content: "』"; }
+
+.ProseMirror p[data-quote-style="guillemet-single"]::before { content: "〈"; }
+.ProseMirror p[data-quote-style="guillemet-single"]::after  { content: "〉"; }
+
+.ProseMirror p[data-quote-style="guillemet-double"]::before { content: "《"; }
+.ProseMirror p[data-quote-style="guillemet-double"]::after  { content: "》"; }
+
+/* Comment 노드 스타일 */
+.ProseMirror aside {
+    background-color: #f6f8fa;
+    color: #666;
+    font-family: monospace;
+    font-size: 14px;
+    padding: 0.6em 1em;
+    border-left: 3px solid #bbb;
+    border-radius: 4px;
+    margin: 1em 0;
+    white-space: pre-wrap;
+}
+
+/* Divider (hr) */
+.ProseMirror hr {
+    border: none;
+    border-top: 1.5px dashed #ccc;
+    margin: 2em 0;
+    height: 0;
+}

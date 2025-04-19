@@ -1,4 +1,4 @@
-import type { Novel } from "../../../types/novel.type"
+import type { Novel } from "muvel-api-types"
 import type { StackProps } from "@chakra-ui/react"
 import NovelItem from "../../../components/molecules/NovelItem"
 import { useSortable } from "@dnd-kit/sortable"

@@ -1,25 +1,25 @@
-import { type Block, BlockType } from "~/types/block.type"
+import { type LegacyBlock, LegacyBlockType } from "muvel-api-types"
 import { v4 } from "uuid"
 
-const stringToBlock = (content: string): Block[] => {
-  const blocks: Block[] = []
+const stringToBlock = (content: string): LegacyBlock[] => {
+  const blocks: LegacyBlock[] = []
   const lines = content.split("\n")
   for (const line of lines) {
     const content = line.trim()
 
     if (!content) continue
 
-    let blockType = BlockType.Describe
+    let blockType = LegacyBlockType.Describe
     if (/^["“”].*["“”]$/.test(content)) {
-      blockType = BlockType.DoubleQuote
+      blockType = LegacyBlockType.DoubleQuote
     } else if (/^[\s-=*]+$/.test(content)) {
-      blockType = BlockType.Divider
+      blockType = LegacyBlockType.Divider
     }
 
     blocks.push({
       blockType: blockType,
       content:
-        blockType !== BlockType.Divider
+        blockType !== LegacyBlockType.Divider
           ? content.replace(/^"(.*)"$/, "“$1”").replace(/\.\.\./g, "…")
           : "",
       id: v4(),

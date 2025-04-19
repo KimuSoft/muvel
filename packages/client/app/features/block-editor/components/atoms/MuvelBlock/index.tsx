@@ -1,7 +1,7 @@
 import React from "react"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { BlockType } from "~/types/block.type"
+import { LegacyBlockType } from "muvel-api-types"
 import { BlockContainer } from "./Styles"
 import { Box } from "@chakra-ui/react"
 import ContentEditableBlock, {
@@ -31,6 +31,7 @@ const MuvelBlock: React.FC<BlockContentEditableProps & { id: string }> = ({
   }
 
   return (
+    // @ts-ignore 어차피 레거시 지원용이라 작동만 되는 선에서 완성
     <BlockContainer ref={setNodeRef} style={style} {...attributes}>
       {/* 드래그 핸들 */}
       <Box
@@ -41,7 +42,7 @@ const MuvelBlock: React.FC<BlockContentEditableProps & { id: string }> = ({
         <Handle block={block} listeners={listeners} attributes={attributes} />
       </Box>
 
-      {block.blockType === BlockType.Divider ? (
+      {block.blockType === LegacyBlockType.Divider ? (
         <DividerBlock />
       ) : (
         <ContentEditableBlock block={block} {...props} />

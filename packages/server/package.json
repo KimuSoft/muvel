@@ -30,7 +30,7 @@
     "@nestjs/serve-static": "^3.0.0",
     "@nestjs/swagger": "^7.0.1",
     "@nestjs/typeorm": "^9.0.1",
-    "axios": "^1.4.0",
+    "axios": "^1.8.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "cookie-parser": "^1.4.7",
@@ -44,7 +44,8 @@
     "pg": "^8.8.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
-    "typeorm": "^0.3.11"
+    "typeorm": "^0.3.11",
+    "muvel-api-types": "workspace:^"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

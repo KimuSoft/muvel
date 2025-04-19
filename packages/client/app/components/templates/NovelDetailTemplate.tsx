@@ -11,14 +11,10 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import Header from "../organisms/Header"
-import {
-  type Novel,
-  type NovelPermissions,
-  ShareType,
-} from "~/types/novel.type"
-import { TbEdit, TbPlayerPlay, TbPlus, TbShare } from "react-icons/tb"
+import { type GetNovelResponseDto, ShareType } from "muvel-api-types"
+import { TbEdit, TbPlayerPlay, TbPlus } from "react-icons/tb"
 import NovelTagList from "../organisms/NovelTagList"
-import { useNavigate, useRevalidator } from "react-router"
+import { useRevalidator } from "react-router"
 import SortableEpisodeList from "../organisms/SortableEpisodeList"
 import ModifyNovelModal from "~/components/modals/ModifyNovelModal"
 import { FaList } from "react-icons/fa6"
@@ -26,9 +22,8 @@ import BlockLink from "~/components/atoms/BlockLink"
 import { updateNovel } from "~/api/api.novel"
 
 const NovelDetailTemplate: React.FC<{
-  novel: Novel & { permissions: NovelPermissions }
+  novel: GetNovelResponseDto
 }> = ({ novel }) => {
-  const navigate = useNavigate()
   const { revalidate } = useRevalidator()
 
   const shareText = useMemo(() => {
@@ -76,7 +71,7 @@ const NovelDetailTemplate: React.FC<{
                   {novel.title}
                 </Heading>
                 <Text flexShrink={0} color={"gray.500"}>
-                  {novel.episodeIds.length}편 · {shareText}
+                  {novel.episodeCount}편 · {shareText}
                 </Text>
               </HStack>
               <NovelTagList
@@ -180,7 +175,7 @@ const NovelDetailTemplate: React.FC<{
             </Button>
           ) : null}
         </HStack>
-        <SortableEpisodeList novel={novel} />
+        <SortableEpisodeList episodes={novel.episodes} />
       </Container>
     </VStack>
   )

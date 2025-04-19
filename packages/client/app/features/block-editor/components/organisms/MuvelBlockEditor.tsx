@@ -16,13 +16,13 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { Box, Text } from "@chakra-ui/react"
-import _ from "lodash"
 import { v4 } from "uuid"
-import { type Block, BlockType } from "~/types/block.type"
+import { type LegacyBlock, LegacyBlockType } from "muvel-api-types"
 import MuvelBlock from "../atoms/MuvelBlock"
 import { useBlockEditor } from "~/features/block-editor/context/EditorContext"
 import usePrevious from "~/features/block-editor/hooks/usePrevious"
 import setCaretToEnd from "~/features/block-editor/utils/setCaretToEnd"
+import { sum as lodSum } from "lodash-es"
 
 const MuvelBlockEditor: React.FC<{ initialFocusedBlockId?: string }> = ({
   initialFocusedBlockId,
@@ -37,13 +37,13 @@ const MuvelBlockEditor: React.FC<{ initialFocusedBlockId?: string }> = ({
     return document.createElement("canvas").getContext("2d")!
   }, [])
 
-  const prevBlocks = usePrevious<Block[]>(blocks)
+  const prevBlocks = usePrevious<LegacyBlock[]>(blocks)
 
   const getFocusIndex = (id: string) => {
     const b = blocks.find((b) => b.id === id)
     if (!b) return -1
     return blocks
-      .filter((b) => ![BlockType.Divider].includes(b.blockType))
+      .filter((b) => ![LegacyBlockType.Divider].includes(b.blockType))
       .indexOf(b)
   }
 
@@ -77,7 +77,7 @@ const MuvelBlockEditor: React.FC<{ initialFocusedBlockId?: string }> = ({
 
       _blocks.splice(index, 0, {
         id,
-        blockType: BlockType.Describe,
+        blockType: LegacyBlockType.Describe,
         content: content || "",
         focus: true,
       })
@@ -96,7 +96,7 @@ const MuvelBlockEditor: React.FC<{ initialFocusedBlockId?: string }> = ({
     updateBlocks((b) => b.filter((b) => b.id !== id))
   }
 
-  const updateBlockHandler = (block: Block) => {
+  const updateBlockHandler = (block: LegacyBlock) => {
     updateBlocks((_blocks) =>
       _blocks.map((b) => (b.id === block.id ? block : b)),
     )
@@ -124,7 +124,7 @@ const MuvelBlockEditor: React.FC<{ initialFocusedBlockId?: string }> = ({
 
       if (!currentText || !targetText) return lastBlock.focus()
 
-      const currentTextWidth = _.sum(
+      const currentTextWidth = lodSum(
         currentText
           .slice(0, sel.anchorOffset)
           .split("")
@@ -158,8 +158,8 @@ const MuvelBlockEditor: React.FC<{ initialFocusedBlockId?: string }> = ({
   }
 
   const getBlockNodes = () => {
-    const hasFocus = (blockType: BlockType) =>
-      ![BlockType.Divider].includes(blockType)
+    const hasFocus = (blockType: LegacyBlockType) =>
+      ![LegacyBlockType.Divider].includes(blockType)
 
     let skipIndex = 0
     return blocks.map((b, index) => {

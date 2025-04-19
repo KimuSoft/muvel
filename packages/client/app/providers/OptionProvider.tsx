@@ -1,7 +1,26 @@
 import React, { useCallback, useState } from "react"
 import { type Draft, produce } from "immer"
 import { OptionContext, SetOptionContext } from "~/context/OptionContext"
-import { defaultOption, type EditorOption } from "~/types"
+
+export const defaultOption: EditorOption = {
+  lineHeight: 1.5,
+  fontSize: 16,
+  gap: 8,
+  indent: 1,
+  quoteColor: null,
+  fontFamily: "Inter",
+  color: null,
+}
+
+export interface EditorOption {
+  quoteColor: any
+  lineHeight: number
+  fontSize: number
+  gap: number
+  indent: number
+  fontFamily: string
+  color: string | null
+}
 
 const getOption = (): EditorOption => {
   try {

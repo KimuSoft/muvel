@@ -1,19 +1,18 @@
 import React, { forwardRef, useMemo } from "react"
-import { EpisodeType, type PartialEpisode } from "~/types/episode.type"
+import { EpisodeType, type Episode } from "muvel-api-types"
 import {
   Box,
   HStack,
   Spacer,
   type StackProps,
   Text,
-  useMediaQuery,
   VStack,
 } from "@chakra-ui/react"
 import { TbBrandZapier, TbRefresh, TbTypography } from "react-icons/tb"
 import { useNavigate } from "react-router"
 import { Tooltip } from "~/components/ui/tooltip"
 
-const SideData: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
+const SideData: React.FC<{ episode: Episode }> = ({ episode }) => {
   const updatedAt = useMemo(() => {
     return new Date(episode.updatedAt)
   }, [episode.updatedAt])
@@ -65,7 +64,7 @@ const SideData: React.FC<{ episode: PartialEpisode }> = ({ episode }) => {
 const EpisodeItem = forwardRef<
   HTMLDivElement,
   {
-    episode: PartialEpisode
+    episode: Episode
     index: number
     isDrawer?: boolean
   } & StackProps

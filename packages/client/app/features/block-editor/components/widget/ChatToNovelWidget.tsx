@@ -3,7 +3,7 @@ import { Widget, WidgetBody, WidgetHeader } from "./Widget"
 import { BsDiscord } from "react-icons/bs"
 import { Button, Checkbox, Text, Textarea } from "@chakra-ui/react"
 import { v4 } from "uuid"
-import { type Block, BlockType } from "~/types/block.type"
+import { type LegacyBlock, LegacyBlockType } from "muvel-api-types"
 import { toaster } from "~/components/ui/toaster"
 import { useBlockEditor } from "~/features/block-editor/context/EditorContext"
 
@@ -14,19 +14,19 @@ const ChatToNovelWidget: React.FC = () => {
 
   const convert = () => {
     const lines = content.split("\n")
-    const newBlocks: Block[] = []
+    const newBlocks: LegacyBlock[] = []
 
     let character: string | null = null
     for (const line of lines) {
       const id = v4()
 
-      let block: Block
+      let block: LegacyBlock
       if (/^.+\s—\s/.test(line)) {
         character = line.split(" — ")[0]
       } else if (/^\(.+\)$/.test(line)) {
         newBlocks.push({
           id,
-          blockType: BlockType.Describe,
+          blockType: LegacyBlockType.Describe,
           content: line.replace("(", "").replace(")", ""),
         })
       } else {
@@ -37,7 +37,7 @@ const ChatToNovelWidget: React.FC = () => {
         } else {
           newBlocks.push({
             id,
-            blockType: BlockType.DoubleQuote,
+            blockType: LegacyBlockType.DoubleQuote,
             content:
               enableCharacter && character ? `${character}: ${line}` : line,
             ...(character ? { characterId: character } : {}),
@@ -49,7 +49,7 @@ const ChatToNovelWidget: React.FC = () => {
     updateBlocks(() => [
       ...blocks,
       ...newBlocks.map((b) => {
-        if (b.blockType === BlockType.DoubleQuote) {
+        if (b.blockType === LegacyBlockType.DoubleQuote) {
           return {
             ...b,
             content: `“${b.content}”`,

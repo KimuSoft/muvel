@@ -1,19 +1,12 @@
 import React, { type ReactNode } from "react"
-import {
-  ClientOnly,
-  Container,
-  Flex,
-  Text,
-  Textarea,
-  VStack,
-} from "@chakra-ui/react"
-import type { PartialEpisode } from "~/types/episode.type"
+import { Container, Flex, Text, Textarea, VStack } from "@chakra-ui/react"
+import type { Episode } from "muvel-api-types"
 import EditorHeader from "~/features/block-editor/components/organisms/EditorHeader"
 import MuvelBlockEditor from "~/features/block-editor/components/organisms/MuvelBlockEditor"
 
 const BlockEditorTemplate: React.FC<{
   widgets: ReactNode[]
-  episode: PartialEpisode
+  episode: Episode
   onEpisodeDescriptionChange: (
     e: React.ChangeEvent<HTMLTextAreaElement>,
   ) => void

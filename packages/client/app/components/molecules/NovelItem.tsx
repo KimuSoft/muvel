@@ -1,7 +1,6 @@
 import React, { forwardRef } from "react"
 import { Box, Heading, HStack, Tag, Text, VStack } from "@chakra-ui/react"
-import { type Novel, ShareType } from "../../types/novel.type"
-import TagChip from "~/components/atoms/TagChip"
+import { type Novel, ShareType } from "muvel-api-types"
 import { useNavigate } from "react-router"
 
 const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
@@ -38,7 +37,7 @@ const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
           <HStack w={"100%"}>
             <Heading size={"sm"}>{novel.title}</Heading>
             <Text fontSize={"xs"} color={"gray.500"} flexShrink={0}>
-              {novel.episodeIds.length}편
+              {novel.episodeCount}편
             </Text>
           </HStack>
           <Box w={"100%"}>

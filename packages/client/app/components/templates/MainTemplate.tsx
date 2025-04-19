@@ -1,18 +1,16 @@
 import React, { useMemo, useState } from "react"
 import {
+  Box,
   Button,
   Center,
   Heading,
   HStack,
-  Input,
-  InputGroup,
   SimpleGrid,
   Spacer,
   VStack,
 } from "@chakra-ui/react"
 import Header from "../organisms/Header"
-import { BiSearch } from "react-icons/bi"
-import type { Novel } from "~/types/novel.type"
+import type { Novel } from "muvel-api-types"
 import { useNavigate } from "react-router"
 import Logo from "~/components/molecules/Logo"
 import { useUser } from "~/context/UserContext"
@@ -90,9 +88,18 @@ const MainTemplate: React.FC<{
               <NovelItem novel={novel} />
             </BlockLink>
           ))}
-          <CreateNovelModal>
-            <CreateNovelItem />
-          </CreateNovelModal>
+          {user ? (
+            <CreateNovelModal>
+              <CreateNovelItem />
+            </CreateNovelModal>
+          ) : (
+            <Box
+              cursor={"pointer"}
+              onClick={() => (window.location.href = "api/auth/login")}
+            >
+              <CreateNovelItem />
+            </Box>
+          )}
         </SimpleGrid>
       </Center>
     </VStack>

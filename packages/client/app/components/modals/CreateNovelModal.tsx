@@ -18,9 +18,8 @@ import {
 import { Field as FormikField, type FieldProps, Form, Formik } from "formik"
 import { useUser } from "~/context/UserContext"
 import { useNavigate } from "react-router"
-import { type Novel, ShareType } from "~/types/novel.type"
+import { type Novel, ShareType } from "muvel-api-types"
 import ShareSelect from "~/components/molecules/ShareSelect"
-import { frontApi } from "~/utils/frontApi"
 import { createNovel } from "~/api/api.novel"
 
 const CreateNovelModal: React.FC<{

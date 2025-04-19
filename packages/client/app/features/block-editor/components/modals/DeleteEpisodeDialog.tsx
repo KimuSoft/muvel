@@ -1,15 +1,15 @@
 import React from "react"
-import { Button, Dialog, CloseButton, Portal } from "@chakra-ui/react"
+import { Button, CloseButton, Dialog, Portal } from "@chakra-ui/react"
 import { api } from "~/utils/api"
 import { useNavigate } from "react-router"
-import type { Novel } from "~/types/novel.type"
+import type { GetNovelResponseDto } from "muvel-api-types"
 import { TbTrash } from "react-icons/tb"
 import { toaster } from "~/components/ui/toaster"
 
-const DeleteEpisodeDialog: React.FC<{ novel: Novel; episodeId: string }> = ({
-  novel,
-  episodeId,
-}) => {
+const DeleteEpisodeDialog: React.FC<{
+  novel: GetNovelResponseDto
+  episodeId: string
+}> = ({ novel, episodeId }) => {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = React.useState(false)
 
@@ -21,7 +21,7 @@ const DeleteEpisodeDialog: React.FC<{ novel: Novel; episodeId: string }> = ({
     navigate(`/novels/${novel.id}`)
   }
 
-  if (!novel?.episodeIds || novel.episodeIds.length <= 1) return null
+  if (!novel?.episodes.length || novel.episodes.length <= 1) return null
 
   return (
     <Dialog.Root>

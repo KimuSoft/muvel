@@ -2,7 +2,7 @@ import type { Route } from "./+types/main"
 import MyNovelsTemplates from "~/features/my-novels/MyNovelsTemplates"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { api } from "~/utils/api"
-import type { Novel } from "~/types/novel.type"
+import type { Novel } from "muvel-api-types"
 import { getUserFromRequest } from "~/utils/session.server"
 
 export function meta({}: Route.MetaArgs) {

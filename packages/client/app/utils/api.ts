@@ -5,4 +5,5 @@ export const api = axios.create({
     typeof window === "undefined"
       ? process.env.VITE_API_BASE
       : import.meta.env.VITE_API_BASE,
+  withCredentials: true,
 })

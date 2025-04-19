@@ -14,11 +14,12 @@ import {
   Slider,
 } from "@chakra-ui/react"
 import { AiFillSetting } from "react-icons/ai"
-import { defaultOption } from "~/types"
+
 import { useOption } from "~/context/OptionContext"
 import { Tooltip } from "~/components/ui/tooltip"
 import ContentEditableBlock from "~/features/block-editor/components/atoms/MuvelBlock/ContentEditableBlock"
-import { sampleBlock } from "~/types/block.type"
+import { sampleBlock, sampleLegacyBlock } from "muvel-api-types"
+import { defaultOption } from "~/providers/OptionProvider"
 
 const EditorSetting: React.FC = () => {
   const [open, setOpen] = useState(false)
@@ -51,7 +52,7 @@ const EditorSetting: React.FC = () => {
                 <Field.Label>블록 미리보기</Field.Label>
                 <Box w="100%" bgColor={{ base: "gray.100", _dark: "gray.800" }}>
                   <ContentEditableBlock
-                    block={sampleBlock}
+                    block={sampleLegacyBlock}
                     position={-7}
                     disabled
                   />
