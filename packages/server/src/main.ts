@@ -4,7 +4,6 @@ import { NestFactory } from "@nestjs/core"
 import { AppModule } from "./app.module"
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
 import { ValidationPipe } from "@nestjs/common"
-import * as express from "express"
 import * as cookieParser from "cookie-parser"
 
 async function bootstrap() {
@@ -38,7 +37,10 @@ async function bootstrap() {
   // api 대신 다른 루트를 넣어도 됨 (ex: swagger, api/swagger, api/docs)
   SwaggerModule.setup("api", app, document)
 
-  app.use(express.json({ limit: "50mb" }))
+  app.enableCors({
+    origin: ["https://test.kimustory.net", "https://muvel.kimustory.net"],
+    credentials: true,
+  })
   await app.listen(2556)
 }
 

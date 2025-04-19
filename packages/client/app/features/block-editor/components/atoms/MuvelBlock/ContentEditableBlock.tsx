@@ -2,7 +2,7 @@ import ContentEditable, {
   type ContentEditableEvent,
 } from "react-contenteditable"
 import React, { useEffect, useMemo, useRef } from "react"
-import { type Block, BlockType } from "~/types/block.type"
+import { type LegacyBlock, LegacyBlockType } from "muvel-api-types"
 import "./block.css"
 import { useBlockEditor } from "~/features/block-editor/context/EditorContext"
 import { useOption } from "~/context/OptionContext"
@@ -30,7 +30,7 @@ const ContentEditableBlock: React.FC<BlockContentEditableProps> = ({
 
   const style = useMemo(() => {
     switch (block.blockType) {
-      case BlockType.Comment:
+      case LegacyBlockType.Comment:
         return {
           color: "var(--chakra-colors-gray-500)",
           backgroundColor:
@@ -75,15 +75,16 @@ const ContentEditableBlock: React.FC<BlockContentEditableProps> = ({
     contenteditable.current.innerText = block.content
   }, [block.content])
 
-  const getBlockType = (content: string): BlockType => {
-    if (block.blockType === BlockType.Comment) return BlockType.Comment
+  const getBlockType = (content: string): LegacyBlockType => {
+    if (block.blockType === LegacyBlockType.Comment)
+      return LegacyBlockType.Comment
 
     if (content.startsWith("“") && content.endsWith("”")) {
-      return BlockType.DoubleQuote
+      return LegacyBlockType.DoubleQuote
     } else if (content.startsWith("‘") && content.endsWith("’")) {
-      return BlockType.SingleQuote
+      return LegacyBlockType.SingleQuote
     } else {
-      return BlockType.Describe
+      return LegacyBlockType.Describe
     }
   }
 
@@ -211,7 +212,7 @@ const ContentEditableBlock: React.FC<BlockContentEditableProps> = ({
       updateBlocks((b) =>
         b.map((bl) => ({
           ...bl,
-          ...(bl.id === block.id && { blockType: BlockType.Divider }),
+          ...(bl.id === block.id && { blockType: LegacyBlockType.Divider }),
         })),
       )
       addBlock?.(block.id)
@@ -245,7 +246,7 @@ const ContentEditableBlock: React.FC<BlockContentEditableProps> = ({
         b.map((bl) => ({
           ...bl,
           ...(bl.id === block.id && {
-            blockType: BlockType.Comment,
+            blockType: LegacyBlockType.Comment,
             content: "",
           }),
         })),
@@ -257,7 +258,7 @@ const ContentEditableBlock: React.FC<BlockContentEditableProps> = ({
     <ContentEditable
       key={"block-contenteditable-" + block.id}
       className={`block data_position_${position} ${
-        block.blockType === BlockType.Comment ? "comment-block" : ""
+        block.blockType === LegacyBlockType.Comment ? "comment-block" : ""
       }`}
       innerRef={contenteditable}
       onChange={handleChange}
@@ -273,11 +274,11 @@ const ContentEditableBlock: React.FC<BlockContentEditableProps> = ({
 }
 
 export interface BlockContentEditableProps {
-  block: Block
+  block: LegacyBlock
   position: number
   addBlock?: (blockId: string) => void
   deleteBlock?: ({ id }: { id: string }) => void
-  updateBlock?: (block: Block) => void
+  updateBlock?: (block: LegacyBlock) => void
   moveToRelativeBlock?: (
     currentPos: number,
     direction: -1 | 1,

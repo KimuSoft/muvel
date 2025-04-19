@@ -7,18 +7,18 @@ import {
 } from "react-icons/bi"
 import { BsCode } from "react-icons/bs"
 import { AiTwotoneDelete } from "react-icons/ai"
-import { type Block, BlockType } from "~/types/block.type"
 import { Tooltip } from "~/components/ui/tooltip"
-import { Menu, MenuItemGroup } from "@chakra-ui/react"
+import { Menu } from "@chakra-ui/react"
 import { useBlockEditor } from "~/features/block-editor/context/EditorContext"
+import { type LegacyBlock, LegacyBlockType } from "muvel-api-types"
 
-const ActionMenuList: React.FC<{ block: Block }> = ({ block }) => {
+const ActionMenuList: React.FC<{ block: LegacyBlock }> = ({ block }) => {
   const { updateBlocks } = useBlockEditor()
 
   const removePunctuation = (str: string) =>
     str.replace(/[“”‘’「」『』〈〉《》]/g, "").trim()
 
-  const getSelectedProps = (blockType: BlockType) =>
+  const getSelectedProps = (blockType: LegacyBlockType) =>
     blockType === block.blockType
       ? {
           color: "purple.200",
@@ -37,7 +37,7 @@ const ActionMenuList: React.FC<{ block: Block }> = ({ block }) => {
           ? {
               ...b,
               content: removePunctuation(b.content),
-              blockType: BlockType.Describe,
+              blockType: LegacyBlockType.Describe,
             }
           : b,
       ),
@@ -51,7 +51,7 @@ const ActionMenuList: React.FC<{ block: Block }> = ({ block }) => {
           ? {
               ...b,
               content: `“${removePunctuation(b.content)}”`,
-              blockType: BlockType.DoubleQuote,
+              blockType: LegacyBlockType.DoubleQuote,
             }
           : b,
       ),
@@ -65,7 +65,7 @@ const ActionMenuList: React.FC<{ block: Block }> = ({ block }) => {
           ? {
               ...b,
               content: `‘${removePunctuation(b.content)}’`,
-              blockType: BlockType.SingleQuote,
+              blockType: LegacyBlockType.SingleQuote,
             }
           : b,
       ),
@@ -78,7 +78,7 @@ const ActionMenuList: React.FC<{ block: Block }> = ({ block }) => {
         b.id === block.id
           ? {
               ...b,
-              blockType: BlockType.Comment,
+              blockType: LegacyBlockType.Comment,
             }
           : b,
       ),
@@ -92,7 +92,7 @@ const ActionMenuList: React.FC<{ block: Block }> = ({ block }) => {
           ? {
               ...b,
               content: `「${removePunctuation(b.content)}」`,
-              blockType: BlockType.SingleScythe,
+              blockType: LegacyBlockType.SingleScythe,
             }
           : b,
       ),
@@ -106,7 +106,7 @@ const ActionMenuList: React.FC<{ block: Block }> = ({ block }) => {
           ? {
               ...b,
               content: `『${removePunctuation(b.content)}』`,
-              blockType: BlockType.DoubleScythe,
+              blockType: LegacyBlockType.DoubleScythe,
             }
           : b,
       ),
@@ -120,7 +120,7 @@ const ActionMenuList: React.FC<{ block: Block }> = ({ block }) => {
           ? {
               ...b,
               content: `〈${removePunctuation(b.content)}〉`,
-              blockType: BlockType.SingleGuillemet,
+              blockType: LegacyBlockType.SingleGuillemet,
             }
           : b,
       ),
@@ -134,7 +134,7 @@ const ActionMenuList: React.FC<{ block: Block }> = ({ block }) => {
           ? {
               ...b,
               content: `《${removePunctuation(b.content)}》`,
-              blockType: BlockType.DoubleGuillemet,
+              blockType: LegacyBlockType.DoubleGuillemet,
             }
           : b,
       ),
@@ -151,21 +151,21 @@ const ActionMenuList: React.FC<{ block: Block }> = ({ block }) => {
         <Menu.ItemGroupLabel>블록 종류</Menu.ItemGroupLabel>
         <Menu.Item
           onClick={onChangeToDescribeBlock}
-          {...getSelectedProps(BlockType.Describe)}
+          {...getSelectedProps(LegacyBlockType.Describe)}
         >
           <MdDescription />
           묘사 블록
         </Menu.Item>
         <Menu.Item
           onClick={onChangeToDoubleQuoteBlock}
-          {...getSelectedProps(BlockType.DoubleQuote)}
+          {...getSelectedProps(LegacyBlockType.DoubleQuote)}
         >
           <BiSolidQuoteLeft />
           대사 블록
         </Menu.Item>
         <Menu.Item
           onClick={onChangeToSingleQuoteBlock}
-          {...getSelectedProps(BlockType.SingleQuote)}
+          {...getSelectedProps(LegacyBlockType.SingleQuote)}
         >
           <BiSolidQuoteSingleLeft />
           독백 블록
@@ -176,7 +176,7 @@ const ActionMenuList: React.FC<{ block: Block }> = ({ block }) => {
         >
           <Menu.Item
             onClick={onChangeToCommentBlock}
-            {...getSelectedProps(BlockType.Comment)}
+            {...getSelectedProps(LegacyBlockType.Comment)}
           >
             <BiSolidCommentDots />
             주석 블록
@@ -188,7 +188,7 @@ const ActionMenuList: React.FC<{ block: Block }> = ({ block }) => {
         >
           <Menu.Item
             onClick={onChangeToSingleScytheBlock}
-            {...getSelectedProps(BlockType.SingleScythe)}
+            {...getSelectedProps(LegacyBlockType.SingleScythe)}
           >
             <BsCode />
             용어 블록 A
@@ -200,7 +200,7 @@ const ActionMenuList: React.FC<{ block: Block }> = ({ block }) => {
         >
           <Menu.Item
             onClick={onChangeToDoubleScytheBlock}
-            {...getSelectedProps(BlockType.DoubleScythe)}
+            {...getSelectedProps(LegacyBlockType.DoubleScythe)}
           >
             <BsCode />
             강조 블록 A
@@ -212,7 +212,7 @@ const ActionMenuList: React.FC<{ block: Block }> = ({ block }) => {
         >
           <Menu.Item
             onClick={onChangeToSingleGuillemetBlock}
-            {...getSelectedProps(BlockType.SingleGuillemet)}
+            {...getSelectedProps(LegacyBlockType.SingleGuillemet)}
           >
             <BsCode />
             용어 블록 B
@@ -224,7 +224,7 @@ const ActionMenuList: React.FC<{ block: Block }> = ({ block }) => {
         >
           <Menu.Item
             onClick={onChangeToDoubleGuillemetBlock}
-            {...getSelectedProps(BlockType.DoubleGuillemet)}
+            {...getSelectedProps(LegacyBlockType.DoubleGuillemet)}
           >
             <BsCode />
             강조 블록 B

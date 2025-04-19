@@ -1,12 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
-import {
-  IsEnum,
-  IsInt,
-  IsNumberString,
-  IsOptional,
-  IsString,
-} from "class-validator"
-import { EpisodeType, ShareType } from "../../types"
+import { IsEnum, IsNumberString, IsOptional, IsString } from "class-validator"
+import { EpisodeType } from "muvel-api-types"
 import { Transform } from "class-transformer"
 
 export class CreateEpisodeDto {

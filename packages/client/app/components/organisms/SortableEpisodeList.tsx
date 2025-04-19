@@ -8,12 +8,16 @@ import {
 } from "@dnd-kit/core"
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable"
 import { type StackProps, VStack } from "@chakra-ui/react"
-import type { Novel } from "~/types/novel.type"
+import type { Episode } from "muvel-api-types"
 import SortableEpisodeItem from "../molecules/SortableEpisodeItem"
 
 const SortableEpisodeList: React.FC<
-  { novel: Novel; isNarrow?: boolean; isLoading?: boolean } & StackProps
-> = ({ novel, isNarrow, isLoading, ...props }) => {
+  {
+    episodes: Episode[]
+    isNarrow?: boolean
+    isLoading?: boolean
+  } & StackProps
+> = ({ episodes, isNarrow, isLoading, ...props }) => {
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
@@ -37,11 +41,11 @@ const SortableEpisodeList: React.FC<
     >
       <SortableContext
         id={"episode-sort"}
-        items={novel.episodes}
+        items={episodes}
         strategy={rectSortingStrategy}
       >
         <VStack alignItems={"baseline"} p={0} {...props}>
-          {novel.episodes.map((episode, idx) => (
+          {episodes.map((episode, idx) => (
             <SortableEpisodeItem
               episode={episode}
               index={idx}

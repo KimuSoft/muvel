@@ -11,10 +11,10 @@ import {
 } from "typeorm"
 import { EpisodeEntity } from "../episodes/episode.entity"
 import { UserEntity } from "../users/user.entity"
-import { ShareType } from "../types"
+import { Novel, ShareType } from "muvel-api-types"
 
 @Entity("novel")
-export class NovelEntity {
+export class NovelEntity implements Novel {
   @PrimaryGeneratedColumn("uuid")
   id: string
 
@@ -35,8 +35,8 @@ export class NovelEntity {
   })
   episodes: EpisodeEntity[]
 
-  @RelationId((self: NovelEntity) => self.episodes)
-  episodeIds: string[]
+  @Column({ default: 0 })
+  episodeCount: number
 
   @ManyToOne(() => UserEntity, (user) => user.novels, {
     onDelete: "CASCADE",

@@ -25,11 +25,16 @@ import {
   SearchNovelsResponseDto,
 } from "./dto/search-novels.dto"
 import { PatchEpisodesDto } from "./dto/patch-episodes.dto"
-import { NovelPermission } from "../types"
 import { SearchRepository } from "../search/search.repository"
 import { SearchInNovelDto } from "../search/dto/search-in-novel.dto"
 import { EpisodesService } from "../episodes/episodes.service"
 import { MuvelRequest } from "../auth/auth.decorator"
+import {
+  ExportNovelResponseDto,
+  GetNovelResponseDto,
+  Novel,
+} from "muvel-api-types"
+import { NovelPermission } from "./novel.enum"
 
 @ApiTags("Novels")
 @Controller("api/novels")
@@ -67,7 +72,7 @@ export class NovelsController {
   async getNovel(
     @Request() req: MuvelRequest,
     @Param("id") id: string
-  ): Promise<NovelDtoWithEpisodes> {
+  ): Promise<GetNovelResponseDto> {
     return this.novelsService.findNovelById(id, req.user.id)
   }
 
@@ -81,10 +86,7 @@ export class NovelsController {
     type: NovelDtoWithEpisodes,
   })
   @RequirePermission(NovelPermission.Author)
-  async exportNovels(
-    @Request() req,
-    @Param("id") id: string
-  ): Promise<NovelDtoWithEpisodes> {
+  async exportNovels(@Param("id") id: string): Promise<ExportNovelResponseDto> {
     return this.novelsService.findOne(id, ["episodes", "episodes.blocks"])
   }
 
@@ -93,15 +95,11 @@ export class NovelsController {
     summary: "소설 정보 수정하기",
     description: "소설의 정보를 수정합니다.",
   })
-  @ApiOkResponse({
-    description: "수정된 소설 정보를 반환합니다.",
-    type: NovelDto,
-  })
   @RequirePermission(NovelPermission.EditNovel)
   async updateNovel(
     @Param("id") id: string,
     @Body() novelUpdateDto: UpdateNovelDto
-  ): Promise<NovelDto> {
+  ): Promise<Novel> {
     return this.novelsService.updateNovel(id, novelUpdateDto)
   }
 

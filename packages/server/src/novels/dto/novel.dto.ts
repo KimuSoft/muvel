@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { IsUrl, IsUUID } from "class-validator"
 import { PartialEpisodeDto } from "../../episodes/dto/episode.dto"
-import { ShareType } from "../../types"
+import { ShareType } from "muvel-api-types"
 
 export class NovelDto {
   @ApiProperty({

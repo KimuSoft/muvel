@@ -16,15 +16,15 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger"
-import { BlockDto } from "../blocks/dto/block.dto"
 import { UpdateEpisodeDto } from "./dto/update-episode.dto"
 import { PatchBlocksDto } from "./dto/patch-blocks.dto"
 import { PartialEpisodeDto } from "./dto/episode.dto"
 import { RequirePermission } from "../novels/novels.decorator"
-import { NovelPermission } from "../types"
+import { Block } from "muvel-api-types"
 import { BlocksService } from "../blocks/blocks.service"
 import { EpisodeIdParamDto } from "./dto/episode-id-param.dto"
 import { MuvelRequest } from "../auth/auth.decorator"
+import { NovelPermission } from "../novels/novel.enum"
 
 @Controller("api/episodes")
 @ApiTags("Episodes")
@@ -84,9 +84,8 @@ export class EpisodesController {
     summary: "에피소드 내 블록 불러오기",
     description: "에피소드의 블록을 불러옵니다.",
   })
-  @ApiOkResponse({ type: BlockDto, isArray: true })
   @RequirePermission(NovelPermission.ReadNovel)
-  async getBlocks(@Param() { id }: EpisodeIdParamDto): Promise<BlockDto[]> {
+  async getBlocks(@Param() { id }: EpisodeIdParamDto): Promise<Block[]> {
     const episode = await this.episodesService.findOne(id, ["blocks"])
     episode.blocks.sort((a, b) => a.order - b.order)
     return episode.blocks
@@ -111,12 +110,8 @@ export class EpisodesController {
     summary: "에피소드 내 블록 검색하기",
     description: "에피소드의 블록, 캐릭터, 설정 등을 종합적으로 검색합니다.",
   })
-  @ApiOkResponse({ type: BlockDto, isArray: true })
   @RequirePermission(NovelPermission.ReadNovel)
-  async searchBlocks(
-    @Param() { id }: EpisodeIdParamDto,
-    @Body() query: string
-  ): Promise<BlockDto[]> {
+  async searchBlocks(@Param() { id }: EpisodeIdParamDto): Promise<Block[]> {
     const episode = await this.episodesService.findOne(id, ["blocks"])
     episode.blocks.sort((a, b) => a.order - b.order)
     return episode.blocks

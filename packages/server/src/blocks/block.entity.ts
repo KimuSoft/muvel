@@ -1,16 +1,22 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 import { EpisodeEntity } from "../episodes/episode.entity"
-import { BlockType } from "../types"
+import { Block, BlockAttrs, BlockType, PMNodeJSON } from "muvel-api-types"
 
 @Entity("block")
-export class BlockEntity {
+export class BlockEntity implements Block {
   @PrimaryGeneratedColumn("uuid")
   id: string
 
   @Column()
-  content: string
+  text: string
 
-  @Column()
+  @Column({ type: "jsonb", default: [] })
+  content: PMNodeJSON[]
+
+  @Column({ type: "jsonb", nullable: true })
+  attr: BlockAttrs | null
+
+  @Column({ enum: BlockType, default: BlockType.Describe })
   blockType: BlockType
 
   @Column()

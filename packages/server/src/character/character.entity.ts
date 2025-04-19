@@ -1,30 +1,35 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { Character, CharacterImportance } from "muvel-api-types"
 
 @Entity("character")
-export class CharacterEntity {
+export class CharacterEntity implements Character {
   @PrimaryGeneratedColumn("uuid")
   id: string
 
   @Column()
   name: string
 
+  @Column({ nullable: true })
+  avatar: string | null
+
+  @Column({ array: true, default: [] })
+  tags: string[]
+
+  @Column()
+  summary: string
+
   @Column()
   description: string
 
-  @Column()
-  importance: number
+  @Column({ array: true, default: [] })
+  galleries: string[]
 
   @Column()
-  image: string
+  importance: CharacterImportance
 
   @Column()
   document: string
 
-  @Column({ type: "json" })
-  properties: Map<string, string>
-
-  // @ManyToOne(() => Novel, (novel) => novel.characters, {
-  //   onDelete: "CASCADE",
-  // })
-  // blocks: Novel
+  @Column({ type: "jsonb", default: {} })
+  attributes: Record<string, string>
 }

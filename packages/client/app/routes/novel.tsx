@@ -2,7 +2,7 @@ import type { Route } from "./+types/novel"
 import NovelDetailTemplate from "~/components/templates/NovelDetailTemplate"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { api } from "~/utils/api"
-import type { Novel, NovelPermissions } from "~/types/novel.type"
+import type { GetNovelResponseDto } from "muvel-api-types"
 
 export function meta({ data }: Route.MetaArgs) {
   if (!data?.novel) {
@@ -29,9 +29,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     throw new Response("Not Found", { status: 404 })
   }
 
-  const { data: novel } = await api.get<
-    Novel & { permissions: NovelPermissions }
-  >(`/novels/${id}`, {
+  const { data: novel } = await api.get<GetNovelResponseDto>(`/novels/${id}`, {
     headers: {
       cookie, // ✅ SSR 쿠키 인증
     },

@@ -1,11 +1,11 @@
-import React, { type MouseEventHandler } from "react"
-import { type Block } from "~/types/block.type"
+import React from "react"
+import { type LegacyBlock } from "muvel-api-types"
 import { Menu } from "@chakra-ui/react"
 import DragHandle from "./DragHandle"
 import ActionMenuList from "./ActionMenuList"
 
 interface HandleProps {
-  block: Block
+  block: LegacyBlock
   onClick?: () => void
   listeners?: React.HTMLAttributes<HTMLElement>
   attributes?: Record<string, any>

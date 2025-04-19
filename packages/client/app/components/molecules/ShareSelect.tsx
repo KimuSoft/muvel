@@ -1,11 +1,5 @@
-import {
-  HStack,
-  Icon,
-  RadioCard,
-  type RadioCardRootProps,
-  Text,
-} from "@chakra-ui/react"
-import { ShareType } from "~/types/novel.type"
+import { Icon, RadioCard, type RadioCardRootProps } from "@chakra-ui/react"
+import { ShareType } from "muvel-api-types"
 import { MdPublic } from "react-icons/md"
 import { AiFillLock, AiOutlineLink } from "react-icons/ai"
 import React from "react"

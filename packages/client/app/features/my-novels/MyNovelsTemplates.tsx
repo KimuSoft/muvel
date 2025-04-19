@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react"
 import { RiQuillPenFill } from "react-icons/ri"
 import Header from "../../components/organisms/Header"
-import type { Novel } from "~/types/novel.type"
+import type { Novel } from "muvel-api-types"
 import { FaBookBookmark } from "react-icons/fa6"
 import SortableNovelGrid from "~/features/my-novels/components/SortableNovelGrid"
 import { useUser } from "~/context/UserContext"
@@ -36,7 +36,7 @@ const MyNovelsTemplates: React.FC<{
   const column = useBreakpointValue({ base: 1, md: 2, lg: 3 })
 
   const loginClickHandler = () => {
-    window.location.href = import.meta.env.VITE_API_BASE + "/auth/login"
+    window.location.href = "api/auth/login"
   }
 
   return (

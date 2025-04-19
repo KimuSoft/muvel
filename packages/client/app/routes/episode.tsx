@@ -1,11 +1,11 @@
 import type { Route } from "./+types/episode"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { api } from "~/utils/api"
-import { EditorType, type Episode } from "~/types/episode.type"
-import type { Novel } from "~/types/novel.type"
 import BlockEditorPage from "~/features/block-editor/BlockEditorPage"
 import { BlockEditorProvider } from "~/features/block-editor/context/EditorContext"
 import OptionProvider from "~/providers/OptionProvider"
+import { EditorType, type GetEpisodeResponseDto } from "muvel-api-types"
+import EditorPage from "~/features/editor/EditorPage"
 
 export function meta({ data }: Route.MetaArgs) {
   if (!data?.episode) {
@@ -33,7 +33,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     throw new Response("Not Found", { status: 404 })
   }
 
-  const { data: episode } = await api.get<Episode & { novel: Novel }>(
+  const { data: episode } = await api.get<GetEpisodeResponseDto>(
     `/episodes/${id}`,
     {
       headers: { cookie },
@@ -59,9 +59,7 @@ export default function Main() {
     case EditorType.Flow:
       return <div>Muvel Flow Editor</div>
     case EditorType.RichText:
-      return (
-        <div>Muvel Rich Text Editor: {JSON.stringify(episode, null, 2)}</div>
-      )
+      return <EditorPage episode={episode} />
     default:
       return <div>Unknown Editor Type: {JSON.stringify(episode, null, 2)}</div>
   }

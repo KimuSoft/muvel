@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react"
 import { Field as FormikField, type FieldProps, Form, Formik } from "formik"
 import { TbCheck, TbEdit, TbFileExport, TbTrash } from "react-icons/tb"
-import { type Novel, ShareType } from "~/types/novel.type"
+import { type Novel, ShareType } from "muvel-api-types"
 import { Tooltip } from "~/components/ui/tooltip"
 import DeleteNovelDialog from "./DeleteNovelDialog"
 import ShareSelect from "~/components/molecules/ShareSelect"

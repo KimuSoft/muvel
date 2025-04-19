@@ -1,10 +1,10 @@
 import { Box, Menu, Portal } from "@chakra-ui/react"
 import { LuFileJson } from "react-icons/lu"
 import React, { type PropsWithChildren } from "react"
-import { TbFileTypePdf, TbTxt } from "react-icons/tb"
+import { TbTxt } from "react-icons/tb"
 import { exportNovel } from "~/api/api.novel"
 import { toaster } from "~/components/ui/toaster"
-import type { Block } from "~/types/block.type"
+import type { Block } from "muvel-api-types"
 import dedent from "dedent"
 
 const ExportNovelMenu: React.FC<PropsWithChildren & { novelId: string }> = ({
@@ -57,7 +57,7 @@ const ExportNovelMenu: React.FC<PropsWithChildren & { novelId: string }> = ({
       ${episode.description}
       \`\`\`
      
-      ${episode.blocks.map((block: Block) => block.content).join("\n\n")}
+      ${episode.blocks.map((block: Block) => block.text).join("\n\n")}
       `
     })
 
