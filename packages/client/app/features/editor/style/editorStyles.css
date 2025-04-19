@@ -4,6 +4,7 @@
     font-size: var(--editor-font-size, 16px);
     font-weight: var(--editor-font-weight, 400);
     line-height: var(--editor-line-height, 1.4);
+    text-indent: var(--editor-indent, 0);
     color: var(--editor-color, inherit);
     caret-color: auto;
 
@@ -15,7 +16,7 @@
 /* 공통 블록 */
 .ProseMirror p {
     margin: 0;
-    padding: 0.4em 0;
+    padding: var(--editor-block-gap, 7px) 0;
 }
 
 /* Quote (대사 블록) */
@@ -79,7 +80,9 @@
 /* Divider (hr) */
 .ProseMirror hr {
     border: none;
-    border-top: 1.5px dashed #ccc;
+    border-top: 1.5px solid;
+    border-color: var(--editor-color, inherit);
+    opacity: 0.6;
     margin: 2em 0;
     height: 0;
 }

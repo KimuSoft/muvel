@@ -82,11 +82,11 @@ const EditorSetting: React.FC = () => {
 
               {/* 행 간격 */}
               <Field.Root mb={5}>
-                <Field.Label>행 간격: {options.gap}px</Field.Label>
+                <Field.Label>행 간격: {options.blockGap}px</Field.Label>
                 <Slider.Root
                   min={0}
                   max={16}
-                  value={[options.gap]}
+                  value={[options.blockGap]}
                   onValueChange={(e) =>
                     setOptions((prev) => ({
                       ...prev,

@@ -23,35 +23,35 @@ export const baseSchema = new Schema({
       toDOM: (node) => ["p", { "data-id": node.attrs.id }, 0],
     },
 
-    [BlockType.Quote]: {
-      group: "block",
-      content: "inline*",
-      attrs: {
-        id: { default: null },
-        characterId: { default: null },
-        quoteStyle: { default: "double" },
-      },
-      parseDOM: [
-        {
-          tag: "p[data-quote]",
-          getAttrs: (dom) => ({
-            id: dom.getAttribute("data-id"),
-            characterId: dom.getAttribute("data-character-id"),
-            quoteStyle: dom.getAttribute("data-quote-style"),
-          }),
-        },
-      ],
-      toDOM: (node) => [
-        "p",
-        {
-          "data-quote": "true",
-          "data-id": node.attrs.id,
-          "data-character-id": node.attrs.characterId,
-          "data-quote-style": node.attrs.quoteStyle,
-        },
-        0,
-      ],
-    },
+    // [BlockType.Quote]: {
+    //   group: "block",
+    //   content: "inline*",
+    //   attrs: {
+    //     id: { default: null },
+    //     characterId: { default: null },
+    //     quoteStyle: { default: "double" },
+    //   },
+    //   parseDOM: [
+    //     {
+    //       tag: "p[data-quote]",
+    //       getAttrs: (dom) => ({
+    //         id: dom.getAttribute("data-id"),
+    //         characterId: dom.getAttribute("data-character-id"),
+    //         quoteStyle: dom.getAttribute("data-quote-style"),
+    //       }),
+    //     },
+    //   ],
+    //   toDOM: (node) => [
+    //     "p",
+    //     {
+    //       "data-quote": "true",
+    //       "data-id": node.attrs.id,
+    //       "data-character-id": node.attrs.characterId,
+    //       "data-quote-style": node.attrs.quoteStyle,
+    //     },
+    //     0,
+    //   ],
+    // },
 
     [BlockType.Comment]: {
       group: "block",

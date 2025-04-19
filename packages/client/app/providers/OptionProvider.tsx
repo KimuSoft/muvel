@@ -3,23 +3,36 @@ import { type Draft, produce } from "immer"
 import { OptionContext, SetOptionContext } from "~/context/OptionContext"
 
 export const defaultOption: EditorOption = {
-  lineHeight: 1.5,
-  fontSize: 16,
-  gap: 8,
-  indent: 1,
-  quoteColor: null,
+  lineHeight: 1.8,
+  fontSize: 18,
+  indent: 0,
+  fontWeight: 400,
   fontFamily: "Inter",
   color: null,
+  blockGap: 7,
+  backgroundColor: null,
+  editorMaxWidth: 840,
 }
 
 export interface EditorOption {
-  quoteColor: any
+  // 줄 간격
   lineHeight: number
+  // 폰트 크기
   fontSize: number
-  gap: number
+  // 폰트 두께
+  fontWeight: number
+  // 들여쓰기
   indent: number
+  // 문단 간격
+  blockGap: number
+  // 폰트 패밀리
   fontFamily: string
+  // 글꼴 색상
   color: string | null
+  // 배경 색상 (에디터)
+  backgroundColor: string | null
+  // 에디터 최대 너비
+  editorMaxWidth: number
 }
 
 const getOption = (): EditorOption => {

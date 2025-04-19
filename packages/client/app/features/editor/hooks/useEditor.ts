@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import React, { useEffect, useRef } from "react"
 import { EditorState } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
 import { keymap } from "prosemirror-keymap"
@@ -10,6 +10,7 @@ import { useEditorContext } from "../context/EditorContext"
 import type { Block } from "muvel-api-types"
 import { createInputRules } from "~/features/editor/plugins/inputRules"
 import { assignIdPlugin } from "~/features/editor/plugins/assignIdPlugin"
+import { autoQuotePlugin } from "~/features/editor/plugins/autoQuotePlugin"
 
 interface UseEditorProps {
   containerRef: React.RefObject<HTMLDivElement>
@@ -42,6 +43,7 @@ export const useEditor = ({
         history(),
         assignIdPlugin,
         createInputRules(baseSchema),
+        autoQuotePlugin,
         keymap({
           "Mod-z": undo,
           "Mod-y": redo,
