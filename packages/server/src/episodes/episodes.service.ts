@@ -9,6 +9,7 @@ import { ISearchRepository } from "../search/isearch.repository"
 import { SearchRepository } from "src/search/search.repository"
 import { EpisodeType } from "muvel-api-types"
 import { UserEntity } from "../users/user.entity"
+import { UpdateEpisodeDto } from "./dto/update-episode.dto"
 
 @Injectable()
 export class EpisodesService {
@@ -70,11 +71,14 @@ export class EpisodesService {
 
     const order =
       createEpisodeDto.order ??
-      (await this.getNextOrder(createEpisodeDto.episodeType, novelId))
+      (await this.getNextOrder(
+        createEpisodeDto.episodeType || EpisodeType.Episode,
+        novelId
+      ))
 
     const episode = new EpisodeEntity()
     episode.title = createEpisodeDto.title
-    episode.description = createEpisodeDto.description
+    episode.description = createEpisodeDto.description || ""
     episode.episodeType = createEpisodeDto.episodeType
     episode.order = order
     await this.episodesRepository.save(episode)
@@ -101,19 +105,8 @@ export class EpisodesService {
     return this.episodesRepository.delete(id)
   }
 
-  async updateEpisode(
-    id: string,
-    chapter: string,
-    title: string,
-    description: string
-  ): Promise<EpisodeEntity> {
-    const episode = await this.findOne(id)
-
-    episode.chapter = chapter
-    episode.title = title
-    episode.description = description
-
-    return this.episodesRepository.save(episode)
+  async updateEpisode(id: string, dto: UpdateEpisodeDto) {
+    return this.episodesRepository.update({ id }, dto)
   }
 
   async upsert(episodes: PatchEpisodesDto[]) {

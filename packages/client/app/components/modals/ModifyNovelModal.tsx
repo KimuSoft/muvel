@@ -132,7 +132,7 @@ const ModifyNovelModal: React.FC<{
                       </FormikField>
 
                       <FormikField name="thumbnail">
-                        {({ field }: FieldProps) => (
+                        {({ field, form }: FieldProps) => (
                           <Field.Root>
                             <Field.Label>소설 표지 이미지</Field.Label>
                             <Text fontSize={"sm"} color={"gray.500"} mb={3}>
@@ -150,7 +150,11 @@ const ModifyNovelModal: React.FC<{
                                 w={"100px"}
                                 h={"150px"}
                               />
-                              <ImageUploader onUploaded={field.onChange} />
+                              <ImageUploader
+                                onUploaded={(url) => {
+                                  void form.setFieldValue("thumbnail", url)
+                                }}
+                              />
                             </HStack>
                           </Field.Root>
                         )}

@@ -1,25 +1,27 @@
 import type { Block, GetEpisodeResponseDto } from "muvel-api-types"
-import React, { useMemo, useRef } from "react"
+import React, { useEffect, useMemo, useRef } from "react"
 import EditorTemplate from "~/features/editor/EditorTemplate"
 import { EditorProvider } from "~/features/editor/context/EditorContext"
 import OptionProvider from "~/providers/OptionProvider"
 import { debounce } from "lodash-es"
 import { getBlocksChange } from "~/features/editor/utils/calculateBlockChanges"
-import { updateEpisodeBlocks } from "~/api/api.episode"
+import { updateEpisode, updateEpisodeBlocks } from "~/api/api.episode"
 import { toaster } from "~/components/ui/toaster"
 
 const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
-  episode,
+  episode: episode_,
 }) => {
+  const [episode, setEpisode] = React.useState<GetEpisodeResponseDto>(episode_)
   const originalRef = useRef<Block[]>(episode.blocks)
   const [isAutoSaving, setIsAutoSaving] = React.useState(false)
 
-  const handleChange = useMemo(
+  useEffect(() => setEpisode(episode_), [episode_.id])
+
+  const handleBlocksChange = useMemo(
     () =>
       debounce(async (blocks: Block[]) => {
         const changes = getBlocksChange(originalRef.current, blocks)
         if (!changes.length) return null
-        console.log("시작~")
         setIsAutoSaving(true)
 
         try {
@@ -31,10 +33,28 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
             description: "변경 사항을 저장하는 데 실패했습니다.",
           })
         } finally {
-          console.log("끝~")
           setIsAutoSaving(false)
         }
         originalRef.current = [...blocks]
+      }, 1000),
+    [episode.id],
+  )
+
+  const handleTitleChange = useMemo(
+    () =>
+      debounce(async (title: string) => {
+        try {
+          setIsAutoSaving(true)
+          await updateEpisode(episode.id, { title })
+          setEpisode((prev) => ({ ...prev, title }))
+          setIsAutoSaving(false)
+        } catch (e) {
+          console.error(e)
+          toaster.error({
+            title: "저장 실패",
+            description: "제목을 저장하는 데 실패했습니다.",
+          })
+        }
       }, 1000),
     [episode.id],
   )
@@ -44,7 +64,8 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
       <EditorProvider>
         <EditorTemplate
           episode={episode}
-          onChange={handleChange}
+          onBlocksChange={handleBlocksChange}
+          onTitleChange={handleTitleChange}
           isAutoSaving={isAutoSaving}
         />
       </EditorProvider>

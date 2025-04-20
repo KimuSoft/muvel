@@ -1,5 +1,5 @@
 import { api } from "~/utils/api"
-import { type Block, type LegacyBlock } from "muvel-api-types"
+import { type Block, type Episode, type LegacyBlock } from "muvel-api-types"
 
 export const getEpisodeBlocks = async (episodeId: string) => {
   const { data } = await api.get<Block[]>(`episodes/${episodeId}/blocks`)
@@ -10,6 +10,14 @@ export const getEpisodeLegacyBlocks = async (episodeId: string) => {
   const { data } = await api.get<LegacyBlock[]>(
     `episodes/${episodeId}/legacy-blocks`,
   )
+  return data
+}
+
+export const updateEpisode = async (
+  episodeId: string,
+  patch: Partial<Episode>,
+) => {
+  const { data } = await api.patch<Episode>(`episodes/${episodeId}`, patch)
   return data
 }
 

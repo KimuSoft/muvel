@@ -69,6 +69,16 @@ export class NovelsService {
       }
     }
 
+    // 에피소드 order string에서 float로 바꿔주고 숫자 기준 정렬
+    novel.episodes.map((episode) => {
+      // @ts-ignore TODO 나중에 수정
+      episode.order = parseFloat(episode.order.toString())
+      return episode
+    })
+
+    // @ts-ignore TODO 나중에 수정
+    novel.episodes.sort((a, b) => (a.order as number) - (b.order as number))
+
     return {
       ...novel,
       permissions: {

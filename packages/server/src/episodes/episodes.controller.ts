@@ -49,7 +49,7 @@ export class EpisodesController {
     return this.episodesService.findEpisodeById(id, req.user.id)
   }
 
-  @Put(":id")
+  @Patch(":id")
   @ApiOperation({
     summary: "에피소드 정보 수정하기",
     description: "에피소드의 정보를 수정합니다.",
@@ -57,16 +57,10 @@ export class EpisodesController {
   @ApiOkResponse({ type: PartialEpisodeDto })
   @RequirePermission(NovelPermission.EditNovel)
   async updateEpisode(
-    @Request() req,
     @Param() { id }: EpisodeIdParamDto,
-    @Body() updateEpisodeDto: UpdateEpisodeDto
-  ): Promise<PartialEpisodeDto> {
-    return this.episodesService.updateEpisode(
-      id,
-      updateEpisodeDto.chapter,
-      updateEpisodeDto.title,
-      updateEpisodeDto.description
-    )
+    @Body() dto: UpdateEpisodeDto
+  ) {
+    return this.episodesService.updateEpisode(id, dto)
   }
 
   @Delete(":id")

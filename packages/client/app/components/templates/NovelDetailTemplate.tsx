@@ -6,6 +6,7 @@ import {
   Container,
   Heading,
   HStack,
+  Image,
   Spacer,
   Text,
   VStack,
@@ -14,17 +15,41 @@ import Header from "../organisms/Header"
 import { type GetNovelResponseDto, ShareType } from "muvel-api-types"
 import { TbEdit, TbPlayerPlay, TbPlus } from "react-icons/tb"
 import NovelTagList from "../organisms/NovelTagList"
-import { useRevalidator } from "react-router"
+import { useNavigate, useRevalidator } from "react-router"
 import SortableEpisodeList from "../organisms/SortableEpisodeList"
 import ModifyNovelModal from "~/components/modals/ModifyNovelModal"
 import { FaList } from "react-icons/fa6"
 import BlockLink from "~/components/atoms/BlockLink"
-import { updateNovel } from "~/api/api.novel"
+import {
+  createNovelEpisode,
+  updateNovel,
+  updateNovelEpisodes,
+} from "~/api/api.novel"
+import type { ReorderedEpisode } from "~/utils/reorderEpisode"
 
 const NovelDetailTemplate: React.FC<{
   novel: GetNovelResponseDto
 }> = ({ novel }) => {
   const { revalidate } = useRevalidator()
+  const navigate = useNavigate()
+
+  const handleCreateEpisode = async () => {
+    console.log("만들어!")
+    const episode = await createNovelEpisode(novel.id)
+    console.log("만들어진 에피소드", episode)
+    navigate(`/episodes/${episode.id}`)
+  }
+
+  const handleReorderEpisode = async (episodes: ReorderedEpisode[]) => {
+    console.log("에피소드 정렬", episodes)
+    await updateNovelEpisodes(
+      novel.id,
+      episodes
+        .filter((e) => e.isReordered)
+        .map((e) => ({ id: e.id, order: e.order })),
+    )
+    await revalidate()
+  }
 
   const shareText = useMemo(() => {
     switch (novel.share) {
@@ -50,12 +75,16 @@ const NovelDetailTemplate: React.FC<{
       >
         <Container w={"100%"} px={5} mt={10} maxW={"4xl"}>
           <HStack gap={8} flexDir={{ base: "row", md: "row-reverse" }}>
-            <Box
+            <Image
               w={{ base: "130px", md: "260px" }}
               h={{ base: "195px", md: "390px" }}
               borderRadius="md"
-              backgroundColor={{ base: "gray.100", _dark: "gray.700" }}
-              backgroundImage={novel.thumbnail || ""}
+              bgColor={{ base: "gray.100", _dark: "gray.700" }}
+              src={
+                novel.thumbnail
+                  ? `${novel.thumbnail}/thumbnail?width=260`
+                  : "/cover.png"
+              }
               backgroundRepeat={"no-repeat"}
               backgroundSize={"cover"}
               backgroundPosition={"center"}
@@ -65,12 +94,16 @@ const NovelDetailTemplate: React.FC<{
             <VStack w={"100%"} alignItems={"baseline"}>
               <HStack rowGap={1} columnGap={5} flexWrap={"wrap"}>
                 <Heading
-                  fontSize={{ base: "32px", md: "40px" }}
+                  fontSize={{ base: "24px", md: "40px" }}
                   lineHeight={1.4}
                 >
                   {novel.title}
                 </Heading>
-                <Text flexShrink={0} color={"gray.500"}>
+                <Text
+                  flexShrink={0}
+                  color={"gray.500"}
+                  fontSize={{ base: "sm", md: "md" }}
+                >
                   {novel.episodeCount}편 · {shareText}
                 </Text>
               </HStack>
@@ -95,7 +128,7 @@ const NovelDetailTemplate: React.FC<{
               <HStack gap={2} mt={4}>
                 <BlockLink
                   to={`/episodes/${
-                    novel.episodes.find((e) => e.order === "1")?.id
+                    novel.episodes.find((e) => e.order == 1)?.id
                   }`}
                 >
                   <Button
@@ -171,11 +204,19 @@ const NovelDetailTemplate: React.FC<{
               size={"sm"}
             >
               <TbPlus />
-              <Box display={{ base: "none", md: "block" }}>새 편 쓰기</Box>
+              <Box
+                onClick={handleCreateEpisode}
+                display={{ base: "none", md: "block" }}
+              >
+                새 편 쓰기
+              </Box>
             </Button>
           ) : null}
         </HStack>
-        <SortableEpisodeList episodes={novel.episodes} />
+        <SortableEpisodeList
+          episodes={novel.episodes}
+          onEpisodesChange={handleReorderEpisode}
+        />
       </Container>
     </VStack>
   )
