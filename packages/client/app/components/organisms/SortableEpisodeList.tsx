@@ -1,6 +1,7 @@
 import React from "react"
 import {
   DndContext,
+  type DragEndEvent,
   MouseSensor,
   TouchSensor,
   useSensor,
@@ -10,14 +11,16 @@ import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable"
 import { type StackProps, VStack } from "@chakra-ui/react"
 import type { Episode } from "muvel-api-types"
 import SortableEpisodeItem from "../molecules/SortableEpisodeItem"
+import { type ReorderedEpisode, reorderEpisode } from "~/utils/reorderEpisode"
 
 const SortableEpisodeList: React.FC<
   {
     episodes: Episode[]
     isNarrow?: boolean
     isLoading?: boolean
+    onEpisodesChange?: (diffEpisodes: ReorderedEpisode[]) => void
   } & StackProps
-> = ({ episodes, isNarrow, isLoading, ...props }) => {
+> = ({ episodes, isNarrow, isLoading, onEpisodesChange, ...props }) => {
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
@@ -32,13 +35,27 @@ const SortableEpisodeList: React.FC<
     }),
   )
 
+  const handleDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e
+
+    if (!over || active.id === over.id) return
+
+    const oldIndex = episodes.findIndex((ep) => ep.id === active.id)
+    const newIndex = episodes.findIndex((ep) => ep.id === over.id)
+
+    if (oldIndex === -1 || newIndex === -1) return
+
+    const reordered = [...episodes]
+    const [moved] = reordered.splice(oldIndex, 1)
+    reordered.splice(newIndex, 0, moved)
+
+    const updatedEpisodes = reorderEpisode(reordered)
+
+    onEpisodesChange?.(updatedEpisodes)
+  }
+
   return (
-    <DndContext
-      sensors={sensors}
-      onDragEnd={(e) => {
-        console.log("drag end", e)
-      }}
-    >
+    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <SortableContext
         id={"episode-sort"}
         items={episodes}

@@ -1,17 +1,19 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsString, Length, MIN } from "class-validator"
+import { IsOptional, IsString, Length } from "class-validator"
 
 export class UpdateEpisodeDto {
   @ApiProperty()
   @IsString()
-  @Length(1)
+  @IsOptional()
   title: string
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
   description: string
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
   chapter: string
 }

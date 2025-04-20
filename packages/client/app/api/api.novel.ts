@@ -1,9 +1,12 @@
 import { frontApi } from "~/utils/frontApi"
 import type {
+  Episode,
+  EpisodeType,
   ExportNovelResponseDto,
   GetNovelResponseDto,
   Novel,
 } from "muvel-api-types"
+import { api } from "~/utils/api"
 
 export const createNovel = async ({
   userId,
@@ -31,6 +34,29 @@ export const exportNovel = async (
 ): Promise<ExportNovelResponseDto> => {
   const { data } = await frontApi.get<ExportNovelResponseDto>(
     `/novels/${id}/export`,
+  )
+  return data
+}
+
+export const createNovelEpisode = async (
+  novelId: string,
+  dto: {
+    title?: string
+    description?: string
+    episodeType?: EpisodeType
+  } = {},
+) => {
+  const { data } = await api.post<Episode>(`/novels/${novelId}/episodes`, dto)
+  return data
+}
+
+export const updateNovelEpisodes = async (
+  novelId: string,
+  episodeDiffs: ({ id: string } & Partial<Episode>)[],
+) => {
+  const { data } = await api.patch<Episode[]>(
+    `/novels/${novelId}/episodes`,
+    episodeDiffs,
   )
   return data
 }

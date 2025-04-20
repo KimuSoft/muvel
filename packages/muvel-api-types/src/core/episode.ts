@@ -7,7 +7,7 @@ export interface Episode {
   description: string
   chapter: string
   novelId: string
-  order: string
+  order: string | number
   episodeType: EpisodeType
   // API 응답을 통해 받으면 string이므로 주의!!
   createdAt: Date

@@ -118,6 +118,7 @@ const EpisodeItem = forwardRef<
       py={1}
       cursor={"pointer"}
       onClick={clickHandler}
+      overflow={"hidden"}
       borderRadius={4}
       border={"1px solid transparent"}
       _hover={{
@@ -129,7 +130,7 @@ const EpisodeItem = forwardRef<
       <Box
         flexShrink={0}
         w={"4px"}
-        h={{ base: "70px", md: "44px" }}
+        h={isDrawer ? "50px" : { base: "70px", md: "44px" }}
         backgroundColor={"purple.500"}
       />
       <Text
@@ -138,41 +139,52 @@ const EpisodeItem = forwardRef<
         w={"65px"}
         fontWeight={200}
         fontSize={"36px"}
-        display={{ base: "none", md: "block" }}
+        display={isDrawer ? "none" : { base: "none", md: "block" }}
       >
         {prefix}
       </Text>
       <VStack gap={1} alignItems={"baseline"}>
-        <HStack>
+        <HStack w={"100%"} overflow={"hidden"}>
           <Text
-            display={{ base: "block", md: "none" }}
+            display={isDrawer ? "block" : { base: "block", md: "none" }}
             color={"purple.500"}
             fontWeight={600}
+            flexShrink={0}
           >
             {episode.order}편
           </Text>
-          <Text>{episode.title}</Text>
+          <Text truncate>{episode.title}</Text>
         </HStack>
-        <Text fontSize={"xs"} color={"gray.500"}>
-          {episode.description}
-        </Text>
+        {!isDrawer && (
+          <Text fontSize={"xs"} color={"gray.500"}>
+            {episode.description}
+          </Text>
+        )}
         <Box
-          display={{
-            base: "flex",
-            md: "none",
-          }}
+          display={
+            isDrawer
+              ? "flex"
+              : {
+                  base: "flex",
+                  md: "none",
+                }
+          }
         >
           <SideData episode={episode} />
         </Box>
       </VStack>
       <Spacer />
       <Box
-        display={{
-          base: "none",
-          md: "flex",
-        }}
+        display={
+          isDrawer
+            ? "none"
+            : {
+                base: "none",
+                md: "flex",
+              }
+        }
       >
-        <SideData episode={episode} />{" "}
+        <SideData episode={episode} />
       </Box>
     </HStack>
   )

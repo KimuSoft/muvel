@@ -15,7 +15,7 @@ import {
 } from "@nestjs/common"
 import { NovelsService } from "./novels.service"
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
-import { NovelDto, NovelDtoWithEpisodes } from "./dto/novel.dto"
+import { NovelDtoWithEpisodes } from "./dto/novel.dto"
 import { UpdateNovelDto } from "./dto/update-novel.dto"
 import { PartialEpisodeDto } from "../episodes/dto/episode.dto"
 import { CreateEpisodeDto } from "../episodes/dto/create-episode.dto"

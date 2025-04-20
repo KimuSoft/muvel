@@ -14,9 +14,10 @@ import EditorHeader from "~/features/editor/components/EditorHeader"
 
 const EditorTemplate: React.FC<{
   episode: GetEpisodeResponseDto
-  onChange: (blocks: Block[]) => void
+  onBlocksChange: (blocks: Block[]) => void
+  onTitleChange: (title: string) => void
   isAutoSaving: boolean
-}> = ({ episode, onChange, isAutoSaving }) => {
+}> = ({ episode, onBlocksChange, isAutoSaving, onTitleChange }) => {
   // const { view, getBlocks } = useEditorContext()
   const [option] = useOption()
 
@@ -55,14 +56,18 @@ const EditorTemplate: React.FC<{
           px={4}
           placeholder={"제목을 입력해 주세요"}
           defaultValue={episode.title}
+          onChange={(e) => {
+            onTitleChange(e.target.value)
+          }}
         />
         <Separator color={option.color || undefined} mt={5} mb={3} />
         <ClientOnly>
           <NovelEditor
+            key={episode.id}
             initialBlocks={episode.blocks}
             episodeId={episode.id}
             editable={episode.permissions.edit}
-            onChange={onChange}
+            onChange={onBlocksChange}
           />
         </ClientOnly>
       </Container>
