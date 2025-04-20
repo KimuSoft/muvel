@@ -1,5 +1,11 @@
 import React from "react"
-import { HStack, IconButton, Spacer, type StackProps } from "@chakra-ui/react"
+import {
+  HStack,
+  IconButton,
+  Spacer,
+  Spinner,
+  type StackProps,
+} from "@chakra-ui/react"
 import OptionDrawer from "~/features/editor/components/OptionDrawer"
 import { ColorModeButton } from "~/components/ui/color-mode"
 import { FaChevronLeft } from "react-icons/fa"
@@ -8,10 +14,9 @@ import { BiSolidWidget } from "react-icons/bi"
 import { FaList } from "react-icons/fa6"
 import { Tooltip } from "~/components/ui/tooltip"
 
-const EditorHeader: React.FC<StackProps & { novelId: string }> = ({
-  novelId,
-  ...props
-}) => {
+const EditorHeader: React.FC<
+  StackProps & { novelId: string; isAutoSaving: boolean }
+> = ({ novelId, isAutoSaving, ...props }) => {
   const navigate = useNavigate()
 
   return (
@@ -41,6 +46,7 @@ const EditorHeader: React.FC<StackProps & { novelId: string }> = ({
           <FaList />
         </IconButton>
       </Tooltip>
+      {isAutoSaving && <Spinner colorPalette={"purple"} />}
       <Spacer />
 
       {/*<Tooltip content={"위젯 설정하기"} openDelay={100} showArrow>*/}
