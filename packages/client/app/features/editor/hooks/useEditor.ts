@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react"
 import { EditorState } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
 import { keymap } from "prosemirror-keymap"
-import { baseKeymap } from "prosemirror-commands"
+import { baseKeymap, toggleMark } from "prosemirror-commands"
 import { history, redo, undo } from "prosemirror-history"
 import { baseSchema } from "../schema/baseSchema"
 import { blocksToDoc, docToBlocks } from "../utils/blockConverter"
@@ -11,6 +11,7 @@ import type { Block } from "muvel-api-types"
 import { createInputRules } from "~/features/editor/plugins/inputRules"
 import { assignIdPlugin } from "~/features/editor/plugins/assignIdPlugin"
 import { autoQuotePlugin } from "~/features/editor/plugins/autoQuotePlugin"
+import { typewriterPlugin } from "~/features/editor/plugins/typewriterPlugin"
 
 interface UseEditorProps {
   containerRef: React.RefObject<HTMLDivElement>
@@ -44,10 +45,15 @@ export const useEditor = ({
         assignIdPlugin,
         createInputRules(baseSchema),
         autoQuotePlugin,
+        typewriterPlugin,
         keymap({
           "Mod-z": undo,
           "Mod-y": redo,
           "Shift-Mod-z": redo, // mac 호환
+          "Mod-b": toggleMark(baseSchema.marks.strong), // Bold
+          "Mod-i": toggleMark(baseSchema.marks.em), // Italic
+          "Mod-u": toggleMark(baseSchema.marks.underline), // Underline (스키마에 있다면)
+          "Mod-`": toggleMark(baseSchema.marks.code), // Inline code
         }),
         keymap(baseKeymap),
       ],

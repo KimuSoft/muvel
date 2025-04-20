@@ -1,26 +1,24 @@
-import type { GetEpisodeResponseDto } from "muvel-api-types"
-import React, { useMemo } from "react"
+import type { Block, GetEpisodeResponseDto } from "muvel-api-types"
+import React from "react"
 import NovelEditor from "~/features/editor/components/NovelEditor"
-import { ClientOnly, Container, VStack } from "@chakra-ui/react"
-import type { BlockChange } from "~/features/editor/utils/calculateBlockChanges"
-import { updateEpisodeBlocks } from "~/api/api.episode"
-import { debounce } from "lodash-es"
+import {
+  Button,
+  ClientOnly,
+  Container,
+  Input,
+  Separator,
+  VStack,
+} from "@chakra-ui/react"
 import { useOption } from "~/context/OptionContext"
 import EditorHeader from "~/features/editor/components/EditorHeader"
 
-const EditorTemplate: React.FC<{ episode: GetEpisodeResponseDto }> = ({
-  episode,
-}) => {
+const EditorTemplate: React.FC<{
+  episode: GetEpisodeResponseDto
+  onChange: (blocks: Block[]) => void
+  isAutoSaving: boolean
+}> = ({ episode, onChange, isAutoSaving }) => {
   // const { view, getBlocks } = useEditorContext()
   const [option] = useOption()
-
-  const handleChange = useMemo(
-    () =>
-      debounce(async (blocks: BlockChange[]) => {
-        await updateEpisodeBlocks(episode.id, blocks)
-      }, 1000),
-    [episode.id],
-  )
 
   return (
     <VStack
@@ -32,7 +30,9 @@ const EditorTemplate: React.FC<{ episode: GetEpisodeResponseDto }> = ({
       <EditorHeader
         novelId={episode.novelId}
         transition="background-color 0.2s ease-in-out"
-        bgColor={"inherit"}
+        bgColor={option.backgroundColor || { base: "white", _dark: "black" }}
+        color={option.color || undefined}
+        isAutoSaving={isAutoSaving}
       />
       <Container
         maxW={option.editorMaxWidth}
@@ -41,12 +41,28 @@ const EditorTemplate: React.FC<{ episode: GetEpisodeResponseDto }> = ({
         my={100}
         px={3}
       >
+        <Button variant={"ghost"} color={"gray.500"} size={"md"}>
+          {episode.order}편
+        </Button>
+        <Input
+          fontSize={"2xl"}
+          fontWeight={"bold"}
+          border={"none"}
+          _focus={{
+            border: "none",
+            outline: "none",
+          }}
+          px={4}
+          placeholder={"제목을 입력해 주세요"}
+          defaultValue={episode.title}
+        />
+        <Separator color={option.color || undefined} mt={5} mb={3} />
         <ClientOnly>
           <NovelEditor
             initialBlocks={episode.blocks}
             episodeId={episode.id}
             editable={episode.permissions.edit}
-            onChange={handleChange}
+            onChange={onChange}
           />
         </ClientOnly>
       </Container>
