@@ -1,5 +1,13 @@
 import React, { forwardRef } from "react"
-import { Box, Heading, HStack, Tag, Text, VStack } from "@chakra-ui/react"
+import {
+  Box,
+  Heading,
+  HStack,
+  Image,
+  Tag,
+  Text,
+  VStack,
+} from "@chakra-ui/react"
 import { type Novel, ShareType } from "muvel-api-types"
 import { useNavigate } from "react-router"
 
@@ -22,12 +30,16 @@ const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
         _hover={{ borderColor: { base: "gray.100", _dark: "purple.500" } }}
         {...props}
       >
-        <Box
+        <Image
           w="100px"
           h="150px"
           borderRadius={"md"}
-          backgroundColor={{ base: "gray.200", _dark: "gray.700" }}
-          backgroundImage={novel.thumbnail || ""}
+          bgColor={{ base: "gray.200", _dark: "gray.800" }}
+          src={
+            novel.thumbnail
+              ? `${novel.thumbnail}/thumbnail?width=100`
+              : "/cover.png"
+          }
           backgroundRepeat={"no-repeat"}
           backgroundSize={"cover"}
           backgroundPosition={"center"}

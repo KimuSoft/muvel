@@ -17,7 +17,7 @@ export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
   @PrimaryGeneratedColumn("uuid")
   id: string
 
-  @Column()
+  @Column({ default: "새 에피소드" })
   title: string
 
   @Column({ default: "" })

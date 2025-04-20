@@ -13,6 +13,7 @@ import { useNavigate } from "react-router"
 import { BiSolidWidget } from "react-icons/bi"
 import { FaList } from "react-icons/fa6"
 import { Tooltip } from "~/components/ui/tooltip"
+import EpisodeListDrawer from "~/features/editor/components/EpisodeListDrawer"
 
 const EditorHeader: React.FC<
   StackProps & { novelId: string; isAutoSaving: boolean }
@@ -41,12 +42,12 @@ const EditorHeader: React.FC<
           <FaChevronLeft />
         </IconButton>
       </Tooltip>
-      <Tooltip content={"에피소드 리스트"} openDelay={100} showArrow>
+      <EpisodeListDrawer novelId={novelId}>
         <IconButton variant="ghost" aria-label="back">
           <FaList />
         </IconButton>
-      </Tooltip>
-      {isAutoSaving && <Spinner colorPalette={"purple"} />}
+      </EpisodeListDrawer>
+      {isAutoSaving && <Spinner ml={3} colorPalette={"purple"} />}
       <Spacer />
 
       {/*<Tooltip content={"위젯 설정하기"} openDelay={100} showArrow>*/}
