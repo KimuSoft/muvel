@@ -25,11 +25,11 @@ import WidgetDrawer from "./WidgetDrawer"
 import { TbBook, TbCategory, TbChevronLeft, TbPlus } from "react-icons/tb"
 import { toaster } from "~/components/ui/toaster"
 import { ColorModeButton } from "~/components/ui/color-mode"
-import SearchModal from "../modals/SearchModal"
+import SearchModal from "../../../editor/components/SearchModal"
 import NovelProfile from "../molecules/NovelProfile"
 import SortableEpisodeList from "~/components/organisms/SortableEpisodeList"
 import ExportEpisode from "../molecules/ExportEpisode"
-import DeleteEpisodeDialog from "../modals/DeleteEpisodeDialog"
+import DeleteEpisodeDialog from "../../../editor/components/DeleteEpisodeDialog"
 import ImportEpisode from "~/features/block-editor/components/molecules/ImportEpisode"
 import { MdChevronLeft, MdMenu } from "react-icons/md"
 import { getNovel } from "~/api/api.novel"
@@ -170,7 +170,7 @@ const EditorDrawer: React.FC<{ episode: Episode }> = ({ episode }) => {
 
               <SortableEpisodeList
                 episodes={novel?.episodes || []}
-                isLoading={loading}
+                loading={loading}
                 isNarrow
               />
             </Drawer.Body>

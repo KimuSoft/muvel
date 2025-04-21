@@ -14,10 +14,12 @@ import { BiSolidWidget } from "react-icons/bi"
 import { FaList } from "react-icons/fa6"
 import { Tooltip } from "~/components/ui/tooltip"
 import EpisodeListDrawer from "~/features/editor/components/EpisodeListDrawer"
+import WidgetDrawer from "~/features/editor/components/WidgetDrawer"
+import SearchModal from "~/features/editor/components/SearchModal"
 
 const EditorHeader: React.FC<
-  StackProps & { novelId: string; isAutoSaving: boolean }
-> = ({ novelId, isAutoSaving, ...props }) => {
+  StackProps & { novelId: string; episodeId: string; isAutoSaving: boolean }
+> = ({ novelId, episodeId, isAutoSaving, ...props }) => {
   const navigate = useNavigate()
 
   return (
@@ -42,7 +44,7 @@ const EditorHeader: React.FC<
           <FaChevronLeft />
         </IconButton>
       </Tooltip>
-      <EpisodeListDrawer novelId={novelId}>
+      <EpisodeListDrawer novelId={novelId} episodeId={episodeId}>
         <IconButton variant="ghost" aria-label="back">
           <FaList />
         </IconButton>
@@ -50,10 +52,17 @@ const EditorHeader: React.FC<
       {isAutoSaving && <Spinner ml={3} colorPalette={"purple"} />}
       <Spacer />
 
+      <SearchModal novelId={novelId} />
       {/*<Tooltip content={"위젯 설정하기"} openDelay={100} showArrow>*/}
-      <IconButton variant="ghost" aria-label="back">
-        <BiSolidWidget />
-      </IconButton>
+      <WidgetDrawer>
+        <IconButton
+          variant="ghost"
+          aria-label="back"
+          display={{ base: "none", md: "flex" }}
+        >
+          <BiSolidWidget />
+        </IconButton>
+      </WidgetDrawer>
       {/*</Tooltip>*/}
       <OptionDrawer />
       <ColorModeButton />

@@ -17,10 +17,18 @@ const SortableEpisodeList: React.FC<
   {
     episodes: Episode[]
     isNarrow?: boolean
-    isLoading?: boolean
+    loading?: boolean
+    disableSort?: boolean
     onEpisodesChange?: (diffEpisodes: ReorderedEpisode[]) => void
   } & StackProps
-> = ({ episodes, isNarrow, isLoading, onEpisodesChange, ...props }) => {
+> = ({
+  episodes,
+  isNarrow,
+  loading,
+  onEpisodesChange,
+  disableSort,
+  ...props
+}) => {
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
@@ -57,17 +65,19 @@ const SortableEpisodeList: React.FC<
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <SortableContext
+        disabled={loading || disableSort}
         id={"episode-sort"}
         items={episodes}
         strategy={rectSortingStrategy}
       >
-        <VStack alignItems={"baseline"} p={0} {...props}>
+        <VStack alignItems={"baseline"} p={0} w={"100%"} {...props}>
           {episodes.map((episode, idx) => (
             <SortableEpisodeItem
+              key={episode.id}
               episode={episode}
               index={idx}
               isDrawer={isNarrow}
-              key={episode.id}
+              loading={loading}
             />
           ))}
         </VStack>

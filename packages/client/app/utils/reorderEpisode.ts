@@ -6,7 +6,7 @@ export const reorderEpisode = (episodes: Episode[]): ReorderedEpisode[] => {
   let order = 0
   return episodes.map((episode) => {
     if (episode.episodeType === EpisodeType.Episode) {
-      order += 1
+      order = Math.round(order + 1)
     } else {
       order += 0.0001
     }
