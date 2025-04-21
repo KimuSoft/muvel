@@ -3,7 +3,18 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "pnpm run -rp dev"
+    "dev": "pnpm run -rp dev",
+    "dev:server": "pnpm --filter server dev",
+    "dev:client": "pnpm --filter client dev",
+    "build": "pnpm run -rp build",
+    "build:server": "pnpm --filter server build",
+    "build:client": "pnpm --filter client build",
+    "build:api": "pnpm --filter muvel-api-types build",
+    "dev:s": "pnpm dev:server",
+    "dev:c": "pnpm dev:client",
+    "build:s": "pnpm build:server",
+    "build:c": "pnpm build:client",
+    "build:a": "pnpm build:api"
   },
   "packageManager": "pnpm@8.14.1"
 }

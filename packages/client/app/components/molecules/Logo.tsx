@@ -1,6 +1,7 @@
 import React, { useMemo } from "react"
 import { Box, type BoxProps, ClientOnly } from "@chakra-ui/react"
 import { useColorMode } from "~/components/ui/color-mode"
+import { MotionBox } from "~/components/atoms/motions"
 
 type LogoProps = {
   slogan?: boolean
@@ -93,7 +94,7 @@ const LogoSvg = ({ slogan, color, ...props }: LogoProps) => {
   )
 }
 
-const LogoColorMode: React.FC<LogoProps> = ({ color: _color, ...props }) => {
+const Logo: React.FC<LogoProps> = ({ color: _color, ...props }) => {
   const { colorMode } = useColorMode()
 
   const color = useMemo(() => {
@@ -101,13 +102,17 @@ const LogoColorMode: React.FC<LogoProps> = ({ color: _color, ...props }) => {
     return colorMode === "light" ? "#000000" : "#ffffff"
   }, [_color, colorMode])
 
-  return <LogoSvg {...props} color={color} />
-}
-
-export default (props: LogoProps) => {
   return (
-    <ClientOnly fallback={<LogoSvg {...props} color="#000" />}>
-      <LogoColorMode {...props} />
+    <ClientOnly fallback={<LogoSvg {...props} color={color} opacity={0} />}>
+      <MotionBox
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        <LogoSvg {...props} color={color} />
+      </MotionBox>
     </ClientOnly>
   )
 }
+
+export default Logo

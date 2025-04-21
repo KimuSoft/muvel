@@ -26,7 +26,7 @@ const DeleteEpisodeDialog: React.FC<{
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <Button colorScheme="red">
+        <Button colorPalette="red" variant={"outline"}>
           <TbTrash style={{ marginRight: 10 }} /> 에피소드 삭제
         </Button>
       </Dialog.Trigger>
@@ -48,16 +48,14 @@ const DeleteEpisodeDialog: React.FC<{
 
             <Dialog.Footer>
               <Button
-                colorScheme="red"
+                colorPalette="red"
                 mr={3}
                 loading={isLoading}
                 onClick={onClick}
               >
-                <TbTrash style={{ marginRight: 10 }} /> 네 삭제할게요
+                <TbTrash />
+                주의사항을 이해하였고 삭제하겠습니다
               </Button>
-              <Dialog.CloseTrigger asChild>
-                <Button>취소</Button>
-              </Dialog.CloseTrigger>
             </Dialog.Footer>
           </Dialog.Content>
         </Dialog.Positioner>

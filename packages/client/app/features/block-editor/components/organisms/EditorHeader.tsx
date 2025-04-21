@@ -4,7 +4,7 @@ import { HStack, Spinner } from "@chakra-ui/react"
 import WidgetDrawer from "./WidgetDrawer"
 import { useBlockEditor } from "~/features/block-editor/context/EditorContext"
 import { ColorModeButton } from "~/components/ui/color-mode"
-import SearchModal from "../modals/SearchModal"
+import SearchModal from "../../../editor/components/SearchModal"
 import EpisodeTitle from "~/features/block-editor/components/atoms/EpisodeTitle"
 import Auth from "~/components/molecules/Auth"
 

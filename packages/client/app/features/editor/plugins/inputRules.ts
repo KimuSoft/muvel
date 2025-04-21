@@ -22,6 +22,7 @@ export const createInputRules = (schema: Schema) => {
     textReplaceRule(/<</, "«"),
     textReplaceRule(/>>/, "»"),
     textReplaceRule(/=>$/, "⇒"),
+    textReplaceRule(/\.{3}/, "…"),
   ]
 
   // 큰따옴표 → quote (double)

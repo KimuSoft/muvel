@@ -45,11 +45,9 @@ const OptionDrawer = () => {
   return (
     <DrawerRoot>
       <DrawerTrigger asChild>
-        {/*<Tooltip content={"에디터 설정하기"} openDelay={100} showArrow>*/}
         <IconButton variant="ghost">
           <TbSettingsFilled />
         </IconButton>
-        {/*</Tooltip>*/}
       </DrawerTrigger>
       <DrawerBackdrop />
       <DrawerPositioner>

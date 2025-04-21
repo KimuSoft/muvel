@@ -113,11 +113,11 @@ export class NovelsService {
     episode.order = order.toString()
 
     // 블록 생성
-    episode.blocks = [
-      await this.createBlock([
-        { type: "text", text: "뮤블에 오신 것을 환영합니다!" },
-      ]),
-    ]
+    // episode.blocks = [
+    //   await this.createBlock([
+    //     { type: "text", text: "뮤블에 오신 것을 환영합니다!" },
+    //   ]),
+    // ]
 
     return this.episodesRepository.save(episode)
   }
