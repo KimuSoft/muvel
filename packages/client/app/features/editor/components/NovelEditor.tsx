@@ -1,9 +1,10 @@
-import React, { useRef } from "react"
+import React, { useEffect, useRef } from "react"
 import { Box } from "@chakra-ui/react"
 import { useEditor } from "../hooks/useEditor"
 import type { Block } from "muvel-api-types"
 import "../style/editorStyles.css"
 import { useOption } from "~/context/OptionContext"
+import { toaster } from "~/components/ui/toaster"
 
 interface NovelEditorProps {
   initialBlocks: Block[]
@@ -20,6 +21,25 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null!)
   const [options] = useOption()
+
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      const pastedText = e.clipboardData?.getData("text/plain") ?? ""
+      if (pastedText.includes("\n")) {
+        toaster.info({
+          title: "붙여넣기 팁",
+          description:
+            "소설 전체를 붙여넣기 할 경우 Ctrl(CMD)+Shift+V를 이용해 보세요!",
+        })
+      }
+    }
+
+    window.addEventListener("paste", handlePaste)
+
+    return () => {
+      window.removeEventListener("paste", handlePaste)
+    }
+  }, [])
 
   useEditor({
     containerRef,

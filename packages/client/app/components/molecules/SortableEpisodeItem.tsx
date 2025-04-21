@@ -1,17 +1,12 @@
-import type { StackProps } from "@chakra-ui/react"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import React from "react"
-import EpisodeItem from "./EpisodeItem"
-import type { Episode } from "muvel-api-types"
+import EpisodeItem, { type EpisodeItemProps } from "./EpisodeItem"
 
-const SortableEpisodeItem: React.FC<
-  {
-    episode: Episode
-    index: number
-    isDrawer?: boolean
-  } & StackProps
-> = ({ episode, ...props }) => {
+const SortableEpisodeItem: React.FC<EpisodeItemProps> = ({
+  episode,
+  ...props
+}) => {
   const {
     setNodeRef,
     attributes,

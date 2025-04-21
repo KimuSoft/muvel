@@ -1,12 +1,13 @@
-import React, { useMemo, useState } from "react"
+import React from "react"
 import {
   Box,
   Button,
   Center,
   Heading,
   HStack,
-  SimpleGrid,
+  Link,
   Spacer,
+  Text,
   VStack,
 } from "@chakra-ui/react"
 import Header from "../organisms/Header"
@@ -20,20 +21,14 @@ import CreateNovelItem from "~/components/molecules/CreateNovelItem"
 import CreateNovelModal from "~/components/modals/CreateNovelModal"
 import { IoLibrary } from "react-icons/io5"
 import { FaHistory } from "react-icons/fa"
+import { motion } from "motion/react"
+import { MotionBox, MotionSimpleGrid } from "~/components/atoms/motions"
 
 const MainTemplate: React.FC<{
   novels: Novel[]
 }> = ({ novels }) => {
   const user = useUser()
-
-  const [searchQuery, setSearchQuery] = useState<string>("")
-
   const navigate = useNavigate()
-
-  const searchedNovels = useMemo(() => {
-    if (searchQuery === "") return novels
-    return novels.filter((novel) => novel.title.includes(searchQuery))
-  }, [searchQuery, novels])
 
   return (
     <VStack w={"100%"} h={"100vh"} px={7}>
@@ -82,25 +77,45 @@ const MainTemplate: React.FC<{
             <IoLibrary />내 도서관
           </Button>
         </HStack>
-        <SimpleGrid w={"100%"} minChildWidth={"250px"} gap={2} mt={1}>
+        <MotionSimpleGrid w={"100%"} minChildWidth={"250px"} gap={2} mt={1}>
           {novels.slice(0, 5).map((novel) => (
-            <BlockLink key={novel.id} to={"/novels/" + novel.id}>
-              <NovelItem novel={novel} />
-            </BlockLink>
+            <motion.div key={novel.id}>
+              <BlockLink key={novel.id} to={"/novels/" + novel.id}>
+                <NovelItem novel={novel} />
+              </BlockLink>
+            </motion.div>
           ))}
           {user ? (
             <CreateNovelModal>
               <CreateNovelItem />
             </CreateNovelModal>
           ) : (
-            <Box
+            <MotionBox
               cursor={"pointer"}
               onClick={() => (window.location.href = "api/auth/login")}
             >
               <CreateNovelItem />
-            </Box>
+            </MotionBox>
           )}
-        </SimpleGrid>
+        </MotionSimpleGrid>
+        <HStack mt={8} gap={3} fontSize={"sm"} color={"gray.400"}>
+          <Text>
+            Made by{" "}
+            <Link
+              variant={"underline"}
+              href={"https://kimustory.net"}
+              colorPalette={"purple"}
+            >
+              Kimustory
+            </Link>
+          </Text>
+          <Text>·</Text>
+          <Text>
+            <Link variant={"underline"} href={"https://discord.gg/kQ27qbCJ6V"}>
+              Official Discord
+            </Link>
+          </Text>
+        </HStack>
       </Center>
     </VStack>
   )

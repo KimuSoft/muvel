@@ -32,16 +32,15 @@ const NovelDetailTemplate: React.FC<{
 }> = ({ novel }) => {
   const { revalidate } = useRevalidator()
   const navigate = useNavigate()
+  const [isEpisodesLoading, setIsEpisodesLoading] = React.useState(false)
 
   const handleCreateEpisode = async () => {
-    console.log("만들어!")
     const episode = await createNovelEpisode(novel.id)
-    console.log("만들어진 에피소드", episode)
     navigate(`/episodes/${episode.id}`)
   }
 
   const handleReorderEpisode = async (episodes: ReorderedEpisode[]) => {
-    console.log("에피소드 정렬", episodes)
+    setIsEpisodesLoading(true)
     await updateNovelEpisodes(
       novel.id,
       episodes
@@ -49,6 +48,7 @@ const NovelDetailTemplate: React.FC<{
         .map((e) => ({ id: e.id, order: e.order })),
     )
     await revalidate()
+    setIsEpisodesLoading(false)
   }
 
   const shareText = useMemo(() => {
@@ -168,41 +168,14 @@ const NovelDetailTemplate: React.FC<{
       </Center>
 
       <Container w={"100%"} maxW={"4xl"} userSelect={"none"}>
-        <HStack mb={4} px={1}>
-          <HStack gap={3}>
-            <FaList />
-            <Heading size={"md"}>에피소드 목록</Heading>
-          </HStack>
+        <HStack gap={3} mb={4} px={1}>
+          <FaList />
+          <Heading size={"md"}>에피소드 목록</Heading>
 
           <Spacer />
-          {/*<Tooltip label={sort === 1 ? "1편부터 정렬" : "최신 편부터 정렬"}>*/}
-          {/*  <IconButton*/}
-          {/*    aria-label={"에피소드 추가"}*/}
-          {/*    variant="ghost"*/}
-          {/*    onClick={() => setSort(sort === 1 ? -1 : 1)}*/}
-          {/*    icon={*/}
-          {/*      sort === 1 ? (*/}
-          {/*        <TbSortAscendingNumbers*/}
-          {/*          size={24}*/}
-          {/*          color={"var(--chakra-colors-purple-400)"}*/}
-          {/*        />*/}
-          {/*      ) : (*/}
-          {/*        <TbSortDescendingNumbers*/}
-          {/*          size={24}*/}
-          {/*          color={"var(--chakra-colors-purple-400)"}*/}
-          {/*        />*/}
-          {/*      )*/}
-          {/*    }*/}
-          {/*  />*/}
-          {/*</Tooltip>*/}
 
           {novel.permissions.edit ? (
-            <Button
-              colorScheme={"purple"}
-              gap={3}
-              onClick={revalidate}
-              size={"sm"}
-            >
+            <Button colorScheme={"purple"} gap={3} size={"sm"}>
               <TbPlus />
               <Box
                 onClick={handleCreateEpisode}
@@ -214,6 +187,7 @@ const NovelDetailTemplate: React.FC<{
           ) : null}
         </HStack>
         <SortableEpisodeList
+          loading={isEpisodesLoading}
           episodes={novel.episodes}
           onEpisodesChange={handleReorderEpisode}
         />

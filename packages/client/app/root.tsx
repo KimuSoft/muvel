@@ -7,6 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useNavigation,
 } from "react-router"
 
 import type { Route } from "./+types/root"
@@ -14,6 +15,7 @@ import { Provider } from "./components/ui/provider"
 import { UserProvider } from "~/context/UserContext"
 import { getUserFromRequest } from "~/utils/session.server"
 import { Toaster } from "~/components/ui/toaster"
+import LoadingOverlay from "~/components/templates/LoadingOverlay"
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -58,10 +60,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function App() {
   const { user } = useLoaderData<typeof loader>()
+  const navigation = useNavigation()
+  const isLoading = navigation.state === "loading"
 
   return (
     <UserProvider user={user}>
       <Provider>
+        {isLoading && <LoadingOverlay />}
         <Toaster />
         <Outlet />
       </Provider>

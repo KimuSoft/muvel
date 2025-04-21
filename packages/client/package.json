@@ -1,5 +1,5 @@
 {
-  "name": "client-new",
+  "name": "client",
   "private": true,
   "type": "module",
   "scripts": {
@@ -24,6 +24,7 @@
     "immer": "^10.1.1",
     "isbot": "^5.1.17",
     "lodash-es": "^4.17.21",
+    "motion": "^12.7.4",
     "muvel-api-types": "workspace:^",
     "next-themes": "^0.4.6",
     "prosemirror-commands": "^1.7.1",
@@ -39,6 +40,7 @@
     "react-dom": "^19.0.0",
     "react-icons": "^4.12.0",
     "react-router": "^7.5.0",
+    "react-spinners": "^0.16.1",
     "uuid": "^9.0.0",
     "zod": "^3.21.4"
   },

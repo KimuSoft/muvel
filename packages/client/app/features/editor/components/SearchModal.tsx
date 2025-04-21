@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react"
 import {
   Center,
+  CloseButton,
+  Dialog,
   Highlight,
   HStack,
   Icon,
@@ -8,18 +10,17 @@ import {
   Input,
   InputGroup,
   Kbd,
+  Portal,
   Spacer,
   Text,
   VStack,
-  Dialog,
-  Portal,
-  CloseButton,
 } from "@chakra-ui/react"
 import { api } from "~/utils/api"
 import { useNavigate } from "react-router"
 import { MdMessage } from "react-icons/md"
 import { TbSearch } from "react-icons/tb"
 import { Tooltip } from "~/components/ui/tooltip"
+import { FaSearch } from "react-icons/fa"
 
 const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
   const [hitItems, setHitItems] = useState<HitItem[]>([])
@@ -68,7 +69,7 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
           size="sm"
           variant="ghost"
         >
-          <TbSearch />
+          <FaSearch />
         </IconButton>
       </Dialog.Trigger>
 
@@ -83,9 +84,6 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
                   onChange={(e) => setQuery(e.target.value)}
                 />
               </InputGroup>
-              <Dialog.CloseTrigger asChild>
-                <CloseButton position="absolute" right="3" top="3" />
-              </Dialog.CloseTrigger>
             </Dialog.Header>
 
             <Dialog.Body>
@@ -161,7 +159,8 @@ const SearchHitItem: React.FC<{ item: HitItem; highlight?: string }> = ({
             <Highlight
               query={highlight}
               styles={{
-                color: { base: "purple.600", _dark: "purple.100" },
+                // color: { base: "purple.600", _dark: "purple.300" },
+                backgroundColor: { base: "purple.100", _dark: "purple.500" },
                 fontWeight: 800,
               }}
             >
