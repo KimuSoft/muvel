@@ -64,7 +64,7 @@ export default function App() {
   const isLoading = navigation.state === "loading"
 
   return (
-    <UserProvider user={user}>
+    <UserProvider user={user || null}>
       <Provider>
         {isLoading && <LoadingOverlay />}
         <Toaster />

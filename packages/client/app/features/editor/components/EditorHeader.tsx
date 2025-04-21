@@ -1,5 +1,6 @@
 import React from "react"
 import {
+  ClientOnly,
   HStack,
   IconButton,
   Spacer,
@@ -55,15 +56,17 @@ const EditorHeader: React.FC<
 
       <SearchModal novelId={novelId} />
       {/*<Tooltip content={"위젯 설정하기"} openDelay={100} showArrow>*/}
-      <WidgetDrawer>
-        <IconButton
-          variant="ghost"
-          aria-label="back"
-          display={{ base: "none", md: "flex" }}
-        >
-          <BiSolidWidget />
-        </IconButton>
-      </WidgetDrawer>
+      <ClientOnly>
+        <WidgetDrawer>
+          <IconButton
+            variant="ghost"
+            aria-label="back"
+            display={{ base: "none", xl: "flex" }}
+          >
+            <BiSolidWidget />
+          </IconButton>
+        </WidgetDrawer>
+      </ClientOnly>
       {/*</Tooltip>*/}
       <OptionDrawer />
       <ColorModeButton />

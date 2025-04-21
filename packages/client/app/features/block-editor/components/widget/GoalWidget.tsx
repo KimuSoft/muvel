@@ -127,8 +127,8 @@ const GoalWidget: React.FC = () => {
         <Spacer />
         <Menu.Root>
           <Menu.Trigger asChild>
-            <IconButton size="xs" as={IconButton}>
-              <IoSettings size={9} />
+            <IconButton variant={"ghost"} size="xs">
+              <IoSettings />
             </IconButton>
           </Menu.Trigger>
           <Menu.Content>
