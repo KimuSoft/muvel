@@ -12,6 +12,7 @@ import {
 import { useOption } from "~/context/OptionContext"
 import EditorHeader from "~/features/editor/components/EditorHeader"
 import MobileBar from "~/features/editor/components/MobileBar"
+import { WidgetPanel } from "~/features/editor/widgets/containers/WidgetPanel"
 
 const EditorTemplate: React.FC<{
   episode: GetEpisodeResponseDto
@@ -30,6 +31,9 @@ const EditorTemplate: React.FC<{
       h={"100%"}
       position={"relative"}
     >
+      <ClientOnly>
+        <WidgetPanel />
+      </ClientOnly>
       <EditorHeader
         novelId={episode.novelId}
         episodeId={episode.id}
@@ -49,8 +53,10 @@ const EditorTemplate: React.FC<{
           {episode.order}편
         </Button>
         <Input
+          key={episode.id + "-title"}
           fontSize={"2xl"}
           fontWeight={"bold"}
+          color={option.color || undefined}
           border={"none"}
           _focus={{
             border: "none",
@@ -63,7 +69,12 @@ const EditorTemplate: React.FC<{
             onTitleChange(e.target.value)
           }}
         />
-        <Separator color={option.color || undefined} mt={5} mb={3} />
+        <Separator
+          borderColor={option.color || undefined}
+          opacity={0.5}
+          mt={5}
+          mb={3}
+        />
         <ClientOnly>
           <NovelEditor
             key={episode.id}

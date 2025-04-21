@@ -7,6 +7,9 @@ import { debounce } from "lodash-es"
 import { getBlocksChange } from "~/features/editor/utils/calculateBlockChanges"
 import { updateEpisode, updateEpisodeBlocks } from "~/api/api.episode"
 import { toaster } from "~/components/ui/toaster"
+import { ClientOnly } from "@chakra-ui/react"
+import LoadingOverlay from "~/components/templates/LoadingOverlay"
+import { WidgetLayoutProvider } from "~/features/editor/widgets/context/WidgetLayoutContext"
 
 const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   episode: episode_,
@@ -15,7 +18,11 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   const originalRef = useRef<Block[]>(episode.blocks)
   const [isAutoSaving, setIsAutoSaving] = React.useState(false)
 
-  useEffect(() => setEpisode(episode_), [episode_.id])
+  // 편이 바뀐 경우
+  useEffect(() => {
+    setEpisode(episode_)
+    originalRef.current = episode_.blocks
+  }, [episode_.id])
 
   const handleBlocksChange = useMemo(
     () =>
@@ -60,16 +67,20 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   )
 
   return (
-    <OptionProvider>
-      <EditorProvider>
-        <EditorTemplate
-          episode={episode}
-          onBlocksChange={handleBlocksChange}
-          onTitleChange={handleTitleChange}
-          isAutoSaving={isAutoSaving}
-        />
-      </EditorProvider>
-    </OptionProvider>
+    <ClientOnly fallback={<LoadingOverlay />}>
+      <OptionProvider>
+        <WidgetLayoutProvider>
+          <EditorProvider>
+            <EditorTemplate
+              episode={episode}
+              onBlocksChange={handleBlocksChange}
+              onTitleChange={handleTitleChange}
+              isAutoSaving={isAutoSaving}
+            />
+          </EditorProvider>
+        </WidgetLayoutProvider>
+      </OptionProvider>
+    </ClientOnly>
   )
 }
 
