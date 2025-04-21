@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react"
 import { useOption } from "~/context/OptionContext"
 import EditorHeader from "~/features/editor/components/EditorHeader"
+import MobileBar from "~/features/editor/components/MobileBar"
 
 const EditorTemplate: React.FC<{
   episode: GetEpisodeResponseDto
@@ -27,6 +28,7 @@ const EditorTemplate: React.FC<{
       transition="background-color 0.2s ease-in-out"
       minH={"100vh"}
       h={"100%"}
+      position={"relative"}
     >
       <EditorHeader
         novelId={episode.novelId}
@@ -72,6 +74,7 @@ const EditorTemplate: React.FC<{
           />
         </ClientOnly>
       </Container>
+      <MobileBar />
     </VStack>
   )
 }
