@@ -27,7 +27,7 @@ export const novelpiaDesktopPreset: EditorOption = {
 export const novelpiaMobilePreset: EditorOption = {
   lineHeight: 2,
   fontSize: 18,
-  indent: 1,
+  indent: 0,
   fontWeight: 400,
   fontFamily: "Noto Sans KR, Pretendard, Inter, sans-serif",
   color: "#000000",
@@ -39,7 +39,7 @@ export const novelpiaMobilePreset: EditorOption = {
 export const kakaopagePreset: EditorOption = {
   lineHeight: 2,
   fontSize: 18,
-  indent: 1,
+  indent: 0,
   fontWeight: 100,
   fontFamily: "KoPubWorldBatang",
   color: "#000000",
@@ -51,7 +51,7 @@ export const kakaopagePreset: EditorOption = {
 export const joaraPreset: EditorOption = {
   lineHeight: 2,
   fontSize: 16,
-  indent: 1,
+  indent: 0,
   fontWeight: 400,
   fontFamily: "sans-serif",
   color: "#343434",

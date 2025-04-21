@@ -70,7 +70,13 @@ const EpisodeListDrawer: React.FC<
   }
 
   return (
-    <DrawerRoot placement={"start"} size={"md"}>
+    <DrawerRoot
+      placement={"start"}
+      size={"md"}
+      onOpenChange={(open) => {
+        if (open.open) void fetchNovel()
+      }}
+    >
       <DrawerTrigger asChild>{children}</DrawerTrigger>
       <DrawerBackdrop />
       <DrawerPositioner>
