@@ -1,7 +1,11 @@
 import { Plugin } from "prosemirror-state"
 
+const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+
 export const typewriterPlugin = new Plugin({
   view(editorView) {
+    if (isMobile) return {} // 모바일이면 아무것도 안 함
+
     return {
       update(view, prevState) {
         const { state } = view

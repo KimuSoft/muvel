@@ -40,12 +40,13 @@ const EditorHeader: React.FC<
           onClick={() => {
             navigate(`/novels/${novelId}`)
           }}
+          size={"sm"}
         >
           <FaChevronLeft />
         </IconButton>
       </Tooltip>
       <EpisodeListDrawer novelId={novelId} episodeId={episodeId}>
-        <IconButton variant="ghost" aria-label="back">
+        <IconButton size={"sm"} variant="ghost" aria-label="back">
           <FaList />
         </IconButton>
       </EpisodeListDrawer>
