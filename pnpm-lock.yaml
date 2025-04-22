@@ -43,6 +43,9 @@ importers:
       dedent:
         specifier: ^1.5.3
         version: 1.5.3
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.3.1
       formik:
         specifier: ^2.4.2
         version: 2.4.5(react@19.1.0)
@@ -98,8 +101,8 @@ importers:
         specifier: ^19.0.0
         version: 19.1.0(react@19.1.0)
       react-icons:
-        specifier: ^4.12.0
-        version: 4.12.0(react@19.1.0)
+        specifier: ^5.5.0
+        version: 5.5.0(react@19.1.0)
       react-router:
         specifier: ^7.5.0
         version: 7.5.0(react-dom@19.1.0)(react@19.1.0)
@@ -8893,8 +8896,8 @@ packages:
       react-dom: 19.1.0(react@19.1.0)
     dev: true
 
-  /react-icons@4.12.0(react@19.1.0):
-    resolution: {integrity: sha512-IBaDuHiShdZqmfc/TwHu6+d6k2ltNCf3AszxNmjJc1KUfXdEeRJOKyNvLmAHaarhzGmTSVygNdyu8/opXv2gaw==}
+  /react-icons@5.5.0(react@19.1.0):
+    resolution: {integrity: sha512-MEFcXdkP3dLo8uumGI5xN3lDFNsRtrjbOEKDLD7yv76v4wpnEq2Lt2qeHaQOr34I/wPN3s3+N08WkQ+CW37Xiw==}
     peerDependencies:
       react: '*'
     dependencies:
