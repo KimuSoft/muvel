@@ -5,7 +5,7 @@ services:
       - "127.0.0.1:1338:2556"
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.server
     depends_on:
       - db
     restart: unless-stopped
