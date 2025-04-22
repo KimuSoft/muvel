@@ -1,5 +1,6 @@
 import React from "react"
 import { Center, type CenterProps, HStack, Spacer } from "@chakra-ui/react"
+
 import Auth from "../molecules/Auth"
 import Logo from "../molecules/Logo"
 import { ColorModeButton } from "~/components/ui/color-mode"
