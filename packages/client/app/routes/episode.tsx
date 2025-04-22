@@ -3,6 +3,8 @@ import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { api } from "~/utils/api"
 import { EpisodeType, type GetEpisodeResponseDto } from "muvel-api-types"
 import EditorPage from "~/features/editor/EditorPage"
+import React, { useEffect } from "react"
+import LoadingOverlay from "~/components/templates/LoadingOverlay"
 
 export function meta({ data }: Route.MetaArgs) {
   if (!data?.episode) {
@@ -41,6 +43,19 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return { episode }
 }
 
+const CSREditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
+  episode,
+}) => {
+  const [isClient, setIsClient] = React.useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  if (!isClient) return <LoadingOverlay />
+  return <EditorPage episode={episode} />
+}
+
 export default function Main() {
   const { episode } = useLoaderData<typeof loader>()
 
@@ -49,7 +64,7 @@ export default function Main() {
     case EpisodeType.Prologue:
     case EpisodeType.Epilogue:
     case EpisodeType.Special:
-      return <EditorPage episode={episode} />
+      return <CSREditorPage episode={episode} />
     case EpisodeType.Memo:
     case EpisodeType.EpisodeGroup:
       return <div>구현 예정</div>

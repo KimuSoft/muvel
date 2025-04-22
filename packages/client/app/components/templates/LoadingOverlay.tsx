@@ -1,7 +1,5 @@
-import * as rs from "react-spinners"
 import { MotionCenter } from "~/components/atoms/motions"
-
-const { PropagateLoader } = rs
+import { Spinner } from "@chakra-ui/react"
 
 const LoadingOverlay = () => {
   return (
@@ -18,9 +16,10 @@ const LoadingOverlay = () => {
       bgColor={{ base: "whiteAlpha.700", _dark: "blackAlpha.700" }}
       zIndex={9999}
       key={"loading-overlay"}
-      color={"red.500"}
+      color={"purple.500"}
     >
-      <PropagateLoader color={"var(--chakra-colors-purple-300)"} />
+      {/*<PropagateLoader color={"var(--chakra-colors-purple-300)"} />*/}
+      <Spinner size={"lg"} />
     </MotionCenter>
   )
 }
