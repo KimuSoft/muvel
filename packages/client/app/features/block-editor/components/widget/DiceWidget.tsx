@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react"
 import { BsDice6Fill } from "react-icons/bs"
 import { Widget, WidgetBody, WidgetHeader } from "./Widget"
-import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai"
+import { AiOutlineMinus } from "react-icons/ai"
 import {
   GiDiceEightFacesEight,
   GiDiceTwentyFacesOne,

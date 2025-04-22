@@ -1,6 +1,5 @@
 import React from "react"
 import {
-  Box,
   Button,
   Center,
   Heading,
@@ -9,7 +8,6 @@ import {
   Spacer,
   Stack,
   Text,
-  VStack,
 } from "@chakra-ui/react"
 import Header from "../organisms/Header"
 import type { Novel } from "muvel-api-types"

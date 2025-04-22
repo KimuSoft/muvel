@@ -1,7 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { WidgetBase, WidgetHeader, WidgetTitle, WidgetBody } from "./WidgetBase"
-import { widgetMap, type WidgetId } from "./widgetMap"
+import { type WidgetId, widgetMap } from "./widgetMap"
 
 export const SortableWidget = ({ id }: { id: WidgetId }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =

@@ -1,4 +1,4 @@
-import { ColorPicker, HStack, parseColor, Portal } from "@chakra-ui/react"
+import { ColorPicker, HStack, parseColor } from "@chakra-ui/react"
 import React from "react"
 
 const OptionColorPicker: React.FC<{

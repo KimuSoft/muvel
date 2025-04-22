@@ -1,11 +1,4 @@
-import {
-  type BoxProps,
-  type FlexProps,
-  type ListItemProps,
-  Box,
-  Flex,
-  ListItem,
-} from "@chakra-ui/react"
+import { Box, type BoxProps, Flex, type FlexProps } from "@chakra-ui/react"
 import React from "react"
 import "./block.css"
 

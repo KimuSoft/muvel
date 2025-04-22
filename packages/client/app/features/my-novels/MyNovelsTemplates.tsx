@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
   Box,
   Button,
@@ -6,7 +6,6 @@ import {
   Heading,
   HStack,
   Link,
-  Separator,
   Spacer,
   Text,
   useBreakpointValue,
