@@ -19,7 +19,6 @@ import {
   type GetNovelResponseDto,
 } from "muvel-api-types"
 import { api } from "~/utils/api"
-import { initialNovel, type Novel } from "muvel-api-types"
 import Auth from "~/components/molecules/Auth"
 import WidgetDrawer from "./WidgetDrawer"
 import { TbBook, TbCategory, TbChevronLeft, TbPlus } from "react-icons/tb"

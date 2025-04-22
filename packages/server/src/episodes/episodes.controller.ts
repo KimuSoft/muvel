@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  Put,
   Request,
 } from "@nestjs/common"
 import { EpisodesService } from "./episodes.service"

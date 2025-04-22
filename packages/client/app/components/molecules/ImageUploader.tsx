@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Button, FileUpload, HStack, VStack } from "@chakra-ui/react"
+import { Button, FileUpload, VStack } from "@chakra-ui/react"
 import { HiClipboard, HiUpload } from "react-icons/hi"
 import { useImageUpload } from "~/hooks/useImageUpload"
 

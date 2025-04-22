@@ -9,8 +9,8 @@ import { produce } from "immer"
 import type { LegacyBlock } from "muvel-api-types"
 import {
   type Episode,
+  initialEpisode,
   initialNovel,
-  initialPartialEpisode,
   type Novel,
 } from "muvel-api-types"
 import { getWidgets } from "../utils/getWidgets"
@@ -44,7 +44,7 @@ export const BlockEditorProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [novel, setNovel] = useState<Novel>(initialNovel)
-  const [episode, setEpisode] = useState<Episode>(initialPartialEpisode)
+  const [episode, setEpisode] = useState<Episode>(initialEpisode)
   const [blocks, setBlocks] = useState<LegacyBlock[]>([])
   const [isAutoSaving, setIsAutoSaving] = useState(false)
   const [isLoading, setIsLoading] = useState(false)

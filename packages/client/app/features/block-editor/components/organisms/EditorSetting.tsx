@@ -18,7 +18,7 @@ import { AiFillSetting } from "react-icons/ai"
 import { useOption } from "~/context/OptionContext"
 import { Tooltip } from "~/components/ui/tooltip"
 import ContentEditableBlock from "~/features/block-editor/components/atoms/MuvelBlock/ContentEditableBlock"
-import { sampleBlock, sampleLegacyBlock } from "muvel-api-types"
+import { sampleLegacyBlock } from "muvel-api-types"
 import { defaultOption } from "~/providers/OptionProvider"
 
 const EditorSetting: React.FC = () => {

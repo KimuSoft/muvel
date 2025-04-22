@@ -16,6 +16,7 @@ import { UserProvider } from "~/context/UserContext"
 import { getUserFromRequest } from "~/utils/session.server"
 import { Toaster } from "~/components/ui/toaster"
 import LoadingOverlay from "~/components/templates/LoadingOverlay"
+import React from "react"
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },

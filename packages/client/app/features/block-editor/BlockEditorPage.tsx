@@ -71,48 +71,48 @@ const BlockEditorPage: React.FC = () => {
   const isEpisodeUpdated = () =>
     episode.title !== episodeCache?.title ||
     episode.description !== episodeCache?.description ||
-    episode.chapter !== episodeCache?.chapter
+    // episode.chapter !== episodeCache?.chapter
 
-  // 변경사항 자동 저장 (Debounce)
-  useEffect(() => {
-    // 변경사항이 아직 서버에 올라가지 않았다면 경고
-    // if (isEpisodeUpdated() || getBlocksChange().length) {
-    //   window.onbeforeunload = () => 0
-    // } else {
-    //   window.onbeforeunload = undefined
-    // }
-    if (isLoading) return
-
-    const timeout = setTimeout(async () => {
+    // 변경사항 자동 저장 (Debounce)
+    useEffect(() => {
+      // 변경사항이 아직 서버에 올라가지 않았다면 경고
+      // if (isEpisodeUpdated() || getBlocksChange().length) {
+      //   window.onbeforeunload = () => 0
+      // } else {
+      //   window.onbeforeunload = undefined
+      // }
       if (isLoading) return
-      if (episodeCache?.id !== episode.id) return
 
-      setIsAutoSaving(true)
+      const timeout = setTimeout(async () => {
+        if (isLoading) return
+        if (episodeCache?.id !== episode.id) return
 
-      // 에피소드 변경사항 체크
-      if (isEpisodeUpdated()) {
-        // 에피소드 업데이트 요청
-        await api.put(`episodes/${episodeId}`, {
-          title: episode.title || "제목 없음",
-          description: episode.description,
-          chapter: episode.chapter,
-        })
-        setEpisodeCache(episode)
-      }
+        setIsAutoSaving(true)
 
-      // 블록 변경사항 체크
-      const blocksChange = getBlocksChange()
-      if (blocksChange?.length) {
-        // 블록 데이터 업데이트 요청
-        await api.patch(`episodes/${episodeId}/blocks`, blocksChange)
-        setBlocksCache(blocks)
-      }
+        // 에피소드 변경사항 체크
+        if (isEpisodeUpdated()) {
+          // 에피소드 업데이트 요청
+          await api.put(`episodes/${episodeId}`, {
+            title: episode.title || "제목 없음",
+            description: episode.description,
+            // chapter: episode.chapter,
+          })
+          setEpisodeCache(episode)
+        }
 
-      setIsAutoSaving(false)
-    }, 1000)
+        // 블록 변경사항 체크
+        const blocksChange = getBlocksChange()
+        if (blocksChange?.length) {
+          // 블록 데이터 업데이트 요청
+          await api.patch(`episodes/${episodeId}/blocks`, blocksChange)
+          setBlocksCache(blocks)
+        }
 
-    return () => clearTimeout(timeout)
-  }, [episode, blocks])
+        setIsAutoSaving(false)
+      }, 1000)
+
+      return () => clearTimeout(timeout)
+    }, [episode, blocks])
 
   const initEpisode = async () => {
     setIsLoading(true)

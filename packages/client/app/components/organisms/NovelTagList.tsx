@@ -1,18 +1,6 @@
-import {
-  Box,
-  Button,
-  Center,
-  CloseButton,
-  Field,
-  HStack,
-  Icon,
-  IconButton,
-  Input,
-  Tag,
-} from "@chakra-ui/react"
+import { Field, HStack, Icon, Input, Tag } from "@chakra-ui/react"
 import React from "react"
 import { TbPlus, TbTag, TbX } from "react-icons/tb"
-import TagChip from "../atoms/TagChip"
 import { toaster } from "~/components/ui/toaster"
 import {
   PopoverContent,
