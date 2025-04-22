@@ -1,10 +1,7 @@
 import type { Route } from "./+types/episode"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { api } from "~/utils/api"
-import BlockEditorPage from "~/features/block-editor/BlockEditorPage"
-import { BlockEditorProvider } from "~/features/block-editor/context/EditorContext"
-import OptionProvider from "~/providers/OptionProvider"
-import { EditorType, type GetEpisodeResponseDto } from "muvel-api-types"
+import { EpisodeType, type GetEpisodeResponseDto } from "muvel-api-types"
 import EditorPage from "~/features/editor/EditorPage"
 
 export function meta({ data }: Route.MetaArgs) {
@@ -47,20 +44,14 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export default function Main() {
   const { episode } = useLoaderData<typeof loader>()
 
-  switch (episode.editor) {
-    case EditorType.Block:
-      return (
-        <OptionProvider>
-          <BlockEditorProvider>
-            <BlockEditorPage />
-          </BlockEditorProvider>
-        </OptionProvider>
-      )
-    case EditorType.Flow:
-      return <div>Muvel Flow Editor</div>
-    case EditorType.RichText:
+  switch (episode.episodeType) {
+    case EpisodeType.Episode:
+    case EpisodeType.Prologue:
+    case EpisodeType.Epilogue:
+    case EpisodeType.Special:
       return <EditorPage episode={episode} />
-    default:
-      return <div>Unknown Editor Type: {JSON.stringify(episode, null, 2)}</div>
+    case EpisodeType.Memo:
+    case EpisodeType.EpisodeGroup:
+      return <div>구현 예정</div>
   }
 }

@@ -109,7 +109,6 @@ export class NovelsService {
     const episode = new EpisodeEntity()
     episode.title = title
     episode.description = description
-    episode.chapter = chapter
     episode.order = order.toString()
 
     // 블록 생성

@@ -10,7 +10,7 @@ import {
 } from "typeorm"
 import { BlockEntity } from "../blocks/block.entity"
 import { NovelEntity } from "../novels/novel.entity"
-import { EditorType, Episode, EpisodeType } from "muvel-api-types"
+import { Episode, EpisodeType } from "muvel-api-types"
 
 @Entity("episode")
 export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
@@ -24,17 +24,7 @@ export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
   description: string
 
   @Column({ default: "" })
-  chapter: string
-
-  @Column({ default: "" })
   authorComment: string
-
-  // 임시로 생성 날짜를 기준으로 정렬하도록 함
-  @CreateDateColumn()
-  createdAt: Date
-
-  @UpdateDateColumn()
-  updatedAt: Date
 
   @ManyToOne(() => NovelEntity, (novel) => novel.episodes, {
     onDelete: "CASCADE",
@@ -55,6 +45,9 @@ export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
   @Column({ default: EpisodeType.Episode })
   episodeType: EpisodeType
 
-  @Column({ default: EditorType.RichText })
-  editor: EditorType
+  @CreateDateColumn()
+  createdAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
 }
