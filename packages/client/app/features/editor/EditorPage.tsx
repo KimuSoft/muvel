@@ -7,8 +7,6 @@ import { debounce } from "lodash-es"
 import { getBlocksChange } from "~/features/editor/utils/calculateBlockChanges"
 import { updateEpisode, updateEpisodeBlocks } from "~/api/api.episode"
 import { toaster } from "~/components/ui/toaster"
-import { ClientOnly } from "@chakra-ui/react"
-import LoadingOverlay from "~/components/templates/LoadingOverlay"
 import { WidgetLayoutProvider } from "~/features/editor/widgets/context/WidgetLayoutContext"
 
 const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
@@ -67,20 +65,18 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   )
 
   return (
-    <ClientOnly fallback={<LoadingOverlay />}>
-      <OptionProvider>
-        <WidgetLayoutProvider>
-          <EditorProvider>
-            <EditorTemplate
-              episode={episode}
-              onBlocksChange={handleBlocksChange}
-              onTitleChange={handleTitleChange}
-              isAutoSaving={isAutoSaving}
-            />
-          </EditorProvider>
-        </WidgetLayoutProvider>
-      </OptionProvider>
-    </ClientOnly>
+    <OptionProvider>
+      <WidgetLayoutProvider>
+        <EditorProvider>
+          <EditorTemplate
+            episode={episode}
+            onBlocksChange={handleBlocksChange}
+            onTitleChange={handleTitleChange}
+            isAutoSaving={isAutoSaving}
+          />
+        </EditorProvider>
+      </WidgetLayoutProvider>
+    </OptionProvider>
   )
 }
 
