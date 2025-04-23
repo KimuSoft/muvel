@@ -25,7 +25,11 @@ import {
   getNovel,
   updateNovelEpisodes,
 } from "~/api/api.novel"
-import type { EpisodeType, GetNovelResponseDto } from "muvel-api-types"
+import type {
+  BasePermission,
+  EpisodeType,
+  GetNovelResponseDto,
+} from "muvel-api-types"
 import type { ReorderedEpisode } from "~/utils/reorderEpisode"
 import { FaList } from "react-icons/fa6"
 import NovelItem from "~/components/molecules/NovelItem"
@@ -33,8 +37,12 @@ import CreateEpisodeMenu from "~/features/editor/components/CreateEpisodeMenu"
 import DeleteEpisodeDialog from "~/features/editor/components/DeleteEpisodeDialog"
 
 const EpisodeListDrawer: React.FC<
-  { novelId: string; episodeId: string } & PropsWithChildren
-> = ({ novelId, episodeId, children }) => {
+  {
+    novelId: string
+    episodeId: string
+    permissions: BasePermission
+  } & PropsWithChildren
+> = ({ novelId, episodeId, permissions, children }) => {
   const [novel, setNovel] = React.useState<GetNovelResponseDto | null>(null)
   const [isLoading, setIsLoading] = React.useState(false)
 
@@ -113,7 +121,9 @@ const EpisodeListDrawer: React.FC<
           </DrawerBody>
 
           <DrawerFooter justifyContent="space-between">
-            <DeleteEpisodeDialog novel={novel} episodeId={episodeId} />
+            {permissions.delete && (
+              <DeleteEpisodeDialog novel={novel} episodeId={episodeId} />
+            )}
           </DrawerFooter>
         </DrawerContent>
       </DrawerPositioner>

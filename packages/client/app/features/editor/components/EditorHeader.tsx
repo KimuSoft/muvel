@@ -1,6 +1,5 @@
 import React from "react"
 import {
-  ClientOnly,
   HStack,
   IconButton,
   Spacer,
@@ -17,10 +16,15 @@ import { Tooltip } from "~/components/ui/tooltip"
 import EpisodeListDrawer from "~/features/editor/components/EpisodeListDrawer"
 import WidgetDrawer from "~/features/editor/components/WidgetDrawer"
 import SearchModal from "~/features/editor/components/SearchModal"
+import type { GetEpisodeResponseDto } from "muvel-api-types"
 
 const EditorHeader: React.FC<
-  StackProps & { novelId: string; episodeId: string; isAutoSaving: boolean }
-> = ({ novelId, episodeId, isAutoSaving, ...props }) => {
+  StackProps & {
+    novelId: string
+    episode: GetEpisodeResponseDto
+    isAutoSaving: boolean
+  }
+> = ({ novelId, episode, isAutoSaving, ...props }) => {
   const navigate = useNavigate()
 
   return (
@@ -46,7 +50,11 @@ const EditorHeader: React.FC<
           <FaChevronLeft />
         </IconButton>
       </Tooltip>
-      <EpisodeListDrawer novelId={novelId} episodeId={episodeId}>
+      <EpisodeListDrawer
+        novelId={novelId}
+        episodeId={episode.id}
+        permissions={episode.permissions}
+      >
         <IconButton size={"sm"} variant="ghost" aria-label="back">
           <FaList />
         </IconButton>
@@ -54,9 +62,9 @@ const EditorHeader: React.FC<
       {isAutoSaving && <Spinner ml={3} colorPalette={"purple"} />}
       <Spacer />
 
-      <SearchModal novelId={novelId} />
-      {/*<Tooltip content={"위젯 설정하기"} openDelay={100} showArrow>*/}
-      <ClientOnly>
+      {episode.permissions.edit && <SearchModal novelId={novelId} />}
+
+      {episode.permissions.edit && (
         <WidgetDrawer>
           <IconButton
             variant="ghost"
@@ -66,8 +74,7 @@ const EditorHeader: React.FC<
             <BiSolidWidget />
           </IconButton>
         </WidgetDrawer>
-      </ClientOnly>
-      {/*</Tooltip>*/}
+      )}
       <OptionDrawer />
       <ColorModeButton />
     </HStack>

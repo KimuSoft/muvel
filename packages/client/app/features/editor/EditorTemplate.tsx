@@ -59,7 +59,7 @@ const EditorTemplate: React.FC<{
       </ClientOnly>
       <EditorHeader
         novelId={episode.novelId}
-        episodeId={episode.id}
+        episode={episode}
         transition="background-color 0.2s ease-in-out"
         bgColor={option.backgroundColor || { base: "white", _dark: "black" }}
         color={option.color || undefined}
@@ -92,6 +92,7 @@ const EditorTemplate: React.FC<{
             onTitleChange(e.target.value)
           }}
           onKeyDown={handleTitleKeyDown}
+          readOnly={!episode.permissions.edit}
         />
         <Separator
           borderColor={option.color || undefined}

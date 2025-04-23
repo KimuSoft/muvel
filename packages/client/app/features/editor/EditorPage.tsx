@@ -26,7 +26,7 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     () =>
       debounce(async (blocks: Block[]) => {
         const changes = getBlocksChange(originalRef.current, blocks)
-        if (!changes.length) return null
+        if (!episode.permissions.edit || !changes.length) return null
         setIsAutoSaving(true)
 
         try {

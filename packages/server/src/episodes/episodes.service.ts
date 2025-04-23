@@ -7,7 +7,7 @@ import { CreateEpisodeDto } from "./dto/create-episode.dto"
 import { NovelEntity } from "../novels/novel.entity"
 import { ISearchRepository } from "../search/isearch.repository"
 import { SearchRepository } from "src/search/search.repository"
-import { EpisodeType } from "muvel-api-types"
+import { BasePermission, EpisodeType } from "muvel-api-types"
 import { UserEntity } from "../users/user.entity"
 import { UpdateEpisodeDto } from "./dto/update-episode.dto"
 
@@ -51,14 +51,15 @@ export class EpisodesService {
 
     // 유저 정보 불러오기
     const user = await this.usersRepository.findOneBy({ id: userId })
+    const permissions: BasePermission = {
+      read: true,
+      edit: this.canEdit(episode.novel, user),
+      delete: this.canEdit(episode.novel, user),
+    }
 
     return {
       ...episode,
-      permissions: {
-        canRead: true,
-        canEdit: this.canEdit(episode.novel, user),
-        canDelete: this.canEdit(episode.novel, user),
-      },
+      permissions,
     }
   }
 
