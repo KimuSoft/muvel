@@ -15,13 +15,14 @@ import MobileBar from "~/features/editor/components/MobileBar"
 import { WidgetPanel } from "~/features/editor/widgets/containers/WidgetPanel"
 import { useEditorContext } from "~/features/editor/context/EditorContext"
 import { TextSelection } from "prosemirror-state"
+import type { SyncState } from "~/features/editor/components/SyncIndicator"
 
 const EditorTemplate: React.FC<{
   episode: GetEpisodeResponseDto
   onBlocksChange: (blocks: Block[]) => void
   onTitleChange: (title: string) => void
-  isAutoSaving: boolean
-}> = ({ episode, onBlocksChange, isAutoSaving, onTitleChange }) => {
+  syncState: SyncState
+}> = ({ episode, onBlocksChange, syncState, onTitleChange }) => {
   const { view } = useEditorContext()
   const [option] = useOption()
 
@@ -63,7 +64,7 @@ const EditorTemplate: React.FC<{
         transition="background-color 0.2s ease-in-out"
         bgColor={option.backgroundColor || { base: "white", _dark: "black" }}
         color={option.color || undefined}
-        isAutoSaving={isAutoSaving}
+        syncState={syncState}
       />
       <Container
         maxW={option.editorMaxWidth}

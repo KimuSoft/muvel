@@ -31,6 +31,7 @@ export function docToBlocks(doc: PMNode, episodeId: string): Block[] {
 
     const { id, ...restAttr } = attr
 
+    if (!id) console.warn(`Block ${blockType} has no id.`, node)
     return {
       id: id || crypto.randomUUID(),
       text: node.textContent,

@@ -17,14 +17,17 @@ import EpisodeListDrawer from "~/features/editor/components/EpisodeListDrawer"
 import WidgetDrawer from "~/features/editor/components/WidgetDrawer"
 import SearchModal from "~/features/editor/components/SearchModal"
 import type { GetEpisodeResponseDto } from "muvel-api-types"
+import SyncIndicator, {
+  SyncState,
+} from "~/features/editor/components/SyncIndicator"
 
 const EditorHeader: React.FC<
   StackProps & {
     novelId: string
     episode: GetEpisodeResponseDto
-    isAutoSaving: boolean
+    syncState: SyncState
   }
-> = ({ novelId, episode, isAutoSaving, ...props }) => {
+> = ({ novelId, episode, syncState, ...props }) => {
   const navigate = useNavigate()
 
   return (
@@ -59,7 +62,7 @@ const EditorHeader: React.FC<
           <FaList />
         </IconButton>
       </EpisodeListDrawer>
-      {isAutoSaving && <Spinner ml={3} colorPalette={"purple"} />}
+      <SyncIndicator ml={3} state={syncState} />
       <Spacer />
 
       {episode.permissions.edit && <SearchModal novelId={novelId} />}
