@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException } from "@nestjs/common"
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
 import { EpisodeEntity } from "./episode.entity"
@@ -10,6 +15,8 @@ import { SearchRepository } from "src/search/search.repository"
 import { BasePermission, EpisodeType } from "muvel-api-types"
 import { UserEntity } from "../users/user.entity"
 import { UpdateEpisodeDto } from "./dto/update-episode.dto"
+import { BlockEntity } from "../blocks/block.entity"
+import { PatchBlocksDto } from "./dto/patch-blocks.dto"
 
 @Injectable()
 export class EpisodesService {
@@ -18,6 +25,8 @@ export class EpisodesService {
     private novelsRepository: Repository<NovelEntity>,
     @InjectRepository(EpisodeEntity)
     private episodesRepository: Repository<EpisodeEntity>,
+    @InjectRepository(BlockEntity)
+    private blocksRepository: Repository<BlockEntity>,
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
     @Inject(SearchRepository)
@@ -139,6 +148,62 @@ export class EpisodesService {
     }
 
     return this.searchRepository.insertBlocks(blocks)
+  }
+
+  async updateBlocks(episodeId: string, blockDiffs: PatchBlocksDto[]) {
+    const episode = await this.episodesRepository.findOneBy({ id: episodeId })
+    if (!episode) return null
+
+    // 블록 id 중복 있는지 확인하고 있으면 throw 401
+    const blockIds = blockDiffs.map((b) => b.id)
+    const uniqueBlockIds = new Set(blockIds)
+    if (blockIds.length !== uniqueBlockIds.size) {
+      console.warn(
+        `중복된 블록 ID가 있습니다. episodeId=${episodeId}, blockIds=${blockIds}`
+      )
+      console.warn(blockDiffs)
+      throw new BadRequestException("중복된 블록 ID가 있습니다.")
+    }
+
+    const createdOrUpdatedBlocks = blockDiffs.filter((b) => !b.isDeleted)
+    const deletedBlockIds = blockDiffs
+      .filter((b) => b.isDeleted)
+      .map((b) => b.id)
+
+    // 변경사항 meilisearch 저장
+    void this.searchRepository.insertBlocks(
+      createdOrUpdatedBlocks.map((b) => ({
+        id: b.id,
+        content: b.content.map((c) => c.text).join(),
+        blockType: b.blockType,
+        order: b.order,
+        episodeId: episodeId,
+        episodeName: episode.title,
+        episodeNumber: episode.order,
+        index: b.order,
+        novelId: episode.novelId,
+      }))
+    )
+
+    if (deletedBlockIds.length > 0) {
+      await this.blocksRepository.delete(deletedBlockIds)
+      console.info(`블록 ${deletedBlockIds.length}개 삭제됨`)
+    }
+
+    await this.blocksRepository.upsert(
+      createdOrUpdatedBlocks
+        .filter((b) => !b.isDeleted)
+        .map((b) => ({
+          id: b.id,
+          content: b.content,
+          text: b.content.map((c) => c.text).join(),
+          blockType: b.blockType,
+          order: b.order,
+          episode,
+        })),
+      ["id"]
+    )
+    console.info(`블록 ${createdOrUpdatedBlocks.length}개 생성/수정됨`)
   }
 
   canEdit(novel: NovelEntity, user: UserEntity): boolean {

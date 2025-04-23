@@ -91,11 +91,10 @@ export class EpisodesController {
   })
   @RequirePermission(NovelPermission.EditNovel)
   async patchBlocks(
-    @Request() req,
     @Param() { id }: EpisodeIdParamDto,
     @Body() blockDiffs: PatchBlocksDto[]
   ) {
-    this.blocksService.patchBlocks(id, blockDiffs).then()
+    return this.episodesService.updateBlocks(id, blockDiffs)
   }
 
   @Get(":id/search")
