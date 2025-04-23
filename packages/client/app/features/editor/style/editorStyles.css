@@ -66,13 +66,11 @@
 
 /* Comment 노드 스타일 */
 .ProseMirror aside {
-    background-color: #f6f8fa;
     color: #666;
     font-family: monospace;
     font-size: 14px;
-    padding: 0.6em 1em;
-    border-left: 3px solid #bbb;
-    border-radius: 4px;
+    padding: 0.3em 1em;
+    border-left: 3px solid #666;
     margin: 1em 0;
     white-space: pre-wrap;
 }
