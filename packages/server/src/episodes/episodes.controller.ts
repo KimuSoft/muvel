@@ -117,4 +117,24 @@ export class EpisodesController {
     await this.episodesService.insertAllBlocksToCache()
     return "done!"
   }
+
+  @Post(":id/analyses")
+  @ApiOperation({
+    summary: "AI 분석하기",
+    description: "AI를 통해 에피소드를 분석합니다.",
+  })
+  @RequirePermission(NovelPermission.EditNovel)
+  async aiAnalyze(@Param("id") episodeId: string) {
+    return this.episodesService.createAnalysisForEpisode(episodeId)
+  }
+
+  @Get(":id/analyses")
+  @ApiOperation({
+    summary: "AI 분석하기",
+    description: "AI를 통해 에피소드를 분석합니다.",
+  })
+  @RequirePermission(NovelPermission.ReadNovel)
+  async getAiAnalyses(@Param("id") episodeId: string) {
+    return this.episodesService.findAnalysisByEpisodeId(episodeId)
+  }
 }

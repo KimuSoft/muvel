@@ -18,7 +18,7 @@ import {
   Text,
 } from "@chakra-ui/react"
 import React, { type PropsWithChildren } from "react"
-import { useWidgetLayout } from "~/features/editor/widgets/context/WidgetLayoutContext"
+import { useWidgetLayout } from "~/features/editor/widgets/context/WidgetContext"
 import { GoNumber } from "react-icons/go"
 import type { WidgetId } from "~/features/editor/widgets/components/widgetMap"
 import { RiCharacterRecognitionFill } from "react-icons/ri"
@@ -50,19 +50,19 @@ const widgets: WidgetButtonProps[] = [
     icon: <RiCharacterRecognitionFill size={64} />,
   },
   {
-    id: "dict",
+    id: "dictionary",
     name: "사전 검색",
     description: "단어를 빠르게 검색하고 찾을 수 있습니다.",
     icon: <FaBookBookmark size={42} />,
   },
   {
-    id: "timer",
-    name: "타이머/스톱워치 위젯",
+    id: "stopwatch",
+    name: "스톱워치 위젯",
     description: "글을 쓰는 시간을 측정할 수 있는 위젯입니다.",
     icon: <MdOutlineTimer size={50} />,
   },
   {
-    id: "speed",
+    id: "speedometer",
     name: "속도계 위젯",
     description:
       "실시간 글 집필 속도와 예상 소요 시간을 계산해주는 위젯입니다.",

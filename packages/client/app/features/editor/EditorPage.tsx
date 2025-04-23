@@ -7,7 +7,7 @@ import { debounce } from "lodash-es"
 import { getBlocksChange } from "~/features/editor/utils/calculateBlockChanges"
 import { updateEpisode, updateEpisodeBlocks } from "~/api/api.episode"
 import { toaster } from "~/components/ui/toaster"
-import { WidgetLayoutProvider } from "~/features/editor/widgets/context/WidgetLayoutContext"
+import { WidgetProvider } from "~/features/editor/widgets/context/WidgetContext"
 import { SyncState } from "~/features/editor/components/SyncIndicator"
 
 const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
@@ -75,7 +75,7 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
 
   return (
     <OptionProvider>
-      <WidgetLayoutProvider>
+      <WidgetProvider>
         <EditorProvider>
           <EditorTemplate
             episode={episode}
@@ -84,7 +84,7 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
             syncState={syncState}
           />
         </EditorProvider>
-      </WidgetLayoutProvider>
+      </WidgetProvider>
     </OptionProvider>
   )
 }

@@ -8,6 +8,8 @@ import { BlocksService } from "../blocks/blocks.service"
 import { NovelEntity } from "../novels/novel.entity"
 import { BlockEntity } from "../blocks/block.entity"
 import { UserEntity } from "../users/user.entity"
+import { AiAnalysisEntity } from "./ai-analysis.entity"
+import { GeminiAnalysisRepository } from "./repositories/gemini-analysis.repository"
 
 @Module({
   imports: [
@@ -16,10 +18,16 @@ import { UserEntity } from "../users/user.entity"
       EpisodeEntity,
       BlockEntity,
       UserEntity,
+      AiAnalysisEntity,
     ]),
   ],
   exports: [EpisodesService],
-  providers: [EpisodesService, BlocksService, SearchRepository],
+  providers: [
+    EpisodesService,
+    BlocksService,
+    SearchRepository,
+    GeminiAnalysisRepository,
+  ],
   controllers: [EpisodesController],
 })
 export class EpisodesModule {}

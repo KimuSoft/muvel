@@ -22,6 +22,7 @@
     "migrate": "pnpm build && pnpm typeorm migration:generate src/migrations/init -d datasource.js && pnpm build && pnpm typeorm migration:run -d datasource.js"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/jwt": "^10.0.1",
@@ -37,6 +38,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "meilisearch": "^0.33.0",
+    "muvel-api-types": "workspace:^",
     "passport": "^0.6.0",
     "passport-discord": "^0.1.4",
     "passport-jwt": "^4.0.1",
@@ -44,8 +46,7 @@
     "pg": "^8.8.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
-    "typeorm": "^0.3.11",
-    "muvel-api-types": "workspace:^"
+    "typeorm": "^0.3.11"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
