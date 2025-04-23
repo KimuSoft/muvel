@@ -1,5 +1,10 @@
 import { api } from "~/utils/api"
-import { type Block, type Episode, type LegacyBlock } from "muvel-api-types"
+import {
+  type AiAnalysis,
+  type Block,
+  type Episode,
+  type LegacyBlock,
+} from "muvel-api-types"
 
 export const getEpisodeBlocks = async (episodeId: string) => {
   const { data } = await api.get<Block[]>(`episodes/${episodeId}/blocks`)
@@ -32,5 +37,17 @@ export const updateEpisodeBlocks = async (
     `episodes/${episodeId}/blocks`,
     blocks,
   )
+  return data
+}
+
+export const createAiAnalysis = async (episodeId: string) => {
+  const { data } = await api.post<AiAnalysis[]>(
+    `episodes/${episodeId}/analyses`,
+  )
+  return data
+}
+
+export const getAiAnalysis = async (episodeId: string) => {
+  const { data } = await api.get<AiAnalysis[]>(`episodes/${episodeId}/analyses`)
   return data
 }

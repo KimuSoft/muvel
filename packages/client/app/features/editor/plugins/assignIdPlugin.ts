@@ -2,20 +2,30 @@ import { Plugin } from "prosemirror-state"
 
 export const assignIdPlugin = new Plugin({
   appendTransaction(transactions, oldState, newState) {
+    // 문서에 변경 없으면 무시
+    const docChanged = transactions.some((tr) => tr.docChanged)
+    if (!docChanged) return null
+
     const tr = newState.tr
     let modified = false
+    const seenIds = new Set<string>()
 
     newState.doc.descendants((node, pos) => {
-      const typeName = node.type.name
-      const needsId =
-        node.type.isBlock && !node.attrs.id && typeof node.attrs === "object"
+      if (!node.type.isBlock || typeof node.attrs !== "object") return
 
-      if (needsId) {
+      const nodeId = node.attrs.id
+      const needsNewId = !nodeId || seenIds.has(nodeId)
+
+      if (needsNewId) {
+        const newId = crypto.randomUUID()
         tr.setNodeMarkup(pos, undefined, {
           ...node.attrs,
-          id: crypto.randomUUID(),
+          id: newId,
         })
+        seenIds.add(newId)
         modified = true
+      } else {
+        seenIds.add(nodeId)
       }
     })
 

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   CanActivate,
   ExecutionContext,
   Injectable,
@@ -45,10 +46,10 @@ export class NovelsGuard implements CanActivate {
         novelId = (await this.novelsService.getNovelByEpisodeId(id))?.id
         break
       default:
-        throw new Error("Invalid endpoint:" + request.path)
+        throw new BadRequestException("Invalid endpoint:" + request.path)
     }
 
-    if (!novelId) throw new Error("Cannot get novel ID")
+    if (!novelId) throw new NotFoundException("Cannot get novel ID")
 
     const userId: string = request.user?.id
 

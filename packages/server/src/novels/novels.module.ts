@@ -8,6 +8,8 @@ import { EpisodesService } from "../episodes/episodes.service"
 import { SearchRepository } from "../search/search.repository"
 import { EpisodeEntity } from "../episodes/episode.entity"
 import { BlockEntity } from "../blocks/block.entity"
+import { AiAnalysisEntity } from "../episodes/ai-analysis.entity"
+import { GeminiAnalysisRepository } from "../episodes/repositories/gemini-analysis.repository"
 
 @Global()
 @Module({
@@ -17,10 +19,16 @@ import { BlockEntity } from "../blocks/block.entity"
       NovelEntity,
       EpisodeEntity,
       BlockEntity,
+      AiAnalysisEntity,
     ]),
   ],
   exports: [NovelsService],
-  providers: [NovelsService, EpisodesService, SearchRepository],
+  providers: [
+    NovelsService,
+    EpisodesService,
+    SearchRepository,
+    GeminiAnalysisRepository,
+  ],
   controllers: [NovelsController],
 })
 export class NovelsModule {}

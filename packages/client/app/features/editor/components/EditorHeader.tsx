@@ -1,6 +1,5 @@
 import React from "react"
 import {
-  ClientOnly,
   HStack,
   IconButton,
   Spacer,
@@ -12,16 +11,27 @@ import { ColorModeButton } from "~/components/ui/color-mode"
 import { FaChevronLeft } from "react-icons/fa"
 import { useNavigate } from "react-router"
 import { BiSolidWidget } from "react-icons/bi"
-import { FaList } from "react-icons/fa6"
+import { FaComment, FaList } from "react-icons/fa6"
 import { Tooltip } from "~/components/ui/tooltip"
 import EpisodeListDrawer from "~/features/editor/components/EpisodeListDrawer"
 import WidgetDrawer from "~/features/editor/components/WidgetDrawer"
 import SearchModal from "~/features/editor/components/SearchModal"
+import type { GetEpisodeResponseDto } from "muvel-api-types"
+import SyncIndicator, {
+  SyncState,
+} from "~/features/editor/components/SyncIndicator"
+import { useUser } from "~/context/UserContext"
+import CommentDrawer from "~/features/editor/components/CommentDrawer"
 
 const EditorHeader: React.FC<
-  StackProps & { novelId: string; episodeId: string; isAutoSaving: boolean }
-> = ({ novelId, episodeId, isAutoSaving, ...props }) => {
+  StackProps & {
+    novelId: string
+    episode: GetEpisodeResponseDto
+    syncState: SyncState
+  }
+> = ({ novelId, episode, syncState, ...props }) => {
   const navigate = useNavigate()
+  const user = useUser()
 
   return (
     <HStack
@@ -46,17 +56,29 @@ const EditorHeader: React.FC<
           <FaChevronLeft />
         </IconButton>
       </Tooltip>
-      <EpisodeListDrawer novelId={novelId} episodeId={episodeId}>
+      <EpisodeListDrawer
+        novelId={novelId}
+        episodeId={episode.id}
+        permissions={episode.permissions}
+      >
         <IconButton size={"sm"} variant="ghost" aria-label="back">
           <FaList />
         </IconButton>
       </EpisodeListDrawer>
-      {isAutoSaving && <Spinner ml={3} colorPalette={"purple"} />}
+      <SyncIndicator ml={3} state={syncState} />
       <Spacer />
 
-      <SearchModal novelId={novelId} />
-      {/*<Tooltip content={"위젯 설정하기"} openDelay={100} showArrow>*/}
-      <ClientOnly>
+      {user?.admin && (
+        <CommentDrawer episode={episode}>
+          <IconButton variant={"ghost"} size={"sm"}>
+            <FaComment />
+          </IconButton>
+        </CommentDrawer>
+      )}
+
+      {episode.permissions.edit && <SearchModal novelId={novelId} />}
+
+      {episode.permissions.edit && (
         <WidgetDrawer>
           <IconButton
             variant="ghost"
@@ -66,8 +88,7 @@ const EditorHeader: React.FC<
             <BiSolidWidget />
           </IconButton>
         </WidgetDrawer>
-      </ClientOnly>
-      {/*</Tooltip>*/}
+      )}
       <OptionDrawer />
       <ColorModeButton />
     </HStack>

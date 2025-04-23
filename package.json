@@ -16,5 +16,5 @@
     "build:c": "pnpm build:client",
     "build:a": "pnpm build:api"
   },
-  "packageManager": "pnpm@8.14.1"
+  "packageManager": "pnpm@10.9.0"
 }

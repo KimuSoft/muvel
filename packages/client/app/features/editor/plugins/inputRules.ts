@@ -18,10 +18,12 @@ function textReplaceRule(regex: RegExp, replaceWith: string) {
 export const createInputRules = (schema: Schema) => {
   const rules: Rule[] = [
     textReplaceRule(/->$/, "→"),
+    textReplaceRule(/<-$/, "←"),
     textReplaceRule(/--$/, "—"),
     textReplaceRule(/<</, "«"),
     textReplaceRule(/>>/, "»"),
     textReplaceRule(/=>$/, "⇒"),
+    textReplaceRule(/<=$/, "⇐"),
     textReplaceRule(/\.{3}/, "…"),
   ]
 
@@ -51,6 +53,33 @@ export const createInputRules = (schema: Schema) => {
       return newTr.setSelection(
         TextSelection.create(newTr.doc, newTr.selection.to),
       )
+    }),
+  )
+
+  rules.push(
+    new Rule(/\/\/$/, (state, match, start, end) => {
+      const { tr, schema, selection } = state
+      const { $from } = selection
+
+      const nodeType = schema.nodes[BlockType.Comment]
+      if (!nodeType) return null
+
+      // 현재 위치의 노드 정보 가져오기
+      const pos = $from.before()
+      const node = tr.doc.nodeAt(pos)
+      if (!node) return null
+
+      // 입력한 // 텍스트 제거
+      tr.delete(start, end)
+
+      // 블록 타입 변경 (attrs 유지 + 내용 초기화)
+      tr.setNodeMarkup(pos, nodeType, node.attrs)
+
+      // 블록 내부에 커서 위치시키기 (내용 비었으므로 +1 위치)
+      const resolvedPos = tr.doc.resolve(pos + 1)
+      tr.setSelection(TextSelection.create(tr.doc, resolvedPos.pos))
+
+      return tr
     }),
   )
 

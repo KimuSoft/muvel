@@ -7,14 +7,16 @@ import { debounce } from "lodash-es"
 import { getBlocksChange } from "~/features/editor/utils/calculateBlockChanges"
 import { updateEpisode, updateEpisodeBlocks } from "~/api/api.episode"
 import { toaster } from "~/components/ui/toaster"
-import { WidgetLayoutProvider } from "~/features/editor/widgets/context/WidgetLayoutContext"
+import { WidgetProvider } from "~/features/editor/widgets/context/WidgetContext"
+import { SyncState } from "~/features/editor/components/SyncIndicator"
+
 
 const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   episode: episode_,
 }) => {
   const [episode, setEpisode] = React.useState<GetEpisodeResponseDto>(episode_)
   const originalRef = useRef<Block[]>(episode.blocks)
-  const [isAutoSaving, setIsAutoSaving] = React.useState(false)
+  const [syncState, setSyncState] = React.useState(SyncState.Synced)
 
   // 편이 바뀐 경우
   useEffect(() => {
@@ -26,19 +28,19 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     () =>
       debounce(async (blocks: Block[]) => {
         const changes = getBlocksChange(originalRef.current, blocks)
-        if (!changes.length) return null
-        setIsAutoSaving(true)
+        if (!episode.permissions.edit || !changes.length) return null
+        setSyncState(SyncState.Syncing)
 
         try {
           await updateEpisodeBlocks(episode.id, changes)
+          setSyncState(SyncState.Synced)
         } catch (e) {
           console.error(e)
           toaster.error({
             title: "저장 실패",
             description: "변경 사항을 저장하는 데 실패했습니다.",
           })
-        } finally {
-          setIsAutoSaving(false)
+          setSyncState(SyncState.Error)
         }
         originalRef.current = [...blocks]
       }, 1000),
@@ -49,33 +51,41 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     () =>
       debounce(async (title: string) => {
         try {
-          setIsAutoSaving(true)
+          setSyncState(SyncState.Syncing)
           await updateEpisode(episode.id, { title })
           setEpisode((prev) => ({ ...prev, title }))
-          setIsAutoSaving(false)
+          setSyncState(SyncState.Synced)
         } catch (e) {
           console.error(e)
           toaster.error({
             title: "저장 실패",
             description: "제목을 저장하는 데 실패했습니다.",
           })
+          setSyncState(SyncState.Error)
         }
       }, 1000),
     [episode.id],
   )
 
+  // syncState를 wait로 변경 후 debounce
+  const handleBlocksChange_ = async (blocks: Block[]) => {
+    if (!episode.permissions.edit || !blocks.length) return null
+    setSyncState(SyncState.Waiting)
+    await handleBlocksChange(blocks)
+  }
+
   return (
     <OptionProvider>
-      <WidgetLayoutProvider>
+      <WidgetProvider>
         <EditorProvider>
           <EditorTemplate
             episode={episode}
-            onBlocksChange={handleBlocksChange}
+            onBlocksChange={handleBlocksChange_}
             onTitleChange={handleTitleChange}
-            isAutoSaving={isAutoSaving}
+            syncState={syncState}
           />
         </EditorProvider>
-      </WidgetLayoutProvider>
+      </WidgetProvider>
     </OptionProvider>
   )
 }

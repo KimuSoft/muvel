@@ -9,4 +9,5 @@ export default [
   route("notes/:id", "routes/note.tsx"),
   // 인증 및 기타 콜백
   route("auth/login", "routes/auth-callback.tsx"),
+  route("auth/logout", "routes/auth-logout.tsx"),
 ] satisfies RouteConfig
