@@ -11,7 +11,7 @@ import { ColorModeButton } from "~/components/ui/color-mode"
 import { FaChevronLeft } from "react-icons/fa"
 import { useNavigate } from "react-router"
 import { BiSolidWidget } from "react-icons/bi"
-import { FaList } from "react-icons/fa6"
+import { FaComment, FaList } from "react-icons/fa6"
 import { Tooltip } from "~/components/ui/tooltip"
 import EpisodeListDrawer from "~/features/editor/components/EpisodeListDrawer"
 import WidgetDrawer from "~/features/editor/components/WidgetDrawer"
@@ -20,6 +20,8 @@ import type { GetEpisodeResponseDto } from "muvel-api-types"
 import SyncIndicator, {
   SyncState,
 } from "~/features/editor/components/SyncIndicator"
+import { useUser } from "~/context/UserContext"
+import CommentDrawer from "~/features/editor/components/CommentDrawer"
 
 const EditorHeader: React.FC<
   StackProps & {
@@ -29,6 +31,7 @@ const EditorHeader: React.FC<
   }
 > = ({ novelId, episode, syncState, ...props }) => {
   const navigate = useNavigate()
+  const user = useUser()
 
   return (
     <HStack
@@ -64,6 +67,14 @@ const EditorHeader: React.FC<
       </EpisodeListDrawer>
       <SyncIndicator ml={3} state={syncState} />
       <Spacer />
+
+      {user?.admin && (
+        <CommentDrawer episode={episode}>
+          <IconButton variant={"ghost"} size={"sm"}>
+            <FaComment />
+          </IconButton>
+        </CommentDrawer>
+      )}
 
       {episode.permissions.edit && <SearchModal novelId={novelId} />}
 
