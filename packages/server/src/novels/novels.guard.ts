@@ -53,7 +53,7 @@ export class NovelsGuard implements CanActivate {
 
     const userId: string = request.user?.id
 
-    if (!request.user) request.user = { permissions: [] }
+    // if (!request.user) request.user = { permissions: [] }
 
     request.user.permissions = await this.novelsService.getPermission(
       novelId,
