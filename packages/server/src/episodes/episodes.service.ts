@@ -13,7 +13,7 @@ import { CreateEpisodeDto } from "./dto/create-episode.dto"
 import { NovelEntity } from "../novels/novel.entity"
 import { ISearchRepository } from "../search/isearch.repository"
 import { SearchRepository } from "src/search/search.repository"
-import { BasePermission, EpisodeType } from "muvel-api-types"
+import { BasePermission, BlockType, EpisodeType } from "muvel-api-types"
 import { UserEntity } from "../users/user.entity"
 import { UpdateEpisodeDto } from "./dto/update-episode.dto"
 import { BlockEntity } from "../blocks/block.entity"
@@ -249,10 +249,12 @@ export class EpisodesService {
     }
 
     // 2. 해당 에피소드의 블록들을 order 순서로 가져오기
-    const blocks = await this.blocksRepository.find({
+    let blocks = await this.blocksRepository.find({
       where: { episode: { id: episodeId } }, // Episode 관계를 통해 필터링
       order: { order: "ASC" }, // order 필드를 오름차순으로 정렬
     })
+
+    blocks = blocks.filter((block) => block.blockType !== BlockType.Comment)
 
     if (!blocks || blocks.length === 0) {
       // 블록이 없어도 분석할 내용이 없으므로 에러 또는 특정 처리 필요
