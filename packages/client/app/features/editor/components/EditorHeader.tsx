@@ -1,27 +1,23 @@
 import React from "react"
-import {
-  HStack,
-  IconButton,
-  Spacer,
-  Spinner,
-  type StackProps,
-} from "@chakra-ui/react"
-import OptionDrawer from "~/features/editor/components/OptionDrawer"
+import { HStack, IconButton, Spacer, type StackProps } from "@chakra-ui/react"
+import OptionDrawer from "~/features/editor/components/drawers/OptionDrawer"
 import { ColorModeButton } from "~/components/ui/color-mode"
 import { FaChevronLeft } from "react-icons/fa"
 import { useNavigate } from "react-router"
-import { BiSolidWidget } from "react-icons/bi"
-import { FaComment, FaList } from "react-icons/fa6"
+import { BiExport, BiSolidWidget } from "react-icons/bi"
+import { FaList } from "react-icons/fa6"
 import { Tooltip } from "~/components/ui/tooltip"
-import EpisodeListDrawer from "~/features/editor/components/EpisodeListDrawer"
-import WidgetDrawer from "~/features/editor/components/WidgetDrawer"
+import EpisodeListDrawer from "~/features/editor/components/drawers/EpisodeListDrawer"
+import WidgetDrawer from "~/features/editor/components/drawers/WidgetDrawer"
 import SearchModal from "~/features/editor/components/SearchModal"
 import type { GetEpisodeResponseDto } from "muvel-api-types"
 import SyncIndicator, {
   SyncState,
 } from "~/features/editor/components/SyncIndicator"
 import { useUser } from "~/context/UserContext"
-import CommentDrawer from "~/features/editor/components/CommentDrawer"
+import CommentDrawer from "~/features/editor/components/drawers/CommentDrawer"
+import { TbMessage } from "react-icons/tb"
+import { ExportEpisodeDrawer } from "~/features/editor/components/drawers/ExportEpisodeDrawer"
 
 const EditorHeader: React.FC<
   StackProps & {
@@ -68,26 +64,32 @@ const EditorHeader: React.FC<
       <SyncIndicator ml={3} state={syncState} />
       <Spacer />
 
-      {user?.admin && (
-        <CommentDrawer episode={episode}>
-          <IconButton variant={"ghost"} size={"sm"}>
-            <FaComment />
-          </IconButton>
-        </CommentDrawer>
-      )}
-
       {episode.permissions.edit && <SearchModal novelId={novelId} />}
 
+      <CommentDrawer episode={episode} editable={episode.permissions.edit}>
+        <IconButton variant={"ghost"} size={"sm"}>
+          <TbMessage />
+        </IconButton>
+      </CommentDrawer>
+
       {episode.permissions.edit && (
-        <WidgetDrawer>
-          <IconButton
-            variant="ghost"
-            aria-label="back"
-            display={{ base: "none", xl: "flex" }}
-          >
-            <BiSolidWidget />
-          </IconButton>
-        </WidgetDrawer>
+        <>
+          <ExportEpisodeDrawer episode={episode}>
+            <IconButton variant={"ghost"} size={"sm"}>
+              <BiExport />
+            </IconButton>
+          </ExportEpisodeDrawer>
+          <WidgetDrawer>
+            <IconButton
+              variant="ghost"
+              aria-label="back"
+              display={{ base: "none", md: "flex" }}
+              size={"sm"}
+            >
+              <BiSolidWidget />
+            </IconButton>
+          </WidgetDrawer>
+        </>
       )}
       <OptionDrawer />
       <ColorModeButton />

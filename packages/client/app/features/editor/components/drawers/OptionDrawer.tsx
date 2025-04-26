@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react"
 import { useOption } from "~/context/OptionContext"
 import { defaultOption } from "~/providers/OptionProvider"
-import FontFamilySelect from "./FontFamilySelect"
+import FontFamilySelect from "../FontFamilySelect"
 import OptionColorPicker from "~/features/editor/components/ColorPicker"
 import {
   joaraPreset,
@@ -31,8 +31,7 @@ import {
   novelpiaDesktopPreset,
   novelpiaMobilePreset,
 } from "~/features/editor/style/stylePreset"
-import { FaDesktop, FaMobile } from "react-icons/fa6"
-import { TbSettingsFilled } from "react-icons/tb"
+import { FaDesktop, FaGear, FaMobile } from "react-icons/fa6"
 import { SiKakao } from "react-icons/si"
 import { useColorMode } from "~/components/ui/color-mode"
 
@@ -45,8 +44,8 @@ const OptionDrawer = () => {
   return (
     <DrawerRoot>
       <DrawerTrigger asChild>
-        <IconButton variant="ghost">
-          <TbSettingsFilled />
+        <IconButton variant="ghost" size={"sm"}>
+          <FaGear />
         </IconButton>
       </DrawerTrigger>
       <DrawerBackdrop />

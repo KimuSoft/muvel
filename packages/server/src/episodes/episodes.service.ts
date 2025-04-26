@@ -269,6 +269,10 @@ export class EpisodesService {
       )
     }
 
+    console.info(
+      `에피소드 ${episodeId} 분석 시작됨. 글자 수: ${episodeContent.length}`
+    )
+
     if (!episodeContent || episodeContent.trim() === "") {
       throw new InternalServerErrorException(
         `Episode ${episodeId} has no content to analyze.`
@@ -290,6 +294,9 @@ export class EpisodesService {
 
     // 3. 분석 결과를 엔티티로 매핑 및 저장
     const newAnalysis = new AiAnalysisEntity()
+
+    console.log(analysisResult)
+
     newAnalysis.overallRating = analysisResult.overallRating
     newAnalysis.scores = analysisResult.scores // scores 객체 통째로 저장 (jsonb)
     newAnalysis.comments = analysisResult.comments // comments 객체 통째로 저장 (jsonb)
