@@ -20,7 +20,7 @@ export function blocksToDoc(blocks: Block[], schema: Schema): PMNode {
 
 // ✅ ProseMirror document → Block[] 변환
 export function docToBlocks(doc: PMNode, episodeId: string): Block[] {
-  return doc.content.content.map((node) => {
+  return doc.content.content.map((node, idx) => {
     const blockType = node.type.name as BlockType
     const attr = node.attrs ?? {}
     const content = node.content?.content.map((child) =>
@@ -38,6 +38,7 @@ export function docToBlocks(doc: PMNode, episodeId: string): Block[] {
       content,
       blockType,
       attr: restAttr,
+      order: idx,
     }
   })
 }

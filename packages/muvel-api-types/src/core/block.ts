@@ -7,7 +7,7 @@ export interface Block {
   content: PMNodeJSON[]
   blockType: BlockType
   attr?: BlockAttrs
-  order?: number
+  order: number
 }
 
 export interface LegacyBlock {
