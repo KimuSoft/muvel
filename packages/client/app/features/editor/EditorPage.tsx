@@ -10,7 +10,6 @@ import { toaster } from "~/components/ui/toaster"
 import { WidgetProvider } from "~/features/editor/widgets/context/WidgetContext"
 import { SyncState } from "~/features/editor/components/SyncIndicator"
 
-
 const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   episode: episode_,
 }) => {
@@ -30,6 +29,8 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
         const changes = getBlocksChange(originalRef.current, blocks)
         if (!episode.permissions.edit || !changes.length) return null
         setSyncState(SyncState.Syncing)
+
+        console.log(changes)
 
         try {
           await updateEpisodeBlocks(episode.id, changes)

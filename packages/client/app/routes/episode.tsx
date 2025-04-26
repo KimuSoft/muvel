@@ -40,6 +40,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     },
   )
 
+  episode.blocks.sort((a, b) => a.order - b.order)
+
   return { episode }
 }
 

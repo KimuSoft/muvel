@@ -77,6 +77,7 @@ export class EpisodesService {
 
     // edit 권한이 없다면 주석 블록을 없앰
     if (!permissions.edit) {
+      console.log("주석 삭제!")
       episode.blocks = episode.blocks.filter(
         (block) => block.blockType !== "comment"
       )
@@ -200,6 +201,8 @@ export class EpisodesService {
         novelId: episode.novelId,
       }))
     )
+
+    console.log(blockDiffs)
 
     if (deletedBlockIds.length > 0) {
       await this.blocksRepository.delete(deletedBlockIds)

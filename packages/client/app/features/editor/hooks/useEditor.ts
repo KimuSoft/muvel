@@ -89,7 +89,7 @@ export const useEditor = ({
       setView(null)
       viewRef.current = null
     }
-  }, []) // ✅ 빈 배열로 useEffect 고정 (절대 view나 setView 넣지 마)
+  }, [])
 
   return {
     view: viewRef.current,
