@@ -101,7 +101,10 @@ export const WidgetPanel = () => {
         widgetIds={layout.left}
         display={{ base: "none", xl: "flex" }}
         position={"fixed"}
-        w={`calc(50vw - (${option.editorMaxWidth}px / 2))`}
+        width={{
+          base: `calc(100vw - ${option.editorMaxWidth}px)`,
+          xl: `calc(50vw - (${option.editorMaxWidth}px / 2))`,
+        }}
         maxW={"300px"}
         left={3}
         bottom={3}
@@ -115,10 +118,13 @@ export const WidgetPanel = () => {
       <WidgetZone
         side="right"
         widgetIds={layout.right}
-        display={{ base: "none", xl: "flex" }}
+        display={{ base: "none", md: "flex" }}
         position={"fixed"}
-        w={`calc(50vw - (${option.editorMaxWidth}px / 2))`}
-        maxW={"300px"}
+        w={{
+          base: `calc(100vw - ${option.editorMaxWidth}px)`,
+          xl: `calc(50vw - (${option.editorMaxWidth}px / 2))`,
+        }}
+        maxW={"350px"}
         right={3}
         bottom={3}
         p={3}

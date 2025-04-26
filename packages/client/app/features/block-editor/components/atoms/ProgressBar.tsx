@@ -5,7 +5,7 @@ const ProgressBar: React.FC<{
   value: number
   min?: number
   max?: number
-  colorSchema?: "gray"
+  colorSchema?: string
 }> = ({ value, min = 0, max = 1, colorSchema = "gray" }) => {
   return (
     <Box

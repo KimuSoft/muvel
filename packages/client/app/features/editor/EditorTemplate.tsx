@@ -1,10 +1,10 @@
 import type { Block, GetEpisodeResponseDto } from "muvel-api-types"
-import React from "react"
+import React, { useMemo } from "react"
 import NovelEditor from "~/features/editor/components/NovelEditor"
 import {
+  Box,
   Button,
   ClientOnly,
-  Container,
   Input,
   Separator,
   VStack,
@@ -16,6 +16,7 @@ import { WidgetPanel } from "~/features/editor/widgets/containers/WidgetPanel"
 import { useEditorContext } from "~/features/editor/context/EditorContext"
 import { TextSelection } from "prosemirror-state"
 import type { SyncState } from "~/features/editor/components/SyncIndicator"
+import { useWidgetLayout } from "~/features/editor/widgets/context/WidgetContext"
 
 const EditorTemplate: React.FC<{
   episode: GetEpisodeResponseDto
@@ -47,6 +48,12 @@ const EditorTemplate: React.FC<{
     dispatch(tr)
   }
 
+  const { layout } = useWidgetLayout()
+
+  const isWidgetUsing = useMemo(() => {
+    return layout.left.length || layout.right.length
+  }, [layout.left, layout.right])
+
   return (
     <VStack
       bgColor={option.backgroundColor || undefined}
@@ -54,6 +61,9 @@ const EditorTemplate: React.FC<{
       minH={"100vh"}
       h={"100%"}
       position={"relative"}
+      alignItems={
+        isWidgetUsing ? { base: "flex-start", xl: "center" } : "center"
+      }
     >
       <ClientOnly>
         <WidgetPanel />
@@ -66,7 +76,7 @@ const EditorTemplate: React.FC<{
         color={option.color || undefined}
         syncState={syncState}
       />
-      <Container
+      <Box
         maxW={option.editorMaxWidth}
         transition="max-width 0.2s ease-in-out"
         minH={"100%"}
@@ -110,7 +120,7 @@ const EditorTemplate: React.FC<{
             onChange={onBlocksChange}
           />
         </ClientOnly>
-      </Container>
+      </Box>
       <MobileBar />
     </VStack>
   )

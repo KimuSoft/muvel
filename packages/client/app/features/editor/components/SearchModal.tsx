@@ -19,7 +19,7 @@ import { useNavigate } from "react-router"
 import { MdMessage } from "react-icons/md"
 import { TbSearch } from "react-icons/tb"
 import { Tooltip } from "~/components/ui/tooltip"
-import { FaSearch } from "react-icons/fa"
+import { BiSearch } from "react-icons/bi"
 
 const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
   const [hitItems, setHitItems] = useState<HitItem[]>([])
@@ -65,10 +65,10 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
         <IconButton
           id="search-dialog-trigger"
           aria-label="search"
-          size="sm"
+          size={"sm"}
           variant="ghost"
         >
-          <FaSearch />
+          <BiSearch />
         </IconButton>
       </Dialog.Trigger>
 
