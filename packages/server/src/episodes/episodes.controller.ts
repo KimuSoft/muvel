@@ -72,17 +72,17 @@ export class EpisodesController {
     return this.episodesService.deleteEpisode(id)
   }
 
-  @Get(":id/blocks")
-  @ApiOperation({
-    summary: "에피소드 내 블록 불러오기",
-    description: "에피소드의 블록을 불러옵니다.",
-  })
-  @RequirePermission(NovelPermission.ReadNovel)
-  async getBlocks(@Param() { id }: EpisodeIdParamDto): Promise<Block[]> {
-    const episode = await this.episodesService.findOne(id, ["blocks"])
-    episode.blocks.sort((a, b) => a.order - b.order)
-    return episode.blocks
-  }
+  // @Get(":id/blocks")
+  // @ApiOperation({
+  //   summary: "에피소드 내 블록 불러오기",
+  //   description: "에피소드의 블록을 불러옵니다.",
+  // })
+  // @RequirePermission(NovelPermission.ReadNovel)
+  // async getBlocks(@Param() { id }: EpisodeIdParamDto): Promise<Block[]> {
+  //   const episode = await this.episodesService.findOne(id, ["blocks"])
+  //   episode.blocks.sort((a, b) => a.order - b.order)
+  //   return episode.blocks
+  // }
 
   @Patch(":id/blocks")
   @ApiOperation({

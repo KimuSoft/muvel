@@ -75,6 +75,13 @@ export class EpisodesService {
       delete: this.canEdit(episode.novel, user),
     }
 
+    // edit 권한이 없다면 주석 블록을 없앰
+    if (!permissions.edit) {
+      episode.blocks = episode.blocks.filter(
+        (block) => block.blockType !== "comment"
+      )
+    }
+
     return {
       ...episode,
       permissions,
