@@ -72,7 +72,7 @@ export class GeminiAnalysisRepository {
     // 사용할 모델 지정 (예: gemini-1.5-flash-latest 또는 gemini-1.0-pro)
     this.model = this.genAI.getGenerativeModel({
       // model: "gemini-1.5-flash-latest",
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash-exp",
       systemInstruction: SYSTEM_INSTRUCTION,
     })
   }
