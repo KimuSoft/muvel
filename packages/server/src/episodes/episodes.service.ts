@@ -92,17 +92,19 @@ export class EpisodesService {
     if (!novel) return null
 
     const order =
-      parseFloat(createEpisodeDto.order) ??
+      parseFloat(createEpisodeDto.order) ||
       (await this.getNextOrder(
         createEpisodeDto.episodeType || EpisodeType.Episode,
         novelId
       ))
 
+    console.log(`에피소드 생성: ${createEpisodeDto.title}, order: ${order}`)
+
     // 현재 회차 수: Math.round(order)
-    await this.novelsRepository.update(
-      { id: novelId },
-      { episodeCount: Math.round(order) }
-    )
+    // await this.novelsRepository.update(
+    //   { id: novelId },
+    //   { episodeCount: Math.round(order) }
+    // )
 
     const episode = new EpisodeEntity()
     episode.title = createEpisodeDto.title
@@ -111,6 +113,7 @@ export class EpisodesService {
     episode.order = order.toString()
     await this.episodesRepository.save(episode)
 
+    novel.episodeCount = Math.round(order)
     novel.episodes.push(episode)
     await this.novelsRepository.save(novel)
 
