@@ -39,12 +39,7 @@ export class NovelsService {
     novel.share = createNovelDto.share
 
     // 에피소드 생성
-    novel.episodes = [
-      await this.createInitialEpisode(
-        "시작하기",
-        "뮤블의 사용법을 배워 보아요!"
-      ),
-    ]
+    novel.episodes = [await this.createInitialEpisode("시작하기")]
 
     return this.novelsRepository.save(novel)
   }

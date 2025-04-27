@@ -4,7 +4,7 @@ import OptionDrawer from "~/features/editor/components/drawers/OptionDrawer"
 import { ColorModeButton } from "~/components/ui/color-mode"
 import { FaChevronLeft } from "react-icons/fa"
 import { useNavigate } from "react-router"
-import { BiExport, BiSolidWidget } from "react-icons/bi"
+import { BiExport, BiHistory, BiSolidWidget } from "react-icons/bi"
 import { FaList } from "react-icons/fa6"
 import { Tooltip } from "~/components/ui/tooltip"
 import EpisodeListDrawer from "~/features/editor/components/drawers/EpisodeListDrawer"
@@ -18,6 +18,8 @@ import { useUser } from "~/context/UserContext"
 import CommentDrawer from "~/features/editor/components/drawers/CommentDrawer"
 import { TbMessage } from "react-icons/tb"
 import { ExportEpisodeDrawer } from "~/features/editor/components/drawers/ExportEpisodeDrawer"
+import SnapshotDrawer from "~/features/editor/components/drawers/SnapshotDrawer"
+
 
 const EditorHeader: React.FC<
   StackProps & {
@@ -89,6 +91,11 @@ const EditorHeader: React.FC<
               <BiSolidWidget />
             </IconButton>
           </WidgetDrawer>
+          <SnapshotDrawer episode={episode}>
+            <IconButton variant="ghost" aria-label="back" size={"sm"}>
+              <BiHistory />
+            </IconButton>
+          </SnapshotDrawer>
         </>
       )}
       <OptionDrawer />

@@ -25,7 +25,7 @@ import {
   SearchNovelsResponseDto,
 } from "./dto/search-novels.dto"
 import { PatchEpisodesDto } from "./dto/patch-episodes.dto"
-import { SearchRepository } from "../search/search.repository"
+import { SearchRepository } from "../search/repositories/search.repository"
 import { SearchInNovelDto } from "../search/dto/search-in-novel.dto"
 import { EpisodesService } from "../episodes/episodes.service"
 import { MuvelRequest } from "../auth/auth.decorator"

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common"
 import { MeiliSearch } from "meilisearch"
-import { BlockCache, ISearchRepository } from "./isearch.repository"
-import { SearchInNovelDto } from "./dto/search-in-novel.dto"
+import { BlockCache, ISearchRepository } from "../interfaces/isearch.repository"
+import { SearchInNovelDto } from "../dto/search-in-novel.dto"
 
 export const BLOCKS_INDEX = "muvel-blocks"
 
@@ -33,14 +33,18 @@ export class SearchRepository implements ISearchRepository {
   }
 
   async insertBlocks(blockCaches: BlockCache[]) {
-    const result = await this.client
-      .index(BLOCKS_INDEX)
-      .addDocuments(blockCaches)
+    return this.client.index(BLOCKS_INDEX).addDocuments(blockCaches)
+  }
 
-    // 5초 대기
-    await new Promise((resolve) => setTimeout(resolve, 5000))
+  async deleteBlocks(blockIds: string[]) {
+    const index = await this.client.getIndex(BLOCKS_INDEX)
+    return index.deleteDocuments(blockIds)
+  }
 
-    await this.client.getTask(result.taskUid)
+  async resetCache() {
+    const index = await this.client.getIndex(BLOCKS_INDEX)
+    await index.deleteAllDocuments()
+    console.info("cache reset!")
   }
 
   async updateFilterableAttributes() {

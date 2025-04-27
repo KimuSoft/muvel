@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common"
-import { SearchRepository } from "./search.repository"
+import { SearchRepository } from "./repositories/search.repository"
 import { SearchController } from "./search.controller"
 
 @Module({

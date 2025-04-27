@@ -53,7 +53,7 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
     <Box
       className="ProseMirror"
       ref={containerRef}
-      minH="300px"
+      w={"100%"}
       borderRadius="md"
       p={4}
       pb={"40vh"}

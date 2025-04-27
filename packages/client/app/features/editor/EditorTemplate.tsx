@@ -7,6 +7,7 @@ import {
   ClientOnly,
   Input,
   Separator,
+  Text,
   VStack,
 } from "@chakra-ui/react"
 import { useOption } from "~/context/OptionContext"
@@ -77,6 +78,7 @@ const EditorTemplate: React.FC<{
         syncState={syncState}
       />
       <Box
+        w={"100%"}
         maxW={option.editorMaxWidth}
         transition="max-width 0.2s ease-in-out"
         minH={"100%"}
@@ -105,6 +107,18 @@ const EditorTemplate: React.FC<{
           onKeyDown={handleTitleKeyDown}
           readOnly={!episode.permissions.edit}
         />
+        {episode.description ? (
+          <Text
+            px={4}
+            mt={3}
+            fontWeight={300}
+            fontSize={"sm"}
+            color={option.color || undefined}
+            opacity={0.5}
+          >
+            {episode.description}
+          </Text>
+        ) : null}
         <Separator
           borderColor={option.color || undefined}
           opacity={0.5}

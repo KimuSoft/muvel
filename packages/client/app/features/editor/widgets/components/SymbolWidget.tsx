@@ -28,6 +28,14 @@ const symbols: { value: string; name: string }[] = [
   { value: "¿", name: "역물음표" },
   { value: "¡", name: "역느낌표" },
   { value: "†", name: "칼표 (십자가)" },
+  { value: "“", name: "큰따옴표 열기" },
+  { value: "”", name: "큰따옴표 닫기" },
+  { value: "‘", name: "작은따옴표 열기" },
+  { value: "’", name: "작은따옴표 닫기" },
+  { value: "☆", name: "빈 별" },
+  { value: "★", name: "찬 별" },
+  { value: "♡", name: "빈 하트" },
+  { value: "♥", name: "찬 하트" },
 ]
 
 interface SymbolButtonProps {
@@ -53,7 +61,7 @@ const SymbolButton: React.FC<SymbolButtonProps> = ({ value, label }) => {
   }
 
   return (
-    <Tooltip content={label}>
+    <Tooltip content={label} openDelay={100}>
       <Button variant={"outline"} size="sm" w="28px" onClick={onClick}>
         {value}
       </Button>

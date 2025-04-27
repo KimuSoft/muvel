@@ -11,8 +11,8 @@ import { EpisodeEntity } from "./episode.entity"
 import { PatchEpisodesDto } from "../novels/dto/patch-episodes.dto"
 import { CreateEpisodeDto } from "./dto/create-episode.dto"
 import { NovelEntity } from "../novels/novel.entity"
-import { ISearchRepository } from "../search/isearch.repository"
-import { SearchRepository } from "src/search/search.repository"
+import { ISearchRepository } from "../search/interfaces/isearch.repository"
+import { SearchRepository } from "src/search/repositories/search.repository"
 import { BasePermission, BlockType, EpisodeType } from "muvel-api-types"
 import { UserEntity } from "../users/user.entity"
 import { UpdateEpisodeDto } from "./dto/update-episode.dto"
@@ -42,21 +42,16 @@ export class EpisodesService {
     private readonly geminiAnalysisRepository: GeminiAnalysisRepository
   ) {}
 
-  private async getNextOrder(
-    episodeType: EpisodeType,
-    novelId?: string
-  ): Promise<string> {
-    if (!novelId) return (1).toString()
+  private async getNextOrder(episodeType: EpisodeType, novelId?: string) {
+    if (!novelId) return 1
 
     const lastBlock: { order: string }[] = await this.episodesRepository.query(
       'SELECT * FROM "episode" WHERE "novelId" = $1 ORDER BY "order" DESC LIMIT 1',
       [novelId]
     )
-    return (
-      episodeType === EpisodeType.Episode
-        ? Math.floor(parseFloat(lastBlock?.[0].order)) + 1
-        : parseFloat(lastBlock?.[0].order) + 1 / 10000
-    ).toString()
+    return episodeType === EpisodeType.Episode
+      ? Math.floor(parseFloat(lastBlock?.[0].order)) + 1
+      : parseFloat(lastBlock?.[0].order) + 1 / 10000
   }
 
   async findEpisodeById(id: string, userId: string) {
@@ -97,19 +92,28 @@ export class EpisodesService {
     if (!novel) return null
 
     const order =
-      createEpisodeDto.order ??
+      parseFloat(createEpisodeDto.order) ||
       (await this.getNextOrder(
         createEpisodeDto.episodeType || EpisodeType.Episode,
         novelId
       ))
 
+    console.log(`에피소드 생성: ${createEpisodeDto.title}, order: ${order}`)
+
+    // 현재 회차 수: Math.round(order)
+    // await this.novelsRepository.update(
+    //   { id: novelId },
+    //   { episodeCount: Math.round(order) }
+    // )
+
     const episode = new EpisodeEntity()
     episode.title = createEpisodeDto.title
     episode.description = createEpisodeDto.description || ""
     episode.episodeType = createEpisodeDto.episodeType
-    episode.order = order
+    episode.order = order.toString()
     await this.episodesRepository.save(episode)
 
+    novel.episodeCount = Math.round(order)
     novel.episodes.push(episode)
     await this.novelsRepository.save(novel)
 
@@ -128,7 +132,17 @@ export class EpisodesService {
   }
 
   async deleteEpisode(id: string) {
-    await this.findOne(id, ["blocks"])
+    const episode = await this.findOne(id, ["novel"])
+    if (!episode) throw new NotFoundException(`Episode with id ${id} not found`)
+
+    if (episode.episodeType === EpisodeType.Episode) {
+      // 에피소드 타입이 에피소드면 회차 수를 줄임
+      await this.novelsRepository.update(
+        { id: episode.novelId },
+        { episodeCount: Math.round(parseFloat(episode.order)) - 1 }
+      )
+    }
+
     return this.episodesRepository.delete(id)
   }
 
@@ -164,6 +178,7 @@ export class EpisodesService {
       }
     }
 
+    await this.searchRepository.resetCache()
     return this.searchRepository.insertBlocks(blocks)
   }
 
@@ -202,7 +217,8 @@ export class EpisodesService {
       }))
     )
 
-    console.log(blockDiffs)
+    void this.searchRepository.deleteBlocks(deletedBlockIds)
+
 
     if (deletedBlockIds.length > 0) {
       await this.blocksRepository.delete(deletedBlockIds)
@@ -221,6 +237,11 @@ export class EpisodesService {
           episode,
         })),
       ["id"]
+    )
+
+    await this.episodesRepository.update(
+      { id: episodeId },
+      { isSnapshotted: false }
     )
     console.info(`블록 ${createdOrUpdatedBlocks.length}개 생성/수정됨`)
   }
@@ -265,7 +286,9 @@ export class EpisodesService {
       // const episodeContent = '';
     }
 
-    const episodeContent = blocks.map((block) => block.text).join("\n")
+    const episodeContent =
+      `${episode.order}편: ${episode.title}\n\n` +
+      blocks.map((block) => block.text).join("\n")
 
     // 3000자 이하면 Bad Request로 거부
     if (episodeContent.length < 3000) {
@@ -314,6 +337,11 @@ export class EpisodesService {
     newAnalysis.comments = analysisResult.comments // comments 객체 통째로 저장 (jsonb)
     newAnalysis.episode = episode // Episode 엔티티 연결
 
+    await this.episodesRepository.update(
+      { id: episodeId },
+      { description: analysisResult.summary }
+    )
+
     try {
       return this.aiAnalysisRepository.save(newAnalysis)
     } catch (error) {
@@ -322,5 +350,17 @@ export class EpisodesService {
         `Failed to save AI analysis for episode ${episodeId}.`
       )
     }
+  }
+
+  async findSnapshotsByEpisodeId(episodeId: string) {
+    const episode = await this.episodesRepository.findOne({
+      where: { id: episodeId },
+      relations: ["snapshots"],
+    })
+    if (!episode) {
+      throw new NotFoundException(`Episode with id ${episodeId} not found`)
+    }
+
+    return episode.snapshots
   }
 }
