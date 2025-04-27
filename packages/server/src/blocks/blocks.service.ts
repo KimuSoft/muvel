@@ -3,8 +3,8 @@ import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
 import { BlockEntity } from "./block.entity"
 import { EpisodeEntity } from "../episodes/episode.entity"
-import { SearchRepository } from "../search/search.repository"
-import { ISearchRepository } from "../search/isearch.repository"
+import { SearchRepository } from "../search/repositories/search.repository"
+import { ISearchRepository } from "../search/interfaces/isearch.repository"
 
 @Injectable()
 export class BlocksService {

@@ -1,4 +1,4 @@
-import { SearchInNovelDto } from "./dto/search-in-novel.dto"
+import { SearchInNovelDto } from "../dto/search-in-novel.dto"
 
 export interface ISearchRepository {
   searchBlocksByNovel(
@@ -9,6 +9,8 @@ export interface ISearchRepository {
   insertBlocks(blockCaches: BlockCache[]): Promise<any>
 
   deleteBlocks(blockIds: string[]): Promise<any>
+
+  resetCache(): Promise<void>
 }
 
 export interface BlockCache {

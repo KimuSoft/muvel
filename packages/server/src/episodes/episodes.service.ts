@@ -11,8 +11,8 @@ import { EpisodeEntity } from "./episode.entity"
 import { PatchEpisodesDto } from "../novels/dto/patch-episodes.dto"
 import { CreateEpisodeDto } from "./dto/create-episode.dto"
 import { NovelEntity } from "../novels/novel.entity"
-import { ISearchRepository } from "../search/isearch.repository"
-import { SearchRepository } from "src/search/search.repository"
+import { ISearchRepository } from "../search/interfaces/isearch.repository"
+import { SearchRepository } from "src/search/repositories/search.repository"
 import { BasePermission, BlockType, EpisodeType } from "muvel-api-types"
 import { UserEntity } from "../users/user.entity"
 import { UpdateEpisodeDto } from "./dto/update-episode.dto"
@@ -175,6 +175,7 @@ export class EpisodesService {
       }
     }
 
+    await this.searchRepository.resetCache()
     return this.searchRepository.insertBlocks(blocks)
   }
 
@@ -232,6 +233,11 @@ export class EpisodesService {
           episode,
         })),
       ["id"]
+    )
+
+    void this.episodesRepository.update(
+      { id: episodeId },
+      { isSnapshotted: false }
     )
     console.info(`블록 ${createdOrUpdatedBlocks.length}개 생성/수정됨`)
   }
@@ -333,5 +339,17 @@ export class EpisodesService {
         `Failed to save AI analysis for episode ${episodeId}.`
       )
     }
+  }
+
+  async findSnapshotsByEpisodeId(episodeId: string) {
+    const episode = await this.episodesRepository.findOne({
+      where: { id: episodeId },
+      relations: ["snapshots"],
+    })
+    if (!episode) {
+      throw new NotFoundException(`Episode with id ${episodeId} not found`)
+    }
+
+    return episode.snapshots
   }
 }

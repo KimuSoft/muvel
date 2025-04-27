@@ -11,6 +11,7 @@ import {
 import { BlockEntity } from "../blocks/block.entity"
 import { NovelEntity } from "../novels/novel.entity"
 import { Episode, EpisodeType } from "muvel-api-types"
+import { EpisodeSnapshotEntity } from "./episode-snapshot.entity"
 
 @Entity("episode")
 export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
@@ -20,11 +21,24 @@ export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
   @Column({ default: "새 에피소드" })
   title: string
 
+  @Column({ default: EpisodeType.Episode })
+  episodeType: EpisodeType
+
   @Column({ default: "" })
   description: string
 
   @Column({ default: "" })
   authorComment: string
+
+  /** Caches */
+
+  @Column({ default: 0, type: "numeric" })
+  order: string
+
+  @Column({ default: true })
+  isSnapshotted: boolean
+
+  /** Relations */
 
   @ManyToOne(() => NovelEntity, (novel) => novel.episodes, {
     onDelete: "CASCADE",
@@ -39,11 +53,12 @@ export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
   })
   blocks: BlockEntity[]
 
-  @Column({ default: 0, type: "numeric" })
-  order: string
+  @OneToMany(() => EpisodeSnapshotEntity, (snapshot) => snapshot.episode, {
+    cascade: true,
+  })
+  snapshots: EpisodeSnapshotEntity[]
 
-  @Column({ default: EpisodeType.Episode })
-  episodeType: EpisodeType
+  /** Dates */
 
   @CreateDateColumn()
   createdAt: Date
