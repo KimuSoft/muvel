@@ -15,20 +15,20 @@ export interface GeminiAnalysisResponse {
   comments: { nickname: string; content: string }[]
 }
 
-// 사용할 모델 (예: gemini-1.5-flash-latest 또는 gemini-1.0-pro)'
+// 사용할 모델 (예: gemini-1.5-flash-latest 또는 gemini-1.0-pro)
 // const GEMINI_MODEL = "models/gemini-2.5-flash-preview-04-17"
-const GEMINI_MODEL = "gemini-2.5-pro-exp-03-25"
+const GEMINI_MODEL = "gemini-2.0-flash-exp"
 const SYSTEM_INSTRUCTION = `
       소설 회차 내용을 제공하면 분석하여 JSON 형식으로 평가 결과를 제공해 주세요.
       평가는 종합 평점, 개별 항목 점수, 그리고 댓글 형식의 리뷰로 구성됩니다.
 
       평가 기준:
       - 종합 평점: 0.0부터 5.0까지 0.5점 단위
-        - 점수는 엄격하게 매겨 주세요.
-        - 5점: 완벽함 / 4점: 재밌음 / 3점: 평범함 / 2점: 부족함 / 1점: 문제 많음
+        - 점수는 객관적으로 매겨 주세요.
+        - 5점: 완벽함 / 4점: 재밌음 / 3점: 무난함 / 2점: 부족함 / 1점: 문제 많음
       - 개별 항목 점수 (문장력, 흥미도, 캐릭터, 몰입력, 기대감): 각 항목 0.0부터 5.0까지 0.5점 단위
       - 댓글 리뷰
-        - 개수는 3~15개 (재미에 따라 개수 조절)
+        - 개수는 3~10개 (재미에 따라 개수 조절)
         - 피드백, 응원, 칭찬, 기대, 웃음, 공감, 오타 지적 및 이상했던 점 지적 등의 내용
         - 각 리뷰에는 적절한 한글 닉네임 포함
         - 실제 한국 웹소설 커뮤니티나 플랫폼 느낌(노벨피아, 조아라 등)이 나는 친근한 말투 사용
