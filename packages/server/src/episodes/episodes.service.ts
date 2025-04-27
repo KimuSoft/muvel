@@ -42,21 +42,16 @@ export class EpisodesService {
     private readonly geminiAnalysisRepository: GeminiAnalysisRepository
   ) {}
 
-  private async getNextOrder(
-    episodeType: EpisodeType,
-    novelId?: string
-  ): Promise<string> {
-    if (!novelId) return (1).toString()
+  private async getNextOrder(episodeType: EpisodeType, novelId?: string) {
+    if (!novelId) return 1
 
     const lastBlock: { order: string }[] = await this.episodesRepository.query(
       'SELECT * FROM "episode" WHERE "novelId" = $1 ORDER BY "order" DESC LIMIT 1',
       [novelId]
     )
-    return (
-      episodeType === EpisodeType.Episode
-        ? Math.floor(parseFloat(lastBlock?.[0].order)) + 1
-        : parseFloat(lastBlock?.[0].order) + 1 / 10000
-    ).toString()
+    return episodeType === EpisodeType.Episode
+      ? Math.floor(parseFloat(lastBlock?.[0].order)) + 1
+      : parseFloat(lastBlock?.[0].order) + 1 / 10000
   }
 
   async findEpisodeById(id: string, userId: string) {
@@ -97,17 +92,23 @@ export class EpisodesService {
     if (!novel) return null
 
     const order =
-      createEpisodeDto.order ??
+      parseFloat(createEpisodeDto.order) ??
       (await this.getNextOrder(
         createEpisodeDto.episodeType || EpisodeType.Episode,
         novelId
       ))
 
+    // 현재 회차 수: Math.round(order)
+    await this.novelsRepository.update(
+      { id: novelId },
+      { episodeCount: Math.round(order) }
+    )
+
     const episode = new EpisodeEntity()
     episode.title = createEpisodeDto.title
     episode.description = createEpisodeDto.description || ""
     episode.episodeType = createEpisodeDto.episodeType
-    episode.order = order
+    episode.order = order.toString()
     await this.episodesRepository.save(episode)
 
     novel.episodes.push(episode)
@@ -128,7 +129,17 @@ export class EpisodesService {
   }
 
   async deleteEpisode(id: string) {
-    await this.findOne(id, ["blocks"])
+    const episode = await this.findOne(id, ["novel"])
+    if (!episode) throw new NotFoundException(`Episode with id ${id} not found`)
+
+    if (episode.episodeType === EpisodeType.Episode) {
+      // 에피소드 타입이 에피소드면 회차 수를 줄임
+      await this.novelsRepository.update(
+        { id: episode.novelId },
+        { episodeCount: Math.round(parseFloat(episode.order)) - 1 }
+      )
+    }
+
     return this.episodesRepository.delete(id)
   }
 
