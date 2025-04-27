@@ -219,6 +219,7 @@ export class EpisodesService {
 
     void this.searchRepository.deleteBlocks(deletedBlockIds)
 
+
     if (deletedBlockIds.length > 0) {
       await this.blocksRepository.delete(deletedBlockIds)
       console.info(`블록 ${deletedBlockIds.length}개 삭제됨`)
