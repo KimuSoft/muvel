@@ -1,6 +1,5 @@
-import { Plugin, TextSelection, EditorState } from "prosemirror-state"
+import { EditorState, Plugin, TextSelection } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
-import { Node } from "prosemirror-model" // Node 타입 import
 
 // --- isPrecededByWhitespaceOrStart, isFollowedByWhitespaceOrEnd 함수는 그대로 유지 ---
 // ... (이전 코드와 동일) ...
