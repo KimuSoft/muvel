@@ -282,7 +282,9 @@ export class EpisodesService {
       // const episodeContent = '';
     }
 
-    const episodeContent = blocks.map((block) => block.text).join("\n")
+    const episodeContent =
+      `${episode.order}편: ${episode.title}\n\n` +
+      blocks.map((block) => block.text).join("\n")
 
     // 3000자 이하면 Bad Request로 거부
     if (episodeContent.length < 3000) {
@@ -330,6 +332,11 @@ export class EpisodesService {
     newAnalysis.scores = analysisResult.scores // scores 객체 통째로 저장 (jsonb)
     newAnalysis.comments = analysisResult.comments // comments 객체 통째로 저장 (jsonb)
     newAnalysis.episode = episode // Episode 엔티티 연결
+
+    await this.episodesRepository.update(
+      { id: episodeId },
+      { description: analysisResult.summary }
+    )
 
     try {
       return this.aiAnalysisRepository.save(newAnalysis)

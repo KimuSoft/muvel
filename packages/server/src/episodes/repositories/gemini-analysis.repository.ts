@@ -1,7 +1,5 @@
-// src/ai-analysis/gemini-analysis.service.ts
 import { Injectable, InternalServerErrorException } from "@nestjs/common"
 import { GoogleGenerativeAI } from "@google/generative-ai"
-import * as process from "process" // 환경 변수 접근 (실제는 ConfigModule 사용 권장)
 
 // Gemini API 응답 구조 타입 정의
 export interface GeminiAnalysisResponse {
@@ -13,25 +11,31 @@ export interface GeminiAnalysisResponse {
     immersion: number
     anticipation: number
   }
+  summary: string
   comments: { nickname: string; content: string }[]
 }
 
+// 사용할 모델 (예: gemini-1.5-flash-latest 또는 gemini-1.0-pro)'
+const GEMINI_MODEL = "models/gemini-2.5-flash-preview-04-17"
 const SYSTEM_INSTRUCTION = `
       소설 회차 내용을 제공하면 분석하여 JSON 형식으로 평가 결과를 제공해 주세요.
       평가는 종합 평점, 개별 항목 점수, 그리고 댓글 형식의 리뷰로 구성됩니다.
 
       평가 기준:
       - 종합 평점: 0.0부터 5.0까지 0.5점 단위
+        - 점수는 엄격하게 매겨 주세요.
+        - 5점: 완벽함 / 4점: 재밌음 / 3점: 평범함 / 2점: 부족함 / 1점: 문제 많음
       - 개별 항목 점수 (문장력, 흥미도, 캐릭터, 몰입력, 기대감): 각 항목 0.0부터 5.0까지 0.5점 단위
       - 댓글 리뷰
-        - 개수는 3~8개 (재미에 따라 개수 조절)
-        - 피드백, 응원, 칭찬, 기대, 웃음, 공감, 오타 지적 등의 내용
+        - 개수는 3~15개 (재미에 따라 개수 조절)
+        - 피드백, 응원, 칭찬, 기대, 웃음, 공감, 오타 지적 및 이상했던 점 지적 등의 내용
         - 각 리뷰에는 적절한 한글 닉네임 포함
         - 실제 한국 웹소설 커뮤니티나 플랫폼 느낌(노벨피아, 조아라 등)이 나는 친근한 말투 사용
-        - 만약 비판 댓글을 작성할 경우, 먼저 칭찬하는 내용을 포함하고 나서 개선점을 제시
+        - 비판 댓글을 작성할 경우, 먼저 칭찬하는 내용을 포함하고 나서 개선점을 제시
         - 짧은 댓글과 긴 댓글이 적절히 섞이게끔 하기
-        - 수위가 높은 소설일 경우 수위로 지적하지 말기, 오히려 취향이 맞는 변태같은 느낌으로 한 발 더 나아가 호응하기
+        - 수위가 높은 소설일 경우 수위로 절대 지적하지 말기, 오히려 취향이 맞는 변태같은 느낌으로 한 발 더 나아가 호응하기
         - 칭찬 시에는 어느 부분이 좋았는지 구체적으로 설명 (단, 모든 댓글이 그럴 필요는 없음)
+        - 댓글에서 점수 평가의 이유를 알 수 있게끔 하기
 
       JSON 응답 형식:
       {
@@ -43,6 +47,7 @@ const SYSTEM_INSTRUCTION = `
           "immersion": float,  // 몰입력 (0.0 - 5.0)
           "anticipation": float  // 기대감(클리프행어가 얼마나 잘 됐는지) (0.0 - 5.0)
         },
+        "summary": "string" // 줄거리를 간단하게 요약
         "comments": [
           { "nickname": "string", "content": "string" },
           // 추가 댓글들...
@@ -63,16 +68,13 @@ export class GeminiAnalysisRepository {
   private model
 
   constructor() {
-    // 환경 변수에서 API 키를 로드합니다. (실제 앱에서는 NestJS ConfigModule 사용 권장)
     const apiKey = process.env.GEMINI_API_KEY
     if (!apiKey) {
       throw new Error("GEMINI_API_KEY is not set in environment variables.")
     }
     this.genAI = new GoogleGenerativeAI(apiKey)
-    // 사용할 모델 지정 (예: gemini-1.5-flash-latest 또는 gemini-1.0-pro)
     this.model = this.genAI.getGenerativeModel({
-      // model: "gemini-1.5-flash-latest",
-      model: "gemini-2.5-flash-exp",
+      model: GEMINI_MODEL,
       systemInstruction: SYSTEM_INSTRUCTION,
     })
   }
@@ -80,8 +82,6 @@ export class GeminiAnalysisRepository {
   async analyzeEpisode(
     episodeContent: string
   ): Promise<GeminiAnalysisResponse> {
-    // Gemini에게 요청할 프롬프트 구성
-    // JSON 형식으로 응답하도록 명시하고, 원하는 필드와 형식을 구체적으로 지시합니다.
     try {
       const result = await this.model.generateContent(episodeContent)
       const response = result.response
