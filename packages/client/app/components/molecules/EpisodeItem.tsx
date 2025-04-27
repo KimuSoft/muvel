@@ -164,11 +164,15 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
               </Text>
               <Text truncate>{episode.title}</Text>
             </HStack>
-            {!isDrawer && (
-              <Text fontSize={"xs"} color={"gray.500"}>
-                {episode.description}
-              </Text>
-            )}
+            <Text
+              fontSize={"xs"}
+              color={"gray.500"}
+              w={"400px"}
+              maxW={"100%"}
+              truncate
+            >
+              {episode.description}
+            </Text>
             <Box
               display={
                 isDrawer
