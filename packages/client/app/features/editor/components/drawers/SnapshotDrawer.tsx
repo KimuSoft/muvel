@@ -20,10 +20,22 @@ import React, { type PropsWithChildren, useEffect } from "react"
 import type { EpisodeSnapshot, GetEpisodeResponseDto } from "muvel-api-types"
 import { getSnapshots } from "~/api/api.episode"
 import { TbHistory, TbSlash } from "react-icons/tb"
+import { toaster } from "~/components/ui/toaster"
 
 const SnapshotItem: React.FC<{
   snapshot: EpisodeSnapshot
 }> = ({ snapshot }) => {
+  const handleCopy = () => {
+    navigator.clipboard
+      .writeText(snapshot.blocks.map((e) => e.text).join("\n\n"))
+      .then(() => {
+        toaster.success({
+          title: "해당 버전의 내용이 클립보드에 복사되었어요!",
+          description: "이 기능은 임시이고, 추후 개선될 예정이에요.",
+        })
+      })
+  }
+
   return (
     <Stack
       gap={2}
@@ -31,6 +43,7 @@ const SnapshotItem: React.FC<{
       borderColor={"gray.500"}
       cursor={"pointer"}
       borderRadius={"md"}
+      onClick={handleCopy}
       p={3}
     >
       <HStack>
@@ -38,7 +51,13 @@ const SnapshotItem: React.FC<{
           {snapshot.createdAt.toLocaleDateString()} (
           {snapshot.createdAt.toLocaleTimeString()})
         </Text>
-        <Tag.Root variant={"solid"} colorPalette={"purple"} size={"sm"}>
+        <Text color={"gray.500"} fontSize={"sm"}>
+          {snapshot.blocks
+            .map((b) => b.text.length)
+            .reduce((acc, cur) => acc + cur)}
+          자
+        </Text>
+        <Tag.Root variant={"outline"} colorPalette={"purple"} size={"sm"}>
           <Tag.Label>자동 생성</Tag.Label>
         </Tag.Root>
       </HStack>
@@ -96,6 +115,9 @@ const SnapshotDrawer: React.FC<
             <HStack gap={3} mb={3}>
               <TbHistory size={"24px"} />
               <Heading size={"lg"}>버전 관리</Heading>
+              <Tag.Root variant={"solid"} colorPalette={"purple"}>
+                <Tag.Label>베타</Tag.Label>
+              </Tag.Root>
             </HStack>
           </DrawerHeader>
 
