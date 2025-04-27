@@ -33,14 +33,12 @@ export class SearchRepository implements ISearchRepository {
   }
 
   async insertBlocks(blockCaches: BlockCache[]) {
-    const result = await this.client
-      .index(BLOCKS_INDEX)
-      .addDocuments(blockCaches)
+    return this.client.index(BLOCKS_INDEX).addDocuments(blockCaches)
+  }
 
-    // 5초 대기
-    await new Promise((resolve) => setTimeout(resolve, 5000))
-
-    await this.client.getTask(result.taskUid)
+  async deleteBlocks(blockIds: string[]) {
+    const index = await this.client.getIndex(BLOCKS_INDEX)
+    return index.deleteDocuments(blockIds)
   }
 
   async updateFilterableAttributes() {

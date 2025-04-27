@@ -213,7 +213,7 @@ export class EpisodesService {
       }))
     )
 
-    console.log(blockDiffs)
+    void this.searchRepository.deleteBlocks(deletedBlockIds)
 
     if (deletedBlockIds.length > 0) {
       await this.blocksRepository.delete(deletedBlockIds)

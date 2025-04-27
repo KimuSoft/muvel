@@ -7,6 +7,8 @@ export interface ISearchRepository {
   ): Promise<any>
 
   insertBlocks(blockCaches: BlockCache[]): Promise<any>
+
+  deleteBlocks(blockIds: string[]): Promise<any>
 }
 
 export interface BlockCache {
