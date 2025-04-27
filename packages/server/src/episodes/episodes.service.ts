@@ -235,7 +235,7 @@ export class EpisodesService {
       ["id"]
     )
 
-    void this.episodesRepository.update(
+    await this.episodesRepository.update(
       { id: episodeId },
       { isSnapshotted: false }
     )

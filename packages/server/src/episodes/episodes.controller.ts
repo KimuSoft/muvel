@@ -138,7 +138,7 @@ export class EpisodesController {
     return this.episodesService.findAnalysisByEpisodeId(episodeId)
   }
 
-  @Get("id:/snapshots")
+  @Get(":id/snapshots")
   @ApiOperation({
     summary: "에피소드 스냅샷 불러오기",
     description: "에피소드의 스냅샷을 불러옵니다.",

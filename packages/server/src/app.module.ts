@@ -7,6 +7,7 @@ import { EpisodesModule } from "./episodes/episodes.module"
 import { AuthModule } from "./auth/auth.module"
 import * as process from "process"
 import { SearchModule } from "./search/search.module"
+import { ScheduleModule } from "@nestjs/schedule"
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { SearchModule } from "./search/search.module"
       autoLoadEntities: true,
       synchronize: process.env.AUTO_SYNC_DB === "true",
     }),
+    ScheduleModule.forRoot(),
     UsersModule,
     NovelsModule,
     BlocksModule,

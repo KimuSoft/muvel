@@ -3,6 +3,7 @@ import {
   type AiAnalysis,
   type Block,
   type Episode,
+  type EpisodeSnapshot,
   type LegacyBlock,
 } from "muvel-api-types"
 
@@ -49,5 +50,12 @@ export const createAiAnalysis = async (episodeId: string) => {
 
 export const getAiAnalysis = async (episodeId: string) => {
   const { data } = await api.get<AiAnalysis[]>(`episodes/${episodeId}/analyses`)
+  return data
+}
+
+export const getSnapshots = async (episodeId: string) => {
+  const { data } = await api.get<EpisodeSnapshot[]>(
+    `episodes/${episodeId}/snapshots`,
+  )
   return data
 }

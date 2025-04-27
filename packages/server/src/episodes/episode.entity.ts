@@ -35,7 +35,7 @@ export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
   @Column({ default: 0, type: "numeric" })
   order: string
 
-  @Column({ default: true })
+  @Column({ default: false })
   isSnapshotted: boolean
 
   /** Relations */

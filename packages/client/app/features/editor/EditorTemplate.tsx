@@ -78,6 +78,7 @@ const EditorTemplate: React.FC<{
         syncState={syncState}
       />
       <Box
+        w={"100%"}
         maxW={option.editorMaxWidth}
         transition="max-width 0.2s ease-in-out"
         minH={"100%"}

@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common"
 import { Cron } from "@nestjs/schedule"
 import { InjectRepository } from "@nestjs/typeorm"
 import { EpisodeEntity } from "./episode.entity"
-import { Repository } from "typeorm"
+import { In, Repository } from "typeorm"
 import { EpisodeSnapshotEntity } from "./episode-snapshot.entity"
 
 @Injectable()
@@ -23,14 +23,27 @@ export class SnapshotService {
       relations: ["blocks"],
     })
 
-    for (const episode of episodes) {
-      await this.episodeSnapshotRepository.save({
-        episodeId: episode.id,
-        blocks: episode.blocks,
-      })
+    const newSnapshots: EpisodeSnapshotEntity[] = []
 
-      episode.isSnapshotted = true
-      await this.episodeRepository.save(episode)
+    for (const episode of episodes) {
+      if (!episode.blocks.length) continue
+
+      const snapshot = new EpisodeSnapshotEntity()
+      snapshot.episode = episode
+      snapshot.episodeId = episode.id
+      snapshot.blocks = episode.blocks.map((block) => ({
+        ...block,
+      }))
+
+      newSnapshots.push(snapshot)
     }
+
+    await this.episodeSnapshotRepository.save(newSnapshots)
+    await this.episodeRepository.update(
+      { id: In(episodes.map((episode) => episode.id)) },
+      { isSnapshotted: true }
+    )
+
+    console.info(`Created ${newSnapshots.length} episode snapshots.`)
   }
 }
