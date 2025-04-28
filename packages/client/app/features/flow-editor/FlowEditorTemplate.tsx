@@ -1,45 +1,27 @@
 import type { GetEpisodeResponseDto } from "muvel-api-types"
 import React from "react"
 import FlowEditorHeader from "~/features/flow-editor/components/FlowEditorHeader"
-import { Box } from "@chakra-ui/react"
 import "@xyflow/react/dist/style.css"
-import {
-  addEdge,
-  Background,
-  Controls,
-  MiniMap,
-  type OnConnect,
-  ReactFlow,
-  useEdgesState,
-  useNodesState,
-} from "@xyflow/react"
+import FlowEditor from "~/features/flow-editor/components/FlowEditor"
+import { ReactFlowProvider } from "@xyflow/react"
+import type { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 
-const FlowEditorTemplate: React.FC<{ episode: GetEpisodeResponseDto }> = ({
-  episode,
-}) => {
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+const FlowEditorTemplate: React.FC<{
+  episode: GetEpisodeResponseDto
+  syncState: SyncState
 
-  const onConnect: OnConnect = (params) =>
-    setEdges((eds) => addEdge(params, eds))
-
+  onTitleChange(title: string): void
+}> = ({ episode, onTitleChange, syncState }) => {
   return (
     <>
-      <FlowEditorHeader episode={episode} />
-      <Box w={"100vw"} h={"100vh"}>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          fitView
-        >
-          <MiniMap />
-          <Controls />
-          <Background />
-        </ReactFlow>
-      </Box>
+      <FlowEditorHeader
+        syncState={syncState}
+        episode={episode}
+        onTitleChange={onTitleChange}
+      />
+      <ReactFlowProvider>
+        <FlowEditor episode={episode} />
+      </ReactFlowProvider>
     </>
   )
 }

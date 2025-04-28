@@ -5,7 +5,7 @@ import { EpisodeType, type GetEpisodeResponseDto } from "muvel-api-types"
 import EditorPage from "~/features/novel-editor/EditorPage"
 import React, { useEffect } from "react"
 import LoadingOverlay from "~/components/templates/LoadingOverlay"
-import FlowEditorTemplate from "~/features/flow-editor/FlowEditorTemplate"
+import FlowEditorPage from "~/features/flow-editor/FlowEditorPage"
 
 export function meta({ data }: Route.MetaArgs) {
   if (!data?.episode) {
@@ -70,6 +70,6 @@ export default function Main() {
       return <CSREditorPage episode={episode} />
     case EpisodeType.Memo:
     case EpisodeType.EpisodeGroup:
-      return <FlowEditorTemplate episode={episode} />
+      return <FlowEditorPage episode={episode} />
   }
 }
