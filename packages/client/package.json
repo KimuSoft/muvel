@@ -16,6 +16,7 @@
     "@emotion/react": "^11.14.0",
     "@react-router/node": "^7.5.0",
     "@react-router/serve": "^7.5.0",
+    "@xyflow/react": "^12.6.0",
     "axios": "^1.8.4",
     "canvas-confetti": "^1.6.0",
     "cookie": "^1.0.2",
