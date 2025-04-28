@@ -35,6 +35,7 @@ const NovelDetailTemplate: React.FC<{
   const [isEpisodesLoading, setIsEpisodesLoading] = React.useState(false)
 
   const handleCreateEpisode = async () => {
+    setIsEpisodesLoading(true)
     const episode = await createNovelEpisode(novel.id)
     navigate(`/episodes/${episode.id}`)
   }
@@ -175,14 +176,15 @@ const NovelDetailTemplate: React.FC<{
           <Spacer />
 
           {novel.permissions.edit ? (
-            <Button colorScheme={"purple"} gap={3} size={"sm"}>
+            <Button
+              colorScheme={"purple"}
+              gap={3}
+              size={"sm"}
+              loading={isEpisodesLoading}
+              onClick={handleCreateEpisode}
+            >
               <TbPlus />
-              <Box
-                onClick={handleCreateEpisode}
-                display={{ base: "none", md: "block" }}
-              >
-                새 편 쓰기
-              </Box>
+              <Box display={{ base: "none", md: "block" }}>새 편 쓰기</Box>
             </Button>
           ) : null}
         </HStack>
