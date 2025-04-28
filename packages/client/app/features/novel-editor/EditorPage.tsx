@@ -23,6 +23,21 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     originalRef.current = episode_.blocks
   }, [episode_.id])
 
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (![SyncState.Synced, SyncState.Waiting].includes(syncState)) {
+        event.preventDefault()
+        event.returnValue = "" // Chrome에서는 이게 필수
+      }
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+    }
+  }, [syncState])
+
   const handleBlocksChange = useMemo(
     () =>
       debounce(async (blocks: Block[]) => {

@@ -35,6 +35,14 @@ export class SnapshotService {
         ...block,
       }))
 
+      // 글자 수 캐싱
+      const contentLength = episode.blocks.reduce(
+        (acc, block) => acc + block.text.replace(/\s/g, "").length,
+        0
+      )
+
+      await this.episodeRepository.update({ id: episode.id }, { contentLength })
+
       newSnapshots.push(snapshot)
     }
 

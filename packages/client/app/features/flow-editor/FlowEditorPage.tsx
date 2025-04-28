@@ -1,6 +1,6 @@
 import type { GetEpisodeResponseDto } from "muvel-api-types"
 import FlowEditorTemplate from "~/features/flow-editor/FlowEditorTemplate"
-import React from "react"
+import React, { useEffect } from "react"
 import { debounce } from "lodash-es"
 import { updateEpisode } from "~/api/api.episode"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
@@ -19,10 +19,35 @@ const FlowEditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     }, 1000)(title)
   }
 
+  const flowChangeHandler = (doc: any) => {
+    setSyncState(SyncState.Waiting)
+    debounce(async (doc: any) => {
+      setSyncState(SyncState.Syncing)
+      await updateEpisode(episode.id, { flowDoc: doc })
+      setSyncState(SyncState.Synced)
+    }, 5000)(doc)
+  }
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (syncState !== SyncState.Synced) {
+        event.preventDefault()
+        event.returnValue = "" // Chrome에서는 이게 필수
+      }
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+    }
+  }, [syncState])
+
   return (
     <FlowEditorTemplate
       episode={episode}
       onTitleChange={titleChangeHandler}
+      onFlowChange={flowChangeHandler}
       syncState={syncState}
     />
   )

@@ -30,10 +30,16 @@ export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
   @Column({ default: "" })
   authorComment: string
 
+  @Column({ type: "jsonb", nullable: true })
+  flowDoc: object
+
   /** Caches */
 
   @Column({ default: 0, type: "numeric" })
   order: string
+
+  @Column({ default: 0 })
+  contentLength: number
 
   @Column({ default: false })
   isSnapshotted: boolean
