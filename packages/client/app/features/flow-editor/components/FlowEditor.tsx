@@ -38,8 +38,8 @@ const FlowEditor: React.FC<{
 }) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null) // Ref 추가
   const { screenToFlowPosition } = useReactFlow()
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node>(doc.nodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(doc.edges)
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>(doc?.nodes || [])
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(doc?.edges || [])
 
   const onConnect: OnConnect = (params) =>
     setEdges((eds) => addEdge(params, eds))
