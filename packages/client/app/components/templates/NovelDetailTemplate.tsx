@@ -75,7 +75,10 @@ const NovelDetailTemplate: React.FC<{
         }}
       >
         <Container w={"100%"} px={5} mt={10} maxW={"4xl"}>
-          <HStack gap={8} flexDir={{ base: "row", md: "row-reverse" }}>
+          <HStack
+            gap={{ base: 5, md: 8 }}
+            flexDir={{ base: "row", md: "row-reverse" }}
+          >
             <Image
               w={{ base: "130px", md: "260px" }}
               h={{ base: "195px", md: "390px" }}
@@ -95,7 +98,7 @@ const NovelDetailTemplate: React.FC<{
             <VStack w={"100%"} alignItems={"baseline"}>
               <HStack rowGap={1} columnGap={5} flexWrap={"wrap"}>
                 <Heading
-                  fontSize={{ base: "24px", md: "40px" }}
+                  fontSize={{ base: "16px", md: "40px" }}
                   lineHeight={1.4}
                 >
                   {novel.title}
@@ -132,11 +135,7 @@ const NovelDetailTemplate: React.FC<{
                     novel.episodes.find((e) => e.order == 1)?.id
                   }`}
                 >
-                  <Button
-                    size={"sm"}
-                    variant={"outline"}
-                    colorPalette={"purple"}
-                  >
+                  <Button size={"sm"} colorPalette={"purple"}>
                     <TbPlayerPlay /> 처음부터 보기
                   </Button>
                 </BlockLink>

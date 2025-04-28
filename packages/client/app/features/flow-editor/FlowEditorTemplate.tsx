@@ -11,7 +11,8 @@ const FlowEditorTemplate: React.FC<{
   syncState: SyncState
 
   onTitleChange(title: string): void
-}> = ({ episode, onTitleChange, syncState }) => {
+  onFlowChange(doc: any): void
+}> = ({ episode, onTitleChange, syncState, onFlowChange }) => {
   return (
     <>
       <FlowEditorHeader
@@ -20,7 +21,7 @@ const FlowEditorTemplate: React.FC<{
         onTitleChange={onTitleChange}
       />
       <ReactFlowProvider>
-        <FlowEditor episode={episode} />
+        <FlowEditor doc={episode.flowDoc} onChange={onFlowChange} />
       </ReactFlowProvider>
     </>
   )

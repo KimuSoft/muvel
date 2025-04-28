@@ -31,7 +31,7 @@ const SideData: React.FC<{ episode: Episode }> = ({ episode }) => {
           style={{ flexShrink: 0 }}
         />
         <Text flexShrink={0} fontSize={"xs"} color={"gray.500"}>
-          1,400자
+          {episode.contentLength.toLocaleString()}자
         </Text>
       </HStack>
       <Tooltip
