@@ -2,9 +2,10 @@ import type { Route } from "./+types/episode"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { api } from "~/utils/api"
 import { EpisodeType, type GetEpisodeResponseDto } from "muvel-api-types"
-import EditorPage from "~/features/editor/EditorPage"
+import EditorPage from "~/features/novel-editor/EditorPage"
 import React, { useEffect } from "react"
 import LoadingOverlay from "~/components/templates/LoadingOverlay"
+import FlowEditorTemplate from "~/features/flow-editor/FlowEditorTemplate"
 
 export function meta({ data }: Route.MetaArgs) {
   if (!data?.episode) {
@@ -69,6 +70,6 @@ export default function Main() {
       return <CSREditorPage episode={episode} />
     case EpisodeType.Memo:
     case EpisodeType.EpisodeGroup:
-      return <div>구현 예정</div>
+      return <FlowEditorTemplate episode={episode} />
   }
 }
