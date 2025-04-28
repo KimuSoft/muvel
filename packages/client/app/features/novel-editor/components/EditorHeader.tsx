@@ -58,7 +58,7 @@ const EditorHeader: React.FC<
         episodeId={episode.id}
         permissions={episode.permissions}
       >
-        <IconButton size={"sm"} variant="ghost" aria-label="back">
+        <IconButton size={"sm"} variant="ghost">
           <FaList />
         </IconButton>
       </EpisodeListDrawer>
