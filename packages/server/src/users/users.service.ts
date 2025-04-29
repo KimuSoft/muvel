@@ -46,4 +46,8 @@ export class UsersService {
     })
     return user.novels
   }
+
+  async getUserCount() {
+    return this.usersRepository.count()
+  }
 }

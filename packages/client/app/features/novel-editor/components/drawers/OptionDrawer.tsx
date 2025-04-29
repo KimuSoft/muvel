@@ -65,7 +65,12 @@ const OptionDrawer = () => {
                 <Button
                   size={"sm"}
                   colorPalette={"purple"}
-                  onClick={() => setOption(() => defaultOption)}
+                  onClick={() =>
+                    setOption((option) => ({
+                      ...option,
+                      ...defaultOption,
+                    }))
+                  }
                 >
                   <FaDesktop />
                   뮤블
@@ -73,7 +78,12 @@ const OptionDrawer = () => {
                 <Button
                   size={"sm"}
                   colorPalette={"purple"}
-                  onClick={() => setOption(() => muvelMobilePreset)}
+                  onClick={() =>
+                    setOption((option) => ({
+                      ...option,
+                      ...muvelMobilePreset,
+                    }))
+                  }
                 >
                   <FaMobile />
                   뮤블
@@ -81,7 +91,10 @@ const OptionDrawer = () => {
                 <Button
                   size={"sm"}
                   onClick={() => {
-                    setOption(() => novelpiaDesktopPreset)
+                    setOption((option) => ({
+                      ...option,
+                      ...novelpiaDesktopPreset,
+                    }))
                     setColorMode("light")
                   }}
                 >
@@ -92,7 +105,10 @@ const OptionDrawer = () => {
                   size={"sm"}
                   onClick={() => {
                     setColorMode("light")
-                    setOption(() => novelpiaMobilePreset)
+                    setOption((option) => ({
+                      ...option,
+                      ...novelpiaMobilePreset,
+                    }))
                   }}
                 >
                   <FaMobile />
@@ -103,7 +119,10 @@ const OptionDrawer = () => {
                   colorPalette={"yellow"}
                   onClick={() => {
                     setColorMode("light")
-                    setOption(() => kakaopagePreset)
+                    setOption((option) => ({
+                      ...option,
+                      ...kakaopagePreset,
+                    }))
                   }}
                 >
                   <SiKakao />
@@ -114,7 +133,10 @@ const OptionDrawer = () => {
                   colorPalette={"blue"}
                   onClick={() => {
                     setColorMode("light")
-                    setOption(() => joaraPreset)
+                    setOption((option) => ({
+                      ...option,
+                      ...joaraPreset,
+                    }))
                   }}
                 >
                   <FaDesktop />

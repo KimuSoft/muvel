@@ -1,15 +1,45 @@
-import React, { forwardRef } from "react"
+import React, { forwardRef, useMemo } from "react"
 import {
-  Box,
+  Center,
   Heading,
   HStack,
+  Icon,
+  type IconProps,
   Image,
+  Spacer,
   Tag,
   Text,
   VStack,
 } from "@chakra-ui/react"
 import { type Novel, ShareType } from "muvel-api-types"
 import { useNavigate } from "react-router"
+import { FaUser } from "react-icons/fa6"
+import { Tooltip } from "~/components/ui/tooltip"
+import { TbLink, TbLock, TbWorld } from "react-icons/tb"
+
+const ShareIcon: React.FC<IconProps & { share: ShareType }> = ({
+  share,
+  ...props
+}) => {
+  const shareData = useMemo(() => {
+    switch (share) {
+      case ShareType.Private:
+        return { text: "비공개", icon: TbLock }
+      case ShareType.Public:
+        return { text: "공개", icon: TbWorld }
+      case ShareType.Unlisted:
+        return { text: "일부 공개", icon: TbLink }
+    }
+  }, [share])
+
+  return (
+    <Tooltip content={shareData.text} openDelay={100}>
+      <Icon cursor={"pointer"} {...props}>
+        <shareData.icon />
+      </Icon>
+    </Tooltip>
+  )
+}
 
 const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
   ({ novel, ...props }, ref) => {
@@ -17,78 +47,86 @@ const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
 
     return (
       <HStack
-        rounded={5}
         h="152px"
         cursor={"pointer"}
         onClick={() => navigate(`/novels/${novel.id}`)}
         userSelect={"none"}
         ref={ref}
-        borderWidth={1}
-        borderColor={"transparent"}
+        className={"group"}
         overflow={"hidden"}
-        transition={"border-color 0.2s"}
-        _hover={{ borderColor: { base: "gray.100", _dark: "purple.500" } }}
+        gap={4}
         {...props}
       >
-        <Image
+        <Center
           w="100px"
           h="150px"
-          borderRadius={"md"}
-          bgColor={{ base: "gray.200", _dark: "gray.800" }}
-          src={
-            novel.thumbnail
-              ? `${novel.thumbnail}/thumbnail?width=100`
-              : "/cover.png"
-          }
-          backgroundRepeat={"no-repeat"}
-          backgroundSize={"cover"}
-          backgroundPosition={"center"}
           flexShrink={0}
-        />
-        <VStack h={"100%"} gap={2} px={3} py={1}>
-          <HStack w={"100%"}>
+          borderRadius={"md"}
+          borderWidth={1}
+          borderColor={"transparent"}
+          transition={"border-color 0.2s"}
+          _groupHover={{
+            borderColor: { base: "gray.100", _dark: "purple.500" },
+          }}
+          overflow={"hidden"}
+        >
+          <Image
+            w={"100%"}
+            h={"100%"}
+            transition="all 0.3s ease"
+            _groupHover={{ w: "130%", h: "130%" }}
+            bgColor={{ base: "gray.200", _dark: "gray.800" }}
+            src={
+              novel.thumbnail
+                ? `${novel.thumbnail}/thumbnail?width=100`
+                : "/cover.png"
+            }
+            backgroundRepeat={"no-repeat"}
+            backgroundSize={"cover"}
+            backgroundPosition={"center"}
+          />
+        </Center>
+        <VStack h={"100%"} gap={2} py={2} alignItems={"flex-start"} mr={2}>
+          <HStack flexWrap={"wrap"} rowGap={1} w={"100%"}>
             <Heading size={"sm"}>{novel.title}</Heading>
             <Text fontSize={"xs"} color={"gray.500"} flexShrink={0}>
               {novel.episodeCount}편
             </Text>
           </HStack>
-          <Box w={"100%"}>
-            {novel.description ? (
-              <Text
-                color={{ base: "gray.700", _dark: "gray.300" }}
-                fontSize={"sm"}
-                css={{
-                  display: "-webkit-box",
-                  WebkitLineClamp: 3, // 줄 수 조절
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                }}
-              >
-                {novel.description}
-              </Text>
-            ) : (
-              <Text color={"gray.500"} fontSize={"sm"}>
-                설명이 없습니다.
-              </Text>
-            )}
-          </Box>
 
-          <HStack w={"100%"} flexWrap={"wrap"} gap={1}>
-            <Tag.Root
+          <Text fontSize="12px" color={"gray.500"}>
+            <Icon display={"inline"} mr={1.5} mb={1}>
+              <FaUser />
+            </Icon>
+            {novel.author.username}
+            <ShareIcon
+              ml={3}
+              share={novel.share}
+              display={"inline"}
               size={"sm"}
-              colorPalette={
-                novel.share === ShareType.Private ? "gray" : "purple"
-              }
-              variant={"subtle"}
-            >
-              <Tag.Label>
-                {novel.share === ShareType.Private
-                  ? "비공개"
-                  : novel.share === ShareType.Public
-                    ? "공개"
-                    : "일부 공개"}
-              </Tag.Label>
-            </Tag.Root>
+              mr={1.5}
+              mb={1}
+            />
+            {novel.share === ShareType.Private
+              ? "비공개"
+              : novel.share === ShareType.Public
+                ? "공개"
+                : "일부 공개"}
+          </Text>
+          <Text
+            w={"100%"}
+            color={"gray.500"}
+            fontSize={"xs"}
+            css={{
+              display: "-webkit-box",
+              WebkitLineClamp: 3, // 줄 수 조절
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {novel.description}
+          </Text>
+          <HStack w={"100%"} flexWrap={"wrap"} gap={1}>
             {novel.tags.map((tag, idx) => (
               <Tag.Root
                 size={"sm"}
@@ -100,6 +138,7 @@ const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
               </Tag.Root>
             ))}
           </HStack>
+          <Spacer />
         </VStack>
       </HStack>
     )

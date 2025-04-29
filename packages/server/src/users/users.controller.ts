@@ -9,7 +9,7 @@ import {
 } from "@nestjs/common"
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
 import { UserDto } from "./dto/user.dto"
-import { RequireAuth } from "../auth/auth.decorator"
+import { MuvelRequest, RequireAuth } from "../auth/auth.decorator"
 import { NovelDto } from "../novels/dto/novel.dto"
 import { UsersService } from "./users.service"
 import { NovelsService } from "../novels/novels.service"
@@ -23,6 +23,15 @@ export class UsersController {
     private readonly novelsService: NovelsService
   ) {}
 
+  @Get("count")
+  @ApiOperation({
+    summary: "유저 수 불러오기",
+    description: "현재 가입한 총 유저 수를 불러옵니다.",
+  })
+  async getUserCount() {
+    return this.usersService.getUserCount()
+  }
+
   @Get("me")
   @RequireAuth()
   @ApiOperation({
@@ -30,7 +39,7 @@ export class UsersController {
     description: "내 정보를 불러옵니다.",
   })
   @ApiOkResponse({ type: UserDto })
-  getMe(@Request() req) {
+  getMe(@Request() req: MuvelRequest) {
     return req.user
   }
 

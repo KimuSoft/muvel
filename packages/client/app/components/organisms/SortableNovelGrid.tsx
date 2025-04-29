@@ -9,12 +9,9 @@ import {
 import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable"
 import { SimpleGrid } from "@chakra-ui/react"
 import type { Novel } from "muvel-api-types"
-import SortableNovelItem from "~/features/my-novels/components/SortableNovelItem"
+import SortableNovelItem from "~/components/molecules/SortableNovelItem"
 
-const SortableNovelGrid: React.FC<{ novels: Novel[]; column?: number }> = ({
-  novels,
-  column = 1,
-}) => {
+const SortableNovelGrid: React.FC<{ novels: Novel[] }> = ({ novels }) => {
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
@@ -40,7 +37,7 @@ const SortableNovelGrid: React.FC<{ novels: Novel[]; column?: number }> = ({
       }}
     >
       <SortableContext items={novels} strategy={rectSortingStrategy}>
-        <SimpleGrid w={"100%"} columns={column} gap={2}>
+        <SimpleGrid w={"100%"} minChildWidth={"250px"} gap={2}>
           {novels.map((novel) => (
             <SortableNovelItem novel={novel} key={novel.id} />
           ))}
