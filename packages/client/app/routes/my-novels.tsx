@@ -1,5 +1,5 @@
 import type { Route } from "./+types/main"
-import MyNovelsTemplates from "~/features/my-novels/MyNovelsTemplates"
+import MyNovelsTemplates from "~/components/templates/MyNovelsTemplates"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { api } from "~/utils/api"
 import type { Novel } from "muvel-api-types"
@@ -12,25 +12,22 @@ export function meta({}: Route.MetaArgs) {
   ]
 }
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const cookie = request.headers.get("cookie") ?? ""
 
   const user = await getUserFromRequest(request)
-  if (!user) return { myNovels: [] }
+  if (!user) return { novels: [] }
 
-  const { data: myNovels } = await api.get<Novel[]>(
-    `/users/${user.id}/novels`,
-    {
-      headers: { cookie },
-      withCredentials: true,
-    },
-  )
+  const { data: novels } = await api.get<Novel[]>(`/users/${user.id}/novels`, {
+    headers: { cookie },
+    withCredentials: true,
+  })
 
-  return { myNovels }
+  return { novels }
 }
 
 export default function Main() {
-  const { myNovels } = useLoaderData<typeof loader>()
+  const { novels } = useLoaderData<typeof loader>()
 
-  return <MyNovelsTemplates novels={myNovels} />
+  return <MyNovelsTemplates novels={novels} />
 }

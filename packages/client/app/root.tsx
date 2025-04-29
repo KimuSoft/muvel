@@ -16,7 +16,12 @@ import { UserProvider } from "~/context/UserContext"
 import { getUserFromRequest } from "~/utils/session.server"
 import { Toaster } from "~/components/ui/toaster"
 import LoadingOverlay from "~/components/templates/LoadingOverlay"
-import React from "react"
+import React, { type ReactNode } from "react"
+import { Button, Center, EmptyState, VStack } from "@chakra-ui/react"
+import { TbSlash } from "react-icons/tb"
+import { IoWarning } from "react-icons/io5"
+import { IoMdArrowBack } from "react-icons/io"
+import { isAxiosError } from "axios"
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -76,30 +81,53 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!"
+  let message = "알 수 없는 오류가 발생했어요!"
   let details = "An unexpected error occurred."
+  let icon: ReactNode = <IoWarning />
   let stack: string | undefined
 
-  if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error"
-    details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details
+  if (isRouteErrorResponse(error) || isAxiosError(error)) {
+    switch (error.status) {
+      case 404:
+        icon = <TbSlash />
+        message = "페이지를 찾을 수 없어요!"
+        details = "혹시 길을 잃으신 건 아닐까요...?"
+        break
+
+      default:
+        details = isRouteErrorResponse(error) ? error.statusText : details
+    }
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message
     stack = error.stack
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
+    <Provider>
+      <Center h={"100vh"} w={"100%"}>
+        <VStack>
+          <EmptyState.Root>
+            <EmptyState.Content>
+              <EmptyState.Indicator>{icon}</EmptyState.Indicator>
+              <VStack textAlign="center">
+                <EmptyState.Title>{message}</EmptyState.Title>
+                <EmptyState.Description>{details}</EmptyState.Description>
+              </VStack>
+            </EmptyState.Content>
+          </EmptyState.Root>
+          <Button onClick={() => window.history.back()} size={"sm"}>
+            <IoMdArrowBack /> 이전 페이지로 돌아가기
+          </Button>
+          {stack && (
+            <pre
+              className="w-full p-4 overflow-x-auto"
+              style={{ fontSize: 12 }}
+            >
+              <code>{stack}</code>
+            </pre>
+          )}
+        </VStack>
+      </Center>
+    </Provider>
   )
 }

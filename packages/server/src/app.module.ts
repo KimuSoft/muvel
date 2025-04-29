@@ -8,6 +8,7 @@ import { AuthModule } from "./auth/auth.module"
 import * as process from "process"
 import { SearchModule } from "./search/search.module"
 import { ScheduleModule } from "@nestjs/schedule"
+import { CacheModule } from "@nestjs/cache-manager"
 
 @Module({
   imports: [

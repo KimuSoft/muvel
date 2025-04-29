@@ -1,10 +1,13 @@
 import { type Draft } from "immer"
 import { createContext, useContext } from "react"
-import { defaultOption, type EditorOption } from "~/providers/OptionProvider"
+import {
+  defaultOption,
+  type EditorStyleOption,
+} from "~/providers/OptionProvider"
 
-export const OptionContext = createContext<EditorOption>(defaultOption)
+export const OptionContext = createContext<EditorStyleOption>(defaultOption)
 export const SetOptionContext = createContext<
-  ((updater: (draft: Draft<EditorOption>) => void) => void) | null
+  ((updater: (draft: Draft<EditorStyleOption>) => void) => void) | null
 >(null)
 
 export const useOption = () => {

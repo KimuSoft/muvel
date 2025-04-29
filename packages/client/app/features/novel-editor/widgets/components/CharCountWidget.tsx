@@ -103,17 +103,15 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
 
   return (
     <WidgetBase>
-      <WidgetHeader {...dragAttributes} {...dragListeners}>
-        <GoNumber />
-        <WidgetTitle>글자 수 세기 ({labelText[type]})</WidgetTitle>
-        <Spacer />
+      <WidgetHeader>
+        <HStack flex="1" cursor="grab" {...dragAttributes} {...dragListeners}>
+          <GoNumber />
+          <WidgetTitle>글자 수 세기 ({labelText[type]})</WidgetTitle>
+        </HStack>
+
         <MenuRoot>
           <MenuTrigger asChild>
-            <IconButton
-              size="xs"
-              variant={"ghost"}
-              onPointerDown={(e) => e.stopPropagation()}
-            >
+            <IconButton size="xs" variant={"ghost"}>
               <IoSettings size={9} />
             </IconButton>
           </MenuTrigger>

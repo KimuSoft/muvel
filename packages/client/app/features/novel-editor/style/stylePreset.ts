@@ -1,6 +1,6 @@
-import type { EditorOption } from "~/providers/OptionProvider"
+import type { EditorStyleOption } from "~/providers/OptionProvider"
 
-export const muvelMobilePreset: EditorOption = {
+export const muvelMobilePreset: EditorStyleOption = {
   lineHeight: 1.8,
   fontSize: 18,
   indent: 1,
@@ -12,43 +12,43 @@ export const muvelMobilePreset: EditorOption = {
   editorMaxWidth: 460,
 }
 
-export const novelpiaDesktopPreset: EditorOption = {
+export const novelpiaDesktopPreset: EditorStyleOption = {
   lineHeight: 1.8,
   fontSize: 18,
   indent: 0,
   fontWeight: 400,
   fontFamily: "Noto Sans KR, Pretendard, Inter, sans-serif",
-  color: "#000000",
+  color: null,
   blockGap: 15,
-  backgroundColor: "#ffffff",
+  backgroundColor: null,
   editorMaxWidth: 930,
 }
 
-export const novelpiaMobilePreset: EditorOption = {
+export const novelpiaMobilePreset: EditorStyleOption = {
   lineHeight: 2,
   fontSize: 18,
   indent: 0,
   fontWeight: 400,
   fontFamily: "Noto Sans KR, Pretendard, Inter, sans-serif",
-  color: "#000000",
+  color: null,
   blockGap: 15,
-  backgroundColor: "#ffffff",
+  backgroundColor: null,
   editorMaxWidth: 460,
 }
 
-export const kakaopagePreset: EditorOption = {
+export const kakaopagePreset: EditorStyleOption = {
   lineHeight: 2,
   fontSize: 18,
   indent: 0,
   fontWeight: 100,
   fontFamily: "KoPubWorldBatang",
-  color: "#000000",
+  color: null,
   blockGap: 15,
-  backgroundColor: "#ffffff",
+  backgroundColor: null,
   editorMaxWidth: 400,
 }
 
-export const joaraPreset: EditorOption = {
+export const joaraPreset: EditorStyleOption = {
   lineHeight: 2,
   fontSize: 16,
   indent: 0,

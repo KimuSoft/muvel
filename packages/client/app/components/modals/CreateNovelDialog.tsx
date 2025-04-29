@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import {
   Button,
   CloseButton,
@@ -13,6 +13,8 @@ import {
   Field,
   Input,
   Portal,
+  useDialog,
+  type UseDialogReturn,
   VStack,
 } from "@chakra-ui/react"
 import { Field as FormikField, type FieldProps, Form, Formik } from "formik"
@@ -22,13 +24,14 @@ import { type Novel, ShareType } from "muvel-api-types"
 import ShareSelect from "~/components/molecules/ShareSelect"
 import { createNovel } from "~/api/api.novel"
 
-const CreateNovelModal: React.FC<{
-  children: React.ReactNode
+const CreateNovelDialog: React.FC<{
+  children?: React.ReactNode
   onCreated?: (novel: Novel) => void
-}> = ({ children, onCreated }) => {
+  dialog?: UseDialogReturn
+}> = ({ children, onCreated, dialog }) => {
+  const dialog_ = useDialog()
   const user = useUser()
   const navigate = useNavigate()
-  const [open, setOpen] = useState(false)
 
   const validateTitle = (value: string) => {
     if (!value) return "제목을 입력해 주세요."
@@ -46,14 +49,13 @@ const CreateNovelModal: React.FC<{
       userId: user.id,
     })
 
-    setOpen(false)
     if (onCreated) onCreated(data)
     else navigate(`/novels/${data.id}`)
   }
 
   return (
-    <Dialog.Root open={open} onOpenChange={(e) => setOpen(e.open)}>
-      <Dialog.Trigger asChild>{children}</Dialog.Trigger>
+    <Dialog.RootProvider value={dialog || dialog_}>
+      {children && <Dialog.Trigger asChild>{children}</Dialog.Trigger>}
       <Portal>
         <DialogBackdrop />
         <Dialog.Positioner>
@@ -127,8 +129,8 @@ const CreateNovelModal: React.FC<{
           </DialogContent>
         </Dialog.Positioner>
       </Portal>
-    </Dialog.Root>
+    </Dialog.RootProvider>
   )
 }
 
-export default CreateNovelModal
+export default CreateNovelDialog

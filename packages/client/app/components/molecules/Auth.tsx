@@ -7,18 +7,16 @@ import {
   MenuPositioner,
   MenuRoot,
   MenuTrigger,
+  Tag,
 } from "@chakra-ui/react"
 import { TbLogin2, TbLogout } from "react-icons/tb"
 import { Tooltip } from "~/components/ui/tooltip"
 import { useUser } from "~/context/UserContext"
-import { useNavigate } from "react-router"
 import { FaUser } from "react-icons/fa6"
-import { api } from "~/utils/api"
 import axios from "axios"
 
 const Auth: React.FC = () => {
   const user = useUser()
-  const navigate = useNavigate()
 
   const loginClickHandler = () => {
     window.location.href = "api/auth/login"
@@ -35,6 +33,22 @@ const Auth: React.FC = () => {
           </MenuTrigger>
           <MenuPositioner>
             <MenuContent>
+              {user.admin ? (
+                <MenuItem
+                  value={"admin"}
+                  onClick={() => {
+                    window.location.href = "/api/"
+                  }}
+                >
+                  <TbLogin2 />
+                  API 페이지{" "}
+                  <Tag.Root colorPalette={"purple"}>
+                    <Tag.Label>관리자</Tag.Label>
+                  </Tag.Root>
+                </MenuItem>
+              ) : (
+                <></>
+              )}
               <MenuItem
                 value={"profile"}
                 onClick={() =>

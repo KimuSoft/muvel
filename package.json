@@ -16,5 +16,9 @@
     "build:c": "pnpm build:client",
     "build:a": "pnpm build:api"
   },
-  "packageManager": "pnpm@10.9.0"
+  "packageManager": "pnpm@10.9.0",
+  "dependencies": {
+    "@nestjs/cache-manager": "^3.0.1",
+    "cache-manager": "^6.4.2"
+  }
 }

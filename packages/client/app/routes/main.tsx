@@ -15,22 +15,21 @@ export function meta({}: Route.MetaArgs) {
 export async function loader({ request }: LoaderFunctionArgs) {
   const cookie = request.headers.get("cookie") ?? ""
 
+  const { data: userCount } = await api.get<number>(`/users/count`)
+
   const user = await getUserFromRequest(request)
-  if (!user) return { myNovels: [] }
+  if (!user) return { novels: [], userCount }
 
-  const { data: myNovels } = await api.get<Novel[]>(
-    `/users/${user.id}/novels`,
-    {
-      headers: { cookie },
-      withCredentials: true,
-    },
-  )
+  const { data: novels } = await api.get<Novel[]>(`/users/${user.id}/novels`, {
+    headers: { cookie },
+    withCredentials: true,
+  })
 
-  return { myNovels }
+  return { novels, userCount }
 }
 
 export default function Main() {
-  const { myNovels } = useLoaderData<typeof loader>()
+  const { novels, userCount } = useLoaderData<typeof loader>()
 
-  return <MainTemplate novels={myNovels} />
+  return <MainTemplate novels={novels} userCount={userCount} />
 }
