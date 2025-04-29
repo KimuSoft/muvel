@@ -86,7 +86,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let icon: ReactNode = <IoWarning />
   let stack: string | undefined
 
-  if (isRouteErrorResponse(error) || isAxiosError(error) || "status" in error) {
+  if (isRouteErrorResponse(error) || isAxiosError(error)) {
     switch (error.status) {
       case 404:
         icon = <TbSlash />
