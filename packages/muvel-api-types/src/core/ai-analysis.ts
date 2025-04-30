@@ -12,3 +12,7 @@ export interface AiAnalysis {
   createdAt: Date
   updatedAt: Date
 }
+
+export interface CreateAiAnalysisRequestBody {
+  usePreviousSummary?: boolean
+}

@@ -28,7 +28,11 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import React, { type PropsWithChildren, useEffect, useMemo } from "react"
-import type { AiAnalysis, GetEpisodeResponseDto } from "muvel-api-types"
+import type {
+  AiAnalysis,
+  CreateAiAnalysisRequestBody,
+  GetEpisodeResponseDto,
+} from "muvel-api-types"
 import { createAiAnalysis, getAiAnalysis } from "~/api/api.episode"
 import {
   TbAnalyze,
@@ -134,11 +138,11 @@ const CommentDrawer: React.FC<{
     void fetchAnalyses()
   }, [dialog.open])
 
-  const onCreateAnalysis = async () => {
+  const onCreateAnalysis = async (options: CreateAiAnalysisRequestBody) => {
     toaster.promise(
       async () => {
         setIsLoading(true)
-        await createAiAnalysis(episode.id)
+        await createAiAnalysis(episode.id, options)
         await fetchAnalyses()
         setIsLoading(false)
       },

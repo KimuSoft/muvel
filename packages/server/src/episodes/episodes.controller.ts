@@ -23,6 +23,7 @@ import { EpisodeAnalysisService } from "./services/episode-analysis.service"
 import { MuvelRequest } from "../auth/jwt-auth.guard"
 import { RequirePermission } from "../permissions/require-permission.decorator"
 import { EpisodePermissionGuard } from "../permissions/episode-permission.guard"
+import { CreateAiAnalysisRequestBodyDto } from "./dto/create-ai-analysis-request-body.dto"
 
 @Controller("episodes")
 @ApiTags("Episodes")
@@ -103,8 +104,14 @@ export class EpisodesController {
     description: "AI를 통해 에피소드를 분석합니다.",
   })
   @RequirePermission("edit", EpisodePermissionGuard)
-  async aiAnalyze(@Param("id") episodeId: string) {
-    return this.episodeAnalysisService.createAnalysisForEpisode(episodeId)
+  async aiAnalyze(
+    @Param("id") episodeId: string,
+    @Body() options: CreateAiAnalysisRequestBodyDto
+  ) {
+    return this.episodeAnalysisService.createAnalysisForEpisode(
+      episodeId,
+      options
+    )
   }
 
   @Get(":id/analyses")

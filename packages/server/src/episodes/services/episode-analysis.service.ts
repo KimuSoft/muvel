@@ -13,6 +13,7 @@ import { Repository } from "typeorm"
 import { EpisodeRepository } from "../repositories/episode.repository"
 import { BlockRepository } from "../../blocks/block.repository"
 import { BlockType, EpisodeType } from "muvel-api-types"
+import { CreateAiAnalysisRequestBodyDto } from "../dto/create-ai-analysis-request-body.dto"
 
 export class EpisodeAnalysisService {
   constructor(
@@ -32,7 +33,10 @@ export class EpisodeAnalysisService {
     })
   }
 
-  async createAnalysisForEpisode(episodeId: string): Promise<AiAnalysisEntity> {
+  async createAnalysisForEpisode(
+    episodeId: string,
+    options: CreateAiAnalysisRequestBodyDto
+  ): Promise<AiAnalysisEntity> {
     // 1. 에피소드 내용을 데이터베이스에서 가져오기
     const episode = await this.episodeRepository.findOne({
       where: { id: episodeId },
@@ -57,6 +61,7 @@ export class EpisodeAnalysisService {
     }
 
     const episodeContent = blocks.map((block) => block.text).join("\n")
+    let analysisContent = episodeContent
 
     // 300자 이하면 Bad Request로 거부
     if (episodeContent.length < 300) {
@@ -78,31 +83,33 @@ export class EpisodeAnalysisService {
       )
     }
 
-    // 2.5. 이전 에피소드의 요약을 불러오기
-    const previousEpisodes = await this.episodeRepository
-      .createQueryBuilder("episode")
-      .innerJoin("episode.novel", "novel")
-      .where("novel.id = :novelId", { novelId: episode.novelId })
-      .andWhere("episode.order < :order", { order: episode.order })
-      .andWhere("episode.episodeType = :type", { type: EpisodeType.Episode })
-      .andWhere("episode.description IS NOT NULL")
-      .andWhere("episode.description != ''")
-      .orderBy("episode.order", "ASC")
-      .select(["episode.order", "episode.description"])
-      .getMany()
+    if (options.usePreviousSummary) {
+      // 2.5. 이전 에피소드의 요약을 불러오기
+      const previousEpisodes = await this.episodeRepository
+        .createQueryBuilder("episode")
+        .innerJoin("episode.novel", "novel")
+        .where("novel.id = :novelId", { novelId: episode.novelId })
+        .andWhere("episode.order < :order", { order: episode.order })
+        .andWhere("episode.episodeType = :type", { type: EpisodeType.Episode })
+        .andWhere("episode.description IS NOT NULL")
+        .andWhere("episode.description != ''")
+        .orderBy("episode.order", "ASC")
+        .select(["episode.order", "episode.description"])
+        .getMany()
 
-    const previousEpisodeContent = previousEpisodes
-      .map((e) => `### ${e.order}편\n${e.description}`)
-      .join("\n\n")
+      const previousEpisodeContent = previousEpisodes
+        .map((e) => `### ${e.order}편\n${e.description}`)
+        .join("\n\n")
 
-    console.log(previousEpisodeContent)
+      console.log(previousEpisodeContent)
 
-    const analysisContent = `
+      analysisContent = `
     ## 지난 줄거리 요약\n${previousEpisodeContent}
     ## 소설 본문\n\`\`\`${episodeContent}\`\`\``
+    }
 
     console.info(
-      `에피소드 ${episodeId} 분석 시작됨. 분석 글자 수: ${analysisContent.length}`
+      `에피소드 ${episodeId} 분석 시작됨. 분석 글자 수: ${analysisContent.length} / 이전 편 분석: ${options.usePreviousSummary}`
     )
 
     // 2. Gemini 분석 서비스 호출

@@ -2,6 +2,7 @@ import { api } from "~/utils/api"
 import {
   type AiAnalysis,
   type Block,
+  type CreateAiAnalysisRequestBody,
   type Episode,
   type EpisodeSnapshot,
   type LegacyBlock,
@@ -34,9 +35,13 @@ export const updateEpisodeBlocks = async (
   return data
 }
 
-export const createAiAnalysis = async (episodeId: string) => {
+export const createAiAnalysis = async (
+  episodeId: string,
+  options: CreateAiAnalysisRequestBody,
+) => {
   const { data } = await api.post<AiAnalysis[]>(
     `episodes/${episodeId}/analyses`,
+    options,
   )
   return data
 }

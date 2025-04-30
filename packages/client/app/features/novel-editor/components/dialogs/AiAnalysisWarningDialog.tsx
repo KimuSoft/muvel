@@ -1,6 +1,7 @@
-import React, { type PropsWithChildren } from "react"
+import React, { type PropsWithChildren, useState } from "react"
 import {
   Button,
+  Checkbox,
   CloseButton,
   Dialog,
   HStack,
@@ -13,13 +14,16 @@ import {
 import { TbCheck } from "react-icons/tb"
 import { IoIosWarning } from "react-icons/io"
 import { SiGooglegemini } from "react-icons/si"
+import type { CreateAiAnalysisRequestBody } from "muvel-api-types"
 
 const AiAnalysisWarningDialog: React.FC<
   {
     alreadyAnalysis?: boolean
-    onSubmit: () => void
+    onSubmit: (options: CreateAiAnalysisRequestBody) => void
   } & PropsWithChildren
 > = ({ alreadyAnalysis, onSubmit, children }) => {
+  const [usePreviousSummary, setUsePreviousSummary] = useState(true)
+
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>{children}</Dialog.Trigger>
@@ -43,7 +47,7 @@ const AiAnalysisWarningDialog: React.FC<
                 {/* spacing Prop 사용 - v3 문법 */}
                 <Text fontSize="md" lineHeight={"1.5"}>
                   뮤블은 AI 분석 시{" "}
-                  <b>사용자의 해당 소설 내용 일부를 구글 서버로 전송</b>
+                  <b>해당 소설 내용 일부를 구글 서버로 전송</b>
                   하며, 이는{" "}
                   <Link
                     colorPalette={"purple"}
@@ -70,6 +74,16 @@ const AiAnalysisWarningDialog: React.FC<
                   </Text>
                 )}
               </VStack>
+              <Checkbox.Root
+                mt={5}
+                colorPalette="purple"
+                defaultChecked
+                onCheckedChange={(d) => setUsePreviousSummary(!!d.checked)}
+              >
+                <Checkbox.HiddenInput />
+                <Checkbox.Control />
+                <Checkbox.Label>AI 분석 시 이전 편 요약 포함</Checkbox.Label>
+              </Checkbox.Root>
             </Dialog.Body>
 
             <Dialog.Footer>
@@ -77,7 +91,11 @@ const AiAnalysisWarningDialog: React.FC<
               <Text fontSize="sm">Powered by Google</Text>
               <Spacer />
               <Dialog.ActionTrigger asChild>
-                <Button colorPalette="purple" mr={3} onClick={onSubmit}>
+                <Button
+                  colorPalette="purple"
+                  mr={3}
+                  onClick={() => onSubmit({ usePreviousSummary })}
+                >
                   <TbCheck />
                   문제 없어요!
                 </Button>
