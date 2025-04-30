@@ -208,7 +208,7 @@ const MainTemplate: React.FC<{
                 >
                   <b>뮤블</b>에는 여러가지 기능이 있어요!
                 </Text>
-                <Wrap>
+                <Wrap gap={1}>
                   <SimpleTag>실시간 클라우드</SimpleTag>
                   <SimpleTag>크로스플랫폼 지원</SimpleTag>
                   <SimpleTag>에디터 위젯</SimpleTag>
