@@ -177,7 +177,7 @@ export class EpisodesService {
       typeof EpisodeOrId === "string"
         ? await this.episodesRepository.findOne({
             where: { id: EpisodeOrId },
-            relations: ["novel.author", "novel"],
+            relations: ["novel", "novel.author"],
           })
         : EpisodeOrId
 
