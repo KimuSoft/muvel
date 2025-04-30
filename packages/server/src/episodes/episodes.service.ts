@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
-import { Repository } from "typeorm"
+import { IsNull, LessThan, Not, Repository } from "typeorm"
 import { EpisodeEntity } from "./episode.entity"
 import { PatchEpisodesDto } from "../novels/dto/patch-episodes.dto"
 import { CreateEpisodeDto } from "./dto/create-episode.dto"
@@ -285,9 +285,7 @@ export class EpisodesService {
       // const episodeContent = '';
     }
 
-    const episodeContent =
-      `${episode.order}편: ${episode.title}\n\n` +
-      blocks.map((block) => block.text).join("\n")
+    const episodeContent = blocks.map((block) => block.text).join("\n")
 
     // 300자 이하면 Bad Request로 거부
     if (episodeContent.length < 300) {
@@ -309,15 +307,38 @@ export class EpisodesService {
       )
     }
 
+    // 2.5. 이전 에피소드의 요약을 불러오기
+    const previousEpisodes = await this.episodesRepository
+      .createQueryBuilder("episode")
+      .innerJoin("episode.novel", "novel")
+      .where("novel.id = :novelId", { novelId: episode.novelId })
+      .andWhere("episode.order < :order", { order: episode.order })
+      .andWhere("episode.episodeType = :type", { type: EpisodeType.Episode })
+      .andWhere("episode.description IS NOT NULL")
+      .andWhere("episode.description != ''")
+      .orderBy("episode.order", "ASC")
+      .select(["episode.order", "episode.description"])
+      .getMany()
+
+    const previousEpisodeContent = previousEpisodes
+      .map((e) => `### ${e.order}편\n${e.description}`)
+      .join("\n\n")
+
+    console.log(previousEpisodeContent)
+
+    const analysisContent = `
+    ## 지난 줄거리 요약\n${previousEpisodeContent}
+    ## 소설 본문\n\`\`\`${episodeContent}\`\`\``
+
     console.info(
-      `에피소드 ${episodeId} 분석 시작됨. 글자 수: ${episodeContent.length}`
+      `에피소드 ${episodeId} 분석 시작됨. 분석 글자 수: ${analysisContent.length}`
     )
 
     // 2. Gemini 분석 서비스 호출
     let analysisResult: GeminiAnalysisResponse
     try {
       analysisResult = await this.geminiAnalysisRepository.analyzeEpisode(
-        episodeContent
+        analysisContent
       )
     } catch (error) {
       console.error(`Error analyzing episode ${episodeId}:`, error)
