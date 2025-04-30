@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react"
 import Header from "../organisms/Header"
 import { type GetNovelResponseDto, ShareType } from "muvel-api-types"
-import { TbEdit, TbPlayerPlay, TbPlus } from "react-icons/tb"
+import { TbEdit, TbPencilPlus, TbPlayerPlay, TbShare } from "react-icons/tb"
 import NovelTagList from "../organisms/NovelTagList"
 import { useNavigate, useRevalidator } from "react-router"
 import SortableEpisodeList from "../organisms/SortableEpisodeList"
@@ -26,6 +26,7 @@ import {
   updateNovelEpisodes,
 } from "~/api/api.novel"
 import type { ReorderedEpisode } from "~/utils/reorderEpisode"
+import { toaster } from "~/components/ui/toaster"
 
 const NovelDetailTemplate: React.FC<{
   novel: GetNovelResponseDto
@@ -64,7 +65,7 @@ const NovelDetailTemplate: React.FC<{
   }, [novel.share])
 
   return (
-    <VStack w={"100vw"} gap={12} pb={100}>
+    <VStack gap={12} pb={100}>
       <Header logo={true} />
       <Center
         w={"100%"}
@@ -74,14 +75,15 @@ const NovelDetailTemplate: React.FC<{
           _dark: "linear-gradient(90deg, rgba(24, 24, 27) 0%, #434145 100%)",
         }}
       >
-        <Container w={"100%"} px={5} mt={10} maxW={"4xl"}>
+        <Container w={"100%"} maxW={"4xl"} px={5} mt={10}>
           <HStack
             gap={{ base: 5, md: 8 }}
-            flexDir={{ base: "row", md: "row-reverse" }}
+            flexDir={{ base: "column", md: "row-reverse" }}
+            alignItems={{ base: "flex-start", md: "center" }}
           >
             <Image
-              w={{ base: "130px", md: "260px" }}
-              h={{ base: "195px", md: "390px" }}
+              w={{ base: "120px", md: "260px" }}
+              h={{ base: "180px", md: "390px" }}
               borderRadius="md"
               bgColor={{ base: "gray.100", _dark: "gray.700" }}
               src={
@@ -96,7 +98,7 @@ const NovelDetailTemplate: React.FC<{
               flexShrink={0}
             />
             <VStack w={"100%"} alignItems={"baseline"}>
-              <HStack rowGap={1} columnGap={5} flexWrap={"wrap"}>
+              <HStack rowGap={1} columnGap={4} flexWrap={"wrap"}>
                 <Heading
                   fontSize={{ base: "16px", md: "40px" }}
                   lineHeight={1.4}
@@ -106,7 +108,7 @@ const NovelDetailTemplate: React.FC<{
                 <Text
                   flexShrink={0}
                   color={"gray.500"}
-                  fontSize={{ base: "sm", md: "md" }}
+                  fontSize={{ base: "xs", md: "md" }}
                 >
                   {novel.episodeCount}편 · {shareText}
                 </Text>
@@ -154,6 +156,25 @@ const NovelDetailTemplate: React.FC<{
                     </Button>
                   </ModifyNovelModal>
                 ) : null}
+                {novel.share !== ShareType.Private && (
+                  <Button
+                    gap={2.5}
+                    flexShrink={0}
+                    size={"sm"}
+                    variant={"subtle"}
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(window.location.href)
+                      toaster.success({
+                        title: "링크가 복사되었습니다.",
+                        description:
+                          "보여주고 싶은 사람한테 링크를 보내보세요!",
+                      })
+                    }}
+                  >
+                    <TbShare />
+                    <Box display={{ base: "none", md: "block" }}>공유하기</Box>
+                  </Button>
+                )}
 
                 {/*{novel.permissions.edit ? (*/}
                 {/*  <Button size={"sm"} variant={"subtle"}>*/}
@@ -170,19 +191,34 @@ const NovelDetailTemplate: React.FC<{
       <Container w={"100%"} maxW={"4xl"} userSelect={"none"}>
         <HStack gap={3} mb={4} px={1}>
           <FaList />
-          <Heading size={"md"}>에피소드 목록</Heading>
-
+          <Heading size={"md"} flexShrink={0}>
+            에피소드 목록
+          </Heading>
+          {novel.permissions.edit && (
+            <Text
+              display={{
+                base: "none",
+                md: "block",
+              }}
+              ml={2}
+              fontSize={"xs"}
+              color={"gray.500"}
+            >
+              잡은 후 드래그하면 순서를 바꿀 수 있어요!
+            </Text>
+          )}
           <Spacer />
 
           {novel.permissions.edit ? (
             <Button
-              colorScheme={"purple"}
+              colorPalette={"purple"}
               gap={3}
+              rounded={{ base: "full", md: 5 }}
               size={"sm"}
               loading={isEpisodesLoading}
               onClick={handleCreateEpisode}
             >
-              <TbPlus />
+              <TbPencilPlus />
               <Box display={{ base: "none", md: "block" }}>새 편 쓰기</Box>
             </Button>
           ) : null}

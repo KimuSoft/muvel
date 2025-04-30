@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react"
+import React, { type ReactNode, useEffect, useState } from "react"
 import {
   Center,
   Dialog,
+  DrawerTrigger,
   Highlight,
   HStack,
   Icon,
-  IconButton,
   Input,
   InputGroup,
   Kbd,
   Portal,
   Spacer,
   Text,
+  type UseDialogReturn,
   VStack,
 } from "@chakra-ui/react"
 import { api } from "~/utils/api"
@@ -19,9 +20,12 @@ import { useNavigate } from "react-router"
 import { MdMessage } from "react-icons/md"
 import { TbSearch } from "react-icons/tb"
 import { Tooltip } from "~/components/ui/tooltip"
-import { BiSearch } from "react-icons/bi"
 
-const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
+const SearchDialog: React.FC<{
+  novelId: string
+  children?: ReactNode
+  dialog: UseDialogReturn
+}> = ({ novelId, children, dialog }) => {
   const [hitItems, setHitItems] = useState<HitItem[]>([])
   const [query, setQuery] = useState<string>("")
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -50,8 +54,7 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (["f", "F"].includes(e.key) && e.ctrlKey && e.shiftKey) {
         e.preventDefault()
-        const trigger = document.getElementById("search-dialog-trigger")
-        trigger?.click()
+        dialog.setOpen(true)
       }
     }
 
@@ -60,17 +63,8 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
   }, [])
 
   return (
-    <Dialog.Root>
-      <Dialog.Trigger asChild>
-        <IconButton
-          id="search-dialog-trigger"
-          aria-label="search"
-          size={"sm"}
-          variant="ghost"
-        >
-          <BiSearch />
-        </IconButton>
-      </Dialog.Trigger>
+    <Dialog.RootProvider value={dialog}>
+      {children && <DrawerTrigger asChild>{children}</DrawerTrigger>}
 
       <Portal>
         <Dialog.Backdrop />
@@ -118,7 +112,7 @@ const SearchModal: React.FC<{ novelId: string }> = ({ novelId }) => {
           </Dialog.Content>
         </Dialog.Positioner>
       </Portal>
-    </Dialog.Root>
+    </Dialog.RootProvider>
   )
 }
 
@@ -193,4 +187,4 @@ interface HitItem {
   index: number
 }
 
-export default SearchModal
+export default SearchDialog

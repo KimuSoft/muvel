@@ -1,9 +1,4 @@
-import React, {
-  type PropsWithChildren,
-  useCallback,
-  useMemo,
-  useState,
-} from "react"
+import React, { type ReactNode, useCallback, useMemo, useState } from "react"
 import {
   Button,
   Checkbox,
@@ -15,7 +10,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerPositioner,
-  DrawerRoot,
+  DrawerRootProvider,
   DrawerTitle,
   DrawerTrigger,
   Field,
@@ -25,6 +20,7 @@ import {
   Stack,
   Text,
   Textarea,
+  type UseDialogReturn,
 } from "@chakra-ui/react"
 import { LuCopy, LuDownload } from "react-icons/lu" // 아이콘 임포트
 import { useEditorContext } from "~/features/novel-editor/context/EditorContext" // 에디터 컨텍스트 (경로 수정 필요)
@@ -47,15 +43,15 @@ const defaultExportOptions = {
 }
 
 // --- 내보내기 Drawer 컴포넌트 시작 ---
-export const ExportEpisodeDrawer: React.FC<
-  { episode: Episode } & PropsWithChildren
-> = ({ episode, children }) => {
+export const ExportEpisodeDrawer: React.FC<{
+  episode: Episode
+  children?: ReactNode
+  dialog: UseDialogReturn
+}> = ({ episode, children, dialog }) => {
   const { view } = useEditorContext() // 에디터 컨텍스트에서 view 가져오기
 
   // 내보내기 옵션 상태 (새로운 옵션 및 기본값 추가)
   const [options, setOptions] = useState<ExportOptions>(defaultExportOptions)
-  // Drawer 열림/닫힘 상태
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
   // 옵션 값 변경 시 상태 업데이트 함수
   const handleOptionChange = useCallback(
@@ -109,11 +105,8 @@ export const ExportEpisodeDrawer: React.FC<
   }, [processedContent, episode.title]) // episodeTitle도 의존성에 추가
 
   return (
-    <DrawerRoot
-      open={isDrawerOpen}
-      onOpenChange={(detail) => setIsDrawerOpen(detail.open)}
-    >
-      <DrawerTrigger asChild>{children}</DrawerTrigger>
+    <DrawerRootProvider value={dialog}>
+      {children && <DrawerTrigger asChild>{children}</DrawerTrigger>}
 
       <DrawerBackdrop />
       <DrawerPositioner>
@@ -376,6 +369,6 @@ export const ExportEpisodeDrawer: React.FC<
           </DrawerFooter>
         </DrawerContent>
       </DrawerPositioner>
-    </DrawerRoot>
+    </DrawerRootProvider>
   )
 }

@@ -59,7 +59,7 @@ const EditorTemplate: React.FC<{
     <VStack
       bgColor={option.backgroundColor || undefined}
       transition="background-color 0.2s ease-in-out"
-      h={"dvh"}
+      h={"100dvh"}
       position={"relative"}
       alignItems={
         isWidgetUsing ? { base: "flex-start", xl: "center" } : "center"
@@ -82,7 +82,7 @@ const EditorTemplate: React.FC<{
         transition="max-width 0.2s ease-in-out"
         minH={"100%"}
         my={100}
-        px={3}
+        px={2}
       >
         <Button variant={"ghost"} color={"gray.500"} size={"md"}>
           {episode.order}편

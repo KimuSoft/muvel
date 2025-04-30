@@ -289,29 +289,29 @@ export class EpisodesService {
       `${episode.order}편: ${episode.title}\n\n` +
       blocks.map((block) => block.text).join("\n")
 
-    // 3000자 이하면 Bad Request로 거부
-    if (episodeContent.length < 3000) {
+    // 300자 이하면 Bad Request로 거부
+    if (episodeContent.length < 300) {
       throw new BadRequestException(
         `Episode ${episodeId} content is too short for analysis.`
       )
     }
 
-    // 10000자 이상이어도 거부
-    if (episodeContent.length > 10000) {
+    // 15000자 이상이어도 거부
+    if (episodeContent.length > 15000) {
       throw new BadRequestException(
         `Episode ${episodeId} content is too long for analysis.`
+      )
+    }
+
+    if (!episodeContent || episodeContent.trim() === "") {
+      throw new BadRequestException(
+        `Episode ${episodeId} has no content to analyze.`
       )
     }
 
     console.info(
       `에피소드 ${episodeId} 분석 시작됨. 글자 수: ${episodeContent.length}`
     )
-
-    if (!episodeContent || episodeContent.trim() === "") {
-      throw new InternalServerErrorException(
-        `Episode ${episodeId} has no content to analyze.`
-      )
-    }
 
     // 2. Gemini 분석 서비스 호출
     let analysisResult: GeminiAnalysisResponse

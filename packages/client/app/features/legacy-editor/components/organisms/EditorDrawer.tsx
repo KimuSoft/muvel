@@ -24,7 +24,7 @@ import WidgetDrawer from "./WidgetDrawer"
 import { TbBook, TbCategory, TbChevronLeft, TbPlus } from "react-icons/tb"
 import { toaster } from "~/components/ui/toaster"
 import { ColorModeButton } from "~/components/ui/color-mode"
-import SearchModal from "~/features/novel-editor/components/SearchModal"
+import SearchDialog from "~/features/novel-editor/components/SearchDialog"
 import NovelProfile from "../molecules/NovelProfile"
 import SortableEpisodeList from "~/components/organisms/SortableEpisodeList"
 import ExportEpisode from "../molecules/ExportEpisode"
@@ -131,7 +131,7 @@ const EditorDrawer: React.FC<{ episode: Episode }> = ({ episode }) => {
                 </IconButton>
                 <ColorModeButton />
                 <WidgetDrawer />
-                {novel && <SearchModal novelId={novel.id} />}
+                {/*{novel && <SearchDialog novelId={novel.id} />}*/}
                 <Auth />
               </HStack>
             </Drawer.Header>

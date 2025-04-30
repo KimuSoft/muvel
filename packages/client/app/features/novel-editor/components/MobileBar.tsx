@@ -73,11 +73,11 @@ const MobileBar = () => {
 
   return (
     <HStack
-      position="fixed"
+      position="sticky"
       left={0}
       right={0}
       // bottom 오프셋은 키보드 높이에 맞게 계속 조절
-      bottom={`${bottomOffset}px`}
+      bottom={0}
       borderTopWidth={1}
       borderColor={{ base: "gray.200", _dark: "gray.700" }}
       p={1}

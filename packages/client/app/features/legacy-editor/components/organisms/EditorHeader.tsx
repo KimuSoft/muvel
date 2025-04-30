@@ -4,7 +4,7 @@ import { HStack, Spinner } from "@chakra-ui/react"
 import WidgetDrawer from "./WidgetDrawer"
 import { useBlockEditor } from "~/features/legacy-editor/context/EditorContext"
 import { ColorModeButton } from "~/components/ui/color-mode"
-import SearchModal from "~/features/novel-editor/components/SearchModal"
+import SearchDialog from "~/features/novel-editor/components/SearchDialog"
 import EpisodeTitle from "~/features/legacy-editor/components/atoms/EpisodeTitle"
 import Auth from "~/components/molecules/Auth"
 
@@ -42,7 +42,7 @@ const EditorHeader: React.FC = () => {
         <Auth />
         <ColorModeButton size={"sm"} mr={3} />
         <WidgetDrawer />
-        <SearchModal novelId={novel.id} />
+        {/*<SearchDialog novelId={novel.id} />*/}
       </HStack>
     </HStack>
   )

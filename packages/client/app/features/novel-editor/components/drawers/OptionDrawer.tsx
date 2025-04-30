@@ -9,16 +9,17 @@ import {
   DrawerHeader,
   DrawerPositioner,
   DrawerRoot,
+  DrawerRootProvider,
   DrawerTitle,
   DrawerTrigger,
   Field,
-  IconButton,
   Link,
   Separator,
   SimpleGrid,
   Slider,
   Stack,
   Text,
+  type UseDialogReturn,
 } from "@chakra-ui/react"
 import { useOption } from "~/context/OptionContext"
 import { defaultOption } from "~/providers/OptionProvider"
@@ -31,23 +32,24 @@ import {
   novelpiaDesktopPreset,
   novelpiaMobilePreset,
 } from "~/features/novel-editor/style/stylePreset"
-import { FaDesktop, FaGear, FaMobile } from "react-icons/fa6"
+import { FaDesktop, FaMobile } from "react-icons/fa6"
 import { SiKakao } from "react-icons/si"
 import { useColorMode } from "~/components/ui/color-mode"
+import React, { type ReactNode } from "react"
 
-const OptionDrawer = () => {
+const OptionDrawer: React.FC<{
+  children?: ReactNode
+  dialog: UseDialogReturn
+}> = ({ children, dialog }) => {
   const [option, setOption] = useOption()
   const { setColorMode } = useColorMode()
 
   const handleReset = () => setOption(() => defaultOption)
 
   return (
-    <DrawerRoot>
-      <DrawerTrigger asChild>
-        <IconButton variant="ghost" size={"sm"}>
-          <FaGear />
-        </IconButton>
-      </DrawerTrigger>
+    <DrawerRootProvider value={dialog}>
+      {children && <DrawerTrigger asChild>{children}</DrawerTrigger>}
+
       <DrawerBackdrop />
       <DrawerPositioner>
         <DrawerContent>
@@ -377,7 +379,7 @@ const OptionDrawer = () => {
           </DrawerFooter>
         </DrawerContent>
       </DrawerPositioner>
-    </DrawerRoot>
+    </DrawerRootProvider>
   )
 }
 
