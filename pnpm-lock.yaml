@@ -225,6 +225,9 @@ importers:
       '@nestjs/typeorm':
         specifier: ^9.0.1
         version: 9.0.1(@nestjs/common@9.4.3(cache-manager@6.4.2)(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@9.4.3)(reflect-metadata@0.1.14)(rxjs@7.8.2)(typeorm@0.3.22(pg@8.15.1)(reflect-metadata@0.1.14)(ts-node@10.9.2(@types/node@18.11.18)(typescript@4.7.4)))
+      '@types/passport-jwt':
+        specifier: ^4.0.1
+        version: 4.0.1
       axios:
         specifier: ^1.8.2
         version: 1.8.4
@@ -2051,8 +2054,14 @@ packages:
   '@types/passport-discord@0.1.14':
     resolution: {integrity: sha512-JE7Wbtr4bqqV9poWAbwB+aeVkd3/TM6wgGTtn4Ym6KPLJlJju73BEIH3uS+EeR+D7tY3lP1MtUpJPbxC86PXzA==}
 
+  '@types/passport-jwt@4.0.1':
+    resolution: {integrity: sha512-Y0Ykz6nWP4jpxgEUYq8NoVZeCQPo1ZndJLfapI249g1jHChvRfZRO/LS3tqu26YgAS/laI1qx98sYGz0IalRXQ==}
+
   '@types/passport-oauth2@1.4.17':
     resolution: {integrity: sha512-ODiAHvso6JcWJ6ZkHHroVp05EHGhqQN533PtFNBkg8Fy5mERDqsr030AX81M0D69ZcaMvhF92SRckEk2B0HYYg==}
+
+  '@types/passport-strategy@0.2.38':
+    resolution: {integrity: sha512-GC6eMqqojOooq993Tmnmp7AUTbbQSgilyvpCYQjT+H6JfG/g6RGc7nXEniZlp0zyKJ0WUdOiZWLBZft9Yug1uA==}
 
   '@types/passport@0.4.7':
     resolution: {integrity: sha512-EePlxNYx5tf3n0yjdPXX0/zDOv0UCwjMyQo4UkWGlhHteNDItAj7TfDdLttSThVMKQz3uCW7lsGzMuml0f8g9Q==}
@@ -7670,10 +7679,20 @@ snapshots:
       '@types/passport': 0.4.7
       '@types/passport-oauth2': 1.4.17
 
+  '@types/passport-jwt@4.0.1':
+    dependencies:
+      '@types/jsonwebtoken': 9.0.5
+      '@types/passport-strategy': 0.2.38
+
   '@types/passport-oauth2@1.4.17':
     dependencies:
       '@types/express': 4.17.21
       '@types/oauth': 0.9.6
+      '@types/passport': 0.4.7
+
+  '@types/passport-strategy@0.2.38':
+    dependencies:
+      '@types/express': 4.17.21
       '@types/passport': 0.4.7
 
   '@types/passport@0.4.7':

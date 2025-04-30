@@ -19,7 +19,7 @@ const Auth: React.FC = () => {
   const user = useUser()
 
   const loginClickHandler = () => {
-    window.location.href = "api/auth/login"
+    window.location.href = "/api/auth/login"
   }
 
   return (
@@ -62,7 +62,10 @@ const Auth: React.FC = () => {
               <MenuItem
                 value={"logout"}
                 onClick={async () => {
-                  await axios.post("auth/logout")
+                  await axios.post(
+                    import.meta.env.VITE_API_BASE?.replace("/api", "") +
+                      "/auth/logout",
+                  )
                   window.location.href = "/"
                 }}
               >

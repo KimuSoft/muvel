@@ -33,7 +33,7 @@ import type {
 import type { ReorderedEpisode } from "~/utils/reorderEpisode"
 import { FaList } from "react-icons/fa6"
 import NovelItem from "~/components/molecules/NovelItem"
-import CreateEpisodeMenu from "~/features/novel-editor/components/CreateEpisodeMenu"
+import CreateEpisodeMenu from "~/features/novel-editor/components/menus/CreateEpisodeMenu"
 import DeleteEpisodeDialog from "~/features/novel-editor/components/dialogs/DeleteEpisodeDialog"
 
 const EpisodeListDrawer: React.FC<

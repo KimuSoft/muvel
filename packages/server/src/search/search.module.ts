@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common"
-import { SearchRepository } from "./repositories/search.repository"
+import { SearchRepository } from "./search.repository"
 import { SearchController } from "./search.controller"
+import { SearchService } from "./search.service"
 
 @Module({
-  providers: [SearchRepository],
+  providers: [SearchRepository, SearchService],
   controllers: [SearchController],
-  exports: [SearchRepository],
 })
 export class SearchModule {}

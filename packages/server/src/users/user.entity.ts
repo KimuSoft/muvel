@@ -1,5 +1,12 @@
 import { NovelEntity } from "src/novels/novel.entity"
-import { Column, Entity, OneToMany, PrimaryColumn, RelationId } from "typeorm"
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from "typeorm"
 
 @Entity("user")
 export class UserEntity {
@@ -17,12 +24,17 @@ export class UserEntity {
   })
   novels: NovelEntity[]
 
-  @RelationId((self: UserEntity) => self.novels)
-  novelIds: string[]
-
-  @Column({ nullable: true })
-  recentEpisodeId?: string
+  @Column({ type: "uuid", array: true, default: [] })
+  recentNovelIds?: string[]
 
   @Column({ default: false })
   admin: boolean
+
+  /** Dates */
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
 }

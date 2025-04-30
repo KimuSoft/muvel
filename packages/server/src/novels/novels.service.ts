@@ -1,36 +1,23 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common"
+import { Injectable, NotFoundException } from "@nestjs/common"
 import { NovelEntity } from "./novel.entity"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
 import { SearchNovelsDto } from "./dto/search-novels.dto"
 import { UserEntity } from "../users/user.entity"
-import { BlockType, PMNodeJSON, ShareType } from "muvel-api-types"
+import { BasePermission, ShareType } from "muvel-api-types"
 import { UpdateNovelDto } from "./dto/update-novel.dto"
-import { EpisodeEntity } from "../episodes/episode.entity"
-import { BlockEntity } from "../blocks/block.entity"
 import { CreateNovelDto } from "./dto/create-novel.dto"
-
-import { NovelPermission } from "./novel.enum"
+import { EpisodeRepository } from "../episodes/repositories/episode.repository"
 
 @Injectable()
 export class NovelsService {
   constructor(
-    @InjectRepository(UserEntity)
-    private usersRepository: Repository<UserEntity>,
     @InjectRepository(NovelEntity)
-    private novelsRepository: Repository<NovelEntity>,
-    @InjectRepository(EpisodeEntity)
-    private episodesRepository: Repository<EpisodeEntity>,
-    @InjectRepository(BlockEntity)
-    private blocksRepository: Repository<BlockEntity>
+    private readonly novelsRepository: Repository<NovelEntity>,
+    private readonly episodesRepository: EpisodeRepository
   ) {}
 
-  async createNovel(authorId: string, createNovelDto: CreateNovelDto) {
-    const user = await this.usersRepository.findOneBy({ id: authorId })
+  public async createNovel(user: UserEntity, createNovelDto: CreateNovelDto) {
     const novel = new NovelEntity()
 
     novel.title = createNovelDto.title
@@ -39,12 +26,12 @@ export class NovelsService {
     novel.share = createNovelDto.share
 
     // 에피소드 생성
-    novel.episodes = [await this.createInitialEpisode("시작하기")]
+    novel.episodes = [await this.episodesRepository.createInitialEpisode()]
 
     return this.novelsRepository.save(novel)
   }
 
-  async findNovelById(id: string, userId: string) {
+  public async findNovelById(id: string, permissions: BasePermission) {
     // 소설 정보 불러오기
     const novel = await this.novelsRepository.findOne({
       where: { id },
@@ -52,95 +39,28 @@ export class NovelsService {
     })
     if (!novel) throw new NotFoundException("소설을 찾을 수 없습니다.")
 
-    // 유저 정보 불러오기
-    const user = await this.usersRepository.findOneBy({ id: userId })
-
-    // 소설이 비공개 이고 주인이 아닌 경우
-    if (novel.share === ShareType.Private) {
-      if (!user) throw new NotFoundException("유저를 찾을 수 없습니다.")
-
-      if (novel.author.id !== userId) {
-        throw new ForbiddenException("비공개 소설은 작성자만 볼 수 있습니다.")
-      }
-    }
-
     // 에피소드 order string에서 float로 바꿔주고 숫자 기준 정렬
     novel.episodes.map((episode) => {
-      // @ts-ignore TODO 나중에 수정
+      // @ts-expect-error TODO 나중에 수정 (order 타입 문제)
       episode.order = parseFloat(episode.order.toString())
       return episode
     })
 
-    // @ts-ignore TODO 나중에 수정
+    // @ts-expect-error TODO 나중에 수정
     novel.episodes.sort((a, b) => (a.order as number) - (b.order as number))
 
     return {
       ...novel,
-      permissions: {
-        // 애초에 이 응답을 받았다는 건 읽을 수 있다는 뜻이니까...
-        read: true,
-        edit: this.canEdit(novel, user),
-        delete: this.canEdit(novel, user),
-      },
+      permissions,
     }
   }
 
-  private async createInitialEpisode(
-    title: string,
-    description = "",
-    chapter = "",
-    novelId?: string
-  ) {
-    let order = 1
-    if (novelId) {
-      const lastBlock: { order: string }[] =
-        await this.episodesRepository.query(
-          'SELECT * FROM "episode" WHERE "novelId" = $1 ORDER BY "order" DESC LIMIT 1',
-          [novelId]
-        )
-      order = parseFloat(lastBlock?.[0].order) + 1
-    }
-
-    const episode = new EpisodeEntity()
-    episode.title = title
-    episode.description = description
-    episode.order = order.toString()
-
-    // 블록 생성
-    // episode.blocks = [
-    //   await this.createBlock([
-    //     { type: "text", text: "뮤블에 오신 것을 환영합니다!" },
-    //   ]),
-    // ]
-
-    return this.episodesRepository.save(episode)
-  }
-
-  private async createBlock(content: PMNodeJSON[], order?: number) {
-    if (!order) {
-      const lastBlock = await this.blocksRepository
-        .findOne({
-          order: { order: "DESC" },
-        })
-        .catch(() => ({ order: 0 }))
-      order = lastBlock.order + 1
-    }
-
-    const block = new BlockEntity()
-    block.blockType = BlockType.Describe
-    block.content = content
-    block.order = order
-
-    return this.blocksRepository.save(block)
-  }
-
-  async delete(id: string) {
+  public async delete(id: string) {
     return this.novelsRepository.softDelete({ id })
   }
 
   async updateNovel(id: string, updateNovelDto: UpdateNovelDto) {
-    const novel = await this.findOne(id)
-
+    const novel = await this.novelsRepository.findOneBy({ id })
     if (!novel) return null
 
     novel.title = updateNovelDto.title ?? novel.title
@@ -153,32 +73,17 @@ export class NovelsService {
     return this.novelsRepository.save(novel)
   }
 
-  async findOne(id: string, relations: string[] = []) {
-    if (!id) return null
+  async exportNovel(id: string) {
     const novel = await this.novelsRepository.findOne({
       where: { id },
-      relations: ["author", ...relations],
+      relations: ["author", "episodes", "episodes.blocks"],
     })
+    if (!novel) throw new NotFoundException()
 
-    if (!novel) {
-      console.warn(`소설을 찾을 수 없습니다. id=${id}`)
-      return novel
-    }
-
-    // 에피소드 정렬
-    novel.episodes?.sort((a, b) => parseFloat(a.order) - parseFloat(b.order))
-    return {
-      ...novel,
-      permissions: {
-        // 애초에 이 응답을 받았다는 건 읽을 수 있다는 뜻이니까...
-        read: true,
-        edit: this.canEdit(novel, novel.author),
-        delete: this.canEdit(novel, novel.author),
-      },
-    }
+    return novel
   }
 
-  async search(searchNovelsDto: SearchNovelsDto) {
+  async searchNovel(searchNovelsDto: SearchNovelsDto) {
     let query = this.novelsRepository
       .createQueryBuilder("novel")
       .where(`novel.share = ${ShareType.Public}`)
@@ -215,29 +120,6 @@ export class NovelsService {
       .getMany()
   }
 
-  async getPermission(novelId: string, userId?: string) {
-    const novel = await this.novelsRepository.findOne({
-      where: { id: novelId },
-      relations: ["author"],
-    })
-
-    if (!novel) throw new Error("소설을 찾을 수 없습니다. novelId=" + novelId)
-
-    if (userId && novel.author.id === userId) {
-      return [
-        NovelPermission.Author,
-        NovelPermission.ReadNovel,
-        NovelPermission.EditNovel,
-        NovelPermission.CreateNovel,
-        NovelPermission.DeleteNovel,
-        NovelPermission.ReadNovelComments,
-      ]
-    } else {
-      if (novel.share === ShareType.Private) return []
-      else return [NovelPermission.ReadNovel]
-    }
-  }
-
   async getNovelByEpisodeId(episodeId: string) {
     return this.novelsRepository
       .createQueryBuilder("novel")
@@ -246,7 +128,41 @@ export class NovelsService {
       .getOne()
   }
 
-  canEdit(novel: NovelEntity, user: UserEntity): boolean {
-    return novel.author.id === user.id || user.admin
+  public async findNovelsByUserId(id: string, showAll: boolean) {
+    return this.novelsRepository.find({
+      where: {
+        author: { id },
+        ...(showAll ? {} : { share: ShareType.Public }),
+      },
+      relations: ["author"],
+    })
+  }
+
+  public async getNovelPermission(
+    novelOrId: string | NovelEntity,
+    userId?: string | null
+  ) {
+    const novel =
+      typeof novelOrId === "string"
+        ? await this.novelsRepository.findOne({
+            where: { id: novelOrId },
+            relations: ["author"],
+          })
+        : novelOrId
+
+    if (!novel) {
+      throw new NotFoundException(`Novel with id ${novelOrId} not found`)
+    }
+
+    const isAuthor = novel.author.id === userId
+
+    return {
+      novel,
+      permissions: {
+        read: isAuthor || novel.share !== ShareType.Private,
+        edit: isAuthor,
+        delete: isAuthor,
+      },
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common"
 import { PassportStrategy } from "@nestjs/passport"
 import * as OAuth2Strategy from "passport-oauth2"
+import { VerifyCallback } from "passport-oauth2"
 import axios from "axios"
 import { AuthService } from "../auth.service"
 
@@ -31,7 +32,7 @@ export class KimustoryStrategy extends PassportStrategy(
     })
   }
 
-  async userProfile(token: string, done) {
+  async userProfile(token: string, done: VerifyCallback) {
     const res = await axios.get(server + "/api/me", {
       headers: { Authorization: `Bearer ${token}` },
     })

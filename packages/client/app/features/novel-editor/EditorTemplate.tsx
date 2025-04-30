@@ -65,9 +65,11 @@ const EditorTemplate: React.FC<{
         isWidgetUsing ? { base: "flex-start", xl: "center" } : "center"
       }
     >
-      <ClientOnly>
-        <WidgetPanel />
-      </ClientOnly>
+      {episode.permissions.edit && (
+        <ClientOnly>
+          <WidgetPanel />
+        </ClientOnly>
+      )}
       <EditorHeader
         novelId={episode.novelId}
         episode={episode}
@@ -79,6 +81,7 @@ const EditorTemplate: React.FC<{
       <Box
         w={"100%"}
         maxW={option.editorMaxWidth}
+        userSelect={episode.permissions.edit ? undefined : "none"}
         transition="max-width 0.2s ease-in-out"
         minH={"100%"}
         my={100}

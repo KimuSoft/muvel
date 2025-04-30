@@ -9,7 +9,7 @@ import {
   RelationId,
   UpdateDateColumn,
 } from "typeorm"
-import { EpisodeEntity } from "../episodes/episode.entity"
+import { EpisodeEntity } from "../episodes/entities/episode.entity"
 import { UserEntity } from "../users/user.entity"
 import { Novel, ShareType } from "muvel-api-types"
 

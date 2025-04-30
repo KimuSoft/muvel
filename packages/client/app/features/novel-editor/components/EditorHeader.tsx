@@ -13,7 +13,7 @@ import { BiExport, BiHistory, BiSearch } from "react-icons/bi"
 import { Tooltip } from "~/components/ui/tooltip"
 import EpisodeListDrawer from "~/features/novel-editor/components/drawers/EpisodeListDrawer"
 import WidgetDrawer from "~/features/novel-editor/components/drawers/WidgetDrawer"
-import SearchDialog from "~/features/novel-editor/components/SearchDialog"
+import SearchDialog from "~/features/novel-editor/components/dialogs/SearchDialog"
 import type { GetEpisodeResponseDto } from "muvel-api-types"
 import SyncIndicator, {
   SyncState,
@@ -23,7 +23,7 @@ import { TbChevronLeft, TbList, TbMessage } from "react-icons/tb"
 import { ExportEpisodeDrawer } from "~/features/novel-editor/components/drawers/ExportEpisodeDrawer"
 import SnapshotDrawer from "~/features/novel-editor/components/drawers/SnapshotDrawer"
 import { MdOutlineWidgets } from "react-icons/md"
-import MobileActionMenu from "~/features/novel-editor/components/MobileActionMenu"
+import MobileActionMenu from "~/features/novel-editor/components/menus/MobileActionMenu"
 import { PiGear } from "react-icons/pi"
 
 const EditorHeader: React.FC<

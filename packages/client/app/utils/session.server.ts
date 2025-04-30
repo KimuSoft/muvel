@@ -19,7 +19,7 @@ export async function getUserFromRequest(request: Request) {
   if (!token) return null
 
   try {
-    const response = await api.get<User>(`auth/me`, {
+    const response = await api.get<User>(`users/me`, {
       headers: { cookie },
     })
     return response.data

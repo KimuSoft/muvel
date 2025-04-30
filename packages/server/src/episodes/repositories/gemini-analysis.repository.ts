@@ -117,9 +117,14 @@ export class GeminiAnalysisRepository {
       // 점수 범위를 0.0 ~ 5.0, 0.5 단위로 맞추기 (선택 사항, Gemini가 잘 맞춰주지만 혹시 모를 경우)
       analysisResult.overallRating =
         Math.round(analysisResult.overallRating * 2) / 2
+
       for (const key in analysisResult.scores) {
-        analysisResult.scores[key] =
-          Math.round(analysisResult.scores[key] * 2) / 2
+        analysisResult.scores[key as keyof GeminiAnalysisResponse["scores"]] =
+          Math.round(
+            analysisResult.scores[
+              key as keyof GeminiAnalysisResponse["scores"]
+            ] * 2
+          ) / 2
       }
 
       return analysisResult

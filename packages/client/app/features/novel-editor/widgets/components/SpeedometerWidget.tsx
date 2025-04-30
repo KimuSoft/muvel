@@ -16,9 +16,9 @@ import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
 import {
   countTextLength,
   CountType,
-} from "~/features/legacy-editor/utils/measureText"
+} from "~/features/novel-editor/utils/measureText"
 // ProgressBar Component (경로 조정 필요)
-import ProgressBar from "~/features/legacy-editor/components/atoms/ProgressBar"
+import ProgressBar from "~/components/atoms/ProgressBar"
 import { Tooltip } from "~/components/ui/tooltip"
 
 // --- 상수 정의 ---

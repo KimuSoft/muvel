@@ -12,13 +12,6 @@ export const getEpisodeBlocks = async (episodeId: string) => {
   return data
 }
 
-export const getEpisodeLegacyBlocks = async (episodeId: string) => {
-  const { data } = await api.get<LegacyBlock[]>(
-    `episodes/${episodeId}/legacy-blocks`,
-  )
-  return data
-}
-
 export const updateEpisode = async (
   episodeId: string,
   patch: Partial<Episode>,
