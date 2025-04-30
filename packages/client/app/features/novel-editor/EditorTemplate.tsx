@@ -1,4 +1,8 @@
-import type { Block, GetEpisodeResponseDto } from "muvel-api-types"
+import {
+  type Block,
+  EpisodeType,
+  type GetEpisodeResponseDto,
+} from "muvel-api-types"
 import React, { useMemo } from "react"
 import NovelEditor from "~/features/novel-editor/components/NovelEditor"
 import {
@@ -6,6 +10,7 @@ import {
   Button,
   ClientOnly,
   Input,
+  Menu,
   Separator,
   Text,
   VStack,
@@ -18,13 +23,22 @@ import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
 import { TextSelection } from "prosemirror-state"
 import type { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 import { useWidgetLayout } from "~/features/novel-editor/widgets/context/WidgetContext"
+import { FaBookOpen, FaStarOfLife } from "react-icons/fa6"
+import { GoMoveToEnd, GoMoveToStart } from "react-icons/go"
 
 const EditorTemplate: React.FC<{
   episode: GetEpisodeResponseDto
   onBlocksChange: (blocks: Block[]) => void
   onTitleChange: (title: string) => void
+  onEpisodeTypeChange: (type: EpisodeType) => void
   syncState: SyncState
-}> = ({ episode, onBlocksChange, syncState, onTitleChange }) => {
+}> = ({
+  episode,
+  onBlocksChange,
+  syncState,
+  onTitleChange,
+  onEpisodeTypeChange,
+}) => {
   const { view } = useEditorContext()
   const [option] = useOption()
 
@@ -54,6 +68,18 @@ const EditorTemplate: React.FC<{
   const isWidgetUsing = useMemo(() => {
     return layout.left.length || layout.right.length
   }, [layout.left, layout.right])
+
+  const episodeCountText = useMemo(() => {
+    if (episode.episodeType === EpisodeType.Episode) {
+      return `${Math.round(parseFloat(episode.order.toString()))}편`
+    } else if (episode.episodeType === EpisodeType.Prologue) {
+      return "프롤로그"
+    } else if (episode.episodeType === EpisodeType.Epilogue) {
+      return "에필로그"
+    } else if (episode.episodeType === EpisodeType.Special) {
+      return "특별편"
+    }
+  }, [episode.episodeType, episode.order])
 
   return (
     <VStack
@@ -87,9 +113,45 @@ const EditorTemplate: React.FC<{
         my={100}
         px={2}
       >
-        <Button variant={"ghost"} color={"gray.500"} size={"md"}>
-          {episode.order}편
-        </Button>
+        <Menu.Root
+          onSelect={(d) => {
+            onEpisodeTypeChange(parseInt(d.value) as EpisodeType)
+          }}
+        >
+          <Menu.Trigger asChild>
+            <Button variant={"ghost"} color={"gray.500"} size={"md"}>
+              {episodeCountText}
+            </Button>
+          </Menu.Trigger>
+          <Menu.Positioner>
+            <Menu.Content>
+              {episode.episodeType !== EpisodeType.Episode && (
+                <Menu.Item value={EpisodeType.Episode.toString()}>
+                  <FaBookOpen />
+                  일반 회차로 지정
+                </Menu.Item>
+              )}
+              {episode.episodeType !== EpisodeType.Prologue && (
+                <Menu.Item value={EpisodeType.Prologue.toString()}>
+                  <GoMoveToStart />
+                  프롤로그로 지정
+                </Menu.Item>
+              )}
+              {episode.episodeType !== EpisodeType.Epilogue && (
+                <Menu.Item value={EpisodeType.Epilogue.toString()}>
+                  <GoMoveToEnd />
+                  에필로그로 지정
+                </Menu.Item>
+              )}
+              {episode.episodeType !== EpisodeType.Special && (
+                <Menu.Item value={EpisodeType.Special.toString()}>
+                  <FaStarOfLife />
+                  특별편으로 지정
+                </Menu.Item>
+              )}
+            </Menu.Content>
+          </Menu.Positioner>
+        </Menu.Root>
         <Input
           key={episode.id + "-title"}
           fontSize={"2xl"}
