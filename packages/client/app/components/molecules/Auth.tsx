@@ -63,8 +63,7 @@ const Auth: React.FC = () => {
                 value={"logout"}
                 onClick={async () => {
                   await axios.post(
-                    import.meta.env.VITE_API_BASE?.replace("/api", "") +
-                      "/auth/logout",
+                    `${window.location.protocol}//${window.location.host}/auth/logout`,
                   )
                   window.location.href = "/"
                 }}

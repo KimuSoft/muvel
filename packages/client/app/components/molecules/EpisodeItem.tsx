@@ -12,6 +12,7 @@ import {
 import { TbBrandZapier, TbRefresh, TbTypography } from "react-icons/tb"
 import { useNavigate } from "react-router"
 import { Tooltip } from "~/components/ui/tooltip"
+import { toaster } from "~/components/ui/toaster"
 
 const SideData: React.FC<{ episode: Episode } & StackProps> = ({
   episode,
@@ -84,11 +85,25 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
           // TODO: 임시, 이후 편수를 따로 추가해야 함
           return `${episode.order.toString().padStart(3, "0")}`
         case EpisodeType.Prologue:
-          return "PR."
+          return "PRO"
         case EpisodeType.Epilogue:
-          return "EP."
+          return "EPIL"
+        case EpisodeType.Special:
+          return "SPE"
       }
     }, [episode.episodeType, index])
+
+    const episodeCountText = useMemo(() => {
+      if (episode.episodeType === EpisodeType.Episode) {
+        return `${Math.round(parseFloat(episode.order.toString()))}편`
+      } else if (episode.episodeType === EpisodeType.Prologue) {
+        return "프롤로그"
+      } else if (episode.episodeType === EpisodeType.Epilogue) {
+        return "에필로그"
+      } else if (episode.episodeType === EpisodeType.Special) {
+        return "특별편"
+      }
+    }, [episode.episodeType, episode.order])
 
     const clickHandler = () => {
       navigate(`/episodes/${episode.id}`)
@@ -143,7 +158,7 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
           <Text
             flexShrink={0}
             color={"purple.500"}
-            w={"65px"}
+            w={"68px"}
             fontWeight={200}
             fontSize={"36px"}
             display={isDrawer ? "none" : { base: "none", md: "block" }}
@@ -158,7 +173,7 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
                 fontWeight={600}
                 flexShrink={0}
               >
-                {episode.order}편
+                {episodeCountText}
               </Text>
               <Text truncate>{episode.title}</Text>
             </HStack>

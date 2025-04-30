@@ -31,10 +31,12 @@ export class EpisodeRepository extends Repository<EpisodeEntity> {
       novelId
     )
 
-    const episode = new EpisodeEntity()
-    episode.title = createEpisodeDto.title
-    episode.episodeType = createEpisodeDto.episodeType
-    episode.order = order.toString()
+    const episode = this.create({
+      title: createEpisodeDto.title,
+      episodeType: createEpisodeDto.episodeType,
+      order: order.toString(),
+      novel: { id: novelId },
+    })
     await this.save(episode)
 
     return episode

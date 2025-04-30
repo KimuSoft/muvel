@@ -58,7 +58,6 @@ const EpisodeListDrawer: React.FC<
   }, [])
 
   const handleReorderEpisode = async (episodes: ReorderedEpisode[]) => {
-    console.log("에피소드 정렬", episodes)
     await updateNovelEpisodes(
       novelId,
       episodes

@@ -1,4 +1,4 @@
-import type { Block, GetEpisodeResponseDto } from "muvel-api-types"
+import type { Block, EpisodeType, GetEpisodeResponseDto } from "muvel-api-types"
 import React, { useEffect, useMemo, useRef } from "react"
 import EditorTemplate from "~/features/novel-editor/EditorTemplate"
 import { EditorProvider } from "~/features/novel-editor/context/EditorContext"
@@ -90,6 +90,28 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     await handleBlocksChange(blocks)
   }
 
+  const handleEpisodeTypeChange = async (episodeType: EpisodeType) => {
+    setSyncState(SyncState.Syncing)
+    try {
+      await updateEpisode(episode.id, { episodeType })
+      setEpisode((prev) => ({ ...prev, episodeType }))
+      setSyncState(SyncState.Synced)
+
+      toaster.info({
+        title: "에피소드 종류가 변경되었어요!",
+        description:
+          "회차 번호가 갱신되지 않는다면, 목록에서 에피소드를 드래그해서 아무 에피소드나 순서를 순서를 바꾼 후 새로고침해보세요!",
+      })
+    } catch (e) {
+      console.error(e)
+      toaster.error({
+        title: "저장 실패",
+        description: "에피소드 타입을 저장하는 데 실패했습니다.",
+      })
+      setSyncState(SyncState.Error)
+    }
+  }
+
   return (
     <OptionProvider>
       <WidgetProvider>
@@ -98,6 +120,7 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
             episode={episode}
             onBlocksChange={handleBlocksChange_}
             onTitleChange={handleTitleChange}
+            onEpisodeTypeChange={handleEpisodeTypeChange}
             syncState={syncState}
           />
         </EditorProvider>
