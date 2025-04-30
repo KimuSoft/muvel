@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
-import { EpisodeEntity } from "../episodes/episode.entity"
+import { EpisodeEntity } from "../episodes/entities/episode.entity"
 import { Block, BlockAttrs, BlockType, PMNodeJSON } from "muvel-api-types"
 
 @Entity("block")

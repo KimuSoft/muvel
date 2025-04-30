@@ -9,6 +9,7 @@ import {
   DrawerHeader,
   DrawerPositioner,
   DrawerRoot,
+  DrawerRootProvider,
   DrawerTrigger,
   EmptyState,
   Heading,
@@ -23,6 +24,7 @@ import {
   Stack,
   Tag,
   Text,
+  type UseDialogReturn,
   VStack,
 } from "@chakra-ui/react"
 import React, { type PropsWithChildren, useEffect, useMemo } from "react"
@@ -102,12 +104,12 @@ const ScoreItem: React.FC<{
   )
 }
 
-const CommentDrawer: React.FC<
-  {
-    episode: GetEpisodeResponseDto
-    editable?: boolean
-  } & PropsWithChildren
-> = ({ episode, children, editable }) => {
+const CommentDrawer: React.FC<{
+  episode: GetEpisodeResponseDto
+  editable?: boolean
+  children?: React.ReactNode
+  dialog: UseDialogReturn
+}> = ({ episode, children, editable, dialog }) => {
   const [analyses, setAnalyses] = React.useState<AiAnalysis[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
 
@@ -128,8 +130,9 @@ const CommentDrawer: React.FC<
   }
 
   useEffect(() => {
+    if (!dialog.open) return
     void fetchAnalyses()
-  }, [])
+  }, [dialog.open])
 
   const onCreateAnalysis = async () => {
     toaster.promise(
@@ -165,14 +168,8 @@ const CommentDrawer: React.FC<
   }, [analyses])
 
   return (
-    <DrawerRoot
-      placement={"end"}
-      size={"md"}
-      onOpenChange={(open) => {
-        if (open.open) void fetchAnalyses()
-      }}
-    >
-      <DrawerTrigger asChild>{children}</DrawerTrigger>
+    <DrawerRootProvider value={dialog} placement={"end"} size={"md"}>
+      {children && <DrawerTrigger asChild>{children}</DrawerTrigger>}
       <DrawerBackdrop />
       <DrawerPositioner>
         <DrawerContent>
@@ -329,7 +326,7 @@ const CommentDrawer: React.FC<
           </DrawerBody>
         </DrawerContent>
       </DrawerPositioner>
-    </DrawerRoot>
+    </DrawerRootProvider>
   )
 }
 

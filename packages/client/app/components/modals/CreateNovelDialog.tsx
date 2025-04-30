@@ -46,7 +46,6 @@ const CreateNovelDialog: React.FC<{
     const data = await createNovel({
       ...values,
       share: parseInt(values.share.toString()),
-      userId: user.id,
     })
 
     if (onCreated) onCreated(data)

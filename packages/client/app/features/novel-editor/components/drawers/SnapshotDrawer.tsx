@@ -6,7 +6,7 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerPositioner,
-  DrawerRoot,
+  DrawerRootProvider,
   DrawerTrigger,
   EmptyState,
   Heading,
@@ -14,9 +14,10 @@ import {
   Stack,
   Tag,
   Text,
+  type UseDialogReturn,
   VStack,
 } from "@chakra-ui/react"
-import React, { type PropsWithChildren, useEffect } from "react"
+import React, { useEffect } from "react"
 import type { EpisodeSnapshot, GetEpisodeResponseDto } from "muvel-api-types"
 import { getSnapshots } from "~/api/api.episode"
 import { TbHistory, TbSlash } from "react-icons/tb"
@@ -65,11 +66,11 @@ const SnapshotItem: React.FC<{
   )
 }
 
-const SnapshotDrawer: React.FC<
-  {
-    episode: GetEpisodeResponseDto
-  } & PropsWithChildren
-> = ({ episode, children }) => {
+const SnapshotDrawer: React.FC<{
+  episode: GetEpisodeResponseDto
+  children?: React.ReactNode
+  dialog: UseDialogReturn
+}> = ({ episode, children, dialog }) => {
   const [snapshots, setSnapshots] = React.useState<EpisodeSnapshot[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
 
@@ -93,18 +94,13 @@ const SnapshotDrawer: React.FC<
   }
 
   useEffect(() => {
+    if (!dialog.open) return
     void fetchSnapshots()
-  }, [])
+  }, [dialog.open])
 
   return (
-    <DrawerRoot
-      placement={"end"}
-      size={"md"}
-      onOpenChange={(open) => {
-        if (open.open) void fetchSnapshots()
-      }}
-    >
-      <DrawerTrigger asChild>{children}</DrawerTrigger>
+    <DrawerRootProvider value={dialog} placement={"end"} size={"md"}>
+      {children && <DrawerTrigger asChild>{children}</DrawerTrigger>}
       <DrawerBackdrop />
       <DrawerPositioner>
         <DrawerContent>
@@ -123,7 +119,7 @@ const SnapshotDrawer: React.FC<
 
           <DrawerBody>
             <Stack gap={3}>
-              <Stack gap={5} mb={5}>
+              <Stack mb={5}>
                 {snapshots.length ? (
                   snapshots.map((snapshot) => (
                     <SnapshotItem
@@ -156,7 +152,7 @@ const SnapshotDrawer: React.FC<
           </DrawerBody>
         </DrawerContent>
       </DrawerPositioner>
-    </DrawerRoot>
+    </DrawerRootProvider>
   )
 }
 

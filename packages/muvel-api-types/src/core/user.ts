@@ -2,16 +2,16 @@ export interface User {
   id: string
   username: string
   avatar: string
-  recentEpisodeId: number
+  recentEpisodeIds: string[]
   admin: boolean
 }
 
-export type UserPublicDto = Pick<User, "username" | "avatar">
+export type UserPublicDto = Pick<User, "id" | "username" | "avatar">
 
 export const sampleUser: User = {
   id: "1",
   username: "testUser",
   avatar: "https://example.com/avatar.png",
-  recentEpisodeId: 1,
+  recentEpisodeIds: [],
   admin: false,
 }

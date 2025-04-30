@@ -11,7 +11,7 @@ import { useNavigate } from "react-router"
 import { TbTrash } from "react-icons/tb"
 import React from "react"
 import { toaster } from "~/components/ui/toaster"
-import { frontApi } from "~/utils/frontApi"
+import { api } from "~/utils/api"
 
 type DeleteNovelDialogProps = {
   novelId: string
@@ -28,7 +28,7 @@ const DeleteNovelDialog: React.FC<DeleteNovelDialogProps> = ({
   const handleDelete = async () => {
     try {
       setIsLoading(true)
-      await frontApi.delete(`/novels/${novelId}`)
+      await api.delete(`/novels/${novelId}`)
       toaster.success({
         title: "소설이 삭제되었어요...",
         description: "지금까지 즐거웠어... 다음에 또 만나요.",

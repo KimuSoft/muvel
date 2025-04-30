@@ -6,10 +6,4 @@ export type QuoteStyle =
   | "guillemet-single"
   | "guillemet-double"
 
-export interface BlockAttrs {
-  id?: string
-  characterId?: string
-  quoteStyle?: QuoteStyle
-  emotion?: string
-  emphasis?: boolean
-}
+export type BlockAttrs = Record<string, string | number>

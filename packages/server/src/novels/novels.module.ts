@@ -4,12 +4,15 @@ import { NovelEntity } from "./novel.entity"
 import { NovelsService } from "./novels.service"
 import { NovelsController } from "./novels.controller"
 import { UserEntity } from "../users/user.entity"
-import { EpisodesService } from "../episodes/episodes.service"
-import { SearchRepository } from "../search/repositories/search.repository"
-import { EpisodeEntity } from "../episodes/episode.entity"
+import { SearchRepository } from "../search/search.repository"
+import { EpisodeEntity } from "../episodes/entities/episode.entity"
 import { BlockEntity } from "../blocks/block.entity"
-import { AiAnalysisEntity } from "../episodes/ai-analysis.entity"
+import { AiAnalysisEntity } from "../episodes/entities/ai-analysis.entity"
 import { GeminiAnalysisRepository } from "../episodes/repositories/gemini-analysis.repository"
+import { EpisodeRepository } from "../episodes/repositories/episode.repository"
+import { EpisodesService } from "../episodes/services/episodes.service"
+import { BlockRepository } from "../blocks/block.repository"
+import { UsersService } from "../users/users.service"
 
 @Global()
 @Module({
@@ -22,12 +25,17 @@ import { GeminiAnalysisRepository } from "../episodes/repositories/gemini-analys
       AiAnalysisEntity,
     ]),
   ],
-  exports: [NovelsService],
   providers: [
+    // services
     NovelsService,
     EpisodesService,
+    UsersService,
+
+    // repositories
+    BlockRepository,
     SearchRepository,
     GeminiAnalysisRepository,
+    EpisodeRepository,
   ],
   controllers: [NovelsController],
 })

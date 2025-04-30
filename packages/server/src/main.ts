@@ -10,12 +10,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
   app.useGlobalPipes(new ValidationPipe())
+  app.setGlobalPrefix("api")
   app.use(cookieParser())
 
   const config = new DocumentBuilder()
     .setTitle("Muvel API")
     .setDescription("Muvel API Document")
-    .setVersion(process.env["npm_package_version"])
+    .setVersion(process.env.npm_package_version || "Unknown")
     // Bearer Token 인증이 있는 경우
     .addBearerAuth(
       { type: "http", scheme: "bearer", bearerFormat: "JWT", in: "header" },
@@ -29,18 +30,17 @@ async function bootstrap() {
     .build()
 
   const document = SwaggerModule.createDocument(app, config)
+  SwaggerModule.setup("api", app, document)
 
   if (process.env.AUTO_SYNC_DB === "true") {
     console.info("Auto sync db is enabled")
   }
 
-  // api 대신 다른 루트를 넣어도 됨 (ex: swagger, api/swagger, api/docs)
-  SwaggerModule.setup("api", app, document)
-
   app.enableCors({
     origin: ["https://test.kimustory.net", "https://muvel.kimustory.net"],
     credentials: true,
   })
+
   await app.listen(2556)
 }
 

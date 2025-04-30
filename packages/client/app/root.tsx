@@ -8,6 +8,7 @@ import {
   ScrollRestoration,
   useLoaderData,
   useNavigation,
+  useRouteError,
 } from "react-router"
 
 import type { Route } from "./+types/root"
@@ -17,11 +18,11 @@ import { getUserFromRequest } from "~/utils/session.server"
 import { Toaster } from "~/components/ui/toaster"
 import LoadingOverlay from "~/components/templates/LoadingOverlay"
 import React, { type ReactNode } from "react"
-import { Button, Center, EmptyState, VStack } from "@chakra-ui/react"
 import { TbSlash } from "react-icons/tb"
 import { IoWarning } from "react-icons/io5"
-import { IoMdArrowBack } from "react-icons/io"
 import { isAxiosError } from "axios"
+import ErrorTemplate from "~/components/templates/ErrorTemplate"
+import type { User } from "muvel-api-types"
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -44,7 +45,7 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -80,11 +81,49 @@ export default function App() {
   )
 }
 
-export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+export function ErrorBoundary() {
+  const error = useRouteError()
+
+  let icon: ReactNode = <IoWarning />
   let message = "알 수 없는 오류가 발생했어요!"
   let details = "An unexpected error occurred."
-  let icon: ReactNode = <IoWarning />
   let stack: string | undefined
+
+  let user: User | null = null
+  try {
+    const { user: user_ } = useLoaderData<typeof loader>()
+    user = user_ || null
+  } catch (e) {
+    console.warn("ErrorBoundary에서 user를 가져오는 중 오류 발생")
+  }
+
+  // message에서 숫자 정규식으로 찾아서 추출
+  const statusCode =
+    error instanceof Error ? error.message.match(/\d+/)?.[0] || null : null
+
+  switch (statusCode) {
+    case "400":
+      message = "잘못된 요청이에요!"
+      details = "서버에 잘못된 요청을 보냈어요."
+      break
+    case "401":
+      message = "인증 오류에요!"
+      details = "로그인이 필요해요."
+      break
+    case "403":
+      message = "접근이 거부되었어요!"
+      details = "이 페이지에 접근할 권한이 없어요!"
+      break
+    case "404":
+      icon = <TbSlash />
+      message = "페이지를 찾을 수 없어요!"
+      details = "요청한 페이지를 찾을 수 없어요."
+      break
+    case "500":
+      message = "서버 오류에요!"
+      details = "서버에서 오류가 발생했어요."
+      break
+  }
 
   if (isRouteErrorResponse(error) || isAxiosError(error)) {
     switch (error.status) {
@@ -98,36 +137,18 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
         details = isRouteErrorResponse(error) ? error.statusText : details
     }
   } else if (import.meta.env.DEV && error && error instanceof Error) {
-    details = error.message
     stack = error.stack
   }
 
   return (
     <Provider>
-      <Center h={"100vh"} w={"100%"}>
-        <VStack>
-          <EmptyState.Root>
-            <EmptyState.Content>
-              <EmptyState.Indicator>{icon}</EmptyState.Indicator>
-              <VStack textAlign="center">
-                <EmptyState.Title>{message}</EmptyState.Title>
-                <EmptyState.Description>{details}</EmptyState.Description>
-              </VStack>
-            </EmptyState.Content>
-          </EmptyState.Root>
-          <Button onClick={() => window.history.back()} size={"sm"}>
-            <IoMdArrowBack /> 이전 페이지로 돌아가기
-          </Button>
-          {stack && (
-            <pre
-              className="w-full p-4 overflow-x-auto"
-              style={{ fontSize: 12 }}
-            >
-              <code>{stack}</code>
-            </pre>
-          )}
-        </VStack>
-      </Center>
+      <ErrorTemplate
+        user={user}
+        icon={icon}
+        title={message}
+        details={details}
+        stack={stack}
+      />
     </Provider>
   )
 }

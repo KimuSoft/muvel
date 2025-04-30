@@ -1,7 +1,7 @@
 export interface Character {
   id: string
   name: string
-  avatar: string
+  avatar: string | null
   tags: string[]
   summary: string
   // 마크다운

@@ -5,13 +5,12 @@ import { NovelsModule } from "./novels/novels.module"
 import { BlocksModule } from "./blocks/blocks.module"
 import { EpisodesModule } from "./episodes/episodes.module"
 import { AuthModule } from "./auth/auth.module"
-import * as process from "process"
 import { SearchModule } from "./search/search.module"
 import { ScheduleModule } from "@nestjs/schedule"
-import { CacheModule } from "@nestjs/cache-manager"
 
 @Module({
   imports: [
+    // Libraries
     TypeOrmModule.forRoot({
       type: "postgres",
       url: process.env.DB_URL,
@@ -19,6 +18,8 @@ import { CacheModule } from "@nestjs/cache-manager"
       synchronize: process.env.AUTO_SYNC_DB === "true",
     }),
     ScheduleModule.forRoot(),
+
+    // Modules
     UsersModule,
     NovelsModule,
     BlocksModule,

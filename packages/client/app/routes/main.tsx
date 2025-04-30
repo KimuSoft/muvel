@@ -20,10 +20,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUserFromRequest(request)
   if (!user) return { novels: [], userCount }
 
-  const { data: novels } = await api.get<Novel[]>(`/users/${user.id}/novels`, {
+  const { data: novels } = await api.get<Novel[]>(`/users/recent-novels`, {
     headers: { cookie },
     withCredentials: true,
   })
+  console.log(novels)
 
   return { novels, userCount }
 }

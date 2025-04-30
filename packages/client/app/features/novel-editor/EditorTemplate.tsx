@@ -59,15 +59,17 @@ const EditorTemplate: React.FC<{
     <VStack
       bgColor={option.backgroundColor || undefined}
       transition="background-color 0.2s ease-in-out"
-      h={"dvh"}
+      h={"100dvh"}
       position={"relative"}
       alignItems={
         isWidgetUsing ? { base: "flex-start", xl: "center" } : "center"
       }
     >
-      <ClientOnly>
-        <WidgetPanel />
-      </ClientOnly>
+      {episode.permissions.edit && (
+        <ClientOnly>
+          <WidgetPanel />
+        </ClientOnly>
+      )}
       <EditorHeader
         novelId={episode.novelId}
         episode={episode}
@@ -79,10 +81,11 @@ const EditorTemplate: React.FC<{
       <Box
         w={"100%"}
         maxW={option.editorMaxWidth}
+        userSelect={episode.permissions.edit ? undefined : "none"}
         transition="max-width 0.2s ease-in-out"
         minH={"100%"}
         my={100}
-        px={3}
+        px={2}
       >
         <Button variant={"ghost"} color={"gray.500"} size={"md"}>
           {episode.order}편

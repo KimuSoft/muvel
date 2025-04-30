@@ -1,13 +1,15 @@
 import { Injectable } from "@nestjs/common"
-import { UsersService } from "src/users/users.service"
 import { UserEntity } from "../users/user.entity"
 import { JwtService } from "@nestjs/jwt"
+import { InjectRepository } from "@nestjs/typeorm"
+import { Repository } from "typeorm"
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService
+    private readonly jwtService: JwtService,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>
   ) {}
 
   async validateUser(
@@ -17,11 +19,25 @@ export class AuthService {
     avatar: string
   ): Promise<UserEntity> {
     const userId = `${accountType}:${id}`
-    const user = await this.usersService.findOne(userId)
-    if (user) return await this.usersService.update(userId, username, avatar)
+
+    // 유저 불러오기
+    const user = await this.userRepository.findOneBy({ id: userId })
+
+    if (user) {
+      // 유저 정보 업데이트
+      user.username = username
+      user.avatar = avatar
+
+      return this.userRepository.save(user)
+    }
 
     // 처음 가입한 유저의 경우 새로 생성
-    return this.usersService.create(userId, username, avatar)
+    const newUser = new UserEntity()
+    newUser.id = userId
+    newUser.username = username
+    newUser.avatar = avatar
+
+    return this.userRepository.save(newUser)
   }
 
   async login(user: UserEntity) {
@@ -29,11 +45,5 @@ export class AuthService {
     return {
       accessToken: await this.jwtService.signAsync(payload),
     }
-  }
-
-  async getUserById(id: string) {
-    const user = await this.usersService.findOne(id)
-    if (!user) throw new Error("User not found")
-    return user
   }
 }

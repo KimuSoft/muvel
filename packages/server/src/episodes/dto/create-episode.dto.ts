@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsEnum, IsNumberString, IsOptional, IsString } from "class-validator"
+import { IsEnum, IsOptional, IsString } from "class-validator"
 import { EpisodeType } from "muvel-api-types"
 import { Transform } from "class-transformer"
 
@@ -8,11 +8,6 @@ export class CreateEpisodeDto {
   @IsOptional()
   @IsString()
   title: string = "새 에피소드"
-
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  description: string = ""
 
   @Transform(({ value }) => parseInt(value.toString()))
   @ApiProperty({
@@ -25,9 +20,9 @@ export class CreateEpisodeDto {
   @IsOptional()
   episodeType: EpisodeType = EpisodeType.Episode
 
-  @ApiProperty()
-  @IsOptional()
-  @Transform(({ value }) => value.toString())
-  @IsNumberString()
-  order?: string
+  // @ApiProperty()
+  // @IsOptional()
+  // @Transform(({ value }) => value.toString())
+  // @IsNumberString()
+  // order?: string
 }

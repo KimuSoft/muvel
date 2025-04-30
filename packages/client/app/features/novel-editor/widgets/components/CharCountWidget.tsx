@@ -25,8 +25,8 @@ import { GoNumber } from "react-icons/go"
 import {
   countTextLength,
   CountType,
-} from "~/features/legacy-editor/utils/measureText"
-import ProgressBar from "~/features/legacy-editor/components/atoms/ProgressBar"
+} from "~/features/novel-editor/utils/measureText"
+import ProgressBar from "~/components/atoms/ProgressBar"
 import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap"
 
 export const CharCountWidget: React.FC<WidgetBaseProps> = ({

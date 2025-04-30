@@ -13,7 +13,10 @@ import { TbBrandZapier, TbRefresh, TbTypography } from "react-icons/tb"
 import { useNavigate } from "react-router"
 import { Tooltip } from "~/components/ui/tooltip"
 
-const SideData: React.FC<{ episode: Episode }> = ({ episode }) => {
+const SideData: React.FC<{ episode: Episode } & StackProps> = ({
+  episode,
+  ...props
+}) => {
   const updatedAt = useMemo(() => {
     return new Date(episode.updatedAt)
   }, [episode.updatedAt])
@@ -23,7 +26,7 @@ const SideData: React.FC<{ episode: Episode }> = ({ episode }) => {
   }, [episode.createdAt])
 
   return (
-    <HStack gap={4} flexShrink={0}>
+    <HStack gap={4} flexShrink={0} {...props}>
       <HStack gap={1}>
         <TbTypography
           color={"var(--chakra-colors-purple-400)"}
@@ -102,6 +105,7 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
               borderColor={"purple.500"}
               userSelect={"none"}
               mt={index ? 4 : 0}
+              mb={2}
               cursor={"pointer"}
               transition={"background-color 0.2s"}
               onClick={clickHandler}
@@ -123,25 +127,19 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
           userSelect={"none"}
           w={"100%"}
           gap={5}
-          pr={3}
-          py={1}
           cursor={"pointer"}
           onClick={clickHandler}
           overflow={"hidden"}
-          borderRadius={4}
+          transition={"border-color 0.2s"}
           border={"1px solid transparent"}
           _hover={{
             borderColor: { base: "purple.300", _dark: "purple.500" },
           }}
+          align={"stretch"}
           ref={ref}
           {...props}
         >
-          <Box
-            flexShrink={0}
-            w={"4px"}
-            h={isDrawer ? "50px" : { base: "70px", md: "44px" }}
-            backgroundColor={"purple.500"}
-          />
+          <Box flexShrink={0} w={"4px"} backgroundColor={"purple.500"} />
           <Text
             flexShrink={0}
             color={"purple.500"}
@@ -152,7 +150,7 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
           >
             {prefix}
           </Text>
-          <VStack gap={1} alignItems={"baseline"}>
+          <VStack gap={1} py={1.5} alignItems={"baseline"}>
             <HStack w={"100%"} overflow={"hidden"}>
               <Text
                 display={isDrawer ? "block" : { base: "block", md: "none" }}
@@ -197,7 +195,7 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
                   }
             }
           >
-            <SideData episode={episode} />
+            <SideData episode={episode} mr={3} />
           </Box>
         </HStack>
       </Skeleton>

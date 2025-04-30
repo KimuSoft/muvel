@@ -16,6 +16,7 @@ import { useNavigate } from "react-router"
 import { FaUser } from "react-icons/fa6"
 import { Tooltip } from "~/components/ui/tooltip"
 import { TbLink, TbLock, TbWorld } from "react-icons/tb"
+import { useUser } from "~/context/UserContext"
 
 const ShareIcon: React.FC<IconProps & { share: ShareType }> = ({
   share,
@@ -44,6 +45,7 @@ const ShareIcon: React.FC<IconProps & { share: ShareType }> = ({
 const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
   ({ novel, ...props }, ref) => {
     const navigate = useNavigate()
+    const user = useUser()
 
     return (
       <HStack
@@ -66,7 +68,7 @@ const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
           borderColor={"transparent"}
           transition={"border-color 0.2s"}
           _groupHover={{
-            borderColor: { base: "gray.100", _dark: "purple.500" },
+            borderColor: "purple.500",
           }}
           overflow={"hidden"}
         >
@@ -94,25 +96,31 @@ const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
             </Text>
           </HStack>
 
-          <Text fontSize="12px" color={"gray.500"}>
-            <Icon display={"inline"} mr={1.5} mb={1}>
-              <FaUser />
-            </Icon>
-            {novel.author.username}
-            <ShareIcon
-              ml={3}
-              share={novel.share}
-              display={"inline"}
-              size={"sm"}
-              mr={1.5}
-              mb={1}
-            />
-            {novel.share === ShareType.Private
-              ? "비공개"
-              : novel.share === ShareType.Public
-                ? "공개"
-                : "일부 공개"}
-          </Text>
+          <HStack gap={3}>
+            <Text
+              fontSize="12px"
+              color={user?.id === novel.author.id ? "purple.500" : "gray.500"}
+            >
+              <Icon display={"inline"} mr={1.5} mb={1}>
+                <FaUser />
+              </Icon>
+              {novel.author.username}
+            </Text>
+            <Text fontSize="12px" color={"gray.500"}>
+              <ShareIcon
+                share={novel.share}
+                display={"inline"}
+                size={"sm"}
+                mr={1.5}
+                mb={1}
+              />
+              {novel.share === ShareType.Private
+                ? "비공개"
+                : novel.share === ShareType.Public
+                  ? "공개"
+                  : "일부 공개"}
+            </Text>
+          </HStack>
           <Text
             w={"100%"}
             color={"gray.500"}

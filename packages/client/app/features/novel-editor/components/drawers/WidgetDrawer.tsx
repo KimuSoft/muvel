@@ -8,6 +8,7 @@ import {
   DrawerHeader,
   DrawerPositioner,
   DrawerRoot,
+  DrawerRootProvider,
   DrawerTitle,
   DrawerTrigger,
   HStack,
@@ -16,8 +17,9 @@ import {
   Stack,
   type StackProps,
   Text,
+  type UseDialogReturn,
 } from "@chakra-ui/react"
-import React, { type PropsWithChildren } from "react"
+import React from "react"
 import { useWidgetLayout } from "~/features/novel-editor/widgets/context/WidgetContext"
 import { GoNumber } from "react-icons/go"
 import type { WidgetId } from "~/features/novel-editor/widgets/components/widgetMap"
@@ -114,7 +116,10 @@ const WidgetButton: React.FC<
   )
 }
 
-const WidgetDrawer: React.FC<PropsWithChildren> = ({ children }) => {
+const WidgetDrawer: React.FC<{
+  children?: React.ReactNode
+  dialog: UseDialogReturn
+}> = ({ children, dialog }) => {
   const { layout, toggleWidget } = useWidgetLayout()
 
   const isActive = (id: WidgetId) => {
@@ -122,8 +127,8 @@ const WidgetDrawer: React.FC<PropsWithChildren> = ({ children }) => {
   }
 
   return (
-    <DrawerRoot size={"md"}>
-      <DrawerTrigger asChild>{children}</DrawerTrigger>
+    <DrawerRootProvider value={dialog} size={"md"}>
+      {children && <DrawerTrigger asChild>{children}</DrawerTrigger>}
       <DrawerBackdrop />
       <DrawerPositioner>
         <DrawerContent>
@@ -153,7 +158,7 @@ const WidgetDrawer: React.FC<PropsWithChildren> = ({ children }) => {
           <DrawerFooter justifyContent="space-between"></DrawerFooter>
         </DrawerContent>
       </DrawerPositioner>
-    </DrawerRoot>
+    </DrawerRootProvider>
   )
 }
 

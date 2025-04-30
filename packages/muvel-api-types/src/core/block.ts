@@ -6,7 +6,7 @@ export interface Block {
   text: string
   content: PMNodeJSON[]
   blockType: BlockType
-  attr?: BlockAttrs
+  attr: BlockAttrs | null
   order: number
 }
 
@@ -28,6 +28,7 @@ export const sampleBlock: Block = {
   id: "1",
   text: "테스트용 블록입니다.",
   content: [],
+  attr: null,
   blockType: BlockType.Describe,
   order: 0,
 }
