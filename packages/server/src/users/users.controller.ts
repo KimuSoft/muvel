@@ -1,11 +1,11 @@
 import { Controller, Get, Param, Req, Request } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
 import { UsersService } from "./users.service"
-import { NovelsService } from "../novels/novels.service"
+import { NovelsService } from "../novels/services/novels.service"
 import {
   AuthenticatedRequest,
-  MuvelRequest,
   OptionalAuth,
+  OptionalAuthenticatedRequest,
   RequireAuth,
 } from "../auth/jwt-auth.guard"
 
@@ -58,7 +58,10 @@ export class UsersController {
     description: "유저가 작성한 소설을 불러옵니다.",
   })
   @OptionalAuth()
-  async getNovels(@Req() req: MuvelRequest, @Param("id") id: string) {
+  async getNovels(
+    @Req() req: OptionalAuthenticatedRequest,
+    @Param("id") id: string
+  ) {
     return this.novelsService.findNovelsByUserId(id, req.user?.id === id)
   }
 }

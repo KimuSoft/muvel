@@ -11,7 +11,7 @@ import {
   Query,
   Request,
 } from "@nestjs/common"
-import { NovelsService } from "./novels.service"
+import { NovelsService } from "./services/novels.service"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
 import { UpdateNovelDto } from "./dto/update-novel.dto"
 import { CreateEpisodeDto } from "../episodes/dto/create-episode.dto"
@@ -21,14 +21,13 @@ import { SearchRepository } from "../search/search.repository"
 import { SearchInNovelDto } from "../search/dto/search-in-novel.dto"
 import { EpisodesService } from "../episodes/services/episodes.service"
 import { ExportNovelResponseDto, GetNovelResponseDto } from "muvel-api-types"
-import {
-  AuthenticatedRequest,
-  MuvelRequest,
-  RequireAuth,
-} from "../auth/jwt-auth.guard"
+import { AuthenticatedRequest, RequireAuth } from "../auth/jwt-auth.guard"
 import { CreateNovelDto } from "./dto/create-novel.dto"
 import { RequirePermission } from "../permissions/require-permission.decorator"
-import { NovelPermissionGuard } from "../permissions/novel-permission.guard"
+import {
+  NovelPermissionGuard,
+  NovelPermissionRequest,
+} from "../permissions/novel-permission.guard"
 import { UuIdParamDto } from "../utils/UuIdParamDto"
 import { UsersService } from "../users/users.service"
 
@@ -72,7 +71,7 @@ export class NovelsController {
   })
   @RequirePermission("read", NovelPermissionGuard)
   async getNovel(
-    @Request() req: MuvelRequest,
+    @Request() req: NovelPermissionRequest,
     @Param() { id }: UuIdParamDto
   ): Promise<GetNovelResponseDto> {
     if (!req.novel?.permissions) throw new InternalServerErrorException()

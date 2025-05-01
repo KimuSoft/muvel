@@ -14,6 +14,7 @@ import { EpisodeSnapshotService } from "./services/episode-snapshot.service"
 import { EpisodeRepository } from "./repositories/episode.repository"
 import { BlockRepository } from "../blocks/block.repository"
 import { EpisodeAnalysisService } from "./services/episode-analysis.service"
+import { EpisodePermissionService } from "./services/episode-permission.service"
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { EpisodeAnalysisService } from "./services/episode-analysis.service"
     EpisodesService,
     EpisodeAnalysisService,
     EpisodeSnapshotService,
+    EpisodePermissionService,
   ],
   controllers: [EpisodesController],
 })

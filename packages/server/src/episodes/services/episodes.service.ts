@@ -168,32 +168,4 @@ export class EpisodesService {
 
     return episode.snapshots
   }
-
-  async getEpisodePermission(
-    EpisodeOrId: string | EpisodeEntity,
-    userId?: string | null
-  ) {
-    const episode =
-      typeof EpisodeOrId === "string"
-        ? await this.episodesRepository.findOne({
-            where: { id: EpisodeOrId },
-            relations: ["novel", "novel.author"],
-          })
-        : EpisodeOrId
-
-    if (!episode) {
-      throw new NotFoundException(`Episode with id ${EpisodeOrId} not found`)
-    }
-
-    const isAuthor = episode.novel.author.id === userId
-
-    return {
-      episode,
-      permissions: {
-        read: isAuthor || episode.novel.share !== ShareType.Private,
-        edit: isAuthor,
-        delete: isAuthor,
-      },
-    }
-  }
 }

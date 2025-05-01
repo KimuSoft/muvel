@@ -4,8 +4,6 @@ export interface Character {
   avatar: string | null
   tags: string[]
   summary: string
-  // 마크다운
-  description: string
   galleries: string[]
   importance: CharacterImportance
   attributes: Record<string, string>

@@ -100,10 +100,7 @@ export interface UserPayload {
   exp: number
 }
 
-export interface MuvelRequest extends Request {
-  user?: UserPayload | null
-  novel?: NovelEntity & { permissions: BasePermission }
-  episode?: EpisodeEntity & { permissions: BasePermission }
-}
-
 export type AuthenticatedRequest = Request & { user: UserPayload }
+export type OptionalAuthenticatedRequest = Request & {
+  user: UserPayload | null
+}

@@ -1,7 +1,7 @@
 import { Global, Module } from "@nestjs/common"
 import { TypeOrmModule } from "@nestjs/typeorm"
 import { NovelEntity } from "./novel.entity"
-import { NovelsService } from "./novels.service"
+import { NovelsService } from "./services/novels.service"
 import { NovelsController } from "./novels.controller"
 import { UserEntity } from "../users/user.entity"
 import { SearchRepository } from "../search/search.repository"
