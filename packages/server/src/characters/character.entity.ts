@@ -18,19 +18,19 @@ export class CharacterEntity implements Character {
   @Column()
   name: string
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   avatar: string | null = null
 
-  @Column({ array: true, default: [] })
+  @Column({ type: "text", array: true, default: [] })
   tags: string[]
 
-  @Column()
-  summary: string
+  @Column({ type: "text", nullable: true })
+  summary: string | null
 
-  @Column({ array: true, default: [] })
+  @Column({ type: "text", array: true, default: [] })
   galleries: string[]
 
-  @Column()
+  @Column({ default: CharacterImportance.Major })
   importance: CharacterImportance
 
   @Column({ type: "jsonb", default: {} })

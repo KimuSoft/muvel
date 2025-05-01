@@ -13,6 +13,7 @@ import { EpisodeRepository } from "../episodes/repositories/episode.repository"
 import { EpisodesService } from "../episodes/services/episodes.service"
 import { BlockRepository } from "../blocks/block.repository"
 import { UsersService } from "../users/users.service"
+import { NovelPermissionService } from "./services/novel-permission.service"
 
 @Global()
 @Module({
@@ -28,6 +29,7 @@ import { UsersService } from "../users/users.service"
   providers: [
     // services
     NovelsService,
+    NovelPermissionService,
     EpisodesService,
     UsersService,
 

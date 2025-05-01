@@ -14,18 +14,12 @@ export class CharactersService {
   public async createCharacter() {
     const character = new CharacterEntity()
     character.name = "새 캐릭터"
-    character.summary = "캐릭터 설명"
 
     return this.charactersRepository.save(character)
   }
 
-  public async findCharacterById(id: string) {
-    // req.character 그대로 돌려보내도 될 듯
-    return Promise.resolve()
-  }
-
   async updateCharacter(id: string, dto: UpdateCharacterDto) {
-    return Promise.resolve(undefined)
+    return this.charactersRepository.update(id, dto)
   }
 
   async deleteCharacter(id: string) {

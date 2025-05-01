@@ -276,8 +276,8 @@ const CommentDrawer: React.FC<{
                     </VStack>
                   </HStack>
                   <Text color={"gray.500"} fontSize={"xs"}>
-                    AI 평가는 정확하지 않으며, 한 회차만을 단편적으로 읽기
-                    때문에 단순 참고용으로만 사용해 주세요. 당신의 글의
+                    AI 평가는 정확하지 않아요. 그냥 이런 의견도 있구나 하는
+                    느낌의 단순 참고용으로만 사용해 주세요. 당신의 글의
                     아름다움은 당신만이 평가할 수 있으니까요!
                   </Text>
                 </VStack>
