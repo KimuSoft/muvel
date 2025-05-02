@@ -85,7 +85,6 @@ const EditorTemplate: React.FC<{
     <VStack
       bgColor={option.backgroundColor || undefined}
       transition="background-color 0.2s ease-in-out"
-      h={"100dvh"}
       position={"relative"}
       alignItems={
         isWidgetUsing ? { base: "flex-start", xl: "center" } : "center"

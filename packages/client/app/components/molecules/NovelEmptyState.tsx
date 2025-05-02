@@ -12,7 +12,7 @@ const NovelEmptyState: React.FC = () => {
         <VStack textAlign="center">
           <EmptyState.Title>소설이 없는데요...?</EmptyState.Title>
           <EmptyState.Description>
-            Explore our products and add items to your cart
+            새 소설 쓰기 버튼으로 새 이야기를 펼쳐 보아요!
           </EmptyState.Description>
         </VStack>
       </EmptyState.Content>
