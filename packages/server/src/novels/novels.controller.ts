@@ -74,8 +74,8 @@ export class NovelsController {
     @Request() req: NovelPermissionRequest,
     @Param() { id }: UuIdParamDto,
   ): Promise<GetNovelResponseDto> {
-    if (!req.novel?.permissions) throw new InternalServerErrorException()
     if (req.user?.id) {
+      // 최근에 접속한 소설 업데이트
       void this.usersService.updateLastAccessedNovel(req.user.id, id)
     }
     return this.novelsService.findNovelById(id, req.novel?.permissions)

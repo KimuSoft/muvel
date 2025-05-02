@@ -30,6 +30,10 @@ export class UserEntity {
   @Column({ default: false })
   admin: boolean
 
+  // 1 포인트 = 10자
+  @Column({ default: 300 })
+  point: number
+
   /** Dates */
 
   @CreateDateColumn()
