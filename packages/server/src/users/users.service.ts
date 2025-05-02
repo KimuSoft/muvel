@@ -10,7 +10,7 @@ export class UsersService {
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
     @InjectRepository(NovelEntity)
-    private novelsRepository: Repository<NovelEntity>
+    private novelsRepository: Repository<NovelEntity>,
   ) {}
 
   async findUserById(id: string): Promise<UserEntity | null> {
@@ -58,7 +58,7 @@ export class UsersService {
   // users.service.ts
   async updateLastAccessedNovel(
     userId: string,
-    novelId: string
+    novelId: string,
   ): Promise<void> {
     const user = await this.usersRepository.findOne({
       where: { id: userId },

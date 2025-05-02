@@ -92,7 +92,7 @@ export class GeminiAnalysisRepository {
   }
 
   async analyzeEpisode(
-    episodeContent: string
+    episodeContent: string,
   ): Promise<GeminiAnalysisResponse> {
     try {
       const result = await this.model.generateContent(episodeContent)
@@ -123,7 +123,7 @@ export class GeminiAnalysisRepository {
           Math.round(
             analysisResult.scores[
               key as keyof GeminiAnalysisResponse["scores"]
-            ] * 2
+            ] * 2,
           ) / 2
       }
 
@@ -132,7 +132,7 @@ export class GeminiAnalysisRepository {
       console.error("Error calling Gemini API:", error)
       // 에러 로깅 및 적절한 예외 발생
       throw new InternalServerErrorException(
-        "Failed to analyze episode content with AI."
+        "Failed to analyze episode content with AI.",
       )
     }
   }

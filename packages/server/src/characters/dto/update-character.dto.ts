@@ -58,7 +58,6 @@ export class UpdateCharacterDto {
   @ApiProperty({
     description: "캐릭터 속성",
     required: false,
-    type: "object",
   })
   @IsOptional()
   @IsObject()

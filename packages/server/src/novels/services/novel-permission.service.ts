@@ -8,12 +8,12 @@ import { ShareType } from "muvel-api-types"
 export class NovelPermissionService {
   constructor(
     @InjectRepository(NovelEntity)
-    private readonly novelRepository: Repository<NovelEntity>
+    private readonly novelRepository: Repository<NovelEntity>,
   ) {}
 
   public async getPermissions(
     novelOrId: string | NovelEntity,
-    userId?: string | null
+    userId?: string | null,
   ) {
     const novel =
       typeof novelOrId === "string"

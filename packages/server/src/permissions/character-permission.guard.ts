@@ -15,7 +15,7 @@ import { CharacterPermissionService } from "../characters/services/character-per
 export class CharacterPermissionGuard extends BasePermissionGuard<CharacterEntity> {
   constructor(
     reflector: Reflector,
-    private readonly characterPermissionService: CharacterPermissionService
+    private readonly characterPermissionService: CharacterPermissionService,
   ) {
     super(reflector)
   }
@@ -26,13 +26,13 @@ export class CharacterPermissionGuard extends BasePermissionGuard<CharacterEntit
 
   async getPermission(
     characterId: string,
-    userId?: string
+    userId?: string,
   ): Promise<PermissionResult<CharacterEntity>> {
     if (!isUuid(characterId))
       throw new BadRequestException("Invalid episode ID")
     const character = await this.characterPermissionService.getPermission(
       characterId,
-      userId
+      userId,
     )
     return {
       permissions: character.permissions,
@@ -43,7 +43,7 @@ export class CharacterPermissionGuard extends BasePermissionGuard<CharacterEntit
   injectPermissionsToRequest(
     request: CharacterPermissionRequest,
     character: CharacterEntity,
-    permissions: BasePermission
+    permissions: BasePermission,
   ) {
     request.character = {
       ...character,

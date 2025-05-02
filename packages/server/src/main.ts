@@ -20,7 +20,7 @@ async function bootstrap() {
     // Bearer Token 인증이 있는 경우
     .addBearerAuth(
       { type: "http", scheme: "bearer", bearerFormat: "JWT", in: "header" },
-      "access-token"
+      "access-token",
     )
     .addCookieAuth("auth_token", {
       type: "apiKey",

@@ -8,7 +8,7 @@ import { UpdateCharacterDto } from "../dto/update-character.dto"
 export class CharactersService {
   constructor(
     @InjectRepository(CharacterEntity)
-    private readonly charactersRepository: Repository<CharacterEntity>
+    private readonly charactersRepository: Repository<CharacterEntity>,
   ) {}
 
   public async createCharacter() {

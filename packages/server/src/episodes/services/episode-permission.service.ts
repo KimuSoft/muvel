@@ -9,7 +9,7 @@ export class EpisodePermissionService {
 
   public async getPermissions(
     episodeOrId: string | EpisodeEntity,
-    userId?: string | null
+    userId?: string | null,
   ) {
     const episode =
       typeof episodeOrId === "string"

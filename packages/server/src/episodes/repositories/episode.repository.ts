@@ -15,7 +15,7 @@ export class EpisodeRepository extends Repository<EpisodeEntity> {
 
     const lastEpisode: { order: string }[] = await this.query(
       'SELECT "order" FROM "episode" WHERE "novelId" = $1 ORDER BY "order" DESC LIMIT 1',
-      [novelId]
+      [novelId],
     )
     return episodeType === EpisodeType.Episode
       ? Math.floor(parseFloat(lastEpisode?.[0].order)) + 1
@@ -24,11 +24,11 @@ export class EpisodeRepository extends Repository<EpisodeEntity> {
 
   public async createEpisode(
     novelId: string,
-    createEpisodeDto: CreateEpisodeDto
+    createEpisodeDto: CreateEpisodeDto,
   ) {
     const order = await this.getNextOrder(
       createEpisodeDto.episodeType || EpisodeType.Episode,
-      novelId
+      novelId,
     )
 
     const episode = this.create({

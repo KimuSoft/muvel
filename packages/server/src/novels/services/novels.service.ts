@@ -14,15 +14,19 @@ export class NovelsService {
   constructor(
     @InjectRepository(NovelEntity)
     private readonly novelsRepository: Repository<NovelEntity>,
-    private readonly episodesRepository: EpisodeRepository
+    private readonly episodesRepository: EpisodeRepository,
   ) {}
 
-  public async createNovel(user: UserEntity, createNovelDto: CreateNovelDto) {
+  public async createNovel(
+    user: { id: string },
+    createNovelDto: CreateNovelDto,
+  ) {
     const novel = new NovelEntity()
 
     novel.title = createNovelDto.title
     novel.description = createNovelDto.description
-    novel.author = user
+    // typeorm 릴레이션에서는 {id: string} 값만 있어도 릴레이션이 되므로 assertion
+    novel.author = user as UserEntity
     novel.share = createNovelDto.share
 
     // 에피소드 생성
@@ -118,14 +122,6 @@ export class NovelsService {
       .offset(searchNovelsDto.start)
       .take(searchNovelsDto.display)
       .getMany()
-  }
-
-  async getNovelByEpisodeId(episodeId: string) {
-    return this.novelsRepository
-      .createQueryBuilder("novel")
-      .leftJoinAndSelect("novel.episodes", "episodes")
-      .where("episodes.id = :episodeId", { episodeId })
-      .getOne()
   }
 
   public async findNovelsByUserId(id: string, showAll: boolean) {

@@ -31,7 +31,7 @@ export class CharactersController {
   @RequirePermission("edit", CharacterPermissionGuard)
   async updateCharacter(
     @Param("id") id: string,
-    @Body() dto: UpdateCharacterDto
+    @Body() dto: UpdateCharacterDto,
   ) {
     // 캐릭터 ID로 캐릭터 정보를 수정하는 로직을 구현합니다.
     return this.charactersService.updateCharacter(id, dto)

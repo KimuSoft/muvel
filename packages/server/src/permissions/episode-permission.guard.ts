@@ -15,7 +15,7 @@ import { EpisodePermissionService } from "../episodes/services/episode-permissio
 export class EpisodePermissionGuard extends BasePermissionGuard<EpisodeEntity> {
   constructor(
     reflector: Reflector,
-    private readonly episodePermissionService: EpisodePermissionService
+    private readonly episodePermissionService: EpisodePermissionService,
   ) {
     super(reflector)
   }
@@ -26,7 +26,7 @@ export class EpisodePermissionGuard extends BasePermissionGuard<EpisodeEntity> {
 
   async getPermission(
     episodeId: string,
-    userId?: string
+    userId?: string,
   ): Promise<PermissionResult<EpisodeEntity>> {
     if (!isUuid(episodeId)) throw new BadRequestException("Invalid episode ID")
     const { episode, permissions } =
@@ -40,7 +40,7 @@ export class EpisodePermissionGuard extends BasePermissionGuard<EpisodeEntity> {
   injectPermissionsToRequest(
     request: EpisodePermissionRequest,
     episode: EpisodeEntity,
-    permissions: BasePermission
+    permissions: BasePermission,
   ) {
     request.episode = {
       ...episode,

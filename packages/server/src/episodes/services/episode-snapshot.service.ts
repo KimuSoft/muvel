@@ -11,7 +11,7 @@ export class EpisodeSnapshotService {
     @InjectRepository(EpisodeEntity)
     private readonly episodeRepository: Repository<EpisodeEntity>,
     @InjectRepository(EpisodeSnapshotEntity)
-    private readonly episodeSnapshotRepository: Repository<EpisodeSnapshotEntity>
+    private readonly episodeSnapshotRepository: Repository<EpisodeSnapshotEntity>,
   ) {}
 
   @Cron("*/10 * * * *") // 10분마다 실행
@@ -38,7 +38,7 @@ export class EpisodeSnapshotService {
       // 글자 수 캐싱
       const contentLength = episode.blocks.reduce(
         (acc, block) => acc + block.text.replace(/\s/g, "").length,
-        0
+        0,
       )
 
       await this.episodeRepository.update({ id: episode.id }, { contentLength })
@@ -49,7 +49,7 @@ export class EpisodeSnapshotService {
     await this.episodeSnapshotRepository.save(newSnapshots)
     await this.episodeRepository.update(
       { id: In(episodes.map((episode) => episode.id)) },
-      { isSnapshotted: true }
+      { isSnapshotted: true },
     )
 
     console.info(`Created ${newSnapshots.length} episode snapshots.`)

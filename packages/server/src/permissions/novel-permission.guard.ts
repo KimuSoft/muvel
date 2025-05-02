@@ -16,7 +16,7 @@ import { NovelPermissionService } from "../novels/services/novel-permission.serv
 export class NovelPermissionGuard extends BasePermissionGuard<NovelEntity> {
   constructor(
     reflector: Reflector,
-    private readonly novelPermissionService: NovelPermissionService
+    private readonly novelPermissionService: NovelPermissionService,
   ) {
     super(reflector)
   }
@@ -35,7 +35,7 @@ export class NovelPermissionGuard extends BasePermissionGuard<NovelEntity> {
   injectPermissionsToRequest(
     request: NovelPermissionRequest,
     novel: NovelEntity,
-    permissions: BasePermission
+    permissions: BasePermission,
   ) {
     request.novel = {
       ...novel,

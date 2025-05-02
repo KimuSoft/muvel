@@ -13,7 +13,7 @@ export class CreateEpisodeDto {
   @ApiProperty({
     description:
       "에피소드의 종류 (일반편, 특별편, 프롤로그, 에필로그, 챕터 등)",
-    type: "enum",
+    type: "number",
     enum: EpisodeType,
   })
   @IsEnum(EpisodeType)

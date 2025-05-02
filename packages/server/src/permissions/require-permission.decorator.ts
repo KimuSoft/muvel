@@ -6,11 +6,11 @@ import { OptionalJwtAuthGuard } from "../auth/jwt-auth.guard"
 
 export const RequirePermission = (
   permission: keyof BasePermission,
-  guard: Type<CanActivate>
+  guard: Type<CanActivate>,
 ) =>
   applyDecorators(
     UseGuards(OptionalJwtAuthGuard),
     SetMetadata("permission", permission),
     UseGuards(guard),
-    ApiForbiddenResponse({ description: "권한 부족" })
+    ApiForbiddenResponse({ description: "권한 부족" }),
   )

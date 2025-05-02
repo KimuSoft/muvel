@@ -38,7 +38,7 @@ export class NovelsController {
     private readonly novelsService: NovelsService,
     private readonly episodesService: EpisodesService,
     private readonly searchService: SearchRepository,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
   ) {}
 
   @Get()
@@ -58,7 +58,7 @@ export class NovelsController {
   @RequireAuth()
   async createNovel(
     @Request() req: AuthenticatedRequest,
-    @Body() createNovelDto: CreateNovelDto
+    @Body() createNovelDto: CreateNovelDto,
   ) {
     return this.novelsService.createNovel(req.user, createNovelDto)
   }
@@ -72,7 +72,7 @@ export class NovelsController {
   @RequirePermission("read", NovelPermissionGuard)
   async getNovel(
     @Request() req: NovelPermissionRequest,
-    @Param() { id }: UuIdParamDto
+    @Param() { id }: UuIdParamDto,
   ): Promise<GetNovelResponseDto> {
     if (!req.novel?.permissions) throw new InternalServerErrorException()
     if (req.user?.id) {
@@ -102,7 +102,7 @@ export class NovelsController {
   @RequirePermission("edit", NovelPermissionGuard)
   async updateNovel(
     @Param("id") id: string,
-    @Body() novelUpdateDto: UpdateNovelDto
+    @Body() novelUpdateDto: UpdateNovelDto,
   ) {
     return this.novelsService.updateNovel(id, novelUpdateDto)
   }
@@ -125,7 +125,7 @@ export class NovelsController {
   @RequirePermission("edit", NovelPermissionGuard)
   async addEpisode(
     @Param("id") id: string,
-    @Body() createEpisodeDto: CreateEpisodeDto
+    @Body() createEpisodeDto: CreateEpisodeDto,
   ) {
     return this.episodesService.createEpisode(id, createEpisodeDto)
   }
@@ -138,7 +138,7 @@ export class NovelsController {
   @RequirePermission("edit", NovelPermissionGuard)
   async patchEpisodes(
     @Param("id") id: string,
-    @Body() dto: PatchEpisodesDto[]
+    @Body() dto: PatchEpisodesDto[],
   ) {
     return this.episodesService.patchEpisodes(id, dto)
   }
@@ -152,7 +152,7 @@ export class NovelsController {
   @RequirePermission("edit", NovelPermissionGuard)
   async searchInNovel(
     @Param("id") id: string,
-    @Query() searchInNovelDto: SearchInNovelDto
+    @Query() searchInNovelDto: SearchInNovelDto,
   ) {
     return this.searchService.searchBlocksByNovel(id, searchInNovelDto)
   }

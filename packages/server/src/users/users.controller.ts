@@ -14,7 +14,7 @@ import {
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private readonly novelsService: NovelsService
+    private readonly novelsService: NovelsService,
   ) {}
 
   @Get("count")
@@ -60,7 +60,7 @@ export class UsersController {
   @OptionalAuth()
   async getNovels(
     @Req() req: OptionalAuthenticatedRequest,
-    @Param("id") id: string
+    @Param("id") id: string,
   ) {
     return this.novelsService.findNovelsByUserId(id, req.user?.id === id)
   }

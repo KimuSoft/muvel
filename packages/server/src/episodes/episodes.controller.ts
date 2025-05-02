@@ -27,7 +27,7 @@ import { CreateAiAnalysisRequestBodyDto } from "./dto/create-ai-analysis-request
 export class EpisodesController {
   constructor(
     private readonly episodesService: EpisodesService,
-    private readonly episodeAnalysisService: EpisodeAnalysisService
+    private readonly episodeAnalysisService: EpisodeAnalysisService,
   ) {}
 
   @Get(":id")
@@ -38,7 +38,7 @@ export class EpisodesController {
   @RequirePermission("read", EpisodePermissionGuard)
   async getEpisodes(
     @Request() req: EpisodePermissionRequest,
-    @Param() { id }: EpisodeIdParamDto
+    @Param() { id }: EpisodeIdParamDto,
   ) {
     return this.episodesService.findEpisodeById(id, req.episode.permissions)
   }
@@ -52,7 +52,7 @@ export class EpisodesController {
   @RequirePermission("edit", EpisodePermissionGuard)
   async updateEpisode(
     @Param() { id }: EpisodeIdParamDto,
-    @Body() dto: UpdateEpisodeDto
+    @Body() dto: UpdateEpisodeDto,
   ) {
     return this.episodesService.updateEpisode(id, dto)
   }
@@ -87,7 +87,7 @@ export class EpisodesController {
   @RequirePermission("edit", EpisodePermissionGuard)
   async patchBlocks(
     @Param() { id }: EpisodeIdParamDto,
-    @Body() blockDiffs: PatchBlocksDto[]
+    @Body() blockDiffs: PatchBlocksDto[],
   ) {
     return this.episodesService.updateBlocks(id, blockDiffs)
   }
@@ -100,11 +100,11 @@ export class EpisodesController {
   @RequirePermission("edit", EpisodePermissionGuard)
   async aiAnalyze(
     @Param("id") episodeId: string,
-    @Body() options: CreateAiAnalysisRequestBodyDto
+    @Body() options: CreateAiAnalysisRequestBodyDto,
   ) {
     return this.episodeAnalysisService.createAnalysisForEpisode(
       episodeId,
-      options
+      options,
     )
   }
 

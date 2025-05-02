@@ -1,10 +1,10 @@
 import { Plugin } from "prosemirror-state"
 import { EditorView } from "prosemirror-view" // EditorView import 추가 (update 함수 타입 명시 위해)
 
-const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-
 export const typewriterPlugin = new Plugin({
   view(editorView) {
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+
     // editorView 인자는 PluginView 생성 시 주입됨
     if (isMobile) return {} // 모바일이면 아무것도 안 함
 

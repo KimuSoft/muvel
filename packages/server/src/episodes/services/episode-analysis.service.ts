@@ -21,11 +21,11 @@ export class EpisodeAnalysisService {
     private readonly aiAnalysisRepository: Repository<AiAnalysisEntity>,
     private readonly episodeRepository: EpisodeRepository,
     private readonly blockRepository: BlockRepository,
-    private readonly geminiAnalysisRepository: GeminiAnalysisRepository
+    private readonly geminiAnalysisRepository: GeminiAnalysisRepository,
   ) {}
 
   async findAnalysisByEpisodeId(
-    episodeId: string
+    episodeId: string,
   ): Promise<AiAnalysisEntity[]> {
     return this.aiAnalysisRepository.find({
       where: { episode: { id: episodeId } },
@@ -35,7 +35,7 @@ export class EpisodeAnalysisService {
 
   async createAnalysisForEpisode(
     episodeId: string,
-    options: CreateAiAnalysisRequestBodyDto
+    options: CreateAiAnalysisRequestBodyDto,
   ): Promise<AiAnalysisEntity> {
     // 1. 에피소드 내용을 데이터베이스에서 가져오기
     const episode = await this.episodeRepository.findOne({
@@ -54,7 +54,7 @@ export class EpisodeAnalysisService {
     if (!blocks || blocks.length === 0) {
       // 블록이 없어도 분석할 내용이 없으므로 에러 또는 특정 처리 필요
       throw new InternalServerErrorException(
-        `Episode ${episodeId} has no blocks to analyze.`
+        `Episode ${episodeId} has no blocks to analyze.`,
       )
       // 또는 빈 내용으로 분석을 진행하거나 (AI 응답이 이상할 수 있음), 다른 처리를 할 수 있습니다.
       // const episodeContent = '';
@@ -66,20 +66,20 @@ export class EpisodeAnalysisService {
     // 300자 이하면 Bad Request로 거부
     if (episodeContent.length < 300) {
       throw new BadRequestException(
-        `Episode ${episodeId} content is too short for analysis.`
+        `Episode ${episodeId} content is too short for analysis.`,
       )
     }
 
     // 15000자 이상이어도 거부
     if (episodeContent.length > 15000) {
       throw new BadRequestException(
-        `Episode ${episodeId} content is too long for analysis.`
+        `Episode ${episodeId} content is too long for analysis.`,
       )
     }
 
     if (!episodeContent || episodeContent.trim() === "") {
       throw new BadRequestException(
-        `Episode ${episodeId} has no content to analyze.`
+        `Episode ${episodeId} has no content to analyze.`,
       )
     }
 
@@ -109,19 +109,18 @@ export class EpisodeAnalysisService {
     }
 
     console.info(
-      `에피소드 ${episodeId} 분석 시작됨. 분석 글자 수: ${analysisContent.length} / 이전 편 분석: ${options.usePreviousSummary}`
+      `에피소드 ${episodeId} 분석 시작됨. 분석 글자 수: ${analysisContent.length} / 이전 편 분석: ${options.usePreviousSummary}`,
     )
 
     // 2. Gemini 분석 서비스 호출
     let analysisResult: GeminiAnalysisResponse
     try {
-      analysisResult = await this.geminiAnalysisRepository.analyzeEpisode(
-        analysisContent
-      )
+      analysisResult =
+        await this.geminiAnalysisRepository.analyzeEpisode(analysisContent)
     } catch (error) {
       console.error(`Error analyzing episode ${episodeId}:`, error)
       throw new InternalServerErrorException(
-        `Failed to get AI analysis for episode ${episodeId}.`
+        `Failed to get AI analysis for episode ${episodeId}.`,
       )
     }
 
@@ -137,7 +136,7 @@ export class EpisodeAnalysisService {
 
     await this.episodeRepository.update(
       { id: episodeId },
-      { description: analysisResult.summary }
+      { description: analysisResult.summary },
     )
 
     try {
@@ -145,7 +144,7 @@ export class EpisodeAnalysisService {
     } catch (error) {
       console.error(`Error saving AI analysis for episode ${episodeId}:`, error)
       throw new InternalServerErrorException(
-        `Failed to save AI analysis for episode ${episodeId}.`
+        `Failed to save AI analysis for episode ${episodeId}.`,
       )
     }
   }

@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common';
-import { WikiPagesController } from './wiki-pages.controller';
-import { WikiPagesService } from './wiki-pages.service';
+import { Module } from "@nestjs/common"
+import { WikiPagesController } from "./wiki-pages.controller"
+import { WikiPagesService } from "./wiki-pages.service"
 
 @Module({
   controllers: [WikiPagesController],
-  providers: [WikiPagesService]
+  providers: [WikiPagesService],
 })
 export class WikiPagesModule {}

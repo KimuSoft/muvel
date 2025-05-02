@@ -32,7 +32,7 @@ export class UpdateNovelDto {
   @Transform(({ value }) => parseInt(value.toString()))
   @ApiProperty({
     description: "소설의 공개 범위",
-    type: "enum",
+    type: "number",
     enum: ShareType,
   })
   @IsEnum(ShareType)

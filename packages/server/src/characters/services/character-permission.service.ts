@@ -8,12 +8,12 @@ import { BasePermission, ShareType } from "muvel-api-types"
 export class CharacterPermissionService {
   constructor(
     @InjectRepository(CharacterEntity)
-    private readonly characterRepository: Repository<CharacterEntity>
+    private readonly characterRepository: Repository<CharacterEntity>,
   ) {}
 
   async getPermission(
     characterOrId: CharacterEntity | string,
-    userId?: string
+    userId?: string,
   ): Promise<
     CharacterEntity & {
       permissions: BasePermission

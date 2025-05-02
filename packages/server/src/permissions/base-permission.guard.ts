@@ -15,12 +15,12 @@ export abstract class BasePermissionGuard<T> implements CanActivate {
   abstract getResourceId(request: OptionalAuthenticatedRequest): string
   abstract getPermission(
     resourceId: string,
-    userId?: string
+    userId?: string,
   ): Promise<PermissionResult<T>>
   abstract injectPermissionsToRequest(
     request: OptionalAuthenticatedRequest,
     resource: T,
-    permissions: BasePermission
+    permissions: BasePermission,
   ): void
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -30,14 +30,14 @@ export abstract class BasePermissionGuard<T> implements CanActivate {
     const userId = request.user?.id
     const required = this.reflector.get<keyof BasePermission>(
       "permission",
-      context.getHandler()
+      context.getHandler(),
     )
     if (!required) return true
 
     const resourceId = this.getResourceId(request)
     const { resource, permissions } = await this.getPermission(
       resourceId,
-      userId
+      userId,
     )
 
     this.injectPermissionsToRequest(request, resource, permissions)

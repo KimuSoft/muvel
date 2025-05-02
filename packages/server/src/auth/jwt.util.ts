@@ -2,7 +2,9 @@
 
 import { Request } from "express"
 
-export function extractTokenFromRequest(req: Request): string | null {
+export function extractTokenFromRequest(
+  req: Omit<Request, "user">,
+): string | null {
   const authHeader = req.headers.authorization
   const bearerToken = authHeader?.startsWith("Bearer ")
     ? authHeader.split(" ")[1]
