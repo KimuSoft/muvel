@@ -5,11 +5,16 @@ import {
   type CreateAiAnalysisRequestBody,
   type Episode,
   type EpisodeSnapshot,
-  type LegacyBlock,
+  type GetEpisodeResponseDto,
 } from "muvel-api-types"
 
 export const getEpisodeBlocks = async (episodeId: string) => {
   const { data } = await api.get<Block[]>(`episodes/${episodeId}/blocks`)
+  return data
+}
+
+export const getEpisode = async (episodeId: string) => {
+  const { data } = await api.get<GetEpisodeResponseDto>(`episodes/${episodeId}`)
   return data
 }
 

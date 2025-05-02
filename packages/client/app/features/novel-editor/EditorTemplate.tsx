@@ -1,8 +1,4 @@
-import {
-  type Block,
-  EpisodeType,
-  type GetEpisodeResponseDto,
-} from "muvel-api-types"
+import { type Block, EpisodeType } from "muvel-api-types"
 import React, { useMemo } from "react"
 import NovelEditor from "~/features/novel-editor/components/NovelEditor"
 import {
@@ -27,19 +23,11 @@ import { FaBookOpen, FaStarOfLife } from "react-icons/fa6"
 import { GoMoveToEnd, GoMoveToStart } from "react-icons/go"
 
 const EditorTemplate: React.FC<{
-  episode: GetEpisodeResponseDto
+  initialBlocks: Block[]
   onBlocksChange: (blocks: Block[]) => void
-  onTitleChange: (title: string) => void
-  onEpisodeTypeChange: (type: EpisodeType) => void
   syncState: SyncState
-}> = ({
-  episode,
-  onBlocksChange,
-  syncState,
-  onTitleChange,
-  onEpisodeTypeChange,
-}) => {
-  const { view } = useEditorContext()
+}> = ({ onBlocksChange, syncState, initialBlocks }) => {
+  const { view, episode, updateEpisodeData } = useEditorContext()
   const [option] = useOption()
 
   // 제목 Input에서 Enter 키를 처리하는 핸들러
@@ -114,7 +102,9 @@ const EditorTemplate: React.FC<{
       >
         <Menu.Root
           onSelect={(d) => {
-            onEpisodeTypeChange(parseInt(d.value) as EpisodeType)
+            updateEpisodeData((e) => {
+              e.episodeType = parseInt(d.value) as EpisodeType
+            })
           }}
         >
           <Menu.Trigger asChild>
@@ -165,7 +155,9 @@ const EditorTemplate: React.FC<{
           placeholder={"제목을 입력해 주세요"}
           defaultValue={episode.title}
           onChange={(e) => {
-            onTitleChange(e.target.value)
+            updateEpisodeData((ep) => {
+              ep.title = e.target.value
+            })
           }}
           onKeyDown={handleTitleKeyDown}
           readOnly={!episode.permissions.edit}
@@ -191,7 +183,7 @@ const EditorTemplate: React.FC<{
         <ClientOnly>
           <NovelEditor
             key={episode.id}
-            initialBlocks={episode.blocks}
+            initialBlocks={initialBlocks}
             episodeId={episode.id}
             editable={episode.permissions.edit}
             onChange={onBlocksChange}
