@@ -274,13 +274,20 @@ export const FindReplaceWidget: React.FC<WidgetBaseProps> = ({
   }, [findText, caseSensitive, setHighlightDecorations])
 
   // 컴포넌트 언마운트 시 데코레이션 초기화
+  // 컴포넌트 언마운트 시 데코레이션 초기화 (수정: view 유효성 검사 추가)
   useEffect(() => {
+    const currentView = view
     return () => {
-      if (setHighlightDecorations) {
-        setHighlightDecorations([], -1)
+      if (setHighlightDecorations && currentView && !currentView.isDestroyed) {
+        console.log("Clearing decorations on unmount.") // 로그 추가 (디버깅용)
+        setHighlightDecorations([], -1) // 안전하게 호출
+      } else {
+        console.log(
+          "Skipping decoration clear on unmount (view destroyed or unavailable).",
+        )
       }
     }
-  }, [setHighlightDecorations])
+  }, [setHighlightDecorations, view])
 
   return (
     <WidgetBase>

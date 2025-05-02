@@ -9,16 +9,14 @@ import React, {
 import type { Block, GetEpisodeResponseDto } from "muvel-api-types" // 경로 수정 필요
 import type { EditorView } from "prosemirror-view"
 import { PluginKey } from "prosemirror-state"
-import { type Draft, produce } from "immer" // Immer produce 및 Draft 타입 임포트
+import { type Draft, produce } from "immer"
+import { highlightPluginKey } from "~/features/novel-editor/plugins/highlightPlugin" // Immer produce 및 Draft 타입 임포트
 
 // Match 타입 정의
 interface Match {
   from: number
   to: number
 }
-
-// 하이라이트 플러그인 키
-export const highlightPluginKey = new PluginKey("highlightPlugin")
 
 export type EpisodeData = Omit<GetEpisodeResponseDto, "blocks">
 
