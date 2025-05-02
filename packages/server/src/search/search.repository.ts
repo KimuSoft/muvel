@@ -21,7 +21,7 @@ export class SearchRepository {
 
   async searchBlocksByNovel(
     novelId: string,
-    searchInNovelDto: SearchInNovelDto
+    searchInNovelDto: SearchInNovelDto,
   ) {
     const index = await this.client.getIndex(BLOCKS_INDEX)
     const result = await index.search(searchInNovelDto.q, {

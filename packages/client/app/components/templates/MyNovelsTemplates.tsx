@@ -32,7 +32,7 @@ const MyNovelsTemplates: React.FC<{
   return (
     <VStack w={"100vw"}>
       <Header />
-      <Container maxW={"4xl"} my={100} px={3}>
+      <Container maxW={"6xl"} my={100} px={3}>
         {user && (
           <>
             <HStack w={"100%"} gap={3} mb={5} px={3}>

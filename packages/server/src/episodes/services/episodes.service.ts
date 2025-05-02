@@ -9,12 +9,11 @@ import { PatchEpisodesDto } from "../../novels/dto/patch-episodes.dto"
 import { CreateEpisodeDto } from "../dto/create-episode.dto"
 import { NovelEntity } from "../../novels/novel.entity"
 import { SearchRepository } from "src/search/search.repository"
-import { BasePermission, EpisodeType, ShareType } from "muvel-api-types"
+import { BasePermission, EpisodeType } from "muvel-api-types"
 import { UpdateEpisodeDto } from "../dto/update-episode.dto"
 import { PatchBlocksDto } from "../dto/patch-blocks.dto"
 import { BlockRepository } from "../../blocks/block.repository"
 import { EpisodeRepository } from "../repositories/episode.repository"
-import { EpisodeEntity } from "../entities/episode.entity"
 
 @Injectable()
 export class EpisodesService {
@@ -23,7 +22,7 @@ export class EpisodesService {
     private readonly novelsRepository: Repository<NovelEntity>,
     private readonly episodesRepository: EpisodeRepository,
     private readonly blocksRepository: BlockRepository,
-    private readonly searchRepository: SearchRepository
+    private readonly searchRepository: SearchRepository,
   ) {}
 
   async findEpisodeById(id: string, permissions: BasePermission) {
@@ -38,7 +37,7 @@ export class EpisodesService {
     if (!permissions.edit) {
       console.log("주석 삭제!")
       episode.blocks = episode.blocks.filter(
-        (block) => block.blockType !== "comment"
+        (block) => block.blockType !== "comment",
       )
     }
 
@@ -54,7 +53,7 @@ export class EpisodesService {
     // 소설 총 회차 갱신
     await this.novelsRepository.update(
       { id: novelId },
-      { episodeCount: Math.round(parseFloat(episode.order)) }
+      { episodeCount: Math.round(parseFloat(episode.order)) },
     )
 
     return episode
@@ -79,7 +78,7 @@ export class EpisodesService {
       // 에피소드 타입이 에피소드면 회차 수를 줄임
       await this.novelsRepository.update(
         { id: episode.novelId },
-        { episodeCount: Math.round(parseFloat(episode.order)) - 1 }
+        { episodeCount: Math.round(parseFloat(episode.order)) - 1 },
       )
     }
 
@@ -103,7 +102,7 @@ export class EpisodesService {
     const uniqueBlockIds = new Set(blockIds)
     if (blockIds.length !== uniqueBlockIds.size) {
       console.warn(
-        `중복된 블록 ID가 있습니다. episodeId=${episodeId}, blockIds=${blockIds}`
+        `중복된 블록 ID가 있습니다. episodeId=${episodeId}, blockIds=${blockIds}`,
       )
       console.warn(blockDiffs)
       throw new BadRequestException("중복된 블록 ID가 있습니다.")
@@ -126,7 +125,7 @@ export class EpisodesService {
         episodeNumber: parseFloat(episode.order),
         index: b.order,
         novelId: episode.novelId,
-      }))
+      })),
     )
 
     void this.searchRepository.deleteBlocks(deletedBlockIds)
@@ -147,12 +146,12 @@ export class EpisodesService {
           order: b.order,
           episode,
         })),
-      ["id"]
+      ["id"],
     )
 
     await this.episodesRepository.update(
       { id: episodeId },
-      { isSnapshotted: false }
+      { isSnapshotted: false },
     )
     console.info(`블록 ${createdOrUpdatedBlocks.length}개 생성/수정됨`)
   }
@@ -167,33 +166,5 @@ export class EpisodesService {
     }
 
     return episode.snapshots
-  }
-
-  async getEpisodePermission(
-    EpisodeOrId: string | EpisodeEntity,
-    userId?: string | null
-  ) {
-    const episode =
-      typeof EpisodeOrId === "string"
-        ? await this.episodesRepository.findOne({
-            where: { id: EpisodeOrId },
-            relations: ["novel", "novel.author"],
-          })
-        : EpisodeOrId
-
-    if (!episode) {
-      throw new NotFoundException(`Episode with id ${EpisodeOrId} not found`)
-    }
-
-    const isAuthor = episode.novel.author.id === userId
-
-    return {
-      episode,
-      permissions: {
-        read: isAuthor || episode.novel.share !== ShareType.Private,
-        edit: isAuthor,
-        delete: isAuthor,
-      },
-    }
   }
 }

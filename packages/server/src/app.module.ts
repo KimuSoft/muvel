@@ -2,11 +2,12 @@ import { Module } from "@nestjs/common"
 import { TypeOrmModule } from "@nestjs/typeorm"
 import { UsersModule } from "./users/users.module"
 import { NovelsModule } from "./novels/novels.module"
-import { BlocksModule } from "./blocks/blocks.module"
 import { EpisodesModule } from "./episodes/episodes.module"
 import { AuthModule } from "./auth/auth.module"
 import { SearchModule } from "./search/search.module"
 import { ScheduleModule } from "@nestjs/schedule"
+import { CharactersModule } from "./characters/characters.module"
+import { WikiPagesModule } from "./wiki-pages/wiki-pages.module"
 
 @Module({
   imports: [
@@ -22,10 +23,11 @@ import { ScheduleModule } from "@nestjs/schedule"
     // Modules
     UsersModule,
     NovelsModule,
-    BlocksModule,
     EpisodesModule,
     AuthModule,
     SearchModule,
+    CharactersModule,
+    WikiPagesModule,
   ],
 })
 export class AppModule {}

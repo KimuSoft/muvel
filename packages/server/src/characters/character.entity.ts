@@ -1,5 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  RelationId,
+  UpdateDateColumn,
+} from "typeorm"
 import { Character, CharacterImportance } from "muvel-api-types"
+import { NovelEntity } from "../novels/novel.entity"
 
 @Entity("character")
 export class CharacterEntity implements Character {
@@ -9,27 +18,39 @@ export class CharacterEntity implements Character {
   @Column()
   name: string
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   avatar: string | null = null
 
-  @Column({ array: true, default: [] })
+  @Column({ type: "text", array: true, default: [] })
   tags: string[]
 
-  @Column()
-  summary: string
+  @Column({ type: "text", nullable: true })
+  summary: string | null
 
-  @Column()
-  description: string
-
-  @Column({ array: true, default: [] })
+  @Column({ type: "text", array: true, default: [] })
   galleries: string[]
 
-  @Column()
+  @Column({ default: CharacterImportance.Major })
   importance: CharacterImportance
-
-  @Column()
-  document: string
 
   @Column({ type: "jsonb", default: {} })
   attributes: Record<string, string>
+
+  /** Relations */
+
+  @ManyToOne(() => NovelEntity, (novel) => novel.characters, {
+    onDelete: "CASCADE",
+  })
+  novel: NovelEntity
+
+  @RelationId((character: CharacterEntity) => character.novel)
+  novelId: string
+
+  /** Dates */
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
 }

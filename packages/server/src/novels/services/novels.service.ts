@@ -1,28 +1,32 @@
 import { Injectable, NotFoundException } from "@nestjs/common"
-import { NovelEntity } from "./novel.entity"
+import { NovelEntity } from "../novel.entity"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
-import { SearchNovelsDto } from "./dto/search-novels.dto"
-import { UserEntity } from "../users/user.entity"
+import { SearchNovelsDto } from "../dto/search-novels.dto"
+import { UserEntity } from "../../users/user.entity"
 import { BasePermission, ShareType } from "muvel-api-types"
-import { UpdateNovelDto } from "./dto/update-novel.dto"
-import { CreateNovelDto } from "./dto/create-novel.dto"
-import { EpisodeRepository } from "../episodes/repositories/episode.repository"
+import { UpdateNovelDto } from "../dto/update-novel.dto"
+import { CreateNovelDto } from "../dto/create-novel.dto"
+import { EpisodeRepository } from "../../episodes/repositories/episode.repository"
 
 @Injectable()
 export class NovelsService {
   constructor(
     @InjectRepository(NovelEntity)
     private readonly novelsRepository: Repository<NovelEntity>,
-    private readonly episodesRepository: EpisodeRepository
+    private readonly episodesRepository: EpisodeRepository,
   ) {}
 
-  public async createNovel(user: UserEntity, createNovelDto: CreateNovelDto) {
+  public async createNovel(
+    user: { id: string },
+    createNovelDto: CreateNovelDto,
+  ) {
     const novel = new NovelEntity()
 
     novel.title = createNovelDto.title
     novel.description = createNovelDto.description
-    novel.author = user
+    // typeorm 릴레이션에서는 {id: string} 값만 있어도 릴레이션이 되므로 assertion
+    novel.author = user as UserEntity
     novel.share = createNovelDto.share
 
     // 에피소드 생성
@@ -35,7 +39,7 @@ export class NovelsService {
     // 소설 정보 불러오기
     const novel = await this.novelsRepository.findOne({
       where: { id },
-      relations: ["author", "episodes"],
+      relations: ["author", "episodes", "characters"],
     })
     if (!novel) throw new NotFoundException("소설을 찾을 수 없습니다.")
 
@@ -120,14 +124,6 @@ export class NovelsService {
       .getMany()
   }
 
-  async getNovelByEpisodeId(episodeId: string) {
-    return this.novelsRepository
-      .createQueryBuilder("novel")
-      .leftJoinAndSelect("novel.episodes", "episodes")
-      .where("episodes.id = :episodeId", { episodeId })
-      .getOne()
-  }
-
   public async findNovelsByUserId(id: string, showAll: boolean) {
     return this.novelsRepository.find({
       where: {
@@ -136,33 +132,5 @@ export class NovelsService {
       },
       relations: ["author"],
     })
-  }
-
-  public async getNovelPermission(
-    novelOrId: string | NovelEntity,
-    userId?: string | null
-  ) {
-    const novel =
-      typeof novelOrId === "string"
-        ? await this.novelsRepository.findOne({
-            where: { id: novelOrId },
-            relations: ["author"],
-          })
-        : novelOrId
-
-    if (!novel) {
-      throw new NotFoundException(`Novel with id ${novelOrId} not found`)
-    }
-
-    const isAuthor = novel.author.id === userId
-
-    return {
-      novel,
-      permissions: {
-        read: isAuthor || novel.share !== ShareType.Private,
-        edit: isAuthor,
-        delete: isAuthor,
-      },
-    }
   }
 }

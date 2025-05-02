@@ -1,86 +1,118 @@
 /* 에디터 기본 구조 */
 .ProseMirror {
-    font-family: var(--editor-font-family, 'Pretendard');
-    font-size: var(--editor-font-size, 16px);
-    font-weight: var(--editor-font-weight, 400);
-    line-height: var(--editor-line-height, 1.4);
-    text-indent: var(--editor-indent, 0);
-    color: var(--editor-color, inherit);
-    caret-color: auto;
+  font-family: var(--editor-font-family, "Pretendard");
+  font-size: var(--editor-font-size, 16px);
+  font-weight: var(--editor-font-weight, 400);
+  line-height: var(--editor-line-height, 1.4);
+  text-indent: var(--editor-indent, 0);
+  color: var(--editor-color, inherit);
+  caret-color: auto;
 
-    outline: none;
-    white-space: pre-wrap;
-    word-break: break-word;
+  outline: none;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 /* 공통 블록 */
 .ProseMirror p {
-    margin: 0;
-    padding: var(--editor-block-gap, 7px) 0;
+  margin: 0;
+  padding: var(--editor-block-gap, 7px) 0;
 }
 
 /* Quote (대사 블록) */
 .ProseMirror p[data-quote-style] {
-    position: relative;
-    font-style: italic;
-    padding-left: 1.2em;
-    padding-right: 1.2em;
-    color: var(--quote-color, #444);
+  position: relative;
+  font-style: italic;
+  padding-left: 1.2em;
+  padding-right: 1.2em;
+  color: var(--quote-color, #444);
 }
 
 /* Quote: 따옴표 삽입 */
 .ProseMirror p[data-quote-style]::before,
 .ProseMirror p[data-quote-style]::after {
-    position: absolute;
-    font-size: 1.2em;
-    color: var(--quote-color, #aaa);
+  position: absolute;
+  font-size: 1.2em;
+  color: var(--quote-color, #aaa);
 }
 
 /* 따옴표 위치 조정 */
 .ProseMirror p[data-quote-style]::before {
-    content: "“";
-    left: 0;
-    top: 0;
+  content: "“";
+  left: 0;
+  top: 0;
 }
 .ProseMirror p[data-quote-style]::after {
-    content: "”";
-    right: 0;
-    bottom: 0;
+  content: "”";
+  right: 0;
+  bottom: 0;
 }
 
 /* 따옴표 스타일 종류별 변경 */
-.ProseMirror p[data-quote-style="single"]::before { content: "‘"; }
-.ProseMirror p[data-quote-style="single"]::after  { content: "’"; }
+.ProseMirror p[data-quote-style="single"]::before {
+  content: "‘";
+}
+.ProseMirror p[data-quote-style="single"]::after {
+  content: "’";
+}
 
-.ProseMirror p[data-quote-style="scythe-single"]::before { content: "「"; }
-.ProseMirror p[data-quote-style="scythe-single"]::after  { content: "」"; }
+.ProseMirror p[data-quote-style="scythe-single"]::before {
+  content: "「";
+}
+.ProseMirror p[data-quote-style="scythe-single"]::after {
+  content: "」";
+}
 
-.ProseMirror p[data-quote-style="scythe-double"]::before { content: "『"; }
-.ProseMirror p[data-quote-style="scythe-double"]::after  { content: "』"; }
+.ProseMirror p[data-quote-style="scythe-double"]::before {
+  content: "『";
+}
+.ProseMirror p[data-quote-style="scythe-double"]::after {
+  content: "』";
+}
 
-.ProseMirror p[data-quote-style="guillemet-single"]::before { content: "〈"; }
-.ProseMirror p[data-quote-style="guillemet-single"]::after  { content: "〉"; }
+.ProseMirror p[data-quote-style="guillemet-single"]::before {
+  content: "〈";
+}
+.ProseMirror p[data-quote-style="guillemet-single"]::after {
+  content: "〉";
+}
 
-.ProseMirror p[data-quote-style="guillemet-double"]::before { content: "《"; }
-.ProseMirror p[data-quote-style="guillemet-double"]::after  { content: "》"; }
+.ProseMirror p[data-quote-style="guillemet-double"]::before {
+  content: "《";
+}
+.ProseMirror p[data-quote-style="guillemet-double"]::after {
+  content: "》";
+}
 
 /* Comment 노드 스타일 */
 .ProseMirror aside {
-    color: #666;
-    font-family: monospace;
-    font-size: 14px;
-    padding: 0.3em 1em;
-    border-left: 3px solid #666;
-    margin: 1em 0;
-    white-space: pre-wrap;
+  color: #666;
+  font-family: monospace;
+  font-size: 14px;
+  padding: 0.3em 1em;
+  border-left: 3px solid #666;
+  margin: 1em 0;
+  white-space: pre-wrap;
 }
 
 /* Divider (hr) */
 .ProseMirror hr {
-    border: none;
-    border-top: 1.5px solid;
-    border-color: var(--editor-color, inherit);
-    opacity: 0.6;
-    margin: 2em 0;
-    height: 0;
+  border: none;
+  border-top: 1.5px solid;
+  border-color: var(--editor-color, inherit);
+  opacity: 0.6;
+  margin: 2em 0;
+  height: 0;
+}
+
+.find-match-highlight {
+  background-color: rgba(128, 0, 128, 0.3);
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(128, 0, 128, 0.5);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.current-find-match {
+  background-color: rgba(128, 0, 128, 0.6);
+  box-shadow: 0 0 0 1px rgba(128, 0, 128, 0.8);
 }

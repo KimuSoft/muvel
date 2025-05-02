@@ -5,7 +5,7 @@ import { SearchRepository } from "./search.repository"
 export class SearchService {
   constructor(
     private readonly episodeRepository: EpisodeRepository,
-    private readonly searchRepository: SearchRepository
+    private readonly searchRepository: SearchRepository,
   ) {}
 
   async insertAllBlocksToCache() {

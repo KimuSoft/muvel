@@ -9,14 +9,14 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>
+    private readonly userRepository: Repository<UserEntity>,
   ) {}
 
   async validateUser(
     accountType: string,
     id: string,
     username: string,
-    avatar: string
+    avatar: string,
   ): Promise<UserEntity> {
     const userId = `${accountType}:${id}`
 
@@ -40,8 +40,8 @@ export class AuthService {
     return this.userRepository.save(newUser)
   }
 
-  async login(user: UserEntity) {
-    const payload = { id: user.id }
+  async login({ id }: { id: string }) {
+    const payload = { id }
     return {
       accessToken: await this.jwtService.signAsync(payload),
     }

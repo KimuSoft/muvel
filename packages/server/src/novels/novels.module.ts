@@ -1,7 +1,7 @@
 import { Global, Module } from "@nestjs/common"
 import { TypeOrmModule } from "@nestjs/typeorm"
 import { NovelEntity } from "./novel.entity"
-import { NovelsService } from "./novels.service"
+import { NovelsService } from "./services/novels.service"
 import { NovelsController } from "./novels.controller"
 import { UserEntity } from "../users/user.entity"
 import { SearchRepository } from "../search/search.repository"
@@ -13,6 +13,7 @@ import { EpisodeRepository } from "../episodes/repositories/episode.repository"
 import { EpisodesService } from "../episodes/services/episodes.service"
 import { BlockRepository } from "../blocks/block.repository"
 import { UsersService } from "../users/users.service"
+import { NovelPermissionService } from "./services/novel-permission.service"
 
 @Global()
 @Module({
@@ -28,6 +29,7 @@ import { UsersService } from "../users/users.service"
   providers: [
     // services
     NovelsService,
+    NovelPermissionService,
     EpisodesService,
     UsersService,
 

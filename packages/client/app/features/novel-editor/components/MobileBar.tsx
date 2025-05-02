@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Button, HStack, Spacer } from "@chakra-ui/react"
+import { Box, Button, HStack, Spacer } from "@chakra-ui/react"
 import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
 import { TextSelection } from "prosemirror-state"
 
@@ -63,71 +63,68 @@ const MobileBar = () => {
     }
   }, []) // 마운트 시 한 번만 실행
 
-  // 동적으로 display 스타일 결정
-  // base (모바일): isKeyboardVisible이 true일 때만 'flex'
-  // md (데스크탑): 항상 'none'
-  const displayStyle = {
-    base: isKeyboardVisible ? "flex" : "none",
-    md: "none",
-  }
-
   return (
-    <HStack
-      position="sticky"
+    <Box
+      display={{ base: "block", md: "none" }}
+      position="fixed"
+      w={"100vw"}
+      h={"100dvh"}
       left={0}
-      right={0}
-      // bottom 오프셋은 키보드 높이에 맞게 계속 조절
-      bottom={0}
-      borderTopWidth={1}
-      borderColor={{ base: "gray.200", _dark: "gray.700" }}
-      p={1}
-      gap={0}
-      zIndex={999}
-      // 계산된 display 스타일 적용
-      display={displayStyle}
-      bgColor={{ base: "white", _dark: "black" }}
-      // 키보드가 올라올 때 부드러운 전환 효과 (선택 사항)
-      transition="bottom 0.2s ease-out, opacity 0.2s ease-out"
-      // 키보드가 보이지 않을 때 투명하게 처리하여 깜빡임 방지 (선택 사항)
-      opacity={isKeyboardVisible ? 1 : 0}
-      // 보이지 않을 때 상호작용 막기 (선택 사항)
-      pointerEvents={isKeyboardVisible ? "auto" : "none"}
+      bottom={bottomOffset}
+      // 클릭 무시
+      pointerEvents={"none"}
+      zIndex={10}
     >
-      {/* 버튼들은 그대로 유지 */}
-      <Button size={"sm"} variant={"ghost"} onClick={() => insertSymbol("!")}>
-        !
-      </Button>
-      <Button size={"sm"} variant={"ghost"} onClick={() => insertSymbol("?")}>
-        ?
-      </Button>
-      <Button size={"sm"} variant={"ghost"} onClick={() => insertSymbol("-")}>
-        -
-      </Button>
-      <Button size={"sm"} variant={"ghost"} onClick={() => insertSymbol("~")}>
-        ~
-      </Button>
-      <Button size={"sm"} variant={"ghost"} onClick={() => insertSymbol("—")}>
-        —
-      </Button>
-      <Spacer />
-      <Button size={"sm"} variant={"ghost"} onClick={() => insertSymbol("⋯")}>
-        ⋯
-      </Button>
-      <Button
-        size={"sm"}
-        variant={"ghost"}
-        onClick={() => insertSymbolPair("‘", "’")}
+      <HStack
+        position={"absolute"}
+        w={"100%"}
+        left={0}
+        // bottom 오프셋은 키보드 높이에 맞게 계속 조절
+        bottom={0}
+        borderTopWidth={1}
+        borderColor={{ base: "gray.200", _dark: "gray.700" }}
+        p={1}
+        gap={0}
+        bgColor={{ base: "white", _dark: "black" }}
+        // 보이지 않을 때 상호작용 막기 (선택 사항)
+        pointerEvents={isKeyboardVisible ? "auto" : "none"}
       >
-        ‘’
-      </Button>
-      <Button
-        size={"sm"}
-        variant={"ghost"}
-        onClick={() => insertSymbolPair("“", "”")}
-      >
-        “”
-      </Button>
-    </HStack>
+        {/* 버튼들은 그대로 유지 */}
+        <Button size={"sm"} variant={"ghost"} onClick={() => insertSymbol("!")}>
+          !
+        </Button>
+        <Button size={"sm"} variant={"ghost"} onClick={() => insertSymbol("?")}>
+          ?
+        </Button>
+        <Button size={"sm"} variant={"ghost"} onClick={() => insertSymbol("-")}>
+          -
+        </Button>
+        <Button size={"sm"} variant={"ghost"} onClick={() => insertSymbol("~")}>
+          ~
+        </Button>
+        <Button size={"sm"} variant={"ghost"} onClick={() => insertSymbol("—")}>
+          —
+        </Button>
+        <Spacer />
+        <Button size={"sm"} variant={"ghost"} onClick={() => insertSymbol("⋯")}>
+          ⋯
+        </Button>
+        <Button
+          size={"sm"}
+          variant={"ghost"}
+          onClick={() => insertSymbolPair("‘", "’")}
+        >
+          ‘’
+        </Button>
+        <Button
+          size={"sm"}
+          variant={"ghost"}
+          onClick={() => insertSymbolPair("“", "”")}
+        >
+          “”
+        </Button>
+      </HStack>
+    </Box>
   )
 }
 

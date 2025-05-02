@@ -18,7 +18,7 @@ export class AuthController {
   })
   async login(
     @Request() req: AuthenticatedRequest,
-    @Res({ passthrough: true }) res: Response
+    @Res({ passthrough: true }) res: Response,
   ) {
     const loginResult = await this.authService.login(req.user)
 

@@ -11,7 +11,7 @@ import {
   Query,
   Request,
 } from "@nestjs/common"
-import { NovelsService } from "./novels.service"
+import { NovelsService } from "./services/novels.service"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
 import { UpdateNovelDto } from "./dto/update-novel.dto"
 import { CreateEpisodeDto } from "../episodes/dto/create-episode.dto"
@@ -21,14 +21,13 @@ import { SearchRepository } from "../search/search.repository"
 import { SearchInNovelDto } from "../search/dto/search-in-novel.dto"
 import { EpisodesService } from "../episodes/services/episodes.service"
 import { ExportNovelResponseDto, GetNovelResponseDto } from "muvel-api-types"
-import {
-  AuthenticatedRequest,
-  MuvelRequest,
-  RequireAuth,
-} from "../auth/jwt-auth.guard"
+import { AuthenticatedRequest, RequireAuth } from "../auth/jwt-auth.guard"
 import { CreateNovelDto } from "./dto/create-novel.dto"
 import { RequirePermission } from "../permissions/require-permission.decorator"
-import { NovelPermissionGuard } from "../permissions/novel-permission.guard"
+import {
+  NovelPermissionGuard,
+  NovelPermissionRequest,
+} from "../permissions/novel-permission.guard"
 import { UuIdParamDto } from "../utils/UuIdParamDto"
 import { UsersService } from "../users/users.service"
 
@@ -39,7 +38,7 @@ export class NovelsController {
     private readonly novelsService: NovelsService,
     private readonly episodesService: EpisodesService,
     private readonly searchService: SearchRepository,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
   ) {}
 
   @Get()
@@ -59,7 +58,7 @@ export class NovelsController {
   @RequireAuth()
   async createNovel(
     @Request() req: AuthenticatedRequest,
-    @Body() createNovelDto: CreateNovelDto
+    @Body() createNovelDto: CreateNovelDto,
   ) {
     return this.novelsService.createNovel(req.user, createNovelDto)
   }
@@ -72,11 +71,11 @@ export class NovelsController {
   })
   @RequirePermission("read", NovelPermissionGuard)
   async getNovel(
-    @Request() req: MuvelRequest,
-    @Param() { id }: UuIdParamDto
+    @Request() req: NovelPermissionRequest,
+    @Param() { id }: UuIdParamDto,
   ): Promise<GetNovelResponseDto> {
-    if (!req.novel?.permissions) throw new InternalServerErrorException()
     if (req.user?.id) {
+      // 최근에 접속한 소설 업데이트
       void this.usersService.updateLastAccessedNovel(req.user.id, id)
     }
     return this.novelsService.findNovelById(id, req.novel?.permissions)
@@ -103,7 +102,7 @@ export class NovelsController {
   @RequirePermission("edit", NovelPermissionGuard)
   async updateNovel(
     @Param("id") id: string,
-    @Body() novelUpdateDto: UpdateNovelDto
+    @Body() novelUpdateDto: UpdateNovelDto,
   ) {
     return this.novelsService.updateNovel(id, novelUpdateDto)
   }
@@ -126,7 +125,7 @@ export class NovelsController {
   @RequirePermission("edit", NovelPermissionGuard)
   async addEpisode(
     @Param("id") id: string,
-    @Body() createEpisodeDto: CreateEpisodeDto
+    @Body() createEpisodeDto: CreateEpisodeDto,
   ) {
     return this.episodesService.createEpisode(id, createEpisodeDto)
   }
@@ -139,7 +138,7 @@ export class NovelsController {
   @RequirePermission("edit", NovelPermissionGuard)
   async patchEpisodes(
     @Param("id") id: string,
-    @Body() dto: PatchEpisodesDto[]
+    @Body() dto: PatchEpisodesDto[],
   ) {
     return this.episodesService.patchEpisodes(id, dto)
   }
@@ -153,7 +152,7 @@ export class NovelsController {
   @RequirePermission("edit", NovelPermissionGuard)
   async searchInNovel(
     @Param("id") id: string,
-    @Query() searchInNovelDto: SearchInNovelDto
+    @Query() searchInNovelDto: SearchInNovelDto,
   ) {
     return this.searchService.searchBlocksByNovel(id, searchInNovelDto)
   }

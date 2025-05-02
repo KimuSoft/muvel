@@ -14,7 +14,6 @@ import { Tooltip } from "~/components/ui/tooltip"
 import EpisodeListDrawer from "~/features/novel-editor/components/drawers/EpisodeListDrawer"
 import WidgetDrawer from "~/features/novel-editor/components/drawers/WidgetDrawer"
 import SearchDialog from "~/features/novel-editor/components/dialogs/SearchDialog"
-import type { GetEpisodeResponseDto } from "muvel-api-types"
 import SyncIndicator, {
   SyncState,
 } from "~/features/novel-editor/components/SyncIndicator"
@@ -25,11 +24,13 @@ import SnapshotDrawer from "~/features/novel-editor/components/drawers/SnapshotD
 import { MdOutlineWidgets } from "react-icons/md"
 import MobileActionMenu from "~/features/novel-editor/components/menus/MobileActionMenu"
 import { PiGear } from "react-icons/pi"
+import type { GetEpisodeResponseDto } from "muvel-api-types"
+import type { EpisodeData } from "~/features/novel-editor/context/EditorContext"
 
 const EditorHeader: React.FC<
   StackProps & {
     novelId: string
-    episode: GetEpisodeResponseDto
+    episode: EpisodeData
     syncState: SyncState
   }
 > = ({ novelId, episode, syncState, ...props }) => {

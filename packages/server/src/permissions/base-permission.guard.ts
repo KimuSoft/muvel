@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common"
 import { Reflector } from "@nestjs/core"
 import { BasePermission } from "muvel-api-types"
-import { MuvelRequest } from "../auth/jwt-auth.guard"
+import { OptionalAuthenticatedRequest } from "../auth/jwt-auth.guard"
 
 export interface PermissionResult<T> {
   resource: T
@@ -12,30 +12,32 @@ export interface PermissionResult<T> {
 export abstract class BasePermissionGuard<T> implements CanActivate {
   constructor(protected reflector: Reflector) {}
 
-  abstract getResourceId(request: MuvelRequest): string
+  abstract getResourceId(request: OptionalAuthenticatedRequest): string
   abstract getPermission(
     resourceId: string,
-    userId?: string
+    userId?: string,
   ): Promise<PermissionResult<T>>
   abstract injectPermissionsToRequest(
-    request: MuvelRequest,
+    request: OptionalAuthenticatedRequest,
     resource: T,
-    permissions: BasePermission
+    permissions: BasePermission,
   ): void
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<MuvelRequest>()
+    const request = context
+      .switchToHttp()
+      .getRequest<OptionalAuthenticatedRequest>()
     const userId = request.user?.id
     const required = this.reflector.get<keyof BasePermission>(
       "permission",
-      context.getHandler()
+      context.getHandler(),
     )
     if (!required) return true
 
     const resourceId = this.getResourceId(request)
     const { resource, permissions } = await this.getPermission(
       resourceId,
-      userId
+      userId,
     )
 
     this.injectPermissionsToRequest(request, resource, permissions)

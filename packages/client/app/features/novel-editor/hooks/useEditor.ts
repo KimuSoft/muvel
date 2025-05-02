@@ -12,6 +12,7 @@ import { createInputRules } from "~/features/novel-editor/plugins/inputRules"
 import { assignIdPlugin } from "~/features/novel-editor/plugins/assignIdPlugin"
 import { autoQuotePlugin } from "~/features/novel-editor/plugins/autoQuotePlugin"
 import { typewriterPlugin } from "~/features/novel-editor/plugins/typewriterPlugin"
+import { highlightPlugin } from "~/features/novel-editor/plugins/highlightPlugin"
 
 interface UseEditorProps {
   containerRef: React.RefObject<HTMLDivElement>
@@ -46,6 +47,7 @@ export const useEditor = ({
         createInputRules(baseSchema),
         autoQuotePlugin,
         typewriterPlugin,
+        highlightPlugin(),
         keymap({
           "Mod-z": undo,
           "Mod-y": redo,

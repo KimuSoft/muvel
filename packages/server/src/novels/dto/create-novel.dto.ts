@@ -14,7 +14,7 @@ export class CreateNovelDto {
 
   @ApiProperty({
     description: "소설의 공개 범위",
-    type: "enum",
+    type: "number",
     enum: ShareType,
   })
   @IsEnum(ShareType)

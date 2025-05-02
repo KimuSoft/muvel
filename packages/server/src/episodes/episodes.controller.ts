@@ -6,23 +6,22 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   Request,
+  UnauthorizedException,
 } from "@nestjs/common"
 import { EpisodesService } from "./services/episodes.service"
-import {
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from "@nestjs/swagger"
+import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
 import { UpdateEpisodeDto } from "./dto/update-episode.dto"
 import { PatchBlocksDto } from "./dto/patch-blocks.dto"
 import { PartialEpisodeDto } from "./dto/episode.dto"
 import { EpisodeIdParamDto } from "./dto/episode-id-param.dto"
 import { EpisodeAnalysisService } from "./services/episode-analysis.service"
-import { MuvelRequest } from "../auth/jwt-auth.guard"
 import { RequirePermission } from "../permissions/require-permission.decorator"
-import { EpisodePermissionGuard } from "../permissions/episode-permission.guard"
+import {
+  EpisodePermissionGuard,
+  EpisodePermissionRequest,
+} from "../permissions/episode-permission.guard"
 import { CreateAiAnalysisRequestBodyDto } from "./dto/create-ai-analysis-request-body.dto"
 
 @Controller("episodes")
@@ -30,7 +29,7 @@ import { CreateAiAnalysisRequestBodyDto } from "./dto/create-ai-analysis-request
 export class EpisodesController {
   constructor(
     private readonly episodesService: EpisodesService,
-    private readonly episodeAnalysisService: EpisodeAnalysisService
+    private readonly episodeAnalysisService: EpisodeAnalysisService,
   ) {}
 
   @Get(":id")
@@ -38,14 +37,11 @@ export class EpisodesController {
     summary: "에피소드 정보 불러오기",
     description: "에피소드의 정보를 불러옵니다.",
   })
-  @ApiNotFoundResponse()
-  @ApiOkResponse({ type: PartialEpisodeDto })
   @RequirePermission("read", EpisodePermissionGuard)
   async getEpisodes(
-    @Request() req: MuvelRequest,
-    @Param() { id }: EpisodeIdParamDto
+    @Request() req: EpisodePermissionRequest,
+    @Param() { id }: EpisodeIdParamDto,
   ) {
-    if (!req.episode?.permissions) return null
     return this.episodesService.findEpisodeById(id, req.episode.permissions)
   }
 
@@ -58,7 +54,7 @@ export class EpisodesController {
   @RequirePermission("edit", EpisodePermissionGuard)
   async updateEpisode(
     @Param() { id }: EpisodeIdParamDto,
-    @Body() dto: UpdateEpisodeDto
+    @Body() dto: UpdateEpisodeDto,
   ) {
     return this.episodesService.updateEpisode(id, dto)
   }
@@ -93,7 +89,7 @@ export class EpisodesController {
   @RequirePermission("edit", EpisodePermissionGuard)
   async patchBlocks(
     @Param() { id }: EpisodeIdParamDto,
-    @Body() blockDiffs: PatchBlocksDto[]
+    @Body() blockDiffs: PatchBlocksDto[],
   ) {
     return this.episodesService.updateBlocks(id, blockDiffs)
   }
@@ -105,13 +101,18 @@ export class EpisodesController {
   })
   @RequirePermission("edit", EpisodePermissionGuard)
   async aiAnalyze(
+    @Req() request: EpisodePermissionRequest,
     @Param("id") episodeId: string,
-    @Body() options: CreateAiAnalysisRequestBodyDto
+    @Body() options: CreateAiAnalysisRequestBodyDto,
   ) {
-    return this.episodeAnalysisService.createAnalysisForEpisode(
+    if (!request.user) throw new UnauthorizedException()
+    await this.episodeAnalysisService.checkPoints(request.user.id, 100)
+    const result = this.episodeAnalysisService.createAnalysisForEpisode(
       episodeId,
-      options
+      options,
     )
+    await this.episodeAnalysisService.consumePoints(request.user.id, 100)
+    return result
   }
 
   @Get(":id/analyses")

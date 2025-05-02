@@ -22,6 +22,7 @@ import type { EpisodeSnapshot, GetEpisodeResponseDto } from "muvel-api-types"
 import { getSnapshots } from "~/api/api.episode"
 import { TbHistory, TbSlash } from "react-icons/tb"
 import { toaster } from "~/components/ui/toaster"
+import type { EpisodeData } from "~/features/novel-editor/context/EditorContext"
 
 const SnapshotItem: React.FC<{
   snapshot: EpisodeSnapshot
@@ -67,7 +68,7 @@ const SnapshotItem: React.FC<{
 }
 
 const SnapshotDrawer: React.FC<{
-  episode: GetEpisodeResponseDto
+  episode: EpisodeData
   children?: React.ReactNode
   dialog: UseDialogReturn
 }> = ({ episode, children, dialog }) => {

@@ -8,7 +8,6 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerPositioner,
-  DrawerRoot,
   DrawerRootProvider,
   DrawerTrigger,
   EmptyState,
@@ -27,12 +26,8 @@ import {
   type UseDialogReturn,
   VStack,
 } from "@chakra-ui/react"
-import React, { type PropsWithChildren, useEffect, useMemo } from "react"
-import type {
-  AiAnalysis,
-  CreateAiAnalysisRequestBody,
-  GetEpisodeResponseDto,
-} from "muvel-api-types"
+import React, { useEffect, useMemo } from "react"
+import type { AiAnalysis, CreateAiAnalysisRequestBody } from "muvel-api-types"
 import { createAiAnalysis, getAiAnalysis } from "~/api/api.episode"
 import {
   TbAnalyze,
@@ -42,6 +37,7 @@ import {
 } from "react-icons/tb"
 import AiAnalysisWarningDialog from "~/features/novel-editor/components/dialogs/AiAnalysisWarningDialog"
 import { toaster } from "~/components/ui/toaster"
+import type { EpisodeData } from "~/features/novel-editor/context/EditorContext"
 
 const MAX_AI_PROFILE = 8
 
@@ -109,7 +105,7 @@ const ScoreItem: React.FC<{
 }
 
 const CommentDrawer: React.FC<{
-  episode: GetEpisodeResponseDto
+  episode: EpisodeData
   editable?: boolean
   children?: React.ReactNode
   dialog: UseDialogReturn
@@ -276,8 +272,8 @@ const CommentDrawer: React.FC<{
                     </VStack>
                   </HStack>
                   <Text color={"gray.500"} fontSize={"xs"}>
-                    AI 평가는 정확하지 않으며, 한 회차만을 단편적으로 읽기
-                    때문에 단순 참고용으로만 사용해 주세요. 당신의 글의
+                    AI 평가는 정확하지 않아요. 그냥 이런 의견도 있구나 하는
+                    느낌의 단순 참고용으로만 사용해 주세요. 당신의 글의
                     아름다움은 당신만이 평가할 수 있으니까요!
                   </Text>
                 </VStack>

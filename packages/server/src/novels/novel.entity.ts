@@ -12,6 +12,7 @@ import {
 import { EpisodeEntity } from "../episodes/entities/episode.entity"
 import { UserEntity } from "../users/user.entity"
 import { Novel, ShareType } from "muvel-api-types"
+import { CharacterEntity } from "../characters/character.entity"
 
 @Entity("novel")
 export class NovelEntity implements Novel {
@@ -30,13 +31,26 @@ export class NovelEntity implements Novel {
   @Column("text", { array: true, default: [] })
   tags: string[] = []
 
+  @Column({ default: ShareType.Private })
+  share: ShareType
+
+  @Column({ default: 0, type: "numeric" })
+  order: number
+
+  @Column({ default: 0 })
+  episodeCount: number
+
+  /** Relations */
+
   @OneToMany(() => EpisodeEntity, (episode) => episode.novel, {
     cascade: true,
   })
   episodes: EpisodeEntity[]
 
-  @Column({ default: 0 })
-  episodeCount: number
+  @OneToMany(() => CharacterEntity, (character) => character.novel, {
+    cascade: true,
+  })
+  characters: CharacterEntity[]
 
   @ManyToOne(() => UserEntity, (user) => user.novels, {
     onDelete: "CASCADE",
@@ -46,11 +60,7 @@ export class NovelEntity implements Novel {
   @RelationId((self: NovelEntity) => self.author)
   authorId: string
 
-  @Column({ default: ShareType.Private })
-  share: ShareType
-
-  @Column({ default: 0, type: "numeric" })
-  order: number
+  /** Dates */
 
   @CreateDateColumn()
   createdAt: Date

@@ -1,6 +1,4 @@
 import { Injectable } from "@nestjs/common"
 
 @Injectable()
-export class BlocksService {
-  constructor() {}
-}
+export class WikiPagesService {}

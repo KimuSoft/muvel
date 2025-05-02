@@ -19,15 +19,15 @@ interface KimustoryProfile {
 @Injectable()
 export class KimustoryStrategy extends PassportStrategy(
   OAuth2Strategy,
-  "kimustory"
+  "kimustory",
 ) {
   constructor(private authService: AuthService) {
     super({
       authorizationURL: server + "/api/oauth2/authorize",
       tokenURL: server + "/api/oauth2/token",
-      clientID: process.env.KIMUSTORY_CLIENT_ID,
-      clientSecret: process.env.KIMUSTORY_CLIENT_SECRET,
-      callbackURL: process.env.KIMUSTORY_CALLBACK_URL,
+      clientID: process.env.KIMUSTORY_CLIENT_ID!,
+      clientSecret: process.env.KIMUSTORY_CLIENT_SECRET!,
+      callbackURL: process.env.KIMUSTORY_CALLBACK_URL!,
       scope: "identify",
     })
   }
@@ -42,13 +42,13 @@ export class KimustoryStrategy extends PassportStrategy(
   async validate(
     accessToken: string,
     refreshToken: string,
-    profile: KimustoryProfile
+    profile: KimustoryProfile,
   ) {
     return this.authService.validateUser(
       "kimustory",
       profile.id,
       profile.username,
-      server + "/avatars/" + profile.avatar
+      server + "/avatars/" + profile.avatar,
     )
   }
 }
