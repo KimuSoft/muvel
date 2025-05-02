@@ -17,7 +17,7 @@ export interface GeminiAnalysisResponse {
 
 // 사용할 모델 (예: gemini-1.5-flash-latest 또는 gemini-1.0-pro)
 // const GEMINI_MODEL = "models/gemini-2.5-flash-preview-04-17"
-const GEMINI_MODEL = "gemini-2.0-flash-exp"
+const GEMINI_MODEL = "gemini-2.0-flash"
 const SYSTEM_INSTRUCTION = `
       소설 회차 내용을 제공하면 분석하여 JSON 형식으로 평가 결과를 제공해 주세요.
       평가는 종합 평점, 개별 항목 점수, 그리고 댓글 형식의 리뷰로 구성됩니다.

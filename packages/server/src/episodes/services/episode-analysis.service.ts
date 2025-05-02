@@ -14,15 +14,39 @@ import { EpisodeRepository } from "../repositories/episode.repository"
 import { BlockRepository } from "../../blocks/block.repository"
 import { BlockType, EpisodeType } from "muvel-api-types"
 import { CreateAiAnalysisRequestBodyDto } from "../dto/create-ai-analysis-request-body.dto"
+import { UserEntity } from "../../users/user.entity"
 
 export class EpisodeAnalysisService {
   constructor(
     @InjectRepository(AiAnalysisEntity)
     private readonly aiAnalysisRepository: Repository<AiAnalysisEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
     private readonly episodeRepository: EpisodeRepository,
     private readonly blockRepository: BlockRepository,
     private readonly geminiAnalysisRepository: GeminiAnalysisRepository,
   ) {}
+
+  // 포인트를 체크하고 소비시키는 메서드 (TODO: 나중에 유저서비스로 이동)
+  async checkAndConsumePoints(userId: string, point: number): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    })
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`)
+    }
+
+    if (user.point < point) {
+      throw new BadRequestException(
+        `User with ID ${userId} does not have enough points.`,
+      )
+    }
+
+    user.point -= point
+
+    await this.userRepository.save(user)
+  }
 
   async findAnalysisByEpisodeId(
     episodeId: string,

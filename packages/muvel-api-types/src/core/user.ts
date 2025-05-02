@@ -4,6 +4,9 @@ export interface User {
   avatar: string
   recentEpisodeIds: string[]
   admin: boolean
+  point: number
+  // createdAt: number
+  // updatedAt: number
 }
 
 export type UserPublicDto = Pick<User, "id" | "username" | "avatar">
@@ -14,4 +17,5 @@ export const sampleUser: User = {
   avatar: "https://example.com/avatar.png",
   recentEpisodeIds: [],
   admin: false,
+  point: 0,
 }

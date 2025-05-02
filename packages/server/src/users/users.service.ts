@@ -1,11 +1,14 @@
-import { Injectable, NotFoundException } from "@nestjs/common"
+import { Injectable, Logger, NotFoundException } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 import { UserEntity } from "./user.entity"
-import { In, Repository } from "typeorm"
+import { Repository } from "typeorm"
 import { NovelEntity } from "../novels/novel.entity"
+import { Cron, CronExpression } from "@nestjs/schedule"
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name) // 클래스 이름 자동으로 사용
+
   constructor(
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
@@ -78,5 +81,23 @@ export class UsersService {
     await this.usersRepository.update(userId, {
       recentNovelIds: limited,
     })
+  }
+
+  @Cron(CronExpression.EVERY_HOUR)
+  async handlePointIncrease() {
+    try {
+      const result = await this.usersRepository
+        .createQueryBuilder()
+        .update(UserEntity)
+        .set({
+          point: () => `LEAST(point + 100, 1000)`,
+        })
+        .where("point < 1000")
+        .execute()
+
+      this.logger.log(`✅ Updated ${result.affected} users' points.`)
+    } catch (error) {
+      this.logger.error("❌ Failed to update points", error.stack)
+    }
   }
 }

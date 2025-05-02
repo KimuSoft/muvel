@@ -30,8 +30,8 @@ export class UserEntity {
   @Column({ default: false })
   admin: boolean
 
-  // 1 포인트 = 10자
-  @Column({ default: 300 })
+  // 100 포인트 = 3000자
+  @Column({ default: 1000 })
   point: number
 
   /** Dates */

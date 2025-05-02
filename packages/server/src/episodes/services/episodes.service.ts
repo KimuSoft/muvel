@@ -9,12 +9,11 @@ import { PatchEpisodesDto } from "../../novels/dto/patch-episodes.dto"
 import { CreateEpisodeDto } from "../dto/create-episode.dto"
 import { NovelEntity } from "../../novels/novel.entity"
 import { SearchRepository } from "src/search/search.repository"
-import { BasePermission, EpisodeType, ShareType } from "muvel-api-types"
+import { BasePermission, EpisodeType } from "muvel-api-types"
 import { UpdateEpisodeDto } from "../dto/update-episode.dto"
 import { PatchBlocksDto } from "../dto/patch-blocks.dto"
 import { BlockRepository } from "../../blocks/block.repository"
 import { EpisodeRepository } from "../repositories/episode.repository"
-import { EpisodeEntity } from "../entities/episode.entity"
 
 @Injectable()
 export class EpisodesService {

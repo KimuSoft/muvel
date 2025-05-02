@@ -6,7 +6,9 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   Request,
+  UnauthorizedException,
 } from "@nestjs/common"
 import { EpisodesService } from "./services/episodes.service"
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
@@ -99,9 +101,15 @@ export class EpisodesController {
   })
   @RequirePermission("edit", EpisodePermissionGuard)
   async aiAnalyze(
+    @Req() request: EpisodePermissionRequest,
     @Param("id") episodeId: string,
     @Body() options: CreateAiAnalysisRequestBodyDto,
   ) {
+    if (!request.user) throw new UnauthorizedException()
+    await this.episodeAnalysisService.checkAndConsumePoints(
+      request.user.id,
+      100,
+    )
     return this.episodeAnalysisService.createAnalysisForEpisode(
       episodeId,
       options,
