@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo, useCallback } from "react"
 import {
   DndContext,
   type DragEndEvent,
@@ -7,71 +7,111 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core"
-import { rectSortingStrategy, SortableContext } from "@dnd-kit/sortable"
+import {
+  arrayMove,
+  rectSortingStrategy,
+  SortableContext,
+} from "@dnd-kit/sortable"
 import { type StackProps, VStack } from "@chakra-ui/react"
 import type { Episode } from "muvel-api-types"
-import SortableEpisodeItem from "../molecules/SortableEpisodeItem"
-import { type ReorderedEpisode, reorderEpisode } from "~/utils/reorderEpisode"
+import SortableEpisodeItem from "../molecules/SortableEpisodeItem" // 경로 확인 필요
+import { type ReorderedEpisode, reorderEpisode } from "~/utils/reorderEpisode" // 경로 확인 필요
 
-const SortableEpisodeList: React.FC<
-  {
-    episodes: Episode[]
-    isNarrow?: boolean
-    loading?: boolean
-    disableSort?: boolean
-    onEpisodesChange?: (diffEpisodes: ReorderedEpisode[]) => void
-  } & StackProps
-> = ({
+/** ------------------------------------------------------------------
+ *  Types
+ * ------------------------------------------------------------------*/
+export type SortDirection = "asc" | "desc"
+
+interface SortableEpisodeListProps extends StackProps {
+  episodes: Episode[]
+  isNarrow?: boolean
+  loading?: boolean
+  disableSort?: boolean
+  onEpisodesChange?: (diffEpisodes: ReorderedEpisode[]) => void
+  sortDirection: SortDirection
+}
+
+/** ------------------------------------------------------------------
+ *  Helpers
+ * ------------------------------------------------------------------*/
+const ascSort = (a: Episode, b: Episode) =>
+  parseFloat(a.order.toString()) - parseFloat(b.order.toString())
+const toCanonicalAsc = (eps: Episode[]) => [...eps].sort(ascSort)
+
+/** ------------------------------------------------------------------
+ *  Component
+ * ------------------------------------------------------------------*/
+const SortableEpisodeList: React.FC<SortableEpisodeListProps> = ({
   episodes,
   isNarrow,
   loading,
   onEpisodesChange,
   disableSort,
+  sortDirection,
   ...props
 }) => {
+  /** ------------------------------------------------------------------
+   * Sensors
+   * ------------------------------------------------------------------*/
   const sensors = useSensors(
     useSensor(MouseSensor, {
-      activationConstraint: {
-        distance: 50,
-      },
+      activationConstraint: { distance: 8 },
     }),
     useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 250,
-        tolerance: 1,
-      },
+      activationConstraint: { delay: 150, tolerance: 5 },
     }),
   )
 
-  const handleDragEnd = (e: DragEndEvent) => {
-    const { active, over } = e
+  /** ------------------------------------------------------------------
+   * 화면에 표시할 배열 (정렬 방향 반영)
+   * ------------------------------------------------------------------*/
+  const displayedEpisodes = useMemo(() => {
+    const asc = toCanonicalAsc(episodes)
+    return sortDirection === "desc" ? asc.reverse() : asc
+  }, [episodes, sortDirection])
 
-    if (!over || active.id === over.id) return
+  /** ------------------------------------------------------------------
+   * DragEnd
+   *  1) UI 순서대로 이동
+   *  2) sortDirection 이 desc 면 다시 뒤집어 canonical(asc)로 변환
+   *  3) reorderEpisode 호출
+   * ------------------------------------------------------------------*/
+  const handleDragEnd = useCallback(
+    (e: DragEndEvent) => {
+      const { active, over } = e
+      if (!over || active.id === over.id) return
 
-    const oldIndex = episodes.findIndex((ep) => ep.id === active.id)
-    const newIndex = episodes.findIndex((ep) => ep.id === over.id)
+      const oldIndex = displayedEpisodes.findIndex((ep) => ep.id === active.id)
+      const newIndex = displayedEpisodes.findIndex((ep) => ep.id === over.id)
+      if (oldIndex === -1 || newIndex === -1) return
 
-    if (oldIndex === -1 || newIndex === -1) return
+      // 1) UI 순서 기준으로 이동
+      const uiReordered = arrayMove(displayedEpisodes, oldIndex, newIndex)
 
-    const reordered = [...episodes]
-    const [moved] = reordered.splice(oldIndex, 1)
-    reordered.splice(newIndex, 0, moved)
+      // 2) canonical(오름차순)으로 변환
+      const canonicalReordered =
+        sortDirection === "desc" ? [...uiReordered].reverse() : uiReordered
 
-    const updatedEpisodes = reorderEpisode(reordered)
+      // 3) 순번 재계산 & 콜백
+      const diff = reorderEpisode(canonicalReordered)
+      onEpisodesChange?.(diff)
+    },
+    [displayedEpisodes, sortDirection, onEpisodesChange],
+  )
 
-    onEpisodesChange?.(updatedEpisodes)
-  }
-
+  /** ------------------------------------------------------------------
+   * Render
+   * ------------------------------------------------------------------*/
   return (
-    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <SortableContext
-        disabled={loading || disableSort}
-        id={"episode-sort"}
-        items={episodes}
-        strategy={rectSortingStrategy}
-      >
-        <VStack alignItems={"baseline"} p={0} w={"100%"} {...props}>
-          {episodes.map((episode, idx) => (
+    <VStack alignItems="stretch" w="100%" {...props}>
+      <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+        <SortableContext
+          disabled={loading || disableSort}
+          id="episode-sort"
+          items={displayedEpisodes}
+          strategy={rectSortingStrategy}
+        >
+          {displayedEpisodes.map((episode, idx) => (
             <SortableEpisodeItem
               key={episode.id}
               episode={episode}
@@ -80,9 +120,9 @@ const SortableEpisodeList: React.FC<
               loading={loading}
             />
           ))}
-        </VStack>
-      </SortableContext>
-    </DndContext>
+        </SortableContext>
+      </DndContext>
+    </VStack>
   )
 }
 

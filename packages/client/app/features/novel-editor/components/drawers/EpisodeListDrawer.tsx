@@ -17,8 +17,10 @@ import {
   Spacer,
   Stack,
 } from "@chakra-ui/react"
-import { TbPlus } from "react-icons/tb"
-import SortableEpisodeList from "~/components/organisms/SortableEpisodeList"
+import { TbPlus, TbSortAscending, TbSortDescending } from "react-icons/tb"
+import SortableEpisodeList, {
+  type SortDirection,
+} from "~/components/organisms/SortableEpisodeList"
 import React, { type PropsWithChildren, useEffect } from "react"
 import {
   createNovelEpisode,
@@ -45,6 +47,7 @@ const EpisodeListDrawer: React.FC<
 > = ({ novelId, episodeId, permissions, children }) => {
   const [novel, setNovel] = React.useState<GetNovelResponseDto | null>(null)
   const [isLoading, setIsLoading] = React.useState(false)
+  const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc")
 
   const fetchNovel = async () => {
     setIsLoading(true)
@@ -97,10 +100,27 @@ const EpisodeListDrawer: React.FC<
             <Stack gap={3}>
               <NovelItem novel={novel} />
               <Separator my={3} />
-              <HStack gap={3} px={1}>
+              <HStack px={1}>
                 <FaList />
-                <Heading size={"md"}>에피소드 목록</Heading>
+                <Heading size={"md"} ml={1}>
+                  에피소드 목록
+                </Heading>
                 <Spacer />
+                <IconButton
+                  variant={"ghost"}
+                  gap={3}
+                  onClick={() =>
+                    setSortDirection((prev) =>
+                      prev === "asc" ? "desc" : "asc",
+                    )
+                  }
+                >
+                  {sortDirection === "asc" ? (
+                    <TbSortAscending />
+                  ) : (
+                    <TbSortDescending />
+                  )}
+                </IconButton>
                 {novel.permissions.edit ? (
                   <CreateEpisodeMenu onSelect={handleCreateEpisode}>
                     <IconButton variant={"ghost"} gap={3}>
@@ -111,6 +131,7 @@ const EpisodeListDrawer: React.FC<
               </HStack>
               <SortableEpisodeList
                 loading={isLoading}
+                sortDirection={sortDirection}
                 disableSort={!novel.permissions.edit}
                 isNarrow
                 episodes={novel?.episodes || []}

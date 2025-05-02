@@ -6,6 +6,7 @@ import {
   Container,
   Heading,
   HStack,
+  IconButton,
   Image,
   Spacer,
   Text,
@@ -13,10 +14,19 @@ import {
 } from "@chakra-ui/react"
 import Header from "../organisms/Header"
 import { type GetNovelResponseDto, ShareType } from "muvel-api-types"
-import { TbEdit, TbPencilPlus, TbPlayerPlay, TbShare } from "react-icons/tb"
+import {
+  TbEdit,
+  TbPencilPlus,
+  TbPlayerPlay,
+  TbShare,
+  TbSortAscending,
+  TbSortDescending,
+} from "react-icons/tb"
 import NovelTagList from "../organisms/NovelTagList"
 import { useNavigate, useRevalidator } from "react-router"
-import SortableEpisodeList from "../organisms/SortableEpisodeList"
+import SortableEpisodeList, {
+  type SortDirection,
+} from "../organisms/SortableEpisodeList"
 import ModifyNovelModal from "~/components/modals/ModifyNovelModal"
 import { FaList } from "react-icons/fa6"
 import BlockLink from "~/components/atoms/BlockLink"
@@ -34,6 +44,7 @@ const NovelDetailTemplate: React.FC<{
   const { revalidate } = useRevalidator()
   const navigate = useNavigate()
   const [isEpisodesLoading, setIsEpisodesLoading] = React.useState(false)
+  const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc")
 
   const handleCreateEpisode = async () => {
     setIsEpisodesLoading(true)
@@ -209,6 +220,19 @@ const NovelDetailTemplate: React.FC<{
           )}
           <Spacer />
 
+          <IconButton
+            variant={"ghost"}
+            gap={3}
+            onClick={() =>
+              setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"))
+            }
+          >
+            {sortDirection === "asc" ? (
+              <TbSortAscending />
+            ) : (
+              <TbSortDescending />
+            )}
+          </IconButton>
           {novel.permissions.edit ? (
             <Button
               colorPalette={"purple"}
@@ -224,6 +248,7 @@ const NovelDetailTemplate: React.FC<{
           ) : null}
         </HStack>
         <SortableEpisodeList
+          sortDirection={sortDirection}
           loading={isEpisodesLoading}
           episodes={novel.episodes}
           onEpisodesChange={handleReorderEpisode}
