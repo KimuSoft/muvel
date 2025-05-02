@@ -106,14 +106,13 @@ export class EpisodesController {
     @Body() options: CreateAiAnalysisRequestBodyDto,
   ) {
     if (!request.user) throw new UnauthorizedException()
-    await this.episodeAnalysisService.checkAndConsumePoints(
-      request.user.id,
-      100,
-    )
-    return this.episodeAnalysisService.createAnalysisForEpisode(
+    await this.episodeAnalysisService.checkPoints(request.user.id, 100)
+    const result = this.episodeAnalysisService.createAnalysisForEpisode(
       episodeId,
       options,
     )
+    await this.episodeAnalysisService.consumePoints(request.user.id, 100)
+    return result
   }
 
   @Get(":id/analyses")
