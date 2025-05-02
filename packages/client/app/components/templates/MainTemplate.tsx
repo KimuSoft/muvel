@@ -1,10 +1,12 @@
 import React, { type PropsWithChildren, type ReactNode } from "react"
 import {
+  Box,
   Button,
   Center,
   Heading,
   HStack,
   Icon,
+  Image,
   Link,
   Mark,
   Spacer,
@@ -30,6 +32,9 @@ import { TbLogin2, TbPencilPlus } from "react-icons/tb"
 import CreateNovelDialog from "~/components/modals/CreateNovelDialog"
 import { LuPackageSearch, LuPartyPopper } from "react-icons/lu"
 import { FaDoorOpen } from "react-icons/fa6"
+import { Tooltip } from "~/components/ui/tooltip"
+
+const BuyMeACoffeText = "Buy me a coffee!"
 
 const NovelItemActionButton: React.FC<
   { icon: ReactNode; title: string; description: string } & StackProps
@@ -282,7 +287,15 @@ const MainTemplate: React.FC<{
             </HStack>
           )}
 
-          <HStack mt={8} gap={3} fontSize={"sm"} color={"gray.400"}>
+          <HStack
+            mt={8}
+            gap={3}
+            rowGap={2}
+            fontSize={"sm"}
+            color={"gray.400"}
+            flexDir={{ base: "column", md: "row" }}
+            justifyContent={"center"}
+          >
             <Text>
               Made by{" "}
               <Link href={"https://kimustory.net"} colorPalette={"purple"}>
@@ -293,9 +306,34 @@ const MainTemplate: React.FC<{
             {/*<Link color={"gray.500"} href={"https://discord.gg/kQ27qbCJ6V"}>*/}
             {/*  Official Discord*/}
             {/*</Link>*/}
-            <Text>·</Text>
+            <Text display={{ base: "none", md: "inline" }}>·</Text>
             <Text>{userCount}명의 작가님과 함께하고 있어요!</Text>
           </HStack>
+          <Box
+            position={{ base: undefined, md: "fixed" }}
+            bottom={5}
+            right={5}
+            zIndex={1}
+          >
+            <Tooltip
+              content={"뮤블 개발자에게 커피 사주기!"}
+              openDelay={0}
+              showArrow
+            >
+              <a
+                href="https://www.buymeacoffee.com/kimustory?amount=3&utm_source=muvel&utm_medium=link&utm_campaign=muvel"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Image
+                  mt={3}
+                  h={"40px"}
+                  src={`https://img.buymeacoffee.com/button-api/?text=${BuyMeACoffeText}&emoji=☕️&slug=kimustory&button_colour=BD5FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00`}
+                  alt="Buy Me a Coffee"
+                />
+              </a>
+            </Tooltip>
+          </Box>
         </Center>
       </Center>
     </Stack>
