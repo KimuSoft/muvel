@@ -29,7 +29,7 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
         toaster.info({
           title: "붙여넣기 팁",
           description:
-            "소설 전체를 붙여넣기 할 경우 Ctrl(CMD)+Shift+V를 이용해 보세요!",
+            "소설 전체를 붙여넣는 게 의도대로 안 될 경우에는 Ctrl(CMD)+Shift+V를 사용해 보세요!",
         })
       }
     }
