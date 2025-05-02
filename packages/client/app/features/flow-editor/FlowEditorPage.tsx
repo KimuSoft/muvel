@@ -10,22 +10,26 @@ const FlowEditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
 }) => {
   const [syncState, setSyncState] = React.useState(SyncState.Synced)
 
+  const debouncedUpdateTitle = debounce(async (title: string) => {
+    setSyncState(SyncState.Syncing)
+    await updateEpisode(episode.id, { title })
+    setSyncState(SyncState.Synced)
+  }, 1000)
+
+  const debouncedUpdateFlow = debounce(async (doc: any) => {
+    setSyncState(SyncState.Syncing)
+    await updateEpisode(episode.id, { flowDoc: doc })
+    setSyncState(SyncState.Synced)
+  }, 5000)
+
   const titleChangeHandler = (title: string) => {
     setSyncState(SyncState.Waiting)
-    debounce(async (title: string) => {
-      setSyncState(SyncState.Syncing)
-      await updateEpisode(episode.id, { title })
-      setSyncState(SyncState.Synced)
-    }, 1000)(title)
+    void debouncedUpdateTitle(title)
   }
 
   const flowChangeHandler = (doc: any) => {
     setSyncState(SyncState.Waiting)
-    debounce(async (doc: any) => {
-      setSyncState(SyncState.Syncing)
-      await updateEpisode(episode.id, { flowDoc: doc })
-      setSyncState(SyncState.Synced)
-    }, 5000)(doc)
+    void debouncedUpdateFlow(doc)
   }
 
   useEffect(() => {
