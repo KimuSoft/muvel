@@ -8,4 +8,7 @@ export default defineConfig({
     ...(baseConfig.define || {}),
     "process.env.TAURI": JSON.stringify(true),
   },
+  build: {
+    outDir: "build-tauri",
+  },
 })
