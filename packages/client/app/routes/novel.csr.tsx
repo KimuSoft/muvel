@@ -1,10 +1,14 @@
 import NovelDetailTemplate from "~/components/templates/NovelDetailTemplate"
-import { useLoaderData, useParams } from "react-router"
+import {
+  type ClientLoaderFunctionArgs,
+  useLoaderData,
+  useParams,
+} from "react-router"
 import { api } from "~/utils/api"
 import type { GetNovelResponseDto } from "muvel-api-types"
 
-export async function clientLoader() {
-  const id = useParams().id
+export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
+  const id = params.id
   if (!id) throw new Response("Not Found", { status: 404 })
 
   const { data: novel } = await api.get<GetNovelResponseDto>(`/novels/${id}`)

@@ -23,6 +23,7 @@ import { IoWarning } from "react-icons/io5"
 import { isAxiosError } from "axios"
 import ErrorTemplate from "~/components/templates/ErrorTemplate"
 import type { User } from "muvel-api-types"
+import { getMe } from "~/api/api.user"
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -62,6 +63,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
+  if (import.meta.env.VITE_TAURI) return { user: null }
   return { user: await getUserFromRequest(request) }
 }
 
@@ -71,13 +73,13 @@ export default function App() {
   const isLoading = navigation.state === "loading"
 
   return (
-    <UserProvider user={user || null}>
-      <Provider>
+    <Provider>
+      <UserProvider user={user || null}>
         {isLoading && <LoadingOverlay />}
         <Toaster />
         <Outlet />
-      </Provider>
-    </UserProvider>
+      </UserProvider>
+    </Provider>
   )
 }
 

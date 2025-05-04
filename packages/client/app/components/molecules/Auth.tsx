@@ -13,22 +13,14 @@ import { TbLogin2, TbLogout } from "react-icons/tb"
 import { Tooltip } from "~/components/ui/tooltip"
 import { useUser } from "~/context/UserContext"
 import { FaUser } from "react-icons/fa6"
-import axios from "axios"
 import { SiGoogledrive } from "react-icons/si"
-import { usePlatform } from "~/hooks/usePlatform"
-import { openUrl } from "@tauri-apps/plugin-opener"
+import { useLogin } from "~/hooks/useLogin"
+import { useLogout } from "~/hooks/useLogout"
 
 const Auth: React.FC = () => {
   const user = useUser()
-  const { isTauri } = usePlatform()
-
-  const loginClickHandler = () => {
-    if (isTauri) {
-      void openUrl(`https://${process.env.VITE_API_BASE}/auth/login`)
-    } else {
-      window.location.href = "/api/auth/login"
-    }
-  }
+  const login = useLogin()
+  const logout = useLogout()
 
   return (
     <>
@@ -79,15 +71,7 @@ const Auth: React.FC = () => {
                 <FaUser />
                 프로필 수정하기
               </MenuItem>
-              <MenuItem
-                value={"logout"}
-                onClick={async () => {
-                  await axios.post(
-                    `${window.location.protocol}//${window.location.host}/auth/logout`,
-                  )
-                  window.location.href = "/"
-                }}
-              >
+              <MenuItem value={"logout"} onClick={logout}>
                 <TbLogout />
                 로그아웃
               </MenuItem>
@@ -98,7 +82,7 @@ const Auth: React.FC = () => {
         <Tooltip content={"로그인하기"}>
           <IconButton
             aria-label={"lock"}
-            onClick={loginClickHandler}
+            onClick={login}
             variant={"ghost"}
             borderRadius={"full"}
           >

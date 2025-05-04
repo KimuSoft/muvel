@@ -29,6 +29,7 @@ export class KimustoryStrategy extends PassportStrategy(
       clientSecret: process.env.KIMUSTORY_CLIENT_SECRET!,
       callbackURL: process.env.KIMUSTORY_CALLBACK_URL!,
       scope: "identify",
+      passReqToCallback: true,
     })
   }
 
@@ -40,15 +41,21 @@ export class KimustoryStrategy extends PassportStrategy(
   }
 
   async validate(
+    req: any,
     accessToken: string,
     refreshToken: string,
     profile: KimustoryProfile,
+    done: VerifyCallback,
   ) {
-    return this.authService.validateUser(
+    console.log(profile)
+    const user = await this.authService.validateUser(
       "kimustory",
       profile.id,
       profile.username,
       server + "/avatars/" + profile.avatar,
     )
+    // @ts-expect-error 타입 정의가 더 귀찮음
+    user._authFlow = req.query?.state ?? "web"
+    done(null, user)
   }
 }

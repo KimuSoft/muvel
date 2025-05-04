@@ -97,6 +97,7 @@ export interface UserPayload {
   id: string
   iat: number
   exp: number
+  _authFlow?: string
 }
 
 export type AuthenticatedRequest = Omit<Request, "user"> & { user: UserPayload }
