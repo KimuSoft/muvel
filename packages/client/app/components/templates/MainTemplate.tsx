@@ -33,6 +33,7 @@ import CreateNovelDialog from "~/components/modals/CreateNovelDialog"
 import { LuPackageSearch, LuPartyPopper } from "react-icons/lu"
 import { FaDoorOpen } from "react-icons/fa6"
 import { Tooltip } from "~/components/ui/tooltip"
+import { usePlatform } from "~/hooks/usePlatform"
 
 const BuyMeACoffeText = "Buy me a coffee!"
 
@@ -96,6 +97,7 @@ const MainTemplate: React.FC<{
   novels: Novel[]
   userCount: number
 }> = ({ novels, userCount }) => {
+  const { isTauri } = usePlatform()
   const user = useUser()
   const navigate = useNavigate()
   const createNovelDialog = useDialog()
@@ -159,7 +161,7 @@ const MainTemplate: React.FC<{
                 </Icon>
                 <Heading mt={3}>
                   <Mark variant={"solid"} colorPalette={"purple"}>
-                    뮤블
+                    뮤블 {isTauri ? "데스크탑" : "웹"}
                   </Mark>
                   에 어서오세요!
                 </Heading>

@@ -1,20 +1,20 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "TauriApp",
+  "productName": "Muvel",
   "version": "0.1.0",
   "identifier": "com.tauri.dev",
   "build": {
     "frontendDist": "../client/dist",
-    "devUrl": "http://localhost:5173",
+    "devUrl": "http://localhost:5174",
     "beforeDevCommand": "pnpm --filter client dev:tauri",
     "beforeBuildCommand": "pnpm --filter client build:tauri"
   },
   "app": {
     "windows": [
       {
-        "title": "TauriApp",
-        "width": 800,
-        "height": 600,
+        "title": "Muvel",
+        "width": 1200,
+        "height": 800,
         "resizable": true,
         "fullscreen": false
       }

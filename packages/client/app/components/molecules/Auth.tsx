@@ -15,12 +15,19 @@ import { useUser } from "~/context/UserContext"
 import { FaUser } from "react-icons/fa6"
 import axios from "axios"
 import { SiGoogledrive } from "react-icons/si"
+import { usePlatform } from "~/hooks/usePlatform"
+import { openUrl } from "@tauri-apps/plugin-opener"
 
 const Auth: React.FC = () => {
   const user = useUser()
+  const { isTauri } = usePlatform()
 
   const loginClickHandler = () => {
-    window.location.href = "/api/auth/login"
+    if (isTauri) {
+      void openUrl(`https://${process.env.VITE_API_BASE}/auth/login`)
+    } else {
+      window.location.href = "/api/auth/login"
+    }
   }
 
   return (

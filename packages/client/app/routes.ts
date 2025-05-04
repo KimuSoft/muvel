@@ -6,12 +6,17 @@ const SsrRoutes = [
   route("novels/:id", "routes/novel.tsx"),
   route("episodes/:id", "routes/episode.tsx"),
   route("characters/:id", "routes/character.tsx"),
-  route("notes/:id", "routes/note.tsx"),
   // 인증 및 기타 콜백
   route("auth/login", "routes/auth-callback.tsx"),
   route("auth/logout", "routes/auth-logout.tsx"),
 ] satisfies RouteConfig
 
-const CsrRoutes = [index("routes/main.csr.tsx")] satisfies RouteConfig
+const CsrRoutes = [
+  index("routes/main.csr.tsx"),
+  route("my-novels", "routes/my-novels.csr.tsx"),
+  route("novels/:id", "routes/novel.csr.tsx"),
+  route("episodes/:id", "routes/episode.csr.tsx"),
+  route("characters/:id", "routes/character.csr.tsx"),
+] satisfies RouteConfig
 
-export default process.env.TAURI == "true" ? CsrRoutes : SsrRoutes
+export default process.env.VITE_TAURI == "true" ? CsrRoutes : SsrRoutes

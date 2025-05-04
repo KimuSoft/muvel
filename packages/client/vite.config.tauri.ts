@@ -6,6 +6,6 @@ export default defineConfig({
   ...baseConfig,
   define: {
     ...(baseConfig.define || {}),
-    "process.env.TAURI": JSON.stringify(true), // 👈 이걸로 SSR off
+    "process.env.TAURI": JSON.stringify(true),
   },
 })
