@@ -12,6 +12,7 @@ export const authCookie = createCookie("auth_token", {
   maxAge: 60 * 60 * 24 * 7, // 7 days
 })
 
+// SSR 전용
 export async function getUserFromRequest(request: Request) {
   const cookie = request.headers.get("cookie") ?? ""
 

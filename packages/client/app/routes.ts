@@ -1,6 +1,6 @@
 import { type RouteConfig, index, route } from "@react-router/dev/routes"
 
-export default [
+const SsrRoutes = [
   index("routes/main.tsx"),
   route("my-novels", "routes/my-novels.tsx"),
   route("novels/:id", "routes/novel.tsx"),
@@ -11,3 +11,7 @@ export default [
   route("auth/login", "routes/auth-callback.tsx"),
   route("auth/logout", "routes/auth-logout.tsx"),
 ] satisfies RouteConfig
+
+const CsrRoutes = [index("routes/main.csr.tsx")] satisfies RouteConfig
+
+export default process.env.TAURI == "true" ? CsrRoutes : SsrRoutes

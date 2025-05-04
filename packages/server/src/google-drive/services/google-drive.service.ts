@@ -20,7 +20,7 @@ export class GoogleDriveService {
   ) {}
 
   private readonly algorithm = "aes-256-cbc"
-  private readonly key = Buffer.from(process.env.ENCRYPTION_KEY!, "hex") // 32 bytes key
+  private readonly key = Buffer.from(process.env.GOOGLE_ENCRYPTION_KEY!, "hex") // 32 bytes key
 
   private encrypt(text: string): string {
     const iv = randomBytes(16)

@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
+    "build:tauri": "vite build --config vite.config.tauri.ts",
     "dev": "react-router dev",
+    "dev:tauri": "cross-env TAURI=true vite",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc"
   },
@@ -57,6 +59,7 @@
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
     "@types/uuid": "^9",
+    "cross-env": "^7.0.3",
     "prettier": "^3.5.3",
     "react-router-devtools": "^1.1.0",
     "tailwindcss": "^4.0.0",
