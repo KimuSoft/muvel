@@ -7,6 +7,7 @@ import {
   OneToMany,
   OneToOne,
   PrimaryColumn,
+  RelationId,
   UpdateDateColumn,
 } from "typeorm"
 
@@ -30,7 +31,7 @@ export class UserEntity {
 
   /** Caches */
 
-  @Column({ type: "uuid", array: true, default: [] })
+  @Column({ type: "uuid", array: true, default: [], select: false })
   recentNovelIds?: string[]
 
   /** Relations */
@@ -45,6 +46,9 @@ export class UserEntity {
     nullable: true,
   })
   googleDrive?: GoogleDriveAccountEntity
+
+  @RelationId((user: UserEntity) => user.googleDrive)
+  googleDriveId?: number
 
   /** Dates */
 

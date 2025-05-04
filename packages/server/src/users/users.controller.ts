@@ -46,10 +46,10 @@ export class UsersController {
   @Get(":id")
   @ApiOperation({
     summary: "유저 정보 불러오기",
-    description: "유저의 정보를 불러옵니다.",
+    description: "유저의 정보를 불러옵니다. (다른 사람이)",
   })
   async getUser(@Param("id") id: string) {
-    return this.usersService.findUserById(id)
+    return this.usersService.findUserByIdPublic(id)
   }
 
   @Get(":id/novels")
