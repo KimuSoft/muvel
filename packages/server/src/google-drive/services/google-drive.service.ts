@@ -206,12 +206,10 @@ export class GoogleDriveService {
     const drive = await this.getDriveClient(userId)
     const muvelFolderId = await this.getOrCreateFolder(drive, null, "muvel")
 
-    const user = await this.userRepository.findOne({
+    const user = await this.userRepository.findOneOrFail({
       where: { id: userId },
       relations: ["novels", "novels.episodes"],
     })
-
-    if (!user) throw new Error("User not found")
 
     for (const novel of user.novels) {
       // TODO 애초에 쿼리 단계부터 isDriveBackup이 false인 것만 가져오도록 수정
