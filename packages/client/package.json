@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
-    "build:tauri": "cross-env VITE_TAURI=true vite build --config vite.config.tauri.ts",
+    "build:tauri": "cross-env VITE_TAURI=true VITE_API_BASE=https://muvel.kimustory.net/api react-router build --config vite.config.tauri.ts",
     "dev": "react-router dev",
     "dev:tauri": "cross-env VITE_TAURI=true vite",
     "start": "react-router-serve ./build/server/index.js",

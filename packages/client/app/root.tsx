@@ -23,7 +23,6 @@ import { IoWarning } from "react-icons/io5"
 import { isAxiosError } from "axios"
 import ErrorTemplate from "~/components/templates/ErrorTemplate"
 import type { User } from "muvel-api-types"
-import { getMe } from "~/api/api.user"
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },

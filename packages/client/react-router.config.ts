@@ -1,7 +1,7 @@
 import type { Config } from "@react-router/dev/config"
 
 const isTauri = !!process.env.VITE_TAURI
-console.log(`Tauri: ${isTauri}, SSR: ${!isTauri}`)
+console.log(`Tauri: ${isTauri}`)
 
 export default {
   ssr: !isTauri,
