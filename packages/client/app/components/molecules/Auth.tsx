@@ -47,7 +47,7 @@ const Auth: React.FC = () => {
                   </Tag.Root>
                 </MenuItem>
               )}
-              {!!user.googleDriveId && (
+              {!user.googleDriveId && (
                 <MenuItem
                   value={"drive"}
                   onClick={() => {

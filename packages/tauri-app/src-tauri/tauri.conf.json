@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "identifier": "com.muvel.app",
   "build": {
-    "frontendDist": "../client/dist",
+    "frontendDist": "../../client/build-tauri",
     "devUrl": "http://localhost:5173",
     "beforeDevCommand": "pnpm --filter client dev:tauri",
     "beforeBuildCommand": "pnpm --filter client build:tauri"
@@ -30,7 +30,7 @@
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
-      "icons/icon.icons",
+      "icons/icon.icns",
       "icons/icon.ico"
     ]
   },
