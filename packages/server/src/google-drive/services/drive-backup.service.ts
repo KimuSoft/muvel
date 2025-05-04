@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common"
 import { Cron } from "@nestjs/schedule"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
-import { GoogleDriveAccountEntity } from "./google-drive-account.entity"
+import { GoogleDriveAccountEntity } from "../google-drive-account.entity"
 import { GoogleDriveService } from "./google-drive.service"
 
 @Injectable()

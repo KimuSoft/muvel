@@ -8,9 +8,9 @@ import {
 import { drive_v3, google } from "googleapis"
 import { createCipheriv, createDecipheriv, randomBytes } from "crypto"
 import { Repository } from "typeorm"
-import { UserEntity } from "../users/user.entity"
+import { UserEntity } from "../../users/user.entity"
 import { InjectRepository } from "@nestjs/typeorm"
-import { GoogleDriveAccountEntity } from "./google-drive-account.entity"
+import { GoogleDriveAccountEntity } from "../google-drive-account.entity"
 
 @Injectable()
 export class GoogleDriveService {

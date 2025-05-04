@@ -1,5 +1,5 @@
 import { Controller, Get, Req, Res, UseGuards } from "@nestjs/common"
-import { GoogleDriveService } from "./google-drive.service"
+import { GoogleDriveService } from "./services/google-drive.service"
 import { Response } from "express"
 import {
   GoogleAuthenticatedRequest,
