@@ -24,7 +24,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     headers: { cookie },
     withCredentials: true,
   })
-  console.log(novels)
 
   return { novels, userCount }
 }
