@@ -37,7 +37,12 @@ async function bootstrap() {
   }
 
   app.enableCors({
-    origin: ["https://test.kimustory.net", "https://muvel.kimustory.net"],
+    origin: [
+      "https://test.kimustory.net",
+      "https://muvel.kimustory.net",
+      // TODO: 차후 보안 강화 고려
+      "http://tauri.localhost",
+    ],
     credentials: true,
   })
 
