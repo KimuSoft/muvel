@@ -1,4 +1,8 @@
-import { ExecutionContext, Injectable } from "@nestjs/common"
+import {
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from "@nestjs/common"
 import { AuthGuard } from "@nestjs/passport"
 import { Request } from "express"
 import { AuthenticatedRequest } from "../auth/jwt-auth.guard"
@@ -11,7 +15,7 @@ export class GoogleAuthGuard extends AuthGuard("google") {
       .getRequest<Request>() as GoogleAuthenticatedRequest
 
     if (err || !user) {
-      throw err || new Error("Google authentication failed")
+      throw err || new UnauthorizedException("Google authentication failed")
     }
 
     // 기본 req.user에 넣지 않고 custom 필드로 이동
