@@ -22,7 +22,6 @@ export class AuthController {
   ) {
     const loginResult = await this.authService.login(req.user)
 
-    console.info(loginResult.accessToken)
     // 쿠키 직접 설정
     res.cookie("auth_token", loginResult.accessToken, {
       httpOnly: true,

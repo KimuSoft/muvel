@@ -8,6 +8,7 @@ import { SearchModule } from "./search/search.module"
 import { ScheduleModule } from "@nestjs/schedule"
 import { CharactersModule } from "./characters/characters.module"
 import { WikiPagesModule } from "./wiki-pages/wiki-pages.module"
+import { GoogleDriveModule } from "./google-drive/google-drive.module"
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { WikiPagesModule } from "./wiki-pages/wiki-pages.module"
     SearchModule,
     CharactersModule,
     WikiPagesModule,
+    GoogleDriveModule,
   ],
 })
 export class AppModule {}
