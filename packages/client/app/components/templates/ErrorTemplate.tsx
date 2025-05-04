@@ -4,11 +4,11 @@ import {
   Center,
   EmptyState,
   HStack,
+  Text,
   VStack,
 } from "@chakra-ui/react"
 import { IoMdArrowBack } from "react-icons/io"
-import React from "react"
-import type { User } from "muvel-api-types"
+import React, { useEffect } from "react"
 import { IoLogIn } from "react-icons/io5"
 
 const ErrorTemplate: React.FC<{
@@ -16,8 +16,16 @@ const ErrorTemplate: React.FC<{
   title: string
   details: string
   stack?: string
-  user?: User | null
-}> = ({ icon, title, details, stack, user }) => {
+}> = ({ icon, title, details, stack }) => {
+  const [isLogined, setIsLogined] = React.useState(false)
+
+  useEffect(() => {
+    const token = localStorage.getItem("auth_token")
+    if (token) {
+      setIsLogined(true)
+    }
+  }, [])
+
   return (
     <Center h={"100vh"} w={"100%"}>
       <VStack>
@@ -34,7 +42,7 @@ const ErrorTemplate: React.FC<{
           <Button onClick={() => window.history.back()} size={"sm"}>
             <IoMdArrowBack /> 이전 페이지로 돌아가기
           </Button>
-          {!user && (
+          {!isLogined && (
             <Button
               size={"sm"}
               onClick={() => {
@@ -54,6 +62,11 @@ const ErrorTemplate: React.FC<{
                 style={{ fontSize: 12 }}
               >
                 <code>{stack}</code>
+                {import.meta.env.VITE_TAURI == "true" && (
+                  <Text>
+                    데스크톱 버전 (서버: {import.meta.env.VITE_API_BASE})
+                  </Text>
+                )}
               </pre>
             </Box>
           </details>

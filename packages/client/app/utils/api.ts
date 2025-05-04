@@ -1,11 +1,15 @@
 import axios from "axios"
 
+console.info(
+  `Using ${import.meta.env.VITE_TAURI == "true" ? "Tauri" : "Web"} API`,
+)
+
 const api = axios.create({
   baseURL:
     (typeof window === "undefined"
       ? process.env.VITE_API_BASE
       : import.meta.env.VITE_API_BASE) || "/api",
-  withCredentials: import.meta.env.VITE_TAURI !== "true",
+  withCredentials: import.meta.env.VITE_TAURI != "true",
 })
 
 if (import.meta.env.VITE_TAURI === "true") {
