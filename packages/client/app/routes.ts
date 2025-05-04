@@ -1,4 +1,4 @@
-import { type RouteConfig, index, route } from "@react-router/dev/routes"
+import { index, route, type RouteConfig } from "@react-router/dev/routes"
 
 const SsrRoutes = [
   index("routes/main.tsx"),
@@ -19,4 +19,6 @@ const CsrRoutes = [
   // route("characters/:id", "routes/character.csr.tsx"),
 ] satisfies RouteConfig
 
-export default process.env.VITE_TAURI == "true" ? CsrRoutes : SsrRoutes
+// export default CsrRoutes
+console.info(`Using ${process.env.SSR == "true" ? "SSR" : "CSR"} routes`)
+export default process.env.SSR == "true" ? SsrRoutes : CsrRoutes

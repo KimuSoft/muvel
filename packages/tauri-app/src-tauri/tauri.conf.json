@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "identifier": "com.muvel.app",
   "build": {
-    "frontendDist": "../../client/build-tauri",
+    "frontendDist": "../../client/build-tauri/client",
     "devUrl": "http://localhost:5173",
     "beforeDevCommand": "pnpm --filter client dev:tauri",
     "beforeBuildCommand": "pnpm --filter client build:tauri"

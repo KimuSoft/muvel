@@ -3,7 +3,6 @@ import { createCookie } from "react-router"
 import type { User } from "muvel-api-types"
 import { api } from "~/utils/api"
 import { isAxiosError } from "axios"
-import { getMe } from "~/api/api.user"
 
 export const authCookie = createCookie("auth_token", {
   httpOnly: true,
