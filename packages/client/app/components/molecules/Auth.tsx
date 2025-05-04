@@ -14,6 +14,7 @@ import { Tooltip } from "~/components/ui/tooltip"
 import { useUser } from "~/context/UserContext"
 import { FaUser } from "react-icons/fa6"
 import axios from "axios"
+import { SiGoogledrive } from "react-icons/si"
 
 const Auth: React.FC = () => {
   const user = useUser()
@@ -33,7 +34,7 @@ const Auth: React.FC = () => {
           </MenuTrigger>
           <MenuPositioner>
             <MenuContent>
-              {user.admin ? (
+              {user.admin && (
                 <MenuItem
                   value={"admin"}
                   onClick={() => {
@@ -46,8 +47,20 @@ const Auth: React.FC = () => {
                     <Tag.Label>관리자</Tag.Label>
                   </Tag.Root>
                 </MenuItem>
-              ) : (
-                <></>
+              )}
+              {!!user.googleDriveId && (
+                <MenuItem
+                  value={"drive"}
+                  onClick={() => {
+                    window.location.href = "/api/google-drive/connect"
+                  }}
+                >
+                  <SiGoogledrive />
+                  소설 자동 백업 활성화{" "}
+                  <Tag.Root colorPalette={"purple"}>
+                    <Tag.Label>구글 드라이브</Tag.Label>
+                  </Tag.Root>
+                </MenuItem>
               )}
               <MenuItem
                 value={"profile"}

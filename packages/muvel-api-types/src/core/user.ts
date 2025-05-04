@@ -2,9 +2,9 @@ export interface User {
   id: string
   username: string
   avatar: string
-  recentEpisodeIds: string[]
   admin: boolean
   point: number
+  googleDriveId?: number
   // createdAt: number
   // updatedAt: number
 }
@@ -15,7 +15,6 @@ export const sampleUser: User = {
   id: "1",
   username: "testUser",
   avatar: "https://example.com/avatar.png",
-  recentEpisodeIds: [],
   admin: false,
   point: 0,
 }
