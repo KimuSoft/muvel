@@ -43,7 +43,7 @@ export const createInputRules = (schema: Schema) => {
 
   // --- → divider
   rules.push(
-    new Rule(/^(--|—)-$|^\*{3,}$/, (state, match, start, end) => {
+    new Rule(/^(----|——)-$|^\*{3,}$/, (state, match, start, end) => {
       const { tr, schema } = state
       const nodeType = schema.nodes[BlockType.Divider]
       if (!nodeType) return null

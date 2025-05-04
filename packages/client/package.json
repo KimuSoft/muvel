@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
-    "build:tauri": "vite build --config vite.config.tauri.ts",
+    "build:tauri": "cross-env VITE_TAURI=true vite build --config vite.config.tauri.ts",
     "dev": "react-router dev",
-    "dev:tauri": "cross-env TAURI=true vite",
+    "dev:tauri": "cross-env VITE_TAURI=true vite",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc"
   },
@@ -18,6 +18,8 @@
     "@emotion/react": "^11.14.0",
     "@react-router/node": "^7.5.0",
     "@react-router/serve": "^7.5.0",
+    "@tauri-apps/api": "^2.5.0",
+    "@tauri-apps/plugin-opener": "^2.2.6",
     "@xyflow/react": "^12.6.0",
     "axios": "^1.8.4",
     "canvas-confetti": "^1.6.0",

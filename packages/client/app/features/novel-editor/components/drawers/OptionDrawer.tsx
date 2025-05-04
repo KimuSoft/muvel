@@ -35,6 +35,7 @@ import { FaDesktop, FaMobile } from "react-icons/fa6"
 import { SiKakao } from "react-icons/si"
 import { useColorMode } from "~/components/ui/color-mode"
 import React, { type ReactNode } from "react"
+import { BiReset } from "react-icons/bi"
 
 const OptionDrawer: React.FC<{
   children?: ReactNode
@@ -56,7 +57,7 @@ const OptionDrawer: React.FC<{
             <CloseButton size="sm" position="absolute" top="4" right="4" />
           </DrawerCloseTrigger>
           <DrawerHeader>
-            <DrawerTitle>에디터 옵션</DrawerTitle>
+            <DrawerTitle>에디터 설정하기</DrawerTitle>
           </DrawerHeader>
 
           <DrawerBody>
@@ -368,12 +369,10 @@ const OptionDrawer: React.FC<{
             {/*{JSON.stringify(option)}*/}
           </DrawerBody>
 
-          <DrawerFooter justifyContent="space-between">
+          <DrawerFooter>
             <Button variant="outline" onClick={handleReset}>
+              <BiReset />
               초기화
-            </Button>
-            <Button colorScheme="blue" type="button">
-              닫기
             </Button>
           </DrawerFooter>
         </DrawerContent>
