@@ -103,6 +103,44 @@ export class GoogleDriveService {
       refresh_token: refreshToken,
     })
 
+    let refreshed = false
+
+    try {
+      // 임의 API 호출로 토큰 유효성 확인
+      await google
+        .drive({ version: "v3", auth: oauth2Client })
+        .files.list({ pageSize: 1 })
+    } catch (err) {
+      if (err.response?.status === 401) {
+        // access_token 만료 → refresh
+        const { credentials } = await oauth2Client.refreshAccessToken()
+        const newAccessToken = credentials.access_token
+
+        if (!newAccessToken) {
+          throw new UnauthorizedException("Access token not set")
+        }
+
+        user.googleDrive.encryptedAccessToken = this.encrypt(newAccessToken)
+        user.googleDrive.accessTokenExpiresAt = new Date(
+          Date.now() + 1000 * 60 * 60,
+        ) // 1 hour
+
+        await this.userRepository.save(user)
+        oauth2Client.setCredentials({
+          access_token: newAccessToken,
+          refresh_token: refreshToken,
+        })
+
+        refreshed = true
+      } else {
+        throw err
+      }
+    }
+
+    if (refreshed) {
+      console.log(`[Drive] Access token refreshed for user ${userId}`)
+    }
+
     return google.drive({ version: "v3", auth: oauth2Client })
   }
 
