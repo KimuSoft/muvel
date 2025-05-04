@@ -1,12 +1,16 @@
-import { useLoaderData, useParams } from "react-router"
+import {
+  type ClientLoaderFunctionArgs,
+  useLoaderData,
+  useParams,
+} from "react-router"
 import { api } from "~/utils/api"
 import { EpisodeType, type GetEpisodeResponseDto } from "muvel-api-types"
 import EditorPage from "~/features/novel-editor/EditorPage"
 import React from "react"
 import FlowEditorPage from "~/features/flow-editor/FlowEditorPage"
 
-export async function clientLoader() {
-  const id = useParams().id
+export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
+  const id = params.id
   if (!id) throw new Response("Not Found", { status: 404 })
 
   const { data: episode } = await api.get<GetEpisodeResponseDto>(

@@ -3,6 +3,7 @@ import { createCookie } from "react-router"
 import type { User } from "muvel-api-types"
 import { api } from "~/utils/api"
 import { isAxiosError } from "axios"
+import { getMe } from "~/api/api.user"
 
 export const authCookie = createCookie("auth_token", {
   httpOnly: true,
@@ -12,10 +13,11 @@ export const authCookie = createCookie("auth_token", {
   maxAge: 60 * 60 * 24 * 7, // 7 days
 })
 
-// SSR 전용
 export async function getUserFromRequest(request: Request) {
-  const cookie = request.headers.get("cookie") ?? ""
+  if (import.meta.env.VITE_TAURI) return null
 
+  // SSR 전용
+  const cookie = request.headers.get("cookie") ?? ""
   const token = parse(cookie)["auth_token"]
   if (!token) return null
 

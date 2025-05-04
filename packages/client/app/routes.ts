@@ -16,7 +16,7 @@ const CsrRoutes = [
   route("my-novels", "routes/my-novels.csr.tsx"),
   route("novels/:id", "routes/novel.csr.tsx"),
   route("episodes/:id", "routes/episode.csr.tsx"),
-  route("characters/:id", "routes/character.csr.tsx"),
+  // route("characters/:id", "routes/character.csr.tsx"),
 ] satisfies RouteConfig
 
 export default process.env.VITE_TAURI == "true" ? CsrRoutes : SsrRoutes

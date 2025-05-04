@@ -1,6 +1,6 @@
 import type { Config } from "@react-router/dev/config"
 
-const isTauri = process.env.TAURI === "true"
+const isTauri = process.env.VITE_TAURI === "true"
 console.log(`Tauri: ${isTauri}`)
 
 export default {

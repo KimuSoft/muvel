@@ -9,5 +9,10 @@ export default defineConfig({
     allowedHosts: [".kimustory.net"],
     proxy: { "/api": process.env.API_PROXY || "http://localhost:2556" },
   },
+  build: {
+    rollupOptions: {
+      external: ["@tauri-apps/api/core", "@tauri-apps/plugin-opener"],
+    },
+  },
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
 })

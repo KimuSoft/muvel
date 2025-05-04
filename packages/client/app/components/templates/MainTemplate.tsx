@@ -34,6 +34,7 @@ import { LuPackageSearch, LuPartyPopper } from "react-icons/lu"
 import { FaDoorOpen } from "react-icons/fa6"
 import { Tooltip } from "~/components/ui/tooltip"
 import { usePlatform } from "~/hooks/usePlatform"
+import { useLogin } from "~/hooks/useLogin"
 
 const BuyMeACoffeText = "Buy me a coffee!"
 
@@ -101,6 +102,7 @@ const MainTemplate: React.FC<{
   const user = useUser()
   const navigate = useNavigate()
   const createNovelDialog = useDialog()
+  const login = useLogin()
 
   return (
     <Stack>
@@ -276,12 +278,7 @@ const MainTemplate: React.FC<{
                 <Text fontSize={"xs"} color={"purple.500"}>
                   현재 Google과 Discord 로그인만 가능해요!
                 </Text>
-                <Button
-                  colorPalette={"purple"}
-                  onClick={() => {
-                    window.location.href = `/api/auth/login`
-                  }}
-                >
+                <Button colorPalette={"purple"} onClick={login}>
                   <TbLogin2 />
                   뮤블에 로그인하기
                 </Button>
