@@ -1,9 +1,26 @@
 // src-tauri/src/app_lib/auth.rs
-use tiny_http::{Server, Response};
+use tiny_http::{Server, Response, Header};
 use url::Url;
+
 
 #[tauri::command]
 pub fn wait_for_token() -> Result<String, String> {
+    let html = r#"<!DOCTYPE html>
+    <html lang="ko">
+    <head>
+      <meta charset="UTF-8" />
+      <title>로그인 완료</title>
+      <script>
+        window.onload = () => {
+          window.close();
+        };
+      </script>
+    </head>
+    <body>
+      <p>로그인 완료! 창이 곧 닫힙니다.</p>
+    </body>
+    </html>"#;
+
     let server = Server::http("127.0.0.1:53682").map_err(|e| e.to_string())?;
 
     for request in server.incoming_requests() {
@@ -17,7 +34,9 @@ pub fn wait_for_token() -> Result<String, String> {
                 .map(|(_, v)| v.to_string())
                 .ok_or("no token")?;
 
-            let _ = request.respond(Response::from_string("로그인 완료! 창을 닫으셔도 됩니다."));
+            let _ = request.respond(    Response::from_string(html).with_header(
+                                            Header::from_bytes("Content-Type", "text/html").unwrap()
+                                        ));
             return Ok(token);
         }
     }
