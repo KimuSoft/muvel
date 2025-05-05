@@ -41,7 +41,7 @@ export const createInputRules = (schema: Schema) => {
   //   }),
   // )
 
-  // --- → divider
+  // ----- 또는 *** → divider
   rules.push(
     new Rule(/^(----|——)-$|^\*{3,}$/, (state, match, start, end) => {
       const { tr, schema } = state

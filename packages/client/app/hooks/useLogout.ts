@@ -1,10 +1,8 @@
 import { usePlatform } from "~/hooks/usePlatform"
 import axios from "axios"
-import { useNavigate } from "react-router"
 
 export const useLogout = () => {
   const { isTauri } = usePlatform()
-  const navigate = useNavigate()
 
   return async () => {
     if (isTauri) {
