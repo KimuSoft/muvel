@@ -57,6 +57,7 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
       borderRadius="md"
       p={4}
       pb={"40vh"}
+      spellCheck={false}
       tabIndex={0}
       color={{ base: "gray.700", _dark: "gray.300" }}
       style={

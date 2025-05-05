@@ -90,9 +90,7 @@ const PrivacyPolicyTemplate = () => {
           <List.Item>
             키뮤스토리 계정 연결 해제 또는 탈퇴 시 개인정보 파기
           </List.Item>
-          <List.Item>
-            작성한 콘텐츠는 삭제 요청 시 또는 탈퇴 시 지체 없이 삭제
-          </List.Item>
+          <List.Item>작성한 콘텐츠는 삭제 요청 시 또는 탈퇴 시 삭제</List.Item>
           <List.Item>
             자동 저장 및 열람 기록은 일정 기간 후 자동 삭제될 수 있음
           </List.Item>
@@ -147,8 +145,7 @@ const PrivacyPolicyTemplate = () => {
           <List.Item>작성한 콘텐츠의 삭제 요청</List.Item>
         </List.Root>
         <Text mb={4}>
-          위 요청은 아래 고객지원 이메일을 통해 접수할 수 있으며, 지체 없이
-          처리됩니다.
+          위 요청은 아래 고객지원 이메일을 통해 접수할 수 있습니다.
         </Text>
 
         <Heading as="h2" size="md" mt={8} mb={4}>
