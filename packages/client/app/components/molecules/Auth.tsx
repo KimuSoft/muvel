@@ -47,7 +47,8 @@ const Auth: React.FC = () => {
                   </Tag.Root>
                 </MenuItem>
               )}
-              {!user.googleDriveId && (
+              {/* TODO: 구글 인증 받을 때까지 관리자만 */}
+              {!user.googleDriveId && user.admin && (
                 <MenuItem
                   value={"drive"}
                   onClick={() => {

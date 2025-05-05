@@ -56,7 +56,7 @@ const CommentItem: React.FC<{
 
     const avatarId = (Math.abs(hash) % MAX_AI_PROFILE) + 1
 
-    return `/profiles/${avatarId}.png`
+    return `/profiles/${avatarId}.webp`
   }, [isAI, username])
 
   return (

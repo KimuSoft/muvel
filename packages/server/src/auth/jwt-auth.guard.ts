@@ -26,8 +26,6 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       request.user = await this.jwtService.verifyAsync(token)
-
-      console.info(request.method, request.path, request.user?.id, "(REQUIRED)")
       return true
     } catch {
       throw new UnauthorizedException("Invalid token")
@@ -55,8 +53,6 @@ export class OptionalJwtAuthGuard implements CanActivate {
     } catch {
       request.user = null // 인증 실패 → 무시하고 넘어감
     }
-
-    console.info(request.method, request.path, request.user?.id, "(OPTIONAL)")
 
     return true
   }
