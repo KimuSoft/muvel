@@ -34,6 +34,8 @@ pub fn get_family_fonts(family: &str) -> Vec<String> {
     font_names
 }
 
+// 폰트가 많을 경우 로딩이 느려지는 문제 있음
+// FontFamilySelect.tsx에서 선택 후 추가로 로딩하는 구조로 변경하고 삭제할 예정
 #[cfg(not(any(target_os = "android", target_os = "ios")))]
 #[tauri::command]
 pub fn get_system_fonts() -> Vec<String> {
@@ -41,6 +43,18 @@ pub fn get_system_fonts() -> Vec<String> {
         .into_iter()
         .flat_map(|family| get_family_fonts(&family))
         .collect()
+}
+
+#[cfg(any(target_os = "android", target_os = "ios"))]
+#[tauri::command]
+pub fn get_system_font_families() -> Vec<String> {
+    Vec::new()
+}
+
+#[cfg(any(target_os = "android", target_os = "ios"))]
+#[tauri::command]
+pub fn get_family_fonts() -> Vec<String> {
+    Vec::new()
 }
 
 #[cfg(any(target_os = "android", target_os = "ios"))]
