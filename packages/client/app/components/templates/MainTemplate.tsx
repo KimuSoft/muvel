@@ -316,7 +316,9 @@ const MainTemplate: React.FC<{
             {/*</Link>*/}
             <Text display={{ base: "none", md: "inline" }}>·</Text>
             <BlockLink to={"/privacy-policy"}>
-              <Link color={"gray.400"}>개인정보처리방침</Link>
+              <Link color={"gray.400"} fontWeight={500}>
+                개인정보처리방침
+              </Link>
             </BlockLink>
             <Text display={{ base: "none", md: "inline" }}>·</Text>
             <BlockLink to={"/terms-of-use"}>
