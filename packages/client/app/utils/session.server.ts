@@ -13,8 +13,10 @@ export const authCookie = createCookie("auth_token", {
 })
 
 export async function getUserFromRequest(request: Request) {
-  const cookie = request.headers.get("cookie") ?? ""
+  if (import.meta.env.VITE_TAURI) return null
 
+  // SSR 전용
+  const cookie = request.headers.get("cookie") ?? ""
   const token = parse(cookie)["auth_token"]
   if (!token) return null
 

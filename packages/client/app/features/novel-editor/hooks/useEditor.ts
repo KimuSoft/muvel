@@ -13,6 +13,7 @@ import { assignIdPlugin } from "~/features/novel-editor/plugins/assignIdPlugin"
 import { autoQuotePlugin } from "~/features/novel-editor/plugins/autoQuotePlugin"
 import { typewriterPlugin } from "~/features/novel-editor/plugins/typewriterPlugin"
 import { highlightPlugin } from "~/features/novel-editor/plugins/highlightPlugin"
+import { Fragment, Node as PMNode, Slice } from "prosemirror-model"
 
 interface UseEditorProps {
   containerRef: React.RefObject<HTMLDivElement>
@@ -80,6 +81,26 @@ export const useEditor = ({
           }
           return false
         },
+      },
+      transformCopied(slice) {
+        const transformer = (node: PMNode): PMNode => {
+          if (node.type.isBlock && node.attrs.id) {
+            const { id, ...rest } = node.attrs
+            return (
+              node.type.createAndFill(rest, node.content, node.marks) || node
+            )
+          }
+
+          const newContent = Fragment.from(
+            node.content.content.map(transformer),
+          )
+          return node.copy(newContent)
+        }
+
+        const transformed = Fragment.from(
+          slice.content.content.map(transformer),
+        )
+        return new Slice(transformed, slice.openStart, slice.openEnd)
       },
     })
 

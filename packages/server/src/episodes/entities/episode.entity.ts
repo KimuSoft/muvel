@@ -44,6 +44,9 @@ export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
   @Column({ default: false })
   isSnapshotted: boolean
 
+  @Column({ default: false })
+  isDriveBackup: boolean
+
   /** Relations */
 
   @ManyToOne(() => NovelEntity, (novel) => novel.episodes, {

@@ -3,11 +3,12 @@ import "dotenv/config"
 import { NestFactory } from "@nestjs/core"
 import { AppModule } from "./app.module"
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
-import { ValidationPipe } from "@nestjs/common"
+import { Logger, ValidationPipe } from "@nestjs/common"
 import * as cookieParser from "cookie-parser"
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
+  const logger = new Logger("Bootstrap")
 
   app.useGlobalPipes(new ValidationPipe())
   app.setGlobalPrefix("api")
@@ -33,11 +34,23 @@ async function bootstrap() {
   SwaggerModule.setup("api", app, document)
 
   if (process.env.AUTO_SYNC_DB === "true") {
-    console.info("Auto sync db is enabled")
+    logger.log("Auto sync db is enabled")
   }
 
+  app.use((req: Request, res: Response, next: () => void) => {
+    logger.log(`[${req.method}] ${req.url}`)
+    next()
+  })
+
   app.enableCors({
-    origin: ["https://test.kimustory.net", "https://muvel.kimustory.net"],
+    origin: [
+      "https://test.kimustory.net",
+      "https://muvel.kimustory.net",
+      "http://tauri.localhost",
+      "tauri://localhost",
+      null,
+      undefined,
+    ],
     credentials: true,
   })
 

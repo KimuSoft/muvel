@@ -20,6 +20,14 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id })
   }
 
+  // Public하게 불러오는 경우
+  async findUserByIdPublic(id: string): Promise<UserEntity | null> {
+    return this.usersRepository.findOne({
+      where: { id },
+      select: ["id", "username", "avatar", "point"],
+    })
+  }
+
   async getUserCount() {
     return this.usersRepository.count()
   }

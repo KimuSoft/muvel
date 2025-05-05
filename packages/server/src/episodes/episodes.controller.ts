@@ -107,7 +107,7 @@ export class EpisodesController {
   ) {
     if (!request.user) throw new UnauthorizedException()
     await this.episodeAnalysisService.checkPoints(request.user.id, 100)
-    const result = this.episodeAnalysisService.createAnalysisForEpisode(
+    const result = await this.episodeAnalysisService.createAnalysisForEpisode(
       episodeId,
       options,
     )

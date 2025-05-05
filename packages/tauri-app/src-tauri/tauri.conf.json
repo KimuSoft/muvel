@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Muvel",
+  "version": "0.1.0",
+  "identifier": "com.muvel.app",
+  "build": {
+    "frontendDist": "../../client/build-tauri/client",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "pnpm --filter client dev:tauri",
+    "beforeBuildCommand": "pnpm --filter client build:tauri"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Muvel",
+        "width": 1200,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ]
+  },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["muvel"]
+      }
+    }
+  }
+}

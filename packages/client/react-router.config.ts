@@ -1,7 +1,9 @@
-import type { Config } from "@react-router/dev/config";
+import type { Config } from "@react-router/dev/config"
+
+const isTauri = !!process.env.VITE_TAURI
+console.log(`Tauri: ${isTauri} (${!process.env.VITE_TAURI})`)
 
 export default {
-  // Config options...
-  // Server-side render by default, to enable SPA mode set this to `false`
-  ssr: true,
-} satisfies Config;
+  ssr: !isTauri,
+  buildDirectory: isTauri ? "build-tauri" : "build",
+} satisfies Config
