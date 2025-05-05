@@ -19,7 +19,7 @@ import CreateNovelDialog from "~/components/modals/CreateNovelDialog"
 import NovelEmptyState from "~/components/molecules/NovelEmptyState"
 import LoadingOverlay from "~/components/templates/LoadingOverlay"
 
-const MyNovelsTemplates: React.FC<{
+const MyNovelsTemplate: React.FC<{
   novels: Novel[]
 }> = ({ novels }) => {
   const user = useUser()
@@ -69,4 +69,4 @@ const MyNovelsTemplates: React.FC<{
   )
 }
 
-export default MyNovelsTemplates
+export default MyNovelsTemplate

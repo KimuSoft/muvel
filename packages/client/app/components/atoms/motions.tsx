@@ -8,9 +8,9 @@ import {
   VStack,
 } from "@chakra-ui/react"
 
-export const MotionBox = motion(Box)
-export const MotionStack = motion(Stack)
-export const MotionHStack = motion(HStack)
-export const MotionVStack = motion(VStack)
-export const MotionCenter = motion(Center)
-export const MotionSimpleGrid = motion(SimpleGrid)
+export const MotionBox = motion.create(Box)
+export const MotionStack = motion.create(Stack)
+export const MotionHStack = motion.create(HStack)
+export const MotionVStack = motion.create(VStack)
+export const MotionCenter = motion.create(Center)
+export const MotionSimpleGrid = motion.create(SimpleGrid)
