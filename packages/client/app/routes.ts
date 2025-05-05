@@ -20,9 +20,8 @@ const CsrRoutes = [
   route("episodes/:id", "routes/episode.csr.tsx"),
   route("privacy-policy", "routes/privacy-policy.tsx"),
   route("terms-of-use", "routes/terms-of-use.tsx"),
-  // route("characters/:id", "routes/character.csr.tsx"),
 ] satisfies RouteConfig
 
 // export default CsrRoutes
-console.info(`Using ${process.env.SSR == "true" ? "SSR" : "CSR"} routes`)
-export default process.env.SSR == "true" ? SsrRoutes : CsrRoutes
+console.info(`Using ${!process.env.VITE_TAURI ? "SSR" : "CSR"} routes`)
+export default !process.env.VITE_TAURI ? SsrRoutes : CsrRoutes

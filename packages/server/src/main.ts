@@ -40,8 +40,8 @@ async function bootstrap() {
     origin: [
       "https://test.kimustory.net",
       "https://muvel.kimustory.net",
-      // TODO: 차후 보안 강화 고려
       "http://tauri.localhost",
+      "tauri://localhost",
     ],
     credentials: true,
   })
