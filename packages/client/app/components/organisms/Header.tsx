@@ -15,9 +15,13 @@ const Header: React.FC<{ logo?: boolean; nonWide?: boolean } & CenterProps> = ({
     <Center
       h="70px"
       position={"absolute"}
-      w={"100vw"}
+      w={"100%"}
       zIndex={1}
-      px={5}
+      px={{
+        base: 3,
+        sm: 5,
+        md: 8,
+      }}
       {...props}
     >
       <HStack w={"100%"} maxW={!nonWide ? undefined : "4xl"} gap={3} h={"70px"}>
