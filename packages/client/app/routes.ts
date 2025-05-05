@@ -6,6 +6,8 @@ const SsrRoutes = [
   route("novels/:id", "routes/novel.tsx"),
   route("episodes/:id", "routes/episode.tsx"),
   route("characters/:id", "routes/character.tsx"),
+  route("privacy-policy", "routes/privacy-policy.tsx"),
+  route("terms-of-use", "routes/terms-of-use.tsx"),
   // 인증 및 기타 콜백
   route("auth/login", "routes/auth-callback.tsx"),
   route("auth/logout", "routes/auth-logout.tsx"),
@@ -16,6 +18,8 @@ const CsrRoutes = [
   route("my-novels", "routes/my-novels.csr.tsx"),
   route("novels/:id", "routes/novel.csr.tsx"),
   route("episodes/:id", "routes/episode.csr.tsx"),
+  route("privacy-policy", "routes/privacy-policy.tsx"),
+  route("terms-of-use", "routes/terms-of-use.tsx"),
   // route("characters/:id", "routes/character.csr.tsx"),
 ] satisfies RouteConfig
 
