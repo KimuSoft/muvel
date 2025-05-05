@@ -105,11 +105,19 @@ const MainTemplate: React.FC<{
   const login = useLogin()
 
   return (
-    <Stack>
+    <Stack p={0}>
       <Header logo={false} />
       <Center w={"100%"} minH={"100vh"} px={3}>
         <Center flexDir={"column"} w={"100%"} maxW={"4xl"} gap={3} my={100}>
-          <Logo w={{ base: 250, md: 300 }} slogan />
+          <Tooltip
+            content={`${userCount}명의 작가님과 함께하고 있어요!`}
+            positioning={{
+              placement: "top",
+            }}
+            showArrow
+          >
+            <Logo w={{ base: 250, md: 300 }} slogan />
+          </Tooltip>
           {/*<HStack w={"100%"} maxW={"2xl"} mt={5}>*/}
           {/*<InputGroup flex={1} endElement={<BiSearch size={20} />}>*/}
           {/*  <Input*/}
@@ -296,18 +304,26 @@ const MainTemplate: React.FC<{
             justifyContent={"center"}
           >
             <Text>
-              Made by{" "}
+              © 2025{" "}
               <Link href={"https://kimustory.net"} colorPalette={"purple"}>
                 Kimustory
               </Link>
+              . All rights reserved
             </Text>
             {/*<Text>·</Text>*/}
             {/*<Link color={"gray.500"} href={"https://discord.gg/kQ27qbCJ6V"}>*/}
             {/*  Official Discord*/}
             {/*</Link>*/}
             <Text display={{ base: "none", md: "inline" }}>·</Text>
-            <Text>{userCount}명의 작가님과 함께하고 있어요!</Text>
+            <BlockLink to={"/privacy-policy"}>
+              <Link color={"gray.400"}>개인정보처리방침</Link>
+            </BlockLink>
+            <Text display={{ base: "none", md: "inline" }}>·</Text>
+            <BlockLink to={"/terms-of-use"}>
+              <Link color={"gray.400"}>이용약관</Link>
+            </BlockLink>
           </HStack>
+          <HStack color={"gray.400"} fontSize={"sm"}></HStack>
           <Box
             position={{ base: undefined, md: "fixed" }}
             bottom={5}
