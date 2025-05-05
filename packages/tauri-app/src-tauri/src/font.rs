@@ -1,5 +1,4 @@
-use font_kit::source::SystemSource;
-
+#[cfg(not(any(target_os = "android", target_os = "ios")))]
 #[tauri::command]
 pub fn get_system_fonts() -> Vec<String> {
     let mut font_names = Vec::new();
@@ -18,4 +17,10 @@ pub fn get_system_fonts() -> Vec<String> {
     font_names.sort();
     font_names.dedup();
     font_names
+}
+
+#[cfg(any(target_os = "android", target_os = "ios"))]
+#[tauri::command]
+pub fn get_system_fonts() -> Vec<String> {
+    Vec::new()
 }
