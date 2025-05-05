@@ -1,5 +1,7 @@
 import {
+  Box,
   createListCollection,
+  Input,
   SelectContent,
   SelectControl,
   SelectHiddenSelect,
@@ -11,25 +13,19 @@ import {
   SelectRoot,
   SelectTrigger,
   SelectValueText,
-  Input, // 추가: 사용자 입력용
-  Box, // 추가: 감싸는 용
 } from "@chakra-ui/react"
-import { useMemo, useState, useEffect } from "react"
-
-const predefinedFonts = [
-  { label: "리디바탕", value: "RIDIBatang" },
-  { label: "KoPubWorld 바탕체", value: "KoPubWorldBatang" },
-  { label: "Inter", value: "Inter" },
-  { label: "Pretendard", value: "Pretendard" },
-  { label: "굴림", value: "Gulim" },
-  { label: "돋움", value: "Dotum" },
-]
+import { useEffect, useMemo, useState } from "react"
+import { usePlatform } from "~/hooks/usePlatform"
 
 const CUSTOM_VALUE = "__custom__"
 
-const fontFamilyCollection = createListCollection({
-  items: [...predefinedFonts, { label: "사용자 설정...", value: CUSTOM_VALUE }],
-})
+const predefinedFonts = [
+  { label: "Pretendard Variable", value: '"Pretendard Variable"' },
+  { label: "리디바탕", value: "RIDIBatang" },
+  { label: "KoPubWorld 바탕체", value: "KoPubWorldBatang" },
+  // { label: "굴림", value: "Gulim" },
+  // { label: "돋움", value: "Dotum" },
+]
 
 const FontFamilySelect = ({
   value,
@@ -38,22 +34,55 @@ const FontFamilySelect = ({
   value: string
   onChange: (value: string) => void
 }) => {
-  // 사용자가 직접 입력하는 custom value
+  const { isTauri } = usePlatform()
   const [customValue, setCustomValue] = useState("")
+  const [extraFonts, setExtraFonts] = useState<
+    { label: string; value: string }[]
+  >([])
 
-  // 현재 value가 predefinedFonts 안에 있는지 확인
+  const allFonts = useMemo(
+    () => [
+      ...predefinedFonts,
+      ...extraFonts,
+      { label: "사용자 설정...", value: CUSTOM_VALUE },
+    ],
+    [extraFonts],
+  )
+
+  const fontFamilyCollection = useMemo(
+    () => createListCollection({ items: allFonts }),
+    [allFonts],
+  )
+
   const isPredefined = useMemo(
-    () => predefinedFonts.some((item) => item.value === value),
-    [value],
+    () => allFonts.some((item) => item.value === value),
+    [value, allFonts],
   )
 
   const selectedValue = isPredefined ? value : CUSTOM_VALUE
 
   useEffect(() => {
     if (!isPredefined) {
-      setCustomValue(value) // 외부에서 직접 value가 넘어온 경우 세팅
+      setCustomValue(value)
     }
   }, [isPredefined, value])
+
+  useEffect(() => {
+    if (isTauri) {
+      ;(async () => {
+        const { invoke } = await import("@tauri-apps/api/core")
+        try {
+          const fonts = await invoke<string[]>("get_system_fonts")
+          const mapped = (fonts as string[])
+            .filter((f) => !!f && isNaN(Number(f))) // 간단한 필터
+            .map((font) => ({ label: font, value: font }))
+          setExtraFonts(mapped)
+        } catch (e) {
+          console.warn("시스템 폰트 로딩 실패", e)
+        }
+      })()
+    }
+  }, [isTauri])
 
   return (
     <Box w="100%">
@@ -63,7 +92,7 @@ const FontFamilySelect = ({
         value={[selectedValue]}
         onValueChange={({ value }) => {
           if (value[0] === CUSTOM_VALUE) {
-            onChange(customValue) // 인풋 수정하도록 유도
+            onChange(customValue)
           } else {
             onChange(value[0])
           }
@@ -90,7 +119,6 @@ const FontFamilySelect = ({
         </SelectPositioner>
       </SelectRoot>
 
-      {/* 사용자 설정 input 보여주기 */}
       {selectedValue === CUSTOM_VALUE && (
         <Input
           mt={2}

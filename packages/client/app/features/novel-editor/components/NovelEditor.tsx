@@ -63,7 +63,7 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
       style={
         {
           "--editor-line-height": options.lineHeight,
-          "--editor-font-family": `'${options.fontFamily}'`,
+          "--editor-font-family": `${options.fontFamily}, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Apple SD Gothic Neo', 'Noto Sans KR', Arial, sans-serif`,
           "--editor-font-weight": `${options.fontWeight}`,
           "--editor-font-size": `${options.fontSize}px`,
           "--editor-color": options.color,

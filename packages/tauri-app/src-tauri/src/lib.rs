@@ -1,6 +1,7 @@
 use tauri_plugin_deep_link::DeepLinkExt;
 
 mod auth;
+mod font;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -23,7 +24,8 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            auth::wait_for_token, // ✅ 여기 등록
+            auth::wait_for_token,
+            font::get_system_fonts,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
