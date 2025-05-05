@@ -1,4 +1,4 @@
-import MyNovelsTemplates from "~/components/templates/MyNovelsTemplates"
+import MyNovelsTemplate from "~/components/templates/MyNovelsTemplate"
 import { useLoaderData } from "react-router"
 import { api } from "~/utils/api"
 import type { Novel } from "muvel-api-types"
@@ -16,5 +16,5 @@ export async function clientLoader() {
 export default function Main() {
   const { novels } = useLoaderData<typeof clientLoader>()
 
-  return <MyNovelsTemplates novels={novels} />
+  return <MyNovelsTemplate novels={novels} />
 }

@@ -1,5 +1,5 @@
 import type { Route } from "./+types/main"
-import MyNovelsTemplates from "~/components/templates/MyNovelsTemplates"
+import MyNovelsTemplate from "~/components/templates/MyNovelsTemplate"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { api } from "~/utils/api"
 import type { Novel } from "muvel-api-types"
@@ -29,5 +29,5 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function Main() {
   const { novels } = useLoaderData<typeof loader>()
 
-  return <MyNovelsTemplates novels={novels} />
+  return <MyNovelsTemplate novels={novels} />
 }
