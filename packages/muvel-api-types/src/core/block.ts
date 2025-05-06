@@ -1,4 +1,4 @@
-import { BlockType, LegacyBlockType } from "../enums"
+import { BlockType } from "../enums"
 import { BlockAttrs, PMNodeJSON } from "../editor"
 
 export interface Block {
@@ -8,20 +8,9 @@ export interface Block {
   blockType: BlockType
   attr: BlockAttrs | null
   order: number
-}
 
-export interface LegacyBlock {
-  id: string
-  episodeId?: string
-  content: string
-  blockType: LegacyBlockType
-  characterId?: string
-}
-
-export const sampleLegacyBlock: LegacyBlock = {
-  id: "1",
-  content: "테스트용 블록입니다.",
-  blockType: LegacyBlockType.Describe,
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 export const sampleBlock: Block = {

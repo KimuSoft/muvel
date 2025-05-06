@@ -1,22 +1,28 @@
-import React, { useEffect, useRef } from "react"
+import { type RefObject, useEffect, useRef } from "react"
+import * as Y from "yjs"
 import { EditorState } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
+import { yCursorPlugin, ySyncPlugin, yUndoPlugin } from "y-prosemirror"
 import { keymap } from "prosemirror-keymap"
-import { baseKeymap, toggleMark } from "prosemirror-commands"
-import { history, redo, undo } from "prosemirror-history"
+import { baseKeymap } from "prosemirror-commands"
+import { redo, undo } from "prosemirror-history"
+import { IndexeddbPersistence } from "y-indexeddb"
+import { Awareness } from "y-protocols/awareness"
 import { baseSchema } from "../schema/baseSchema"
 import { blocksToDoc, docToBlocks } from "../utils/blockConverter"
+import { getBlocksChange } from "../utils/calculateBlockChanges"
 import { useEditorContext } from "../context/EditorContext"
+import { createInputRules } from "../plugins/inputRules"
+import { assignIdPlugin } from "../plugins/assignIdPlugin"
+import { autoQuotePlugin } from "../plugins/autoQuotePlugin"
+import { typewriterPlugin } from "../plugins/typewriterPlugin"
+import { highlightPlugin } from "../plugins/highlightPlugin"
 import type { Block } from "muvel-api-types"
-import { createInputRules } from "~/features/novel-editor/plugins/inputRules"
-import { assignIdPlugin } from "~/features/novel-editor/plugins/assignIdPlugin"
-import { autoQuotePlugin } from "~/features/novel-editor/plugins/autoQuotePlugin"
-import { typewriterPlugin } from "~/features/novel-editor/plugins/typewriterPlugin"
-import { highlightPlugin } from "~/features/novel-editor/plugins/highlightPlugin"
-import { Fragment, Node as PMNode, Slice } from "prosemirror-model"
+import { debounce } from "lodash-es"
+import { getEpisodeKey } from "~/db/yjsKeys"
 
 interface UseEditorProps {
-  containerRef: React.RefObject<HTMLDivElement>
+  containerRef: RefObject<HTMLDivElement>
   initialBlocks: Block[]
   episodeId: string
   editable?: boolean
@@ -32,82 +38,76 @@ export const useEditor = ({
 }: UseEditorProps) => {
   const { setView, setBlocks } = useEditorContext()
   const viewRef = useRef<EditorView | null>(null)
+  const ydocRef = useRef(new Y.Doc())
+  const prevBlocksRef = useRef<Block[]>(initialBlocks)
+  const initialDocRef = useRef<ReturnType<typeof blocksToDoc> | null>(null)
 
   useEffect(() => {
-    if (!containerRef.current) return
-    if (viewRef.current) return // ✅ 에디터 중복 생성 방지
+    const ydoc = ydocRef.current
+    const yXmlFragment = ydoc.getXmlFragment("prosemirror")
 
-    const doc = blocksToDoc(initialBlocks, baseSchema)
+    // 로컬 저장소 연동
+    const persistence = new IndexeddbPersistence(getEpisodeKey(episodeId), ydoc)
+    persistence.on("synced", () => {
+      console.log("✅ Yjs IndexedDB 동기화 완료")
+    })
+
+    // 최초 로딩 시 Yjs 문서 초기화 (이미 존재하면 무시)
+    if (yXmlFragment.length === 0) {
+      initialDocRef.current = blocksToDoc(initialBlocks, baseSchema)
+    }
+
+    const awareness = new Awareness(ydoc)
+    awareness.setLocalStateField("user", {
+      name: "Kimu",
+      color: "#ff88aa",
+    })
+
+    const plugins = [
+      ySyncPlugin(yXmlFragment),
+      yCursorPlugin(awareness),
+      yUndoPlugin(),
+      createInputRules(baseSchema),
+      autoQuotePlugin,
+      typewriterPlugin,
+      highlightPlugin(),
+      editable && assignIdPlugin,
+      keymap({
+        "Mod-z": undo,
+        "Mod-y": redo,
+        "Shift-Mod-z": redo,
+      }),
+      keymap(baseKeymap),
+    ].filter(Boolean)
 
     const state = EditorState.create({
       schema: baseSchema,
-      doc,
-      plugins: [
-        history(),
-        assignIdPlugin,
-        createInputRules(baseSchema),
-        autoQuotePlugin,
-        typewriterPlugin,
-        highlightPlugin(),
-        keymap({
-          "Mod-z": undo,
-          "Mod-y": redo,
-          "Shift-Mod-z": redo, // mac 호환
-          "Mod-b": toggleMark(baseSchema.marks.strong), // Bold
-          "Mod-i": toggleMark(baseSchema.marks.em), // Italic
-          "Mod-u": toggleMark(baseSchema.marks.underline), // Underline (스키마에 있다면)
-          "Mod-`": toggleMark(baseSchema.marks.code), // Inline code
-        }),
-        keymap(baseKeymap),
-      ],
+      doc: initialDocRef.current ?? undefined,
+      plugins,
     })
 
-    const view = new EditorView(containerRef.current, {
+    const view = new EditorView(containerRef.current!, {
       state,
       editable: () => editable,
-      dispatchTransaction(tr) {
-        const newState = view.state.apply(tr)
-        view.updateState(newState)
-
-        const updatedBlocks = docToBlocks(newState.doc, episodeId)
-        setBlocks(updatedBlocks)
-        onChange?.(updatedBlocks)
-      },
-      handleDOMEvents: {
-        keydown(view, event) {
-          if ((event.ctrlKey || event.metaKey) && event.key === "z") {
-            undo(view.state, view.dispatch)
-            return true // ✅ 직접 처리했으니 true
-          }
-          return false
-        },
-      },
-      transformCopied(slice) {
-        const transformer = (node: PMNode): PMNode => {
-          if (node.type.isBlock && node.attrs.id) {
-            const { id, ...rest } = node.attrs
-            return (
-              node.type.createAndFill(rest, node.content, node.marks) || node
-            )
-          }
-
-          const newContent = Fragment.from(
-            node.content.content.map(transformer),
-          )
-          return node.copy(newContent)
-        }
-
-        const transformed = Fragment.from(
-          slice.content.content.map(transformer),
-        )
-        return new Slice(transformed, slice.openStart, slice.openEnd)
-      },
     })
 
     viewRef.current = view
-    setView(view) // ✅ 최초 한 번만 등록
+    setView(view)
+
+    const handleUpdate = debounce(() => {
+      const newBlocks = docToBlocks(view.state.doc, episodeId)
+      const diff = getBlocksChange(prevBlocksRef.current, newBlocks)
+      if (diff.length > 0) {
+        prevBlocksRef.current = newBlocks
+        setBlocks(newBlocks)
+        onChange?.(newBlocks)
+      }
+    }, 500)
+
+    ydoc.on("update", handleUpdate)
 
     return () => {
+      ydoc.off("update", handleUpdate)
       view.destroy()
       setView(null)
       viewRef.current = null

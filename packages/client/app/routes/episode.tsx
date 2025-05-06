@@ -1,7 +1,11 @@
 import type { Route } from "./+types/episode"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { api } from "~/utils/api"
-import { EpisodeType, type GetEpisodeResponseDto } from "muvel-api-types"
+import {
+  type Block,
+  EpisodeType,
+  type GetEpisodeResponseDto,
+} from "muvel-api-types"
 import EditorPage from "~/features/novel-editor/EditorPage"
 import React, { useEffect } from "react"
 import LoadingOverlay from "~/components/templates/LoadingOverlay"
@@ -35,20 +39,24 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const { data: episode } = await api.get<GetEpisodeResponseDto>(
     `/episodes/${id}`,
-    {
-      headers: { cookie },
-      withCredentials: true,
-    },
+    { headers: { cookie }, withCredentials: true },
   )
 
-  episode.blocks.sort((a, b) => a.order - b.order)
+  const { data: blocks } = await api.get<Block[]>(`/episodes/${id}/blocks`, {
+    headers: { cookie },
+    withCredentials: true,
+  })
 
-  return { episode }
+  // 사실 서버에서 정렬해서 없어도 되는데 불안해서 넣음
+  blocks.sort((a, b) => a.order - b.order)
+
+  return { episode, blocks }
 }
 
-const CSREditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
-  episode,
-}) => {
+const CSREditorPage: React.FC<{
+  episode: GetEpisodeResponseDto
+  blocks: Block[]
+}> = ({ episode, blocks }) => {
   const [isClient, setIsClient] = React.useState(false)
 
   useEffect(() => {
@@ -56,18 +64,18 @@ const CSREditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   }, [])
 
   if (!isClient) return <LoadingOverlay />
-  return <EditorPage episode={episode} />
+  return <EditorPage episode={episode} blocks={blocks} />
 }
 
 export default function Main() {
-  const { episode } = useLoaderData<typeof loader>()
+  const { episode, blocks } = useLoaderData<typeof loader>()
 
   switch (episode.episodeType) {
     case EpisodeType.Episode:
     case EpisodeType.Prologue:
     case EpisodeType.Epilogue:
     case EpisodeType.Special:
-      return <CSREditorPage episode={episode} />
+      return <CSREditorPage episode={episode} blocks={blocks} />
     case EpisodeType.Memo:
     case EpisodeType.EpisodeGroup:
       return <FlowEditorPage episode={episode} />

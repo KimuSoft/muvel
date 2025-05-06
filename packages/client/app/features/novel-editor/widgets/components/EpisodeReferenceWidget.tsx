@@ -23,7 +23,8 @@ import {
   WidgetHeader,
   WidgetTitle,
 } from "~/features/novel-editor/widgets/components/WidgetBase"
-import { getEpisode } from "~/api/api.episode" // 경로 수정 필요
+import { getEpisodeBlocks, getEpisodeById } from "~/api/api.episode"
+import { useOption } from "~/context/OptionContext" // 경로 수정 필요
 
 // --- 에피소드 참조 위젯 컴포넌트 ---
 const WIDGET_ID = "episodeReference"
@@ -42,6 +43,7 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
   const { episode: currentEpisode } = useEditorContext()
   const novelId = currentEpisode?.novel?.id // 현재 에피소드의 소설 ID 사용
 
+  const [options] = useOption()
   const [novelEpisodes, setNovelEpisodes] = useState<EpisodeSelectItem[]>([])
   const [selectedEpisodeId, setSelectedEpisodeId] = useState<string | null>(
     null,
@@ -93,7 +95,7 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
 
   // 위젯 마운트 시 또는 novelId 변경 시 에피소드 목록 로드
   useEffect(() => {
-    fetchNovelEpisodes()
+    void fetchNovelEpisodes()
   }, [fetchNovelEpisodes]) // fetchNovelEpisodes 함수 참조가 변경될 때 실행
 
   // 선택된 에피소드 내용 불러오기
@@ -102,11 +104,9 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
     setIsEpisodeLoading(true)
     setError(null)
     try {
-      const episodeData = await getEpisode(episodeId)
+      const blocks = await getEpisodeBlocks(episodeId)
       // 블록 텍스트 추출 및 결합 (개행 2번으로 구분)
-      const content = episodeData.blocks
-        .map((block) => block.text || "")
-        .join("\n\n")
+      const content = blocks.map((block) => block.text || "").join("\n\n")
       setSelectedEpisodeContent(content)
     } catch (err) {
       console.error("Failed to fetch episode content:", err)
@@ -240,7 +240,9 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
               minH="200px" // 최소 높이
               h="40vh" // 화면 높이 비례 (조정 가능)
               fontSize="sm"
-              fontFamily="monospace" // 고정폭 글꼴
+              border={"none"}
+              p={0}
+              fontFamily={options.fontFamily}
               whiteSpace="pre-wrap" // 줄바꿈/공백 유지
               borderColor="gray.300"
               _dark={{ borderColor: "gray.600" }}

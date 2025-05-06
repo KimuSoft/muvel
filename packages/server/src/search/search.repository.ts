@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common"
+import { Injectable, Logger } from "@nestjs/common"
 import { MeiliSearch } from "meilisearch"
 import { SearchInNovelDto } from "./dto/search-in-novel.dto"
 import { NovelSearchResult } from "muvel-api-types"
@@ -7,11 +7,13 @@ export const BLOCKS_INDEX = "muvel-blocks"
 
 @Injectable()
 export class SearchRepository {
+  private readonly logger = new Logger(SearchRepository.name)
   private readonly client: MeiliSearch
 
   constructor() {
-    if (!process.env.MEILISEARCH_HOST)
-      console.error("MEILISEARCH_HOST is not defined!")
+    if (!process.env.MEILISEARCH_HOST) {
+      this.logger.error("MEILISEARCH_HOST is not defined!")
+    }
     this.client = new MeiliSearch({
       host: process.env.MEILISEARCH_HOST!,
     })
@@ -57,6 +59,5 @@ export class SearchRepository {
     await this.client
       .index(BLOCKS_INDEX)
       .updateFilterableAttributes(["novelId"])
-    console.info("filterable attributes updated!")
   }
 }

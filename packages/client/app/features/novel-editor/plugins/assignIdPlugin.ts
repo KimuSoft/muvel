@@ -2,7 +2,10 @@ import { Plugin } from "prosemirror-state"
 
 export const assignIdPlugin = new Plugin({
   appendTransaction(transactions, oldState, newState) {
-    // 문서에 변경 없으면 무시
+    // ✅ Yjs에서 온 트랜잭션은 무시
+    const fromYjs = transactions.some((tr) => tr.getMeta("y-sync$"))
+    if (fromYjs) return null
+
     const docChanged = transactions.some((tr) => tr.docChanged)
     if (!docChanged) return null
 

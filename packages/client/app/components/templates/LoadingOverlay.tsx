@@ -1,7 +1,8 @@
 import { MotionCenter } from "~/components/atoms/motions"
-import { Spinner } from "@chakra-ui/react"
+import { Spinner, Text } from "@chakra-ui/react"
+import React from "react"
 
-const LoadingOverlay = () => {
+const LoadingOverlay: React.FC<{ message?: string }> = ({ message }) => {
   return (
     <MotionCenter
       initial={{ opacity: 0 }}
@@ -17,9 +18,16 @@ const LoadingOverlay = () => {
       zIndex={9999}
       key={"loading-overlay"}
       color={"purple.500"}
+      display={"flex"}
+      flexDirection={"column"}
     >
       {/*<PropagateLoader color={"var(--chakra-colors-purple-300)"} />*/}
       <Spinner size={"lg"} />
+      {message && (
+        <Text color={"purple.500"} mt={4} textAlign={"center"}>
+          {message}
+        </Text>
+      )}
     </MotionCenter>
   )
 }

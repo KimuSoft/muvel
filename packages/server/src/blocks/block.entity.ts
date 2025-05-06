@@ -1,4 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm"
 import { EpisodeEntity } from "../episodes/entities/episode.entity"
 import { Block, BlockAttrs, BlockType, PMNodeJSON } from "muvel-api-types"
 
@@ -26,4 +33,12 @@ export class BlockEntity implements Block {
     onDelete: "CASCADE",
   })
   episode: EpisodeEntity
+
+  /** Dates */
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
 }
