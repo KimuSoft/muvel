@@ -7,7 +7,16 @@ import "dotenv/config"
 export default defineConfig({
   server: {
     allowedHosts: [".kimustory.net"],
-    proxy: { "/api": process.env.API_PROXY || "http://localhost:2556" },
+    proxy: {
+      "/api": {
+        target: process.env.API_PROXY || "http://localhost:3000",
+        changeOrigin: true,
+      },
+      "/socket.io": {
+        target: process.env.API_PROXY || "ws://localhost:3000",
+        ws: true,
+      },
+    },
   },
   build: {
     rollupOptions: {

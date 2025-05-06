@@ -9,6 +9,8 @@ import { ScheduleModule } from "@nestjs/schedule"
 import { CharactersModule } from "./characters/characters.module"
 import { WikiPagesModule } from "./wiki-pages/wiki-pages.module"
 import { GoogleDriveModule } from "./google-drive/google-drive.module"
+import { DynamicBullModule } from "./crdt/dynamic-bull.module"
+import { CrdtModule } from "./crdt/crdt.module"
 
 @Module({
   imports: [
@@ -20,6 +22,9 @@ import { GoogleDriveModule } from "./google-drive/google-drive.module"
       synchronize: process.env.AUTO_SYNC_DB === "true",
     }),
     ScheduleModule.forRoot(),
+
+    // Related to CRDT
+    CrdtModule,
 
     // Modules
     UsersModule,

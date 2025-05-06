@@ -2,7 +2,7 @@ version: "3"
 services:
   muvel:
     ports:
-      - "127.0.0.1:1338:2556"
+      - "127.0.0.1:1338:3000"
     build:
       context: .
       dockerfile: Dockerfile.server

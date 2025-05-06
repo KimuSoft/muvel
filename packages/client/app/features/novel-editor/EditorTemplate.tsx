@@ -23,9 +23,9 @@ import { FaBookOpen, FaStarOfLife } from "react-icons/fa6"
 import { GoMoveToEnd, GoMoveToStart } from "react-icons/go"
 
 const EditorTemplate: React.FC<{
-  initialBlocks: Block[]
   onBlocksChange: (blocks: Block[]) => void
   syncState: SyncState
+  initialBlocks: Block[]
 }> = ({ onBlocksChange, syncState, initialBlocks }) => {
   const { view, episode, updateEpisodeData } = useEditorContext()
   const [option] = useOption()
@@ -180,11 +180,12 @@ const EditorTemplate: React.FC<{
           mt={5}
           mb={3}
         />
+        <pre>{JSON.stringify(episode, null, 2)}</pre>
         <ClientOnly>
           <NovelEditor
             key={episode.id}
-            initialBlocks={initialBlocks}
             episodeId={episode.id}
+            initialBlocks={initialBlocks}
             editable={episode.permissions.edit}
             onChange={onBlocksChange}
           />

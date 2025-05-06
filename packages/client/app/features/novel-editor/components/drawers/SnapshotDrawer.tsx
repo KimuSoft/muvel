@@ -17,8 +17,12 @@ import {
   type UseDialogReturn,
   VStack,
 } from "@chakra-ui/react"
-import React, { useEffect } from "react"
-import type { EpisodeSnapshot, GetEpisodeResponseDto } from "muvel-api-types"
+import React, { useEffect, useMemo } from "react"
+import {
+  SnapshotReason,
+  type EpisodeSnapshot,
+  type GetEpisodeResponseDto,
+} from "muvel-api-types"
 import { getSnapshots } from "~/api/api.episode"
 import { TbHistory, TbSlash } from "react-icons/tb"
 import { toaster } from "~/components/ui/toaster"
@@ -37,6 +41,23 @@ const SnapshotItem: React.FC<{
         })
       })
   }
+
+  const snapshotTag = useMemo(() => {
+    switch (snapshot.reason) {
+      case SnapshotReason.Autosave:
+        return (
+          <Tag.Root variant={"outline"} colorPalette={"purple"} size={"sm"}>
+            <Tag.Label>자동 생성</Tag.Label>
+          </Tag.Root>
+        )
+      case SnapshotReason.Merge:
+        return (
+          <Tag.Root variant={"outline"} colorPalette={"blue"} size={"sm"}>
+            <Tag.Label>자동 병합</Tag.Label>
+          </Tag.Root>
+        )
+    }
+  }, [snapshot.reason])
 
   return (
     <Stack
@@ -59,9 +80,7 @@ const SnapshotItem: React.FC<{
             .reduce((acc, cur) => acc + cur)}
           자
         </Text>
-        <Tag.Root variant={"outline"} colorPalette={"purple"} size={"sm"}>
-          <Tag.Label>자동 생성</Tag.Label>
-        </Tag.Root>
+        {snapshotTag}
       </HStack>
     </Stack>
   )

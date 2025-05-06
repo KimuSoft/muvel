@@ -4,6 +4,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   RelationId,
   UpdateDateColumn,
@@ -12,6 +13,8 @@ import { BlockEntity } from "../../blocks/block.entity"
 import { NovelEntity } from "../../novels/novel.entity"
 import { Episode, EpisodeType } from "muvel-api-types"
 import { EpisodeSnapshotEntity } from "./episode-snapshot.entity"
+import { YUpdateEntity } from "../../crdt/entities/y-update.entity"
+import { YSnapshotEntity } from "../../crdt/entities/y-snapshot.entity"
 
 @Entity("episode")
 export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
@@ -66,6 +69,12 @@ export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
     cascade: true,
   })
   snapshots: EpisodeSnapshotEntity[]
+
+  @OneToOne(() => YSnapshotEntity, (y) => y.episode)
+  ySnapshot: YSnapshotEntity
+
+  @OneToMany(() => YUpdateEntity, (u) => u.episode)
+  yUpdates: YUpdateEntity[]
 
   /** Dates */
 

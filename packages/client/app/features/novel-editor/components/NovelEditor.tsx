@@ -1,22 +1,23 @@
 import React, { useEffect, useRef } from "react"
 import { Box } from "@chakra-ui/react"
-import { useEditor } from "../hooks/useEditor"
 import type { Block } from "muvel-api-types"
 import "../style/editorStyles.css"
 import { useOption } from "~/context/OptionContext"
 import { toaster } from "~/components/ui/toaster"
+import { useCollabEditor } from "~/features/novel-editor/hooks/useCollabEditor"
+import { useEditor } from "~/features/novel-editor/hooks/useEditor"
 
 interface NovelEditorProps {
-  initialBlocks: Block[]
   episodeId: string
   editable?: boolean
+  initialBlocks?: Block[]
   onChange?: (blocks: Block[]) => void // ✅ 변화된 내용만 넘김
 }
 
 const NovelEditor: React.FC<NovelEditorProps> = ({
-  initialBlocks,
   episodeId,
   editable = true,
+  initialBlocks = [],
   onChange,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null!)

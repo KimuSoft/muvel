@@ -21,8 +21,8 @@ export type EpisodeData = GetEpisodeResponseDto
 interface EditorContextValue {
   view: EditorView | null
   setView: (view: EditorView | null) => void
-  getBlocks: () => Block[]
-  setBlocks: (blocks: Block[]) => void
+  // getBlocks: () => Block[]
+  // setBlocks: (blocks: Block[]) => void
   setHighlightDecorations: (matches: Match[], currentIndex: number) => void
   episode: EpisodeData
   updateEpisodeData: (updater: (draft: Draft<EpisodeData>) => void) => void
@@ -69,33 +69,16 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({
     [view],
   )
 
-  const updateEpisodeData = useCallback(
-    (updater: (draft: Draft<EpisodeData>) => void) => {
-      setEpisode(updater)
-    },
-    [setEpisode],
-  )
-
   const contextValue = useMemo(
     () => ({
       view,
       setView,
-      getBlocks: () => blocksRef.current,
-      setBlocks: (blocks: Block[]) => {
-        blocksRef.current = blocks
-      },
       setHighlightDecorations,
       episode,
-      updateEpisodeData,
+      updateEpisodeData: setEpisode,
       fetchLatestEpisode,
     }),
-    [
-      view,
-      setHighlightDecorations,
-      episode,
-      updateEpisodeData,
-      fetchLatestEpisode,
-    ],
+    [view, setHighlightDecorations, episode, setEpisode, fetchLatestEpisode],
   )
 
   return (

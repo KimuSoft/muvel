@@ -5,11 +5,14 @@ import { AppModule } from "./app.module"
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
 import { Logger, ValidationPipe } from "@nestjs/common"
 import * as cookieParser from "cookie-parser"
+import { IoAdapter } from "@nestjs/platform-socket.io"
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   const logger = new Logger("Bootstrap")
 
+  // app.useWebSocketAdapter(new DynamicIoAdapter())
+  // app.useWebSocketAdapter(new IoAdapter())
   app.useGlobalPipes(new ValidationPipe())
   app.setGlobalPrefix("api")
   app.use(cookieParser())
@@ -37,10 +40,10 @@ async function bootstrap() {
     logger.log("Auto sync db is enabled")
   }
 
-  app.use((req: Request, res: Response, next: () => void) => {
-    logger.log(`[${req.method}] ${req.url}`)
-    next()
-  })
+  // app.use((req: Request, res: Response, next: () => void) => {
+  //   logger.log(`[${req.method}] ${req.url}`)
+  //   next()
+  // })
 
   app.enableCors({
     origin: [
@@ -54,7 +57,7 @@ async function bootstrap() {
     credentials: true,
   })
 
-  await app.listen(2556)
+  await app.listen(3000)
 }
 
 void bootstrap()

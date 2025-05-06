@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import type { Block, GetEpisodeResponseDto } from "muvel-api-types"
 import EditorTemplate from "~/features/novel-editor/EditorTemplate"
 import { EditorProvider } from "~/features/novel-editor/context/EditorContext"
@@ -30,6 +30,10 @@ const EditorPage: React.FC<{
     },
   })
 
+  useEffect(() => {
+    console.log("실행대써요!")
+  }, [])
+
   const { isOffline } = usePlatform()
 
   const {
@@ -39,7 +43,7 @@ const EditorPage: React.FC<{
     isReady,
   } = useBlockSync(initialEpisodeData.id, {
     serverBlocks: initialBlocks_,
-    isOnline: !isOffline,
+    isCloudSave: !isOffline,
     onMerge: () => {
       toaster.info({
         title: "자동 병합됨",
@@ -65,7 +69,7 @@ const EditorPage: React.FC<{
         ? SyncState.Waiting
         : SyncState.Synced
 
-  if (!isReady || !episode) {
+  if (!isReady || !episode || !initialBlocks) {
     return <LoadingOverlay message={"초기 데이터 불러오는 중..."} />
   }
 

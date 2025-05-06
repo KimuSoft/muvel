@@ -9,7 +9,7 @@ import { redo, undo } from "prosemirror-history"
 import { IndexeddbPersistence } from "y-indexeddb"
 import { Awareness } from "y-protocols/awareness"
 import { baseSchema } from "../schema/baseSchema"
-import { blocksToDoc, docToBlocks } from "../utils/blockConverter"
+import { blocksToYXmlElements, docToBlocks } from "../utils/blockConverter"
 import { getBlocksChange } from "../utils/calculateBlockChanges"
 import { useEditorContext } from "../context/EditorContext"
 import { createInputRules } from "../plugins/inputRules"
@@ -30,8 +30,8 @@ interface UseEditorProps {
 }
 
 export const useEditor = ({
-  containerRef,
   initialBlocks,
+  containerRef,
   episodeId,
   editable = true,
   onChange,
@@ -39,23 +39,32 @@ export const useEditor = ({
   const { setView, setBlocks } = useEditorContext()
   const viewRef = useRef<EditorView | null>(null)
   const ydocRef = useRef(new Y.Doc())
-  const prevBlocksRef = useRef<Block[]>(initialBlocks)
-  const initialDocRef = useRef<ReturnType<typeof blocksToDoc> | null>(null)
+  const initializedRef = useRef(false)
 
-  useEffect(() => {
-    const ydoc = ydocRef.current
-    const yXmlFragment = ydoc.getXmlFragment("prosemirror")
-
-    // 로컬 저장소 연동
-    const persistence = new IndexeddbPersistence(getEpisodeKey(episodeId), ydoc)
-    persistence.on("synced", () => {
-      console.log("✅ Yjs IndexedDB 동기화 완료")
+  // ⛳ IndexedDB 삭제 유틸
+  const deleteIndexedDB = (name: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.deleteDatabase(name)
+      req.onsuccess = () => resolve()
+      req.onerror = () => reject(req.error)
+      req.onblocked = () => {
+        console.warn(`⚠️ IndexedDB "${name}" deletion blocked.`)
+      }
     })
+  }
 
-    // 최초 로딩 시 Yjs 문서 초기화 (이미 존재하면 무시)
-    if (yXmlFragment.length === 0) {
-      initialDocRef.current = blocksToDoc(initialBlocks, baseSchema)
-    }
+  // ⛳ 초기화 메인 로직
+  const initializeEditor = async (ydoc: Y.Doc) => {
+    console.log(`[useEditor] episodeId: ${episodeId} initialised`)
+    const dbName = getEpisodeKey(episodeId)
+    await deleteIndexedDB(dbName)
+
+    console.log("initialBlocks", initialBlocks)
+
+    const yXmlFragment = ydoc.getXmlFragment("prosemirror")
+    const elements = blocksToYXmlElements(initialBlocks, baseSchema)
+    yXmlFragment.delete(0, yXmlFragment.length)
+    yXmlFragment.insert(0, elements)
 
     const awareness = new Awareness(ydoc)
     awareness.setLocalStateField("user", {
@@ -80,11 +89,7 @@ export const useEditor = ({
       keymap(baseKeymap),
     ].filter(Boolean)
 
-    const state = EditorState.create({
-      schema: baseSchema,
-      doc: initialDocRef.current ?? undefined,
-      plugins,
-    })
+    const state = EditorState.create({ schema: baseSchema, plugins })
 
     const view = new EditorView(containerRef.current!, {
       state,
@@ -94,23 +99,40 @@ export const useEditor = ({
     viewRef.current = view
     setView(view)
 
-    const handleUpdate = debounce(() => {
+    // 🧠 debounce로 block diff 감지
+    const handleUpdate = () => {
       const newBlocks = docToBlocks(view.state.doc, episodeId)
-      const diff = getBlocksChange(prevBlocksRef.current, newBlocks)
-      if (diff.length > 0) {
-        prevBlocksRef.current = newBlocks
-        setBlocks(newBlocks)
-        onChange?.(newBlocks)
-      }
-    }, 500)
+      setBlocks(newBlocks)
+      onChange?.(newBlocks)
+    }
 
     ydoc.on("update", handleUpdate)
 
+    new IndexeddbPersistence(dbName, ydoc)
+
+    // 정리 함수 리턴
     return () => {
       ydoc.off("update", handleUpdate)
       view.destroy()
       setView(null)
       viewRef.current = null
+    }
+  }
+
+  // 🎯 useEffect 안에서는 async 함수 호출만
+  useEffect(() => {
+    if (initializedRef.current) return
+    initializedRef.current = true
+
+    const ydoc = ydocRef.current
+
+    let cleanup: (() => void) | undefined
+    void initializeEditor(ydoc).then((fn) => {
+      cleanup = fn
+    })
+
+    return () => {
+      cleanup?.()
     }
   }, [])
 
