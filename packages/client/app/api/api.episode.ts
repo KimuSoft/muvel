@@ -1,5 +1,6 @@
 import { api } from "~/utils/api"
 import {
+  SnapshotReason,
   type AiAnalysis,
   type Block,
   type CreateAiAnalysisRequestBody,
@@ -60,5 +61,15 @@ export const getSnapshots = async (episodeId: string) => {
   const { data } = await api.get<EpisodeSnapshot[]>(
     `episodes/${episodeId}/snapshots`,
   )
+  return data
+}
+
+export const saveSnapshot = async (
+  episodeId: string,
+  reason: SnapshotReason = SnapshotReason.Manual,
+) => {
+  const { data } = await api.post(`/episodes/${episodeId}/snapshots`, {
+    reason,
+  })
   return data
 }

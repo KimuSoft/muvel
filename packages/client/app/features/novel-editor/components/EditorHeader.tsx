@@ -4,6 +4,7 @@ import {
   IconButton,
   Spacer,
   type StackProps,
+  Tag,
   useDialog,
 } from "@chakra-ui/react"
 import EditorSettingDrawer from "~/features/novel-editor/components/drawers/OptionDrawer"
@@ -24,8 +25,9 @@ import SnapshotDrawer from "~/features/novel-editor/components/drawers/SnapshotD
 import { MdOutlineWidgets } from "react-icons/md"
 import MobileActionMenu from "~/features/novel-editor/components/menus/MobileActionMenu"
 import { PiGear } from "react-icons/pi"
-import type { GetEpisodeResponseDto } from "muvel-api-types"
 import type { EpisodeData } from "~/features/novel-editor/context/EditorContext"
+import { usePlatform } from "~/hooks/usePlatform"
+import { IoCloudOffline } from "react-icons/io5"
 
 const EditorHeader: React.FC<
   StackProps & {
@@ -34,6 +36,8 @@ const EditorHeader: React.FC<
     syncState: SyncState
   }
 > = ({ novelId, episode, syncState, ...props }) => {
+  const { isOffline } = usePlatform()
+
   const navigate = useNavigate()
 
   const snapshotDialog = useDialog()
@@ -76,6 +80,19 @@ const EditorHeader: React.FC<
           </IconButton>
         </EpisodeListDrawer>
         <SyncIndicator ml={5} state={syncState} />
+        {isOffline && (
+          <Tooltip
+            content={
+              "현재 인터넷에 연결되어 있지 않지만 걱정 마세요. 뮤블은 오프라인 상태에서도 소설 편집이 가능합니다. 변경사항이 자동 저장되고 이후 인터넷이 연결됐을 때 자동으로 동기화되므로 브라우저를 끄셔도 좋습니다."
+            }
+            openDelay={100}
+          >
+            <Tag.Root ml={5}>
+              <IoCloudOffline />
+              <Tag.Label>오프라인 모드</Tag.Label>
+            </Tag.Root>
+          </Tooltip>
+        )}
       </HStack>
       <Spacer />
 

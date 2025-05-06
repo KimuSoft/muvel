@@ -155,16 +155,4 @@ export class EpisodesService {
     )
     console.info(`블록 ${createdOrUpdatedBlocks.length}개 생성/수정됨`)
   }
-
-  async findSnapshotsByEpisodeId(episodeId: string) {
-    const episode = await this.episodesRepository.findOne({
-      where: { id: episodeId },
-      relations: ["snapshots"],
-    })
-    if (!episode) {
-      throw new NotFoundException(`Episode with id ${episodeId} not found`)
-    }
-
-    return episode.snapshots
-  }
 }
