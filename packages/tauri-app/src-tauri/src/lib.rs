@@ -25,9 +25,8 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             auth::wait_for_token,
-            font::get_system_fonts,
             font::get_system_font_families,
-            font::get_family_fonts
+            font::get_fonts_by_family,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -39,6 +39,14 @@ const FontFamilySelect = ({
   const [extraFonts, setExtraFonts] = useState<
     { label: string; value: string }[]
   >([])
+  const [selectedFamily, setSelectedFamily] = useState<string | null>(null)
+  const [familyStyles, setFamilyStyles] = useState<
+    { label: string; value: string }[]
+  >([])
+  const [fontStylesCache, setFontStylesCache] = useState<
+    Record<string, { label: string; value: string }[]>
+  >({})
+  const [isLoading, setIsLoading] = useState(false)
 
   const allFonts = useMemo(
     () => [
@@ -54,47 +62,167 @@ const FontFamilySelect = ({
     [allFonts],
   )
 
-  const isPredefined = useMemo(
-    () => allFonts.some((item) => item.value === value),
-    [value, allFonts],
+  const fontStyleCollection = useMemo(
+    () => createListCollection({ items: familyStyles }),
+    [familyStyles],
   )
 
-  const selectedValue = isPredefined ? value : CUSTOM_VALUE
+  const isPredefined = useMemo(
+    () => predefinedFonts.some((item) => item.value === value),
+    [value],
+  )
+
+  const isSystemFont = useMemo(
+    () =>
+      extraFonts.some(
+        (font) => value.includes(font.value) || font.value.includes(value),
+      ),
+    [extraFonts, value],
+  )
+
+  const displayFamilyValue = useMemo(() => {
+    if (isLoading && selectedFamily) return selectedFamily
+    if (isPredefined) return value
+    if (selectedFamily) return selectedFamily
+    if (isSystemFont) {
+      const matchingFamily = extraFonts.find((font) =>
+        value.toLowerCase().includes(font.value.toLowerCase()),
+      )
+      return matchingFamily ? matchingFamily.value : CUSTOM_VALUE
+    }
+    return CUSTOM_VALUE
+  }, [isPredefined, selectedFamily, value, isSystemFont, extraFonts, isLoading])
+
+  const loadFamilyStyles = async (family: string) => {
+    if (!isTauri) return
+
+    setIsLoading(true)
+    setSelectedFamily(family)
+
+    try {
+      if (fontStylesCache[family]) {
+        const cachedStyles = fontStylesCache[family]
+        setFamilyStyles(cachedStyles)
+
+        if (cachedStyles.length > 0) {
+          const defaultStyle = cachedStyles.find(
+            (s) =>
+              s.label === "기본" ||
+              s.label === "Regular" ||
+              s.label.includes("보통"),
+          )
+          onChange(defaultStyle ? defaultStyle.value : cachedStyles[0].value)
+        }
+        setIsLoading(false)
+        return
+      }
+
+      const { invoke } = await import("@tauri-apps/api/core")
+      const fonts = await invoke<string[]>("get_fonts_by_family", { family })
+      const filteredFonts = (fonts as string[])
+        .filter((font) => !!font && isNaN(Number(font)))
+        .map((font) => ({
+          label: font.replace(family, "").trim() || "기본",
+          value: font,
+        }))
+
+      setFontStylesCache((prev) => ({
+        ...prev,
+        [family]: filteredFonts,
+      }))
+
+      setFamilyStyles(filteredFonts)
+
+      if (filteredFonts.length > 0) {
+        const defaultStyle = filteredFonts.find(
+          (s) =>
+            s.label === "기본" ||
+            s.label === "Regular" ||
+            s.label.includes("보통"),
+        )
+        onChange(defaultStyle ? defaultStyle.value : filteredFonts[0].value)
+      }
+    } catch (e) {
+      console.warn("시스템 폰트 패밀리 로딩 실패", e)
+      setFamilyStyles([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   useEffect(() => {
-    if (!isPredefined) {
+    if (!isTauri) return
+    ;(async () => {
+      try {
+        const { invoke } = await import("@tauri-apps/api/core")
+        const fonts = await invoke<string[]>("get_system_font_families")
+        const filteredFonts = (fonts as string[])
+          .filter((font) => !!font && isNaN(Number(font)))
+          .sort((a, b) => a.localeCompare(b, "ko"))
+          .map((font) => ({ label: font, value: font }))
+
+        setExtraFonts(filteredFonts)
+      } catch (e) {
+        console.warn("시스템 폰트 로딩 실패", e)
+      }
+    })()
+  }, [isTauri])
+
+  useEffect(() => {
+    if (!isPredefined && !selectedFamily && value) {
       setCustomValue(value)
     }
-  }, [isPredefined, value])
+  }, [isPredefined, selectedFamily, value])
 
   useEffect(() => {
-    if (isTauri) {
-      ;(async () => {
-        const { invoke } = await import("@tauri-apps/api/core")
-        try {
-          const fonts = await invoke<string[]>("get_system_fonts")
-          const mapped = (fonts as string[])
-            .filter((f) => !!f && isNaN(Number(f))) // 간단한 필터
-            .map((font) => ({ label: font, value: font }))
-          setExtraFonts(mapped)
-        } catch (e) {
-          console.warn("시스템 폰트 로딩 실패", e)
-        }
-      })()
+    if (isLoading || isPredefined) return
+    if (selectedFamily && familyStyles.some((style) => style.value === value)) {
+      return
     }
-  }, [isTauri])
+    if (isSystemFont && !selectedFamily) {
+      const matchingFamily = extraFonts.find((font) =>
+        value.toLowerCase().includes(font.value.toLowerCase()),
+      )
+      if (matchingFamily) {
+        loadFamilyStyles(matchingFamily.value)
+      }
+    }
+  }, [
+    value,
+    isPredefined,
+    isSystemFont,
+    selectedFamily,
+    familyStyles,
+    extraFonts,
+    isLoading,
+  ])
 
   return (
     <Box w="100%">
       <SelectRoot
         w={"100%"}
         collection={fontFamilyCollection}
-        value={[selectedValue]}
+        value={[displayFamilyValue]}
         onValueChange={({ value }) => {
-          if (value[0] === CUSTOM_VALUE) {
+          if (isLoading) return
+          const selectedValue = value[0]
+
+          if (selectedValue === CUSTOM_VALUE) {
+            setSelectedFamily(null)
+            setFamilyStyles([])
             onChange(customValue)
           } else {
-            onChange(value[0])
+            const isPredefined = predefinedFonts.some(
+              (font) => font.value === selectedValue,
+            )
+
+            if (isPredefined) {
+              setSelectedFamily(null)
+              setFamilyStyles([])
+              onChange(selectedValue)
+            } else {
+              loadFamilyStyles(selectedValue)
+            }
           }
         }}
       >
@@ -119,7 +247,41 @@ const FontFamilySelect = ({
         </SelectPositioner>
       </SelectRoot>
 
-      {selectedValue === CUSTOM_VALUE && (
+      {selectedFamily && familyStyles.length > 1 && (
+        <SelectRoot
+          w={"100%"}
+          mt={2}
+          collection={fontStyleCollection}
+          value={[value]}
+          onValueChange={({ value }) => {
+            if (value[0]) {
+              onChange(value[0])
+            }
+          }}
+        >
+          <SelectHiddenSelect />
+          <SelectControl>
+            <SelectTrigger>
+              <SelectValueText placeholder="스타일 선택" />
+            </SelectTrigger>
+            <SelectIndicatorGroup>
+              <SelectIndicator />
+            </SelectIndicatorGroup>
+          </SelectControl>
+          <SelectPositioner>
+            <SelectContent>
+              {fontStyleCollection.items.map((item) => (
+                <SelectItem key={item.value} item={item}>
+                  {item.label}
+                  <SelectItemIndicator />
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </SelectPositioner>
+        </SelectRoot>
+      )}
+
+      {displayFamilyValue === CUSTOM_VALUE && (
         <Input
           mt={2}
           placeholder="폰트 이름 입력"
