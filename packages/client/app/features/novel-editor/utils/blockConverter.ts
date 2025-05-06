@@ -1,5 +1,6 @@
 import { type Block, BlockType, type PMNodeJSON } from "muvel-api-types"
 import { Schema, type Node as PMNode } from "prosemirror-model"
+import * as Y from "yjs"
 
 // ✅ ProseMirror document를 생성하는 함수
 export function blocksToDoc(blocks: Block[], schema: Schema): PMNode {
@@ -41,4 +42,58 @@ export function docToBlocks(doc: PMNode, episodeId: string): Block[] {
       order: idx,
     }
   })
+}
+
+export function blocksToYXmlElements(
+  blocks: Block[],
+  schema: Schema,
+): (Y.XmlElement | Y.XmlText)[] {
+  const elements: (Y.XmlElement | Y.XmlText)[] = []
+
+  blocks.forEach((block) => {
+    const nodeType = schema.nodes[block.blockType]
+    if (!nodeType) {
+      console.warn(`Unknown node type: ${block.blockType}`)
+      return
+    }
+
+    const yElem = new Y.XmlElement(block.blockType)
+    const attrs = block.attr
+      ? { ...block.attr, id: block.id }
+      : { id: block.id }
+    Object.entries(attrs).forEach(([k, v]) => {
+      if (v != null) yElem.setAttribute(k, String(v))
+    })
+
+    if (Array.isArray(block.content)) {
+      block.content.forEach((nodeJson) => {
+        try {
+          const pmNode = schema.nodeFromJSON(nodeJson)
+
+          if (pmNode.isText) {
+            const yText = new Y.XmlText()
+            yText.insert(0, pmNode.text || "")
+            yElem.push([yText])
+          } else {
+            const child = new Y.XmlElement(pmNode.type.name)
+            Object.entries(pmNode.attrs ?? {}).forEach(([k, v]) =>
+              child.setAttribute(k, String(v)),
+            )
+            if (pmNode.text) {
+              const t = new Y.XmlText()
+              t.insert(0, pmNode.text)
+              child.push([t])
+            }
+            yElem.push([child])
+          }
+        } catch (e) {
+          console.warn("Invalid nodeJson", nodeJson, e)
+        }
+      })
+    }
+
+    elements.push(yElem)
+  })
+
+  return elements
 }

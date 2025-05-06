@@ -12,7 +12,9 @@ import { getBlocksChange } from "~/features/novel-editor/utils/calculateBlockCha
 import { updateEpisode, updateEpisodeBlocks } from "~/api/api.episode" // 경로 수정 필요
 import { toaster } from "~/components/ui/toaster" // 경로 수정 필요
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
-import LoadingOverlay from "~/components/templates/LoadingOverlay" // 경로 수정 필요
+import LoadingOverlay from "~/components/templates/LoadingOverlay"
+import { useBlockSync } from "~/features/novel-editor/hooks/useBlockSync"
+import { usePlatform } from "~/hooks/usePlatform" // 경로 수정 필요
 
 type EpisodePatchData = Partial<
   Omit<
@@ -57,6 +59,10 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     window.addEventListener("beforeunload", handleBeforeUnload)
     return () => window.removeEventListener("beforeunload", handleBeforeUnload)
   }, [syncState])
+
+  useEffect(() => {
+    console.log("loaded")
+  }, [])
 
   const saveEpisodeChanges = async () => {
     if (!episode || !previousEpisodeRef.current) return
@@ -128,36 +134,33 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     }
   }, [episode, debouncedSaveEpisode])
 
-  const handleBlocksChange = useMemo(
-    () =>
-      debounce(async (blocks: Block[]) => {
-        const changes = getBlocksChange(originalBlocksRef.current, blocks)
-        if (!episode || !episode.permissions.edit || !changes.length)
-          return null
-        setSyncState(SyncState.Syncing)
-        try {
-          await updateEpisodeBlocks(episode.id, changes)
-          setSyncState(SyncState.Synced)
-          originalBlocksRef.current = [...blocks]
-        } catch (e) {
-          console.error(e)
-          toaster.error({
-            title: "저장 실패",
-            description: "변경 사항을 저장하는 데 실패했습니다.",
-          })
-          setSyncState(SyncState.Error)
-        }
-      }, 1000),
-    [episode?.id, episode?.permissions.edit],
-  )
+  const { isOffline } = usePlatform()
 
-  const handleBlocksChange_ = async (blocks: Block[]) => {
-    if (!episode || !episode.permissions.edit || !blocks.length) return null
-    setSyncState(SyncState.Waiting)
-    await handleBlocksChange(blocks)
-  }
+  const {
+    syncState: blockSyncState,
+    initialBlocks,
+    onChange,
+    isReady,
+  } = useBlockSync(initialEpisodeData.id, {
+    isCloudSave: !isOffline,
+    debounceMs: 500,
+    onMerge: () => {
+      toaster.info({
+        title: "자동 병합됨",
+        description:
+          "동기화 중 충돌이 발생하여 자동 병합되었습니다. 병합 이전 버전이 백업되었으므로, 문제가 생긴 경우 '버전 관리'에서 복원할 수 있습니다.",
+      })
+    },
+    onError: (err) => {
+      toaster.error({
+        title: "블록 저장 실패",
+        description: err instanceof Error ? err.message : String(err),
+      })
+    },
+    serverBlocks: initialEpisodeData.blocks,
+  })
 
-  if (!episode) {
+  if (!episode || !isReady || !initialBlocks) {
     return <LoadingOverlay />
   }
 
@@ -166,9 +169,9 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
       <WidgetProvider>
         <EditorProvider episode={episode} setEpisode={setEpisode}>
           <EditorTemplate
-            initialBlocks={initialEpisodeData.blocks}
-            onBlocksChange={handleBlocksChange_}
-            syncState={syncState}
+            initialBlocks={initialBlocks}
+            onBlocksChange={onChange}
+            syncState={blockSyncState}
           />
         </EditorProvider>
       </WidgetProvider>
