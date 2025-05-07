@@ -63,9 +63,10 @@ export const ExportEpisodeDrawer: React.FC<{
 
   // 에디터 내용이나 옵션 변경 시 미리보기 내용 업데이트
   const processedContent = useMemo(() => {
+    if (!dialog.open) return ""
     // 임포트한 헬퍼 함수 사용
     return processContentForExport(view?.state.doc, options)
-  }, [view?.state.doc, options])
+  }, [options, dialog.open])
 
   // 내보내기(클립보드 복사) 함수
   const handleExport = useCallback(async () => {
@@ -105,7 +106,7 @@ export const ExportEpisodeDrawer: React.FC<{
   }, [processedContent, episode.title]) // episodeTitle도 의존성에 추가
 
   return (
-    <DrawerRootProvider value={dialog}>
+    <DrawerRootProvider value={dialog} lazyMount>
       {children && <DrawerTrigger asChild>{children}</DrawerTrigger>}
 
       <DrawerBackdrop />

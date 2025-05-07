@@ -26,25 +26,12 @@ export class EpisodesService {
   ) {}
 
   async findEpisodeById(id: string, permissions: BasePermission) {
-    const episode = await this.episodesRepository.findOne({
+    const episode = await this.episodesRepository.findOneOrFail({
       where: { id },
-      relations: ["novel", "novel.author", "blocks"],
+      relations: ["novel", "novel.author"],
     })
 
-    if (!episode) throw new NotFoundException(`Episode with id ${id} not found`)
-
-    // edit 권한이 없다면 주석 블록을 없앰
-    if (!permissions.edit) {
-      console.log("주석 삭제!")
-      episode.blocks = episode.blocks.filter(
-        (block) => block.blockType !== "comment",
-      )
-    }
-
-    return {
-      ...episode,
-      permissions,
-    }
+    return { ...episode, permissions }
   }
 
   async createEpisode(novelId: string, dto: CreateEpisodeDto) {

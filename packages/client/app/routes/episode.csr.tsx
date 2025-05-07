@@ -17,8 +17,6 @@ export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
     `/episodes/${id}`,
   )
 
-  episode.blocks.sort((a, b) => a.order - b.order)
-
   return { episode }
 }
 

@@ -16,5 +16,11 @@
     "build:c": "pnpm build:client",
     "build:a": "pnpm build:api"
   },
-  "packageManager": "pnpm@10.10.0"
+  "packageManager": "pnpm@10.10.0",
+  "dependencies": {
+    "howler": "^2.2.4"
+  },
+  "devDependencies": {
+    "@types/howler": "^2.2.12"
+  }
 }
