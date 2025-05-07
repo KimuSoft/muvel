@@ -12,8 +12,13 @@ import { DictionaryWidget } from "~/features/novel-editor/widgets/components/Dic
 import { FindReplaceWidget } from "~/features/novel-editor/widgets/components/FindReplaceWidget"
 import React from "react"
 import { GoNumber } from "react-icons/go"
-import { RiCharacterRecognitionFill } from "react-icons/ri"
-import { FaBookBookmark, FaDiceSix, FaEllipsis } from "react-icons/fa6"
+import { RiBold, RiCharacterRecognitionFill } from "react-icons/ri"
+import {
+  FaBookBookmark,
+  FaDiceSix,
+  FaEllipsis,
+  FaVolumeHigh,
+} from "react-icons/fa6"
 import { MdFindReplace, MdOutlineTimer } from "react-icons/md"
 import { IoSpeedometerOutline } from "react-icons/io5"
 import { BiNotepad } from "react-icons/bi"
@@ -21,6 +26,8 @@ import { SymbolReplaceWidget } from "~/features/novel-editor/widgets/components/
 import { AuthorCommentWidget } from "~/features/novel-editor/widgets/components/AuthorCommentWidget"
 import { LuBookMarked, LuMessageSquareQuote } from "react-icons/lu"
 import { EpisodeReferenceWidget } from "~/features/novel-editor/widgets/components/EpisodeReferenceWidget"
+import { FormattingWidget } from "~/features/novel-editor/widgets/components/FormattingWidget"
+import { SoundEffectWidget } from "~/features/novel-editor/widgets/components/SoundEffectWidget"
 
 export interface WidgetBaseProps {
   dragAttributes?: DraggableAttributes
@@ -39,10 +46,12 @@ export const widgetMap = {
   symbolReplace: SymbolReplaceWidget,
   authorComment: AuthorCommentWidget,
   episodeReference: EpisodeReferenceWidget,
+  format: FormattingWidget,
+  soundEffect: SoundEffectWidget,
 }
 
 export interface WidgetButtonProps {
-  id: string
+  id: keyof typeof widgetMap
   name: string
   description: string
   icon: React.ReactNode
@@ -120,6 +129,19 @@ export const widgets: WidgetButtonProps[] = [
     name: "회차 참조",
     description: "다른 회차를 참고하면서 글을 쓸 수 있게 해주는 위젯입니다.",
     icon: <LuBookMarked size={50} />,
+  },
+  {
+    id: "format",
+    name: "서식 위젯",
+    description: "단축키 없이 서식을 쉽게 적용할 수 있는 위젯입니다.",
+    icon: <RiBold size={50} />,
+  },
+  {
+    id: "soundEffect",
+    name: "효과음 위젯",
+    description:
+      "타닥 탁 타닥... 타자기 소리는 언제 들어도 기분이 좋지 않나요?",
+    icon: <FaVolumeHigh size={50} />,
   },
 ]
 
