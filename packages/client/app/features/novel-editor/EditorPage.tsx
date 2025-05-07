@@ -1,174 +1,139 @@
-import React, { useEffect, useMemo, useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { Block, GetEpisodeResponseDto } from "muvel-api-types"
-import EditorTemplate from "~/features/novel-editor/EditorTemplate" // 경로 수정 필요
-import {
-  EditorProvider,
-  type EpisodeData,
-} from "~/features/novel-editor/context/EditorContext" // 경로 수정 필요
-import OptionProvider from "~/providers/OptionProvider" // 경로 수정 필요
-import { WidgetProvider } from "~/features/novel-editor/widgets/context/WidgetContext" // 경로 수정 필요
-import { debounce, isEqual } from "lodash-es"
-import { getBlocksChange } from "~/features/novel-editor/utils/calculateBlockChanges" // 경로 수정 필요
-import { updateEpisode, updateEpisodeBlocks } from "~/api/api.episode" // 경로 수정 필요
-import { toaster } from "~/components/ui/toaster" // 경로 수정 필요
+import EditorTemplate from "~/features/novel-editor/EditorTemplate"
+import { EditorProvider } from "~/features/novel-editor/context/EditorContext"
+import OptionProvider from "~/providers/OptionProvider"
+import { WidgetProvider } from "~/features/novel-editor/widgets/context/WidgetContext"
+import { debounce } from "lodash-es"
+import { getBlocksChange } from "~/features/novel-editor/utils/calculateBlockChanges"
+import { updateEpisodeBlocks } from "~/api/api.episode"
+import { toaster } from "~/components/ui/toaster"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
-import LoadingOverlay from "~/components/templates/LoadingOverlay" // 경로 수정 필요
-
-type EpisodePatchData = Partial<
-  Omit<
-    EpisodeData,
-    | "id"
-    | "permissions"
-    | "createdAt"
-    | "updatedAt"
-    | "novel"
-    | "isReadable"
-    | "isPurchased"
-    | "viewCount"
-    | "likeCount"
-    | "commentCount"
-  >
->
+import LoadingOverlay from "~/components/templates/LoadingOverlay"
+import { useEpisodeSync } from "~/features/novel-editor/hooks/useEpisodeSync"
 
 const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
-  episode: initialEpisodeData,
+  episode, // 원본 episode prop을 useEpisodeSync에 전달하기 위해 유지
 }) => {
-  const [episode, setEpisode] = useState<EpisodeData | null>(null)
-  const originalBlocksRef = useRef<Block[]>(initialEpisodeData.blocks)
-  const previousEpisodeRef = useRef<EpisodeData | null>(null)
-  const [syncState, setSyncState] = useState(SyncState.Synced)
-  const saveLogicRef = useRef<() => Promise<void>>(null)
+  // 요청하신 대로 episode prop을 구조 분해하여 사용
+  const { blocks: initialBlocksFromProp, ...initialEpisodeMetadataFromProp } =
+    episode
 
+  // episode 메타데이터 관련 로직은 useEpisodeSync 훅으로 관리
+  const {
+    episodeData, // 훅에서 반환된 에피소드 메타데이터 (타입: EpisodeData | null)
+    setEpisodeData, // 훅에서 반환된 설정 함수
+    episodeSyncState, // 에피소드 메타데이터 동기화 상태
+  } = useEpisodeSync({
+    initialEpisode: episode, // 훅에는 원본 episode prop 전체를 전달
+    // onSyncStateChange: (newState) => { /* 필요시 EditorPage의 syncState와 연동 */ },
+  })
+
+  // 블록 변경 관련 상태 및 로직은 EditorPage에 유지
+  const originalBlocksRef = useRef<Block[]>(initialBlocksFromProp)
+  const [blockSyncState, setBlockSyncState] = useState<SyncState>(
+    SyncState.Synced,
+  )
+
+  // 전체 동기화 상태 결정 로직
+  const combinedSyncState = useMemo(() => {
+    if (
+      episodeSyncState === SyncState.Error ||
+      blockSyncState === SyncState.Error
+    ) {
+      return SyncState.Error
+    }
+    if (
+      episodeSyncState === SyncState.Syncing ||
+      blockSyncState === SyncState.Syncing
+    ) {
+      return SyncState.Syncing
+    }
+    if (
+      episodeSyncState === SyncState.Waiting ||
+      blockSyncState === SyncState.Waiting
+    ) {
+      return SyncState.Waiting
+    }
+    return SyncState.Synced
+  }, [episodeSyncState, blockSyncState])
+
+  // episode prop이 변경될 때 블록 관련 상태 초기화
+  // (episode 객체 자체가 변경되면 initialBlocksFromProp도 새 값으로 업데이트됨)
   useEffect(() => {
-    const { blocks, ...metaData } = initialEpisodeData
-    setEpisode(metaData)
-    originalBlocksRef.current = blocks
-    previousEpisodeRef.current = metaData
-    setSyncState(SyncState.Synced)
-  }, [initialEpisodeData.id])
+    originalBlocksRef.current = initialBlocksFromProp
+    setBlockSyncState(SyncState.Synced)
+  }, [episode]) // episode prop 객체 전체를 의존성으로 사용
 
+  // beforeunload 핸들러 (combinedSyncState 사용)
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (![SyncState.Synced, SyncState.Waiting].includes(syncState)) {
+      if (![SyncState.Synced, SyncState.Waiting].includes(combinedSyncState)) {
         event.preventDefault()
         event.returnValue = ""
       }
     }
     window.addEventListener("beforeunload", handleBeforeUnload)
     return () => window.removeEventListener("beforeunload", handleBeforeUnload)
-  }, [syncState])
+  }, [combinedSyncState])
 
-  const saveEpisodeChanges = async () => {
-    if (!episode || !previousEpisodeRef.current) return
-
-    const currentData = episode
-    const previousData = previousEpisodeRef.current
-    const changes: EpisodePatchData = {}
-
-    ;(Object.keys(currentData) as Array<keyof EpisodeData>).forEach((key) => {
-      const nonComparableFields: Array<keyof EpisodeData> = [
-        "id",
-        "permissions",
-        "createdAt",
-        "updatedAt",
-        "novel",
-      ]
-      if (nonComparableFields.includes(key)) return
-      if (!isEqual(currentData[key], previousData[key])) {
-        ;(changes as any)[key] = currentData[key]
-      }
-    })
-
-    if (Object.keys(changes).length === 0) {
-      if (syncState === SyncState.Waiting) {
-        setSyncState(SyncState.Synced)
-      }
-      return
-    }
-
-    setSyncState(SyncState.Syncing)
-
-    try {
-      console.log("Saving episode changes:", changes)
-      await updateEpisode(episode.id, changes)
-      setSyncState(SyncState.Synced)
-      previousEpisodeRef.current = currentData
-    } catch (e) {
-      console.error("Failed to save episode changes:", e)
-      toaster.error({
-        title: "저장 실패",
-        description: "에피소드 정보를 저장하는 데 실패했습니다.",
-      })
-      setSyncState(SyncState.Error)
-    }
-  }
-
-  useEffect(() => {
-    saveLogicRef.current = saveEpisodeChanges
-  }, [saveEpisodeChanges])
-
-  const debouncedSaveEpisode = useMemo(
+  // 블록 변경 핸들러
+  const debouncedBlocksChange = useMemo(
     () =>
-      debounce(() => {
-        if (saveLogicRef.current) {
-          saveLogicRef.current()
+      debounce(async (newBlocks: Block[]) => {
+        if (!episodeData || !episodeData.permissions.edit) {
+          if (blockSyncState === SyncState.Waiting)
+            setBlockSyncState(SyncState.Synced)
+          return
         }
-      }, 1500),
-    [],
-  )
 
-  useEffect(() => {
-    if (
-      episode &&
-      previousEpisodeRef.current &&
-      !isEqual(episode, previousEpisodeRef.current)
-    ) {
-      setSyncState(SyncState.Waiting)
-      debouncedSaveEpisode()
-    }
-  }, [episode, debouncedSaveEpisode])
+        const changes = getBlocksChange(originalBlocksRef.current, newBlocks)
+        if (!changes.length) {
+          if (blockSyncState === SyncState.Waiting)
+            setBlockSyncState(SyncState.Synced)
+          return
+        }
 
-  const handleBlocksChange = useMemo(
-    () =>
-      debounce(async (blocks: Block[]) => {
-        const changes = getBlocksChange(originalBlocksRef.current, blocks)
-        if (!episode || !episode.permissions.edit || !changes.length)
-          return null
-        setSyncState(SyncState.Syncing)
+        setBlockSyncState(SyncState.Syncing)
         try {
-          await updateEpisodeBlocks(episode.id, changes)
-          setSyncState(SyncState.Synced)
-          originalBlocksRef.current = [...blocks]
+          // API 호출 시 episode ID는 구조 분해한 initialEpisodeMetadataFromProp에서 가져옴
+          await updateEpisodeBlocks(initialEpisodeMetadataFromProp.id, changes)
+          setBlockSyncState(SyncState.Synced)
+          originalBlocksRef.current = [...newBlocks]
         } catch (e) {
-          console.error(e)
+          console.error("Failed to save block changes:", e)
           toaster.error({
-            title: "저장 실패",
+            title: "블록 저장 실패",
             description: "변경 사항을 저장하는 데 실패했습니다.",
           })
-          setSyncState(SyncState.Error)
+          setBlockSyncState(SyncState.Error)
         }
       }, 1000),
-    [episode?.id, episode?.permissions.edit],
+    [episodeData, initialEpisodeMetadataFromProp.id, blockSyncState], // episodeData와 initialEpisodeMetadataFromProp.id 의존성
   )
 
-  const handleBlocksChange_ = async (blocks: Block[]) => {
-    if (!episode || !episode.permissions.edit || !blocks.length) return null
-    setSyncState(SyncState.Waiting)
-    await handleBlocksChange(blocks)
-  }
+  const handleBlocksChange_ = useCallback(
+    async (newBlocks: Block[]) => {
+      if (!episodeData || !episodeData.permissions.edit || !newBlocks.length)
+        return
+      setBlockSyncState(SyncState.Waiting)
+      debouncedBlocksChange(newBlocks)
+    },
+    [episodeData, debouncedBlocksChange],
+  )
 
-  if (!episode) {
+  if (!episodeData) {
     return <LoadingOverlay />
   }
 
   return (
     <OptionProvider>
       <WidgetProvider>
-        <EditorProvider episode={episode} setEpisode={setEpisode}>
+        <EditorProvider episode={episodeData} setEpisode={setEpisodeData}>
           <EditorTemplate
-            initialBlocks={initialEpisodeData.blocks}
+            initialBlocks={initialBlocksFromProp} // 구조 분해한 initialBlocksFromProp 사용
             onBlocksChange={handleBlocksChange_}
-            syncState={syncState}
+            syncState={combinedSyncState}
           />
         </EditorProvider>
       </WidgetProvider>
