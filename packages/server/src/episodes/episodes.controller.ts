@@ -9,6 +9,7 @@ import {
   Req,
   Request,
   UnauthorizedException,
+  UseInterceptors,
 } from "@nestjs/common"
 import { EpisodesService } from "./services/episodes.service"
 import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
@@ -26,6 +27,7 @@ import { CreateAiAnalysisRequestBodyDto } from "./dto/create-ai-analysis-request
 import { CreateEpisodeSnapshotDto } from "./dto/create-episode-snapshot.dto"
 import { EpisodeSnapshotService } from "./services/episode-snapshot.service"
 import { Block } from "muvel-api-types"
+import { CacheInterceptor, CacheTTL } from "@nestjs/cache-manager"
 
 @Controller("episodes")
 @ApiTags("Episodes")
@@ -35,6 +37,17 @@ export class EpisodesController {
     private readonly episodeAnalysisService: EpisodeAnalysisService,
     private readonly episodeSnapshotService: EpisodeSnapshotService,
   ) {}
+
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(60 * 60 * 1000) // 1시간 (3600초)
+  @Get("avg_analysis")
+  @ApiOperation({
+    summary: "AI 분석 결과 평균 조회하기",
+    description: "AI 분석 결과의 평균을 조회할 수 있습니다.",
+  })
+  async getAvgAiAnalyses() {
+    return this.episodeAnalysisService.getAverageAnalysis()
+  }
 
   @Get(":id")
   @ApiOperation({

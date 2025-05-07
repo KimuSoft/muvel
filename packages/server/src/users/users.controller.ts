@@ -1,4 +1,11 @@
-import { Controller, Get, Param, Req, Request } from "@nestjs/common"
+import {
+  Controller,
+  Get,
+  Param,
+  Req,
+  Request,
+  UseInterceptors,
+} from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
 import { UsersService } from "./users.service"
 import { NovelsService } from "../novels/services/novels.service"
@@ -8,6 +15,7 @@ import {
   OptionalAuthenticatedRequest,
   RequireAuth,
 } from "../auth/jwt-auth.guard"
+import { CacheInterceptor, CacheTTL } from "@nestjs/cache-manager"
 
 @Controller("users")
 @ApiTags("Users")
@@ -17,12 +25,15 @@ export class UsersController {
     private readonly novelsService: NovelsService,
   ) {}
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(10 * 60 * 1000) // 10분 (600초)
   @Get("count")
   @ApiOperation({
     summary: "유저 수 불러오기",
     description: "현재 가입한 총 유저 수를 불러옵니다.",
   })
   async getUserCount() {
+    console.log("getUserCount")
     return this.usersService.getUserCount()
   }
 

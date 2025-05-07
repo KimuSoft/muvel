@@ -2,6 +2,7 @@ import { api } from "~/utils/api"
 import {
   SnapshotReason,
   type AiAnalysis,
+  type AiAnalysisScore,
   type Block,
   type CreateAiAnalysisRequestBody,
   type Episode,
@@ -71,5 +72,14 @@ export const saveSnapshot = async (
   const { data } = await api.post(`/episodes/${episodeId}/snapshots`, {
     reason,
   })
+  return data
+}
+
+export type getAvgAiAnalysisResponse = AiAnalysisScore &
+  Pick<AiAnalysis, "overallRating">
+export const getAvgAiAnalysis = async () => {
+  const { data } = await api.get<getAvgAiAnalysisResponse>(
+    `episodes/avg_analysis`,
+  )
   return data
 }

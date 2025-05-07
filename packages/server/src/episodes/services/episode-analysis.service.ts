@@ -12,7 +12,7 @@ import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
 import { EpisodeRepository } from "../repositories/episode.repository"
 import { BlockRepository } from "../../blocks/block.repository"
-import { BlockType, EpisodeType } from "muvel-api-types"
+import { AiAnalysisScore, BlockType, EpisodeType } from "muvel-api-types"
 import { CreateAiAnalysisRequestBodyDto } from "../dto/create-ai-analysis-request-body.dto"
 import { UserEntity } from "../../users/user.entity"
 
@@ -188,5 +188,22 @@ export class EpisodeAnalysisService {
         `Failed to save AI analysis for episode ${episodeId}.`,
       )
     }
+  }
+
+  async getAverageAnalysis(): Promise<
+    AiAnalysisScore & { overallRating: number }
+  > {
+    return (
+      await this.aiAnalysisRepository.query(`
+    SELECT
+      AVG("overallRating") AS "overallRating",
+      AVG((scores->>'writingStyle')::float) AS "writingStyle",
+      AVG((scores->>'interest')::float) AS "interest",
+      AVG((scores->>'character')::float) AS "character",
+      AVG((scores->>'immersion')::float) AS "immersion",
+      AVG((scores->>'anticipation')::float) AS "anticipation"
+    FROM ai_analyses
+  `)
+    )[0]
   }
 }
