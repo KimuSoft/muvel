@@ -9,7 +9,7 @@ import { PatchEpisodesDto } from "../../novels/dto/patch-episodes.dto"
 import { CreateEpisodeDto } from "../dto/create-episode.dto"
 import { NovelEntity } from "../../novels/novel.entity"
 import { SearchRepository } from "src/search/search.repository"
-import { BasePermission, EpisodeType } from "muvel-api-types"
+import { BasePermission, BlockType, EpisodeType } from "muvel-api-types"
 import { UpdateEpisodeDto } from "../dto/update-episode.dto"
 import { PatchBlocksDto } from "../dto/patch-blocks.dto"
 import { BlockRepository } from "../../blocks/block.repository"
@@ -154,5 +154,22 @@ export class EpisodesService {
       { isSnapshotted: false },
     )
     console.info(`블록 ${createdOrUpdatedBlocks.length}개 생성/수정됨`)
+  }
+
+  async findBlocksByEpisodeId(episodeId: string, permissions: BasePermission) {
+    const episode = await this.episodesRepository.findOneOrFail({
+      where: { id: episodeId },
+      relations: ["blocks"],
+      order: { blocks: { order: "ASC" } },
+    })
+
+    // edit 권한이 없다면 주석 블록을 없앰
+    if (!permissions.edit) {
+      episode.blocks = episode.blocks.filter(
+        (block) => block.blockType !== BlockType.Comment,
+      )
+    }
+
+    return episode.blocks
   }
 }

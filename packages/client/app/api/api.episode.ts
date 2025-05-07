@@ -14,7 +14,7 @@ export const getEpisodeBlocks = async (episodeId: string) => {
   return data
 }
 
-export const getEpisode = async (episodeId: string) => {
+export const getEpisodeById = async (episodeId: string) => {
   const { data } = await api.get<GetEpisodeResponseDto>(`episodes/${episodeId}`)
   return data
 }

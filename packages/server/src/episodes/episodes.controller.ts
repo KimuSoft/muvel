@@ -25,6 +25,7 @@ import {
 import { CreateAiAnalysisRequestBodyDto } from "./dto/create-ai-analysis-request-body.dto"
 import { CreateEpisodeSnapshotDto } from "./dto/create-episode-snapshot.dto"
 import { EpisodeSnapshotService } from "./services/episode-snapshot.service"
+import { Block } from "muvel-api-types"
 
 @Controller("episodes")
 @ApiTags("Episodes")
@@ -72,17 +73,21 @@ export class EpisodesController {
     return this.episodesService.deleteEpisode(id)
   }
 
-  // @Get(":id/blocks")
-  // @ApiOperation({
-  //   summary: "에피소드 내 블록 불러오기",
-  //   description: "에피소드의 블록을 불러옵니다.",
-  // })
-  // @RequirePermission(NovelPermission.ReadNovel)
-  // async getBlocks(@Param() { id }: EpisodeIdParamDto): Promise<Block[]> {
-  //   const episode = await this.episodesService.findOne(id, ["blocks"])
-  //   episode.blocks.sort((a, b) => a.order - b.order)
-  //   return episode.blocks
-  // }
+  @Get(":id/blocks")
+  @ApiOperation({
+    summary: "에피소드 내 블록 불러오기",
+    description: "에피소드의 블록을 불러옵니다.",
+  })
+  @RequirePermission("read", EpisodePermissionGuard)
+  async getEpisodeBlocks(
+    @Request() req: EpisodePermissionRequest,
+    @Param() { id }: EpisodeIdParamDto,
+  ): Promise<Block[]> {
+    return this.episodesService.findBlocksByEpisodeId(
+      id,
+      req.episode.permissions,
+    )
+  }
 
   @Patch(":id/blocks")
   @ApiOperation({
