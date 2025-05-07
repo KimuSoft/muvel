@@ -122,7 +122,7 @@ const FontFamilySelect = ({
       const filteredFonts = (fonts as string[])
         .filter((font) => !!font && isNaN(Number(font)))
         .map((font) => ({
-          label: font.replace(family, "").trim() || "기본",
+          label: font.trim() || "기본",
           value: font,
         }))
 
