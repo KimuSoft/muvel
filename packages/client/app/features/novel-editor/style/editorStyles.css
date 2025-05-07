@@ -19,6 +19,10 @@
   padding: var(--editor-block-gap, 7px) 0;
 }
 
+.ProseMirror em {
+  font-style: italic;
+}
+
 /* Quote (대사 블록) */
 .ProseMirror p[data-quote-style] {
   position: relative;

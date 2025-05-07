@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from "typeorm"
 import { EpisodeEntity } from "./episode.entity"
+import { AiAnalysisScore } from "muvel-api-types"
 
 @Entity("ai_analyses") // 테이블 이름 설정
 export class AiAnalysisEntity {
@@ -19,14 +20,7 @@ export class AiAnalysisEntity {
   overallRating: number // 종합 평점 (0.0 ~ 5.0)
 
   @Column({ type: "jsonb" })
-  scores: {
-    // 개별 평가 점수
-    writingStyle: number // 문장력
-    interest: number // 흥미도
-    character: number // 캐릭터
-    immersion: number // 몰입력
-    anticipation: number // 기대감
-  }
+  scores: AiAnalysisScore
 
   @Column({ type: "jsonb" })
   comments: { nickname: string; content: string }[]

@@ -13,9 +13,6 @@ import {
   EmptyState,
   Heading,
   HStack,
-  ProgressRange,
-  ProgressRoot,
-  ProgressTrack,
   RatingGroup,
   Separator,
   Skeleton,
@@ -28,7 +25,12 @@ import {
 } from "@chakra-ui/react"
 import React, { useEffect, useMemo } from "react"
 import type { AiAnalysis, CreateAiAnalysisRequestBody } from "muvel-api-types"
-import { createAiAnalysis, getAiAnalysis } from "~/api/api.episode"
+import {
+  createAiAnalysis,
+  getAiAnalysis,
+  getAvgAiAnalysis,
+  type getAvgAiAnalysisResponse,
+} from "~/api/api.episode"
 import {
   TbAnalyze,
   TbMessage,
@@ -38,15 +40,18 @@ import {
 import AiAnalysisWarningDialog from "~/features/novel-editor/components/dialogs/AiAnalysisWarningDialog"
 import { toaster } from "~/components/ui/toaster"
 import type { EpisodeData } from "~/features/novel-editor/context/EditorContext"
+import AiAnalysisChart from "~/features/novel-editor/components/AiAnalysisChart"
+import { getTimeAgoKo } from "~/utils/getTimeAgoKo"
 
 const MAX_AI_PROFILE = 8
 
 const CommentItem: React.FC<{
   username: string
   comment: string
+  createdAt: Date
   isAI: boolean
   avatar?: string
-}> = ({ username, comment, isAI, avatar }) => {
+}> = ({ username = "unnamed", comment, isAI, createdAt, avatar }) => {
   const aiProfile = useMemo(() => {
     let hash = 0
     for (let i = 0; i < username.length; i++) {
@@ -59,47 +64,25 @@ const CommentItem: React.FC<{
     return `/profiles/${avatarId}.webp`
   }, [isAI, username])
 
+  const timeText = useMemo(() => getTimeAgoKo(createdAt), [createdAt])
+
   return (
-    <HStack alignItems={"flex-start"} gap={3}>
+    <HStack alignItems={"flex-start"} gap={4}>
       <Avatar.Root>
         <Avatar.Image src={isAI ? aiProfile : avatar} />
       </Avatar.Root>
       <Stack gap={2}>
         <HStack>
           <Text fontWeight={"bold"}>{username}</Text>
-          <Tag.Root variant={"solid"} colorPalette={"purple"} size={"sm"}>
+          <Tag.Root variant={"outline"} colorPalette={"purple"} size={"sm"}>
             <Tag.Label>AI</Tag.Label>
           </Tag.Root>
+          <Text color={"gray.500"} fontSize={"xs"}>
+            {timeText}
+          </Text>
         </HStack>
         <Text lineHeight={"1.5"}>{comment}</Text>
       </Stack>
-    </HStack>
-  )
-}
-
-const ScoreItem: React.FC<{
-  title: string
-  score: number
-  loading?: boolean
-}> = ({ title, score, loading = false }) => {
-  return (
-    <HStack overflow={"hidden"} gap={3} w={"100%"}>
-      <Skeleton flexShrink={0} loading={loading}>
-        <Text>{title}</Text>
-      </Skeleton>
-      <Skeleton w={"100%"} loading={loading}>
-        <ProgressRoot
-          w={"100%"}
-          size={"sm"}
-          colorPalette={"purple"}
-          max={5}
-          value={score}
-        >
-          <ProgressTrack>
-            <ProgressRange />
-          </ProgressTrack>
-        </ProgressRoot>
-      </Skeleton>
     </HStack>
   )
 }
@@ -112,10 +95,24 @@ const CommentDrawer: React.FC<{
 }> = ({ episode, children, editable, dialog }) => {
   const [analyses, setAnalyses] = React.useState<AiAnalysis[]>([])
   const [isLoading, setIsLoading] = React.useState(false)
+  const [avgAnalysis, setAvgAnalysis] =
+    React.useState<getAvgAiAnalysisResponse>({
+      overallRating: 0,
+      writingStyle: 0,
+      interest: 0,
+      character: 0,
+      immersion: 0,
+      anticipation: 0,
+    })
 
   const fetchAnalyses = async () => {
     setIsLoading(true)
     const ai = await getAiAnalysis(episode.id)
+    console.log("페팅중!")
+
+    const avg = await getAvgAiAnalysis()
+    console.log("avg", avg)
+    setAvgAnalysis(avg)
 
     // ai 결과를 최신순으로 정렬 ai.createdAt: string
     ai.sort((a: AiAnalysis, b: AiAnalysis) => {
@@ -133,6 +130,32 @@ const CommentDrawer: React.FC<{
     if (!dialog.open) return
     void fetchAnalyses()
   }, [dialog.open])
+
+  const ratingText = useMemo(() => {
+    // 0.5 단위로
+    if (analyses.length === 0) return "네?"
+    else if (analyses[0].overallRating <= 1) return "어... 음...?"
+    else if (analyses[0].overallRating <= 2) return "그냥저냥"
+    else if (analyses[0].overallRating <= 3) return "괜찮은데요?"
+    else if (analyses[0].overallRating <= 3.5) return "잘 쓰셨어요!"
+    else if (analyses[0].overallRating <= 4) return "완전 재밌어요!"
+    else if (analyses[0].overallRating <= 4.5) return "엄청나요!"
+    else if (analyses[0].overallRating <= 5) return "환상적이에요!"
+    else return "네?"
+  }, [analyses])
+
+  const allComments = useMemo(() => {
+    console.log(analyses)
+    return analyses
+      .map((analysis) =>
+        analysis.comments.map((c) => ({
+          ...c,
+          createdAt: new Date(analysis.createdAt),
+        })),
+      )
+      .flat()
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+  }, [analyses])
 
   const onCreateAnalysis = async (options: CreateAiAnalysisRequestBody) => {
     toaster.promise(
@@ -165,6 +188,16 @@ const CommentDrawer: React.FC<{
     if (analyses.length === 0) return "아직 평가된 내용이 없습니다."
     const date = new Date(analyses[0].createdAt)
     return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`
+  }, [analyses])
+
+  const colorPalette = useMemo(() => {
+    const analysis = analyses[0]
+    if (!analysis) return "purple"
+
+    if (analysis.overallRating > 4) return "yellow"
+    else if (analysis.overallRating <= 1.5) return "gray"
+    else if (analysis.overallRating <= 3) return "red"
+    else return "purple"
   }, [analyses])
 
   return (
@@ -223,9 +256,9 @@ const CommentDrawer: React.FC<{
               </HStack>
               {analyses[0] ? (
                 <VStack>
-                  <HStack gap={3} w={"100%"}>
-                    <VStack gap={3} px={5}>
-                      <Skeleton loading={isLoading}>
+                  <HStack w={"100%"}>
+                    <VStack gap={0} w={"50%"}>
+                      <Skeleton loading={isLoading} mb={4}>
                         <Text fontWeight={"bold"} fontSize={"3xl"}>
                           {analyses[0].overallRating.toFixed(1)}
                         </Text>
@@ -234,47 +267,30 @@ const CommentDrawer: React.FC<{
                         <RatingGroup.Root
                           count={5}
                           value={analyses[0].overallRating}
-                          size="lg"
+                          size={"lg"}
                           readOnly
-                          colorPalette={"purple"}
+                          colorPalette={colorPalette}
                         >
                           <RatingGroup.HiddenInput />
                           <RatingGroup.Control />
                         </RatingGroup.Root>
                       </Skeleton>
+                      <Skeleton loading={isLoading} mt={1}>
+                        <Text color={"gray.500"} fontSize={"sm"}>
+                          {ratingText}
+                        </Text>
+                      </Skeleton>
                     </VStack>
-                    <VStack w={"100%"} gap={1}>
-                      <ScoreItem
-                        title={"문장력"}
-                        score={analyses[0].scores.writingStyle}
-                        loading={isLoading}
+                    <Skeleton loading={isLoading} w={"65%"} maxH={"200px"}>
+                      <AiAnalysisChart
+                        scores={analyses[0].scores}
+                        colorPalette={colorPalette}
+                        avgScores={avgAnalysis}
                       />
-                      <ScoreItem
-                        title={"흥미도"}
-                        score={analyses[0].scores.interest}
-                        loading={isLoading}
-                      />
-                      <ScoreItem
-                        title={"캐릭터"}
-                        score={analyses[0].scores.character}
-                        loading={isLoading}
-                      />
-                      <ScoreItem
-                        title={"몰입력"}
-                        score={analyses[0].scores.immersion}
-                        loading={isLoading}
-                      />
-                      <ScoreItem
-                        title={"기대감"}
-                        score={analyses[0].scores.anticipation}
-                        loading={isLoading}
-                      />
-                    </VStack>
+                    </Skeleton>
                   </HStack>
                   <Text color={"gray.500"} fontSize={"xs"}>
-                    AI 평가는 정확하지 않아요. 그냥 이런 의견도 있구나 하는
-                    느낌의 단순 참고용으로만 사용해 주세요. 당신의 글의
-                    아름다움은 당신만이 평가할 수 있으니까요!
+                    이 귀여운 깡통들의 의견에 너무 큰 의미를 부여하지 마세요
                   </Text>
                 </VStack>
               ) : (
@@ -297,12 +313,13 @@ const CommentDrawer: React.FC<{
                 <TbMessage size={"24px"} />
                 <Heading size={"lg"}>리뷰</Heading>
               </HStack>
-              <Stack gap={5} mb={5}>
-                {analyses[0] ? (
-                  analyses[0]?.comments.map((comment, idx) => (
+              <Stack gap={6} mb={5}>
+                {allComments?.length ? (
+                  allComments.map((comment, idx) => (
                     <CommentItem
                       key={`comment-ai-${idx}`}
                       username={comment.nickname}
+                      createdAt={comment.createdAt}
                       comment={comment.content}
                       isAI
                     />

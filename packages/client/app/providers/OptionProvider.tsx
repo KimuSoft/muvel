@@ -7,7 +7,7 @@ export const defaultOption: EditorStyleOption = {
   fontSize: 18,
   indent: 0,
   fontWeight: 400,
-  fontFamily: "Inter",
+  fontFamily: '"Pretendard Variable"',
   color: null,
   blockGap: 7,
   backgroundColor: null,

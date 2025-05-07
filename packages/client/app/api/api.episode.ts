@@ -1,6 +1,8 @@
 import { api } from "~/utils/api"
 import {
+  SnapshotReason,
   type AiAnalysis,
+  type AiAnalysisScore,
   type Block,
   type CreateAiAnalysisRequestBody,
   type Episode,
@@ -13,7 +15,7 @@ export const getEpisodeBlocks = async (episodeId: string) => {
   return data
 }
 
-export const getEpisode = async (episodeId: string) => {
+export const getEpisodeById = async (episodeId: string) => {
   const { data } = await api.get<GetEpisodeResponseDto>(`episodes/${episodeId}`)
   return data
 }
@@ -59,6 +61,25 @@ export const getAiAnalysis = async (episodeId: string) => {
 export const getSnapshots = async (episodeId: string) => {
   const { data } = await api.get<EpisodeSnapshot[]>(
     `episodes/${episodeId}/snapshots`,
+  )
+  return data
+}
+
+export const saveSnapshot = async (
+  episodeId: string,
+  reason: SnapshotReason = SnapshotReason.Manual,
+) => {
+  const { data } = await api.post(`/episodes/${episodeId}/snapshots`, {
+    reason,
+  })
+  return data
+}
+
+export type getAvgAiAnalysisResponse = AiAnalysisScore &
+  Pick<AiAnalysis, "overallRating">
+export const getAvgAiAnalysis = async () => {
+  const { data } = await api.get<getAvgAiAnalysisResponse>(
+    `episodes/avg_analysis`,
   )
   return data
 }

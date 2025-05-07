@@ -3,6 +3,12 @@ import tailwindcss from "@tailwindcss/vite"
 import { defineConfig } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
 import "dotenv/config"
+import { readFileSync } from "node:fs"
+import { resolve } from "node:path"
+
+const packageJson = JSON.parse(
+  readFileSync(resolve(__dirname, "package.json"), "utf-8"),
+)
 
 export default defineConfig({
   server: {
@@ -13,6 +19,9 @@ export default defineConfig({
     rollupOptions: {
       external: ["@tauri-apps/api/core", "@tauri-apps/plugin-opener"],
     },
+  },
+  define: {
+    "import.meta.env.VITE_APP_VERSION": JSON.stringify(packageJson.version),
   },
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
 })

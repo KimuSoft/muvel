@@ -8,6 +8,7 @@ export interface Block {
   blockType: BlockType
   attr: BlockAttrs | null
   order: number
+  updatedAt?: Date
 }
 
 export interface LegacyBlock {

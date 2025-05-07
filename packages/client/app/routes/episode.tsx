@@ -3,8 +3,7 @@ import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { api } from "~/utils/api"
 import { EpisodeType, type GetEpisodeResponseDto } from "muvel-api-types"
 import EditorPage from "~/features/novel-editor/EditorPage"
-import React, { useEffect } from "react"
-import LoadingOverlay from "~/components/templates/LoadingOverlay"
+import React from "react"
 import FlowEditorPage from "~/features/flow-editor/FlowEditorPage"
 
 export function meta({ data }: Route.MetaArgs) {
@@ -41,22 +40,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     },
   )
 
-  episode.blocks.sort((a, b) => a.order - b.order)
-
   return { episode }
-}
-
-const CSREditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
-  episode,
-}) => {
-  const [isClient, setIsClient] = React.useState(false)
-
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  if (!isClient) return <LoadingOverlay />
-  return <EditorPage episode={episode} />
 }
 
 export default function Main() {
@@ -67,7 +51,7 @@ export default function Main() {
     case EpisodeType.Prologue:
     case EpisodeType.Epilogue:
     case EpisodeType.Special:
-      return <CSREditorPage episode={episode} />
+      return <EditorPage episode={episode} />
     case EpisodeType.Memo:
     case EpisodeType.EpisodeGroup:
       return <FlowEditorPage episode={episode} />

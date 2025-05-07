@@ -1,5 +1,5 @@
 import React from "react"
-import { Center, type CenterProps, HStack, Spacer } from "@chakra-ui/react"
+import { Center, type CenterProps, HStack, Spacer, Tag } from "@chakra-ui/react"
 
 import Auth from "../molecules/Auth"
 import Logo from "../molecules/Logo"
@@ -26,9 +26,14 @@ const Header: React.FC<{ logo?: boolean; nonWide?: boolean } & CenterProps> = ({
     >
       <HStack w={"100%"} maxW={!nonWide ? undefined : "4xl"} gap={3} h={"70px"}>
         {logo ? (
-          <BlockLink to={"/"}>
-            <Logo w={128} cursor={"pointer"} />
-          </BlockLink>
+          <>
+            <BlockLink to={"/"}>
+              <Logo w={128} cursor={"pointer"} />
+            </BlockLink>
+            <Tag.Root>
+              <Tag.Label>v{import.meta.env.VITE_APP_VERSION}</Tag.Label>
+            </Tag.Root>
+          </>
         ) : null}
         <Spacer />
         <ColorModeButton />

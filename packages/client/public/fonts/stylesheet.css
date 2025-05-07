@@ -1,18 +1,35 @@
 @font-face {
-    font-family: 'KoPubWorldBatang';
-    src: url('KoPubWorldBatangLight.woff2') format('woff2'),
-        url('KoPubWorldBatangLight.woff') format('woff');
-    font-weight: 200;
-    font-style: normal;
-    font-display: swap;
+  font-family: "KoPubWorldBatang";
+  src: url("KoPubWorldBatangLight.woff2") format("woff2");
+  /*url('KoPubWorldBatangLight.woff') format('woff');*/
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
 }
 
 /* RIDIBatang Regular */
 @font-face {
-    font-family: 'RIDIBatang';
-    src: url('RIDIBatang.woff2') format('woff2'),
-    url('RIDIBatang.woff') format('woff');
-    font-weight: 200;
-    font-style: normal;
-    font-display: swap;
+  font-family: "RIDIBatang";
+  src: url("RIDIBatang.woff2") format("woff2");
+  /*url('RIDIBatang.woff') format('woff');*/
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Pretendard Variable";
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+  src: url("./PretendardVariable.woff2") format("woff2-variations");
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("./InterVariable.woff2") format("woff2");
+  /*url('Inter-Regular.woff') format('woff');*/
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
 }

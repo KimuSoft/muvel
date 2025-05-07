@@ -9,39 +9,34 @@ import {
   Spinner,
   Textarea,
   VStack,
-} from "@chakra-ui/react" // createListCollection 임포트
-import { LuBookMarked } from "react-icons/lu" // 위젯 아이콘 예시
-import { toaster } from "~/components/ui/toaster" // Toaster 경로 수정 필요
-// API 함수 및 타입 임포트 (경로 및 실제 구현 필요)
-import { getNovel } from "~/api/api.novel" // 경로 수정 필요
-// Editor Context (현재 novelId 접근 가정)
-import { useEditorContext } from "~/features/novel-editor/context/EditorContext" // 경로 수정 필요
-import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap" // 경로 수정 필요
+} from "@chakra-ui/react"
+import { LuBookMarked } from "react-icons/lu"
+import { toaster } from "~/components/ui/toaster"
+import { getNovel } from "~/api/api.novel"
+import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
+import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap"
 import {
   WidgetBase,
   WidgetBody,
   WidgetHeader,
   WidgetTitle,
 } from "~/features/novel-editor/widgets/components/WidgetBase"
-import { getEpisode } from "~/api/api.episode" // 경로 수정 필요
+import { getEpisodeBlocks } from "~/api/api.episode"
+import { useOption } from "~/context/OptionContext"
 
-// --- 에피소드 참조 위젯 컴포넌트 ---
-const WIDGET_ID = "episodeReference"
-
-// Select 아이템 타입 정의
 interface EpisodeSelectItem {
   label: string
-  value: string // episodeId
+  value: string
 }
 
 export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
   dragAttributes,
   dragListeners,
 }) => {
-  // 가정: EditorContext에서 현재 novelId를 가져옴 (실제 구현 필요)
   const { episode: currentEpisode } = useEditorContext()
-  const novelId = currentEpisode?.novel?.id // 현재 에피소드의 소설 ID 사용
+  const novelId = currentEpisode?.novel?.id
 
+  const [options] = useOption()
   const [novelEpisodes, setNovelEpisodes] = useState<EpisodeSelectItem[]>([])
   const [selectedEpisodeId, setSelectedEpisodeId] = useState<string | null>(
     null,
@@ -52,13 +47,11 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
   const [isEpisodeLoading, setIsEpisodeLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Select 컬렉션 생성 (useMemo 사용)
   const episodeCollection = useMemo(
     () => createListCollection({ items: novelEpisodes }),
     [novelEpisodes],
   )
 
-  // 소설 정보 및 에피소드 목록 불러오기
   const fetchNovelEpisodes = useCallback(async () => {
     if (!novelId) {
       setError("소설 정보를 찾을 수 없습니다.")
@@ -93,8 +86,8 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
 
   // 위젯 마운트 시 또는 novelId 변경 시 에피소드 목록 로드
   useEffect(() => {
-    fetchNovelEpisodes()
-  }, [fetchNovelEpisodes]) // fetchNovelEpisodes 함수 참조가 변경될 때 실행
+    void fetchNovelEpisodes()
+  }, [fetchNovelEpisodes])
 
   // 선택된 에피소드 내용 불러오기
   const fetchEpisodeContent = useCallback(async (episodeId: string) => {
@@ -102,11 +95,8 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
     setIsEpisodeLoading(true)
     setError(null)
     try {
-      const episodeData = await getEpisode(episodeId)
-      // 블록 텍스트 추출 및 결합 (개행 2번으로 구분)
-      const content = episodeData.blocks
-        .map((block) => block.text || "")
-        .join("\n\n")
+      const blocks = await getEpisodeBlocks(episodeId)
+      const content = blocks.map((block) => block.text || "").join("\n\n")
       setSelectedEpisodeContent(content)
     } catch (err) {
       console.error("Failed to fetch episode content:", err)
@@ -116,12 +106,12 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
     } finally {
       setIsEpisodeLoading(false)
     }
-  }, []) // 의존성 없음 (episodeId는 인자로 받음)
+  }, [])
 
   // selectedEpisodeId 변경 시 내용 로드
   useEffect(() => {
     if (selectedEpisodeId) {
-      fetchEpisodeContent(selectedEpisodeId)
+      void fetchEpisodeContent(selectedEpisodeId)
     } else {
       setSelectedEpisodeContent("") // 선택 해제 시 내용 비우기
     }
@@ -143,9 +133,8 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
           {/* 에피소드 선택 Select */}
           <Select.Root
             collection={episodeCollection} // 컬렉션 사용
-            value={selectedEpisodeId ? [selectedEpisodeId] : []} // value는 배열 형태
+            value={selectedEpisodeId ? [selectedEpisodeId] : []}
             onValueChange={(details) => {
-              // details.value는 선택된 값의 배열
               setSelectedEpisodeId(details.value[0] ?? null)
             }}
             disabled={isNovelLoading || novelEpisodes.length === 0}
@@ -236,15 +225,30 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
             <Textarea
               placeholder="에피소드를 선택하면 내용이 표시됩니다."
               value={selectedEpisodeContent}
-              readOnly // 읽기 전용
-              minH="200px" // 최소 높이
-              h="40vh" // 화면 높이 비례 (조정 가능)
+              readOnly
+              minH="200px"
+              h="40vh"
               fontSize="sm"
-              fontFamily="monospace" // 고정폭 글꼴
+              border={"none"}
+              p={0}
+              lineHeight={1.5}
+              fontFamily={options.fontFamily}
               whiteSpace="pre-wrap" // 줄바꿈/공백 유지
               borderColor="gray.300"
               _dark={{ borderColor: "gray.600" }}
               disabled={isEpisodeLoading} // 로딩 중 비활성화
+              css={{
+                "&::-webkit-scrollbar": {
+                  width: "6px",
+                },
+                "&::-webkit-scrollbar-track": {
+                  background: "transparent",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  background: "#ccc",
+                  borderRadius: "3px",
+                },
+              }}
             />
           </Box>
         </VStack>

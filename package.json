@@ -16,5 +16,13 @@
     "build:c": "pnpm build:client",
     "build:a": "pnpm build:api"
   },
-  "packageManager": "pnpm@10.10.0"
+  "packageManager": "pnpm@10.10.0",
+  "dependencies": {
+    "@chakra-ui/charts": "^3.17.0",
+    "howler": "^2.2.4",
+    "recharts": "^2.15.3"
+  },
+  "devDependencies": {
+    "@types/howler": "^2.2.12"
+  }
 }

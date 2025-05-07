@@ -1,6 +1,7 @@
 // src/google-drive/google-drive.service.ts
 
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -61,6 +62,10 @@ export class GoogleDriveService {
 
     if (!user) {
       throw new UnauthorizedException("User not found")
+    }
+
+    if (!accessToken || !refreshToken || !profile?.id) {
+      throw new BadRequestException("Missing required Google login data")
     }
 
     const encryptedAccessToken = this.encrypt(accessToken)

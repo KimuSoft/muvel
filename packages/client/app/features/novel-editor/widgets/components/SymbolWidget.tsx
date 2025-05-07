@@ -27,6 +27,7 @@ const symbols: { value: string; name: string }[] = [
   { value: "‽", name: "물음느낌표" },
   { value: "¿", name: "역물음표" },
   { value: "¡", name: "역느낌표" },
+  { value: "└", name: "ㄴ자 꺾쇠 (답글 기호)" },
   { value: "†", name: "칼표 (십자가)" },
   { value: "“", name: "큰따옴표 열기" },
   { value: "”", name: "큰따옴표 닫기" },

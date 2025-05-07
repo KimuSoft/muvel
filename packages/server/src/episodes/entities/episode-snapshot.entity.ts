@@ -8,6 +8,7 @@ import {
 } from "typeorm"
 import { EpisodeEntity } from "./episode.entity"
 import { BlockEntity } from "../../blocks/block.entity"
+import { SnapshotReason } from "muvel-api-types"
 
 @Entity("episode_snapshot")
 export class EpisodeSnapshotEntity {
@@ -22,6 +23,13 @@ export class EpisodeSnapshotEntity {
 
   @Column({ type: "jsonb" })
   blocks: BlockEntity[]
+
+  @Column({
+    type: "enum",
+    enum: SnapshotReason,
+    default: SnapshotReason.Autosave,
+  })
+  reason: SnapshotReason
 
   @CreateDateColumn()
   createdAt: Date

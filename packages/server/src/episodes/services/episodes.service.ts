@@ -9,7 +9,7 @@ import { PatchEpisodesDto } from "../../novels/dto/patch-episodes.dto"
 import { CreateEpisodeDto } from "../dto/create-episode.dto"
 import { NovelEntity } from "../../novels/novel.entity"
 import { SearchRepository } from "src/search/search.repository"
-import { BasePermission, EpisodeType } from "muvel-api-types"
+import { BasePermission, BlockType, EpisodeType } from "muvel-api-types"
 import { UpdateEpisodeDto } from "../dto/update-episode.dto"
 import { PatchBlocksDto } from "../dto/patch-blocks.dto"
 import { BlockRepository } from "../../blocks/block.repository"
@@ -26,25 +26,12 @@ export class EpisodesService {
   ) {}
 
   async findEpisodeById(id: string, permissions: BasePermission) {
-    const episode = await this.episodesRepository.findOne({
+    const episode = await this.episodesRepository.findOneOrFail({
       where: { id },
-      relations: ["novel", "novel.author", "blocks"],
+      relations: ["novel", "novel.author"],
     })
 
-    if (!episode) throw new NotFoundException(`Episode with id ${id} not found`)
-
-    // edit 권한이 없다면 주석 블록을 없앰
-    if (!permissions.edit) {
-      console.log("주석 삭제!")
-      episode.blocks = episode.blocks.filter(
-        (block) => block.blockType !== "comment",
-      )
-    }
-
-    return {
-      ...episode,
-      permissions,
-    }
+    return { ...episode, permissions }
   }
 
   async createEpisode(novelId: string, dto: CreateEpisodeDto) {
@@ -156,15 +143,20 @@ export class EpisodesService {
     console.info(`블록 ${createdOrUpdatedBlocks.length}개 생성/수정됨`)
   }
 
-  async findSnapshotsByEpisodeId(episodeId: string) {
-    const episode = await this.episodesRepository.findOne({
+  async findBlocksByEpisodeId(episodeId: string, permissions: BasePermission) {
+    const episode = await this.episodesRepository.findOneOrFail({
       where: { id: episodeId },
-      relations: ["snapshots"],
+      relations: ["blocks"],
+      order: { blocks: { order: "ASC" } },
     })
-    if (!episode) {
-      throw new NotFoundException(`Episode with id ${episodeId} not found`)
+
+    // edit 권한이 없다면 주석 블록을 없앰
+    if (!permissions.edit) {
+      episode.blocks = episode.blocks.filter(
+        (block) => block.blockType !== BlockType.Comment,
+      )
     }
 
-    return episode.snapshots
+    return episode.blocks
   }
 }
