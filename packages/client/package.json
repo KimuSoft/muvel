@@ -1,6 +1,7 @@
 {
   "name": "client",
   "private": true,
+  "version": "2.2.5",
   "type": "module",
   "scripts": {
     "build": "react-router build",

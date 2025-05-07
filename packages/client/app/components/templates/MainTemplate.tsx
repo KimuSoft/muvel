@@ -110,13 +110,14 @@ const MainTemplate: React.FC<{
       <Center w={"100%"} minH={"100vh"} px={3}>
         <Center flexDir={"column"} w={"100%"} maxW={"4xl"} gap={3} my={100}>
           <Tooltip
-            content={`${userCount}명의 작가님과 함께하고 있어요!`}
+            content={`${userCount}명의 작가님과 함께하고 있어요! (Muvel v${import.meta.env.VITE_APP_VERSION})`}
             positioning={{
               placement: "top",
             }}
+            openDelay={100}
             showArrow
           >
-            <Logo w={{ base: 250, md: 300 }} slogan />
+            <Logo w={{ base: 250, md: 300 }} cursor={"pointer"} slogan />
           </Tooltip>
           {/*<HStack w={"100%"} maxW={"2xl"} mt={5}>*/}
           {/*<InputGroup flex={1} endElement={<BiSearch size={20} />}>*/}
