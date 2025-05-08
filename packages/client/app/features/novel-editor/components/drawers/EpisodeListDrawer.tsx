@@ -52,7 +52,7 @@ const EpisodeListDrawer: React.FC<
   const [isLoading, setIsLoading] = React.useState(false)
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc")
   const [episodeListLayout, setEpisodeListLayout] =
-    React.useState<EpisodeItemVariant>("detail")
+    React.useState<EpisodeItemVariant>("shallow")
 
   const fetchNovel = async () => {
     setIsLoading(true)
