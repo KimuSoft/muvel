@@ -68,6 +68,7 @@ const OptionDrawer: React.FC<{
               <SimpleGrid w={"100%"} columns={2} gap={2}>
                 <Button
                   size={"sm"}
+                  variant={"outline"}
                   colorPalette={"purple"}
                   onClick={() =>
                     setOption((option) => ({
@@ -81,6 +82,7 @@ const OptionDrawer: React.FC<{
                 </Button>
                 <Button
                   size={"sm"}
+                  variant={"outline"}
                   colorPalette={"blue"}
                   onClick={() => {
                     setOption((option) => ({
@@ -95,6 +97,7 @@ const OptionDrawer: React.FC<{
                 </Button>
                 <Button
                   size={"sm"}
+                  variant={"outline"}
                   onClick={() => {
                     setOption((option) => ({
                       ...option,
@@ -108,6 +111,7 @@ const OptionDrawer: React.FC<{
                 </Button>
                 <Button
                   size={"sm"}
+                  variant={"outline"}
                   onClick={() => {
                     setColorMode("light")
                     setOption((option) => ({
@@ -121,6 +125,7 @@ const OptionDrawer: React.FC<{
                 </Button>
                 <Button
                   size={"sm"}
+                  variant={"outline"}
                   colorPalette={"yellow"}
                   onClick={() => {
                     setColorMode("light")
@@ -135,6 +140,7 @@ const OptionDrawer: React.FC<{
                 </Button>
                 <Button
                   size={"sm"}
+                  variant={"outline"}
                   colorPalette={"green"}
                   onClick={() => {
                     setColorMode("light")

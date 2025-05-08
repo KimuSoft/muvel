@@ -37,6 +37,9 @@ import {
 } from "~/api/api.novel"
 import type { ReorderedEpisode } from "~/utils/reorderEpisode"
 import { toaster } from "~/components/ui/toaster"
+import SortToggleButton from "~/components/atoms/SortToggleButton"
+import EpisodeListLayoutToggleButton from "~/components/atoms/EpisodeListLayoutToggleButton"
+import type { EpisodeItemVariant } from "~/components/molecules/EpisodeItem"
 
 const NovelDetailTemplate: React.FC<{
   novel: GetNovelResponseDto
@@ -45,6 +48,8 @@ const NovelDetailTemplate: React.FC<{
   const navigate = useNavigate()
   const [isEpisodesLoading, setIsEpisodesLoading] = React.useState(false)
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc")
+  const [episodeListLayout, setEpisodeListLayout] =
+    React.useState<EpisodeItemVariant>("detail")
 
   const handleCreateEpisode = async () => {
     setIsEpisodesLoading(true)
@@ -220,19 +225,17 @@ const NovelDetailTemplate: React.FC<{
           )}
           <Spacer />
 
-          <IconButton
-            variant={"ghost"}
-            gap={3}
-            onClick={() =>
-              setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"))
-            }
-          >
-            {sortDirection === "asc" ? (
-              <TbSortAscending />
-            ) : (
-              <TbSortDescending />
-            )}
-          </IconButton>
+          <HStack gap={1}>
+            <EpisodeListLayoutToggleButton
+              variants={["detail", "simple"]}
+              onValueChange={setEpisodeListLayout}
+              value={episodeListLayout}
+            />
+            <SortToggleButton
+              value={sortDirection}
+              onValueChange={setSortDirection}
+            />
+          </HStack>
           {novel.permissions.edit ? (
             <Button
               colorPalette={"purple"}
@@ -251,6 +254,7 @@ const NovelDetailTemplate: React.FC<{
           sortDirection={sortDirection}
           loading={isEpisodesLoading}
           episodes={novel.episodes}
+          variant={episodeListLayout}
           onEpisodesChange={handleReorderEpisode}
         />
       </Container>

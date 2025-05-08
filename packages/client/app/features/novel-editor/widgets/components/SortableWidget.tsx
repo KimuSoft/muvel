@@ -9,7 +9,7 @@ export const SortableWidget = ({ id }: { id: WidgetId }) => {
   const WidgetComponent = widgetMap[id]
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
     touchAction: "none",
     width: "100%",

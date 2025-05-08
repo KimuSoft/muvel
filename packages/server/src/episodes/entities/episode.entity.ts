@@ -30,6 +30,11 @@ export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
   @Column({ default: "" })
   authorComment: string
 
+  // 에피소드 정보에 의존하는 특정 위젯을 위한 데이터
+  @Column({ type: "jsonb", default: {} })
+  widgetData: Record<string, Record<string, any>>
+
+  // 솔직히 이거 정말 무성의하지 않아? 아무리 생각해도 테이블 나눠야 하는데 이거
   @Column({ type: "jsonb", nullable: true })
   flowDoc: object
 

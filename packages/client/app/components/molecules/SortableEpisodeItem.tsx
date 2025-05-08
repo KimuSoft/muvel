@@ -19,7 +19,7 @@ const SortableEpisodeItem: React.FC<EpisodeItemProps> = ({
   })
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition: transition || undefined,
   }
 
