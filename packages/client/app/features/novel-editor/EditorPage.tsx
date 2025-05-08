@@ -16,7 +16,7 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     initialEpisode,
   })
 
-  const { blockSyncState, blocks, handleBlocksUpdate } = useBlocksSync({
+  const { blockSyncState, initialBlocks, handleDocUpdate } = useBlocksSync({
     episodeId: initialEpisode.id,
     canEdit: !!initialEpisode.permissions.edit,
   })
@@ -58,7 +58,7 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     console.log("episodeData has Changed")
   }, [episodeData])
 
-  if (!episodeData || !blocks) {
+  if (!episodeData || !initialBlocks) {
     return <LoadingOverlay />
   }
 
@@ -67,8 +67,8 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
       <WidgetProvider>
         <EditorProvider episode={episodeData} setEpisode={setEpisodeData}>
           <EditorTemplate
-            initialBlocks={blocks}
-            onBlocksChange={handleBlocksUpdate}
+            initialBlocks={initialBlocks}
+            onDocChange={handleDocUpdate}
             syncState={combinedSyncState}
           />
         </EditorProvider>

@@ -20,7 +20,7 @@ interface UseEditorProps {
   initialBlocks: Block[]
   episodeId: string
   editable?: boolean
-  onChange?: (blocks: Block[]) => void
+  onChange?: (doc: PMNode) => void
 }
 
 export const useEditor = ({
@@ -30,7 +30,7 @@ export const useEditor = ({
   editable = true,
   onChange,
 }: UseEditorProps) => {
-  const { setView, setBlocks } = useEditorContext()
+  const { setView } = useEditorContext()
   const viewRef = useRef<EditorView | null>(null)
 
   useEffect(() => {
@@ -68,10 +68,7 @@ export const useEditor = ({
       dispatchTransaction(tr) {
         const newState = view.state.apply(tr)
         view.updateState(newState)
-
-        const updatedBlocks = docToBlocks(newState.doc, episodeId)
-        setBlocks(updatedBlocks)
-        onChange?.(updatedBlocks)
+        onChange?.(newState.doc)
       },
       handleDOMEvents: {
         keydown(view, event) {

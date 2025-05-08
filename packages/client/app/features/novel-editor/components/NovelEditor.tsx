@@ -5,12 +5,13 @@ import type { Block } from "muvel-api-types"
 import "../style/editorStyles.css"
 import { useOption } from "~/context/OptionContext"
 import { toaster } from "~/components/ui/toaster"
+import { Node as PMNode } from "prosemirror-model"
 
 interface NovelEditorProps {
   initialBlocks: Block[]
   episodeId: string
   editable?: boolean
-  onChange?: (blocks: Block[]) => void // ✅ 변화된 내용만 넘김
+  onChange?: (doc: PMNode) => void
 }
 
 const NovelEditor: React.FC<NovelEditorProps> = ({

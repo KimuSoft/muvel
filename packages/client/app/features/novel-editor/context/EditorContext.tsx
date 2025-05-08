@@ -3,12 +3,10 @@ import React, {
   useCallback,
   useContext,
   useMemo,
-  useRef,
   useState,
 } from "react"
-import type { Block, GetEpisodeResponseDto } from "muvel-api-types" // 경로 수정 필요
+import type { GetEpisodeResponseDto } from "muvel-api-types" // 경로 수정 필요
 import type { EditorView } from "prosemirror-view"
-import { PluginKey } from "prosemirror-state"
 import { type Draft, produce } from "immer"
 import { highlightPluginKey } from "~/features/novel-editor/plugins/highlightPlugin" // Immer produce 및 Draft 타입 임포트
 
@@ -20,12 +18,9 @@ interface Match {
 
 export type EpisodeData = Omit<GetEpisodeResponseDto, "blocks">
 
-// 컨텍스트 값 타입 정의
 interface EditorContextValue {
   view: EditorView | null
   setView: (view: EditorView | null) => void
-  getBlocks: () => Block[]
-  setBlocks: (blocks: Block[]) => void
   setHighlightDecorations: (matches: Match[], currentIndex: number) => void
   episode: EpisodeData
   updateEpisodeData: (
@@ -56,7 +51,6 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({
   setEpisode,
 }) => {
   const [view, setView] = useState<EditorView | null>(null)
-  const blocksRef = useRef<Block[]>([])
 
   // 데코레이션 업데이트 함수 (메타 트랜잭션)
   const setHighlightDecorations = useCallback(
@@ -76,9 +70,7 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({
   // Immer를 사용하여 외부 setEpisode 함수를 호출하는 업데이트 함수
   const updateEpisodeData = useCallback(
     (updater: (draft: Draft<GetEpisodeResponseDto>) => void) => {
-      // props로 받은 setEpisode 함수를 Immer produce와 함께 사용
       setEpisode((currentEpisode) => {
-        // 현재 episode가 null이면 업데이트하지 않음
         if (currentEpisode === null) {
           console.warn(
             "Cannot update episode data because current episode is null.",
@@ -92,20 +84,15 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({
     [setEpisode],
   ) // 외부에서 받은 setEpisode 함수에 의존
 
-  // Context 값 구성
   const contextValue = useMemo(
     () => ({
       view,
       setView,
-      getBlocks: () => blocksRef.current,
-      setBlocks: (blocks: Block[]) => {
-        blocksRef.current = blocks
-      },
       setHighlightDecorations,
-      episode, // props로 받은 episode 상태 제공
-      updateEpisodeData, // Immer 업데이트 함수 제공
+      episode,
+      updateEpisodeData,
     }),
-    [view, setHighlightDecorations, episode, updateEpisodeData], // episode, updateEpisodeData 의존성 추가
+    [view, setHighlightDecorations, episode, updateEpisodeData],
   )
 
   return (

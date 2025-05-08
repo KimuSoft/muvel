@@ -7,7 +7,9 @@ import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 import {
   getEpisodeBlocks,
   updateEpisodeBlocks as apiUpdateEpisodeBlocks,
-} from "~/api/api.episode" // 실제 API 함수 임포트
+} from "~/api/api.episode"
+import { Node as PMNode } from "prosemirror-model"
+import { docToBlocks } from "~/features/novel-editor/utils/blockConverter"
 
 interface UseBlocksSyncProps {
   episodeId: string
@@ -15,17 +17,17 @@ interface UseBlocksSyncProps {
 }
 
 interface UseBlocksSyncReturn {
-  blocks: Block[] | null
+  initialBlocks: Block[] | null
   isLoadingBlocks: boolean
   blockSyncState: SyncState
-  handleBlocksUpdate: (newBlocks: Block[]) => void
+  handleDocUpdate: (doc: PMNode) => void
 }
 
 export function useBlocksSync({
   episodeId,
   canEdit,
 }: UseBlocksSyncProps): UseBlocksSyncReturn {
-  const [blocks, setBlocks] = useState<Block[] | null>(null)
+  const [initialBlocks, setBlocks] = useState<Block[] | null>(null)
   const [isLoadingBlocks, setIsLoadingBlocks] = useState<boolean>(true)
   const originalBlocksRef = useRef<Block[] | null>(null)
   const [blockSyncState, setBlockSyncState] = useState<SyncState>(
@@ -80,12 +82,14 @@ export function useBlocksSync({
   }, [episodeId])
 
   const actualSaveBlocks = useCallback(
-    async (newBlocks: Block[]) => {
+    async (doc: PMNode) => {
       if (!canEdit || originalBlocksRef.current === null) {
         if (blockSyncState === SyncState.Waiting)
           setBlockSyncState(SyncState.Synced)
         return
       }
+
+      const newBlocks = docToBlocks(doc)
 
       // getBlocksChange의 두 번째 인자는 현재 UI에 표시된 블록 (newBlocks)
       // 첫 번째 인자는 마지막으로 저장 성공한 원본 블록 (originalBlocksRef.current)
@@ -126,9 +130,9 @@ export function useBlocksSync({
   const debouncedSave = useMemo(
     () =>
       debounce(
-        (blocksToSave: Block[]) => {
+        (doc: PMNode) => {
           if (actualSaveBlocksRef.current) {
-            actualSaveBlocksRef.current(blocksToSave)
+            actualSaveBlocksRef.current(doc)
           }
         },
         1000,
@@ -137,24 +141,22 @@ export function useBlocksSync({
     [],
   )
 
-  const handleBlocksUpdate = useCallback(
-    (newBlocks: Block[]) => {
-      if (!canEdit || blocks === null) return
-
-      setBlocks(newBlocks) // UI 즉시 반영
+  const handleDocUpdate = useCallback(
+    (doc: PMNode) => {
+      if (!canEdit || initialBlocks === null) return
 
       if (blockSyncState !== SyncState.Syncing) {
         setBlockSyncState(SyncState.Waiting)
       }
-      debouncedSave(newBlocks)
+      debouncedSave(doc)
     },
-    [canEdit, blocks, debouncedSave, blockSyncState],
+    [canEdit, initialBlocks, debouncedSave, blockSyncState],
   )
 
   return {
-    blocks,
+    initialBlocks,
     isLoadingBlocks,
     blockSyncState,
-    handleBlocksUpdate,
+    handleDocUpdate,
   }
 }
