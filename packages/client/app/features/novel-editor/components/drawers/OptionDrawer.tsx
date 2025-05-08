@@ -28,6 +28,7 @@ import OptionColorPicker from "~/features/novel-editor/components/ColorPicker"
 import {
   joaraPreset,
   kakaopagePreset,
+  moonpiaDesktopPreset,
   muvelMobilePreset,
   novelpiaDesktopPreset,
   novelpiaMobilePreset,
@@ -71,25 +72,26 @@ const OptionDrawer: React.FC<{
                   onClick={() =>
                     setOption((option) => ({
                       ...option,
-                      ...defaultOption,
-                    }))
-                  }
-                >
-                  <FaDesktop />
-                  뮤블
-                </Button>
-                <Button
-                  size={"sm"}
-                  colorPalette={"purple"}
-                  onClick={() =>
-                    setOption((option) => ({
-                      ...option,
                       ...muvelMobilePreset,
                     }))
                   }
                 >
                   <FaMobile />
-                  뮤블
+                  뮤블 모바일
+                </Button>
+                <Button
+                  size={"sm"}
+                  colorPalette={"blue"}
+                  onClick={() => {
+                    setOption((option) => ({
+                      ...option,
+                      ...moonpiaDesktopPreset,
+                    }))
+                    setColorMode("light")
+                  }}
+                >
+                  <FaDesktop />
+                  문피아
                 </Button>
                 <Button
                   size={"sm"}
@@ -133,7 +135,7 @@ const OptionDrawer: React.FC<{
                 </Button>
                 <Button
                   size={"sm"}
-                  colorPalette={"blue"}
+                  colorPalette={"green"}
                   onClick={() => {
                     setColorMode("light")
                     setOption((option) => ({
