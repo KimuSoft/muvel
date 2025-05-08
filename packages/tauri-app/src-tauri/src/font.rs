@@ -31,6 +31,8 @@ pub fn get_fonts_by_family(family: &str) -> Vec<String> {
         }
     }
 
+    font_names.sort();
+    font_names.dedup();
     font_names
 }
 

@@ -15,7 +15,7 @@ import { type Novel, ShareType } from "muvel-api-types"
 import { useNavigate } from "react-router"
 import { FaUser } from "react-icons/fa6"
 import { Tooltip } from "~/components/ui/tooltip"
-import { TbLink, TbLock, TbWorld } from "react-icons/tb"
+import { TbFile, TbLink, TbLock, TbWorld } from "react-icons/tb"
 import { useUser } from "~/context/UserContext"
 
 const ShareIcon: React.FC<IconProps & { share: ShareType }> = ({
@@ -30,6 +30,8 @@ const ShareIcon: React.FC<IconProps & { share: ShareType }> = ({
         return { text: "공개", icon: TbWorld }
       case ShareType.Unlisted:
         return { text: "일부 공개", icon: TbLink }
+      case ShareType.Local:
+        return { text: "로컬", icon: TbFile }
     }
   }, [share])
 

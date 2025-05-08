@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 export const usePlatform = () => {
   const isClient = typeof window !== "undefined"
   const isSSR = import.meta.env.SSR
-  const isTauri = import.meta.env.VITE_TAURI === "true"
+  const isTauri = import.meta.env.VITE_TAURI == "true"
   const isWeb = isClient && !isTauri
 
   const [isOnline, setIsOnline] = useState(isClient ? navigator.onLine : true)

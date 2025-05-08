@@ -1,5 +1,6 @@
 import {
   Button,
+  Checkbox,
   CloseButton,
   DrawerBackdrop,
   DrawerBody,
@@ -27,6 +28,7 @@ import OptionColorPicker from "~/features/novel-editor/components/ColorPicker"
 import {
   joaraPreset,
   kakaopagePreset,
+  moonpiaDesktopPreset,
   muvelMobilePreset,
   novelpiaDesktopPreset,
   novelpiaMobilePreset,
@@ -62,23 +64,11 @@ const OptionDrawer: React.FC<{
 
           <DrawerBody>
             <Stack gap={3}>
-              <Text>프리셋</Text>
+              <Text>스타일 프리셋</Text>
               <SimpleGrid w={"100%"} columns={2} gap={2}>
                 <Button
                   size={"sm"}
-                  colorPalette={"purple"}
-                  onClick={() =>
-                    setOption((option) => ({
-                      ...option,
-                      ...defaultOption,
-                    }))
-                  }
-                >
-                  <FaDesktop />
-                  뮤블
-                </Button>
-                <Button
-                  size={"sm"}
+                  variant={"outline"}
                   colorPalette={"purple"}
                   onClick={() =>
                     setOption((option) => ({
@@ -88,10 +78,26 @@ const OptionDrawer: React.FC<{
                   }
                 >
                   <FaMobile />
-                  뮤블
+                  뮤블 모바일
                 </Button>
                 <Button
                   size={"sm"}
+                  variant={"outline"}
+                  colorPalette={"blue"}
+                  onClick={() => {
+                    setOption((option) => ({
+                      ...option,
+                      ...moonpiaDesktopPreset,
+                    }))
+                    setColorMode("light")
+                  }}
+                >
+                  <FaDesktop />
+                  문피아
+                </Button>
+                <Button
+                  size={"sm"}
+                  variant={"outline"}
                   onClick={() => {
                     setOption((option) => ({
                       ...option,
@@ -105,6 +111,7 @@ const OptionDrawer: React.FC<{
                 </Button>
                 <Button
                   size={"sm"}
+                  variant={"outline"}
                   onClick={() => {
                     setColorMode("light")
                     setOption((option) => ({
@@ -118,6 +125,7 @@ const OptionDrawer: React.FC<{
                 </Button>
                 <Button
                   size={"sm"}
+                  variant={"outline"}
                   colorPalette={"yellow"}
                   onClick={() => {
                     setColorMode("light")
@@ -132,7 +140,8 @@ const OptionDrawer: React.FC<{
                 </Button>
                 <Button
                   size={"sm"}
-                  colorPalette={"blue"}
+                  variant={"outline"}
+                  colorPalette={"green"}
                   onClick={() => {
                     setColorMode("light")
                     setOption((option) => ({
@@ -147,7 +156,30 @@ const OptionDrawer: React.FC<{
               </SimpleGrid>
             </Stack>
             <Separator my={5} />
+
             <Stack gap={6}>
+              <Field.Root>
+                <Field.Label>에디터 조작</Field.Label>
+
+                <Checkbox.Root
+                  mt={5}
+                  colorPalette="purple"
+                  defaultChecked={option.typewriter}
+                  onCheckedChange={(d) =>
+                    setOption((draft) => {
+                      draft.typewriter = !!d.checked
+                    })
+                  }
+                >
+                  <Checkbox.HiddenInput />
+                  <Checkbox.Control />
+                  <Checkbox.Label>타입라이터 스크롤</Checkbox.Label>
+                </Checkbox.Root>
+                <Text color={"gray.500"} fontSize={"sm"}>
+                  현재 글쓰는 곳을 화면 중앙으로 이동시킵니다.
+                </Text>
+              </Field.Root>
+
               {/* 폰트 선택 */}
               <Field.Root>
                 <Field.Label>글꼴</Field.Label>

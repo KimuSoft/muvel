@@ -28,6 +28,7 @@ import { LuBookMarked, LuMessageSquareQuote } from "react-icons/lu"
 import { EpisodeReferenceWidget } from "~/features/novel-editor/widgets/components/EpisodeReferenceWidget"
 import { FormattingWidget } from "~/features/novel-editor/widgets/components/FormattingWidget"
 import { SoundEffectWidget } from "~/features/novel-editor/widgets/components/SoundEffectWidget"
+import { RemoteWidget } from "~/features/novel-editor/widgets/components/RemoteWidget"
 
 export interface WidgetBaseProps {
   dragAttributes?: DraggableAttributes
@@ -48,6 +49,7 @@ export const widgetMap = {
   episodeReference: EpisodeReferenceWidget,
   format: FormattingWidget,
   soundEffect: SoundEffectWidget,
+  remote: RemoteWidget,
 }
 
 export interface WidgetButtonProps {
@@ -143,6 +145,12 @@ export const widgets: WidgetButtonProps[] = [
       "타닥 탁 타닥... 타자기 소리는 언제 들어도 기분이 좋지 않나요?",
     icon: <FaVolumeHigh size={50} />,
   },
+  // {
+  //   id: "remote",
+  //   name: "리모콘 위젯",
+  //   description: "이전 편과 다음 편으로 쉽게 이동할 수 있는 위젯입니다.",
+  //   icon: <LuBookMarked size={50} />,
+  // },
 ]
 
 export type WidgetId = keyof typeof widgetMap

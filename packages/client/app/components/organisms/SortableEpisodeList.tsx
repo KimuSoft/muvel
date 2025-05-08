@@ -15,21 +15,21 @@ import {
 import { type StackProps, VStack } from "@chakra-ui/react"
 import type { Episode } from "muvel-api-types"
 import SortableEpisodeItem from "../molecules/SortableEpisodeItem" // 경로 확인 필요
-import { type ReorderedEpisode, reorderEpisode } from "~/utils/reorderEpisode" // 경로 확인 필요
+import { type ReorderedEpisode, reorderEpisode } from "~/utils/reorderEpisode"
+import type { EpisodeItemProps } from "~/components/molecules/EpisodeItem" // 경로 확인 필요
 
 /** ------------------------------------------------------------------
  *  Types
  * ------------------------------------------------------------------*/
 export type SortDirection = "asc" | "desc"
 
-interface SortableEpisodeListProps extends StackProps {
+type SortableEpisodeListProps = StackProps & {
   episodes: Episode[]
-  isNarrow?: boolean
   loading?: boolean
   disableSort?: boolean
   onEpisodesChange?: (diffEpisodes: ReorderedEpisode[]) => void
   sortDirection: SortDirection
-}
+} & Pick<EpisodeItemProps, "variant">
 
 /** ------------------------------------------------------------------
  *  Helpers
@@ -43,7 +43,7 @@ const toCanonicalAsc = (eps: Episode[]) => [...eps].sort(ascSort)
  * ------------------------------------------------------------------*/
 const SortableEpisodeList: React.FC<SortableEpisodeListProps> = ({
   episodes,
-  isNarrow,
+  variant,
   loading,
   onEpisodesChange,
   disableSort,
@@ -103,7 +103,12 @@ const SortableEpisodeList: React.FC<SortableEpisodeListProps> = ({
    * Render
    * ------------------------------------------------------------------*/
   return (
-    <VStack alignItems="stretch" w="100%" {...props}>
+    <VStack
+      alignItems={"stretch"}
+      w={"100%"}
+      gap={variant === "simple" ? 0 : 2}
+      {...props}
+    >
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
         <SortableContext
           disabled={loading || disableSort}
@@ -116,7 +121,7 @@ const SortableEpisodeList: React.FC<SortableEpisodeListProps> = ({
               key={episode.id}
               episode={episode}
               index={idx}
-              isDrawer={isNarrow}
+              variant={variant}
               loading={loading}
             />
           ))}

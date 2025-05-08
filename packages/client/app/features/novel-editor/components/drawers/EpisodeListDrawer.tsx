@@ -37,6 +37,9 @@ import { FaList } from "react-icons/fa6"
 import NovelItem from "~/components/molecules/NovelItem"
 import CreateEpisodeMenu from "~/features/novel-editor/components/menus/CreateEpisodeMenu"
 import DeleteEpisodeDialog from "~/features/novel-editor/components/dialogs/DeleteEpisodeDialog"
+import SortToggleButton from "~/components/atoms/SortToggleButton"
+import EpisodeListLayoutToggleButton from "~/components/atoms/EpisodeListLayoutToggleButton"
+import type { EpisodeItemVariant } from "~/components/molecules/EpisodeItem"
 
 const EpisodeListDrawer: React.FC<
   {
@@ -48,6 +51,8 @@ const EpisodeListDrawer: React.FC<
   const [novel, setNovel] = React.useState<GetNovelResponseDto | null>(null)
   const [isLoading, setIsLoading] = React.useState(false)
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc")
+  const [episodeListLayout, setEpisodeListLayout] =
+    React.useState<EpisodeItemVariant>("shallow")
 
   const fetchNovel = async () => {
     setIsLoading(true)
@@ -106,21 +111,18 @@ const EpisodeListDrawer: React.FC<
                   에피소드 목록
                 </Heading>
                 <Spacer />
-                <IconButton
-                  variant={"ghost"}
-                  gap={3}
-                  onClick={() =>
-                    setSortDirection((prev) =>
-                      prev === "asc" ? "desc" : "asc",
-                    )
-                  }
-                >
-                  {sortDirection === "asc" ? (
-                    <TbSortAscending />
-                  ) : (
-                    <TbSortDescending />
-                  )}
-                </IconButton>
+
+                <HStack gap={1}>
+                  <EpisodeListLayoutToggleButton
+                    variants={["shallow", "simple"]}
+                    onValueChange={setEpisodeListLayout}
+                    value={episodeListLayout}
+                  />
+                  <SortToggleButton
+                    value={sortDirection}
+                    onValueChange={setSortDirection}
+                  />
+                </HStack>
                 {novel.permissions.edit ? (
                   <CreateEpisodeMenu onSelect={handleCreateEpisode}>
                     <IconButton variant={"ghost"} gap={3}>
@@ -133,7 +135,7 @@ const EpisodeListDrawer: React.FC<
                 loading={isLoading}
                 sortDirection={sortDirection}
                 disableSort={!novel.permissions.edit}
-                isNarrow
+                variant={episodeListLayout}
                 episodes={novel?.episodes || []}
                 onEpisodesChange={handleReorderEpisode}
               />

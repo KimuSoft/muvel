@@ -21,12 +21,13 @@ import type { SyncState } from "~/features/novel-editor/components/SyncIndicator
 import { useWidgetLayout } from "~/features/novel-editor/widgets/context/WidgetContext"
 import { FaBookOpen, FaStarOfLife } from "react-icons/fa6"
 import { GoMoveToEnd, GoMoveToStart } from "react-icons/go"
+import { Node as PMNode } from "prosemirror-model"
 
 const EditorTemplate: React.FC<{
   initialBlocks: Block[]
-  onBlocksChange: (blocks: Block[]) => void
+  onDocChange: (doc: PMNode) => void
   syncState: SyncState
-}> = ({ onBlocksChange, syncState, initialBlocks }) => {
+}> = ({ onDocChange, syncState, initialBlocks }) => {
   const { view, episode, updateEpisodeData } = useEditorContext()
   const [option] = useOption()
 
@@ -186,7 +187,7 @@ const EditorTemplate: React.FC<{
             initialBlocks={initialBlocks}
             episodeId={episode.id}
             editable={episode.permissions.edit}
-            onChange={onBlocksChange}
+            onChange={onDocChange}
           />
         </ClientOnly>
       </Box>

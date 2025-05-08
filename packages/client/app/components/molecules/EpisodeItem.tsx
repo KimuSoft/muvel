@@ -1,5 +1,5 @@
 import React, { forwardRef, useMemo } from "react"
-import { EpisodeType, type Episode } from "muvel-api-types"
+import { type Episode, EpisodeType } from "muvel-api-types"
 import {
   Box,
   HStack,
@@ -12,7 +12,6 @@ import {
 import { TbBrandZapier, TbRefresh, TbTypography } from "react-icons/tb"
 import { useNavigate } from "react-router"
 import { Tooltip } from "~/components/ui/tooltip"
-import { toaster } from "~/components/ui/toaster"
 
 const SideData: React.FC<{ episode: Episode } & StackProps> = ({
   episode,
@@ -66,15 +65,17 @@ const SideData: React.FC<{ episode: Episode } & StackProps> = ({
   )
 }
 
+export type EpisodeItemVariant = "detail" | "simple" | "shallow"
+
 export type EpisodeItemProps = StackProps & {
   episode: Episode
   index: number
-  isDrawer?: boolean
   loading?: boolean
+  variant?: EpisodeItemVariant
 }
 
 const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
-  ({ episode, index, loading, isDrawer = false, ...props }, ref) => {
+  ({ episode, index, loading, variant = "simple", ...props }, ref) => {
     const navigate = useNavigate()
 
     const prefix = useMemo(() => {
@@ -161,39 +162,45 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
             w={"68px"}
             fontWeight={200}
             fontSize={"36px"}
-            display={isDrawer ? "none" : { base: "none", md: "block" }}
+            display={
+              variant !== "detail" ? "none" : { base: "none", md: "block" }
+            }
           >
             {prefix}
           </Text>
           <VStack gap={1} py={1.5} alignItems={"baseline"}>
             <HStack w={"100%"} overflow={"hidden"}>
               <Text
-                display={isDrawer ? "block" : { base: "block", md: "none" }}
+                display={
+                  variant !== "detail" ? "block" : { base: "block", md: "none" }
+                }
                 color={"purple.500"}
                 fontWeight={600}
                 flexShrink={0}
+                minW={"32px"}
               >
                 {episodeCountText}
               </Text>
               <Text truncate>{episode.title}</Text>
             </HStack>
-            <Text
-              fontSize={"xs"}
-              color={"gray.500"}
-              w={"400px"}
-              maxW={"100%"}
-              truncate
-            >
-              {episode.description}
-            </Text>
+            {variant !== "simple" && (
+              <Text
+                fontSize={"xs"}
+                color={"gray.500"}
+                w={"400px"}
+                maxW={"100%"}
+                truncate
+              >
+                {episode.description}
+              </Text>
+            )}
             <Box
               display={
-                isDrawer
+                variant === "shallow"
                   ? "flex"
-                  : {
-                      base: "flex",
-                      md: "none",
-                    }
+                  : variant === "detail"
+                    ? { base: "flex", md: "none" }
+                    : "none"
               }
             >
               <SideData episode={episode} />
@@ -202,12 +209,7 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
           <Spacer />
           <Box
             display={
-              isDrawer
-                ? "none"
-                : {
-                    base: "none",
-                    md: "flex",
-                  }
+              variant !== "detail" ? "none" : { base: "none", md: "flex" }
             }
           >
             <SideData episode={episode} mr={3} />
