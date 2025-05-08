@@ -1,12 +1,12 @@
 import { Plugin } from "prosemirror-state"
-import { EditorView } from "prosemirror-view" // EditorView import 추가 (update 함수 타입 명시 위해)
+import { EditorView } from "prosemirror-view"
 
 export const typewriterPlugin = new Plugin({
-  view(editorView) {
+  view() {
     const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
-    // editorView 인자는 PluginView 생성 시 주입됨
-    if (isMobile) return {} // 모바일이면 아무것도 안 함
+    // 모바일이면 아무것도 안 함
+    if (isMobile) return {}
 
     return {
       update(view: EditorView, prevState) {
@@ -19,6 +19,10 @@ export const typewriterPlugin = new Plugin({
         // 2. ***추가된 조건***: selection이 비어있는 경우(커서 상태)에만 스크롤 실행
         // selection.empty가 false이면 (즉, 여러 문자가 선택된 경우) 여기서 중단
         if (!selection.empty) return
+
+        // typewriter 옵션이 false이면 아무것도 안 함`
+        const options = localStorage.getItem("options")
+        if (options && !JSON.parse(options)?.typewriter) return
 
         // --- 이하 로직은 selection이 empty일 때만 실행됨 ---
 

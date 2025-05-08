@@ -1,6 +1,8 @@
-import type { EditorStyleOption } from "~/providers/OptionProvider"
+import type { EditorOption } from "~/providers/OptionProvider"
 
-export const muvelMobilePreset: EditorStyleOption = {
+type EditorOptionPreset = Partial<EditorOption>
+
+export const muvelMobilePreset: EditorOptionPreset = {
   lineHeight: 1.8,
   fontSize: 18,
   indent: 1,
@@ -12,7 +14,7 @@ export const muvelMobilePreset: EditorStyleOption = {
   editorMaxWidth: 460,
 }
 
-export const novelpiaDesktopPreset: EditorStyleOption = {
+export const novelpiaDesktopPreset: EditorOptionPreset = {
   lineHeight: 1.8,
   fontSize: 18,
   indent: 0,
@@ -24,7 +26,7 @@ export const novelpiaDesktopPreset: EditorStyleOption = {
   editorMaxWidth: 930,
 }
 
-export const novelpiaMobilePreset: EditorStyleOption = {
+export const novelpiaMobilePreset: EditorOptionPreset = {
   lineHeight: 2,
   fontSize: 18,
   indent: 0,
@@ -36,7 +38,7 @@ export const novelpiaMobilePreset: EditorStyleOption = {
   editorMaxWidth: 460,
 }
 
-export const kakaopagePreset: EditorStyleOption = {
+export const kakaopagePreset: EditorOptionPreset = {
   lineHeight: 2,
   fontSize: 18,
   indent: 0,
@@ -48,7 +50,7 @@ export const kakaopagePreset: EditorStyleOption = {
   editorMaxWidth: 400,
 }
 
-export const joaraPreset: EditorStyleOption = {
+export const joaraPreset: EditorOptionPreset = {
   lineHeight: 2,
   fontSize: 16,
   indent: 0,

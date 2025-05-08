@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react"
 import { type Draft, produce } from "immer"
 import { OptionContext, SetOptionContext } from "~/context/OptionContext"
 
-export const defaultOption: EditorStyleOption = {
+export const defaultOption: EditorOption = {
   lineHeight: 1.8,
   fontSize: 18,
   indent: 0,
@@ -12,9 +12,10 @@ export const defaultOption: EditorStyleOption = {
   blockGap: 7,
   backgroundColor: null,
   editorMaxWidth: 840,
+  typewriter: true,
 }
 
-export interface EditorStyleOption {
+export interface EditorOption {
   // 줄 간격
   lineHeight: number
   // 폰트 크기
@@ -35,9 +36,11 @@ export interface EditorStyleOption {
   backgroundColor: string | null
   // 에디터 최대 너비
   editorMaxWidth: number
+  // 타입라이터 스크롤 기능
+  typewriter: boolean
 }
 
-const getOption = (): EditorStyleOption => {
+const getOption = (): EditorOption => {
   try {
     const storageOption = JSON.parse(localStorage.getItem("options") || "{}")
     return { ...defaultOption, ...storageOption }
@@ -49,10 +52,10 @@ const getOption = (): EditorStyleOption => {
 const OptionProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [option, _setOption] = useState<EditorStyleOption>(getOption)
+  const [option, _setOption] = useState<EditorOption>(getOption)
 
   const setOption = useCallback(
-    (updater: (draft: Draft<EditorStyleOption>) => void) => {
+    (updater: (draft: Draft<EditorOption>) => void) => {
       _setOption((prev) => {
         const next = produce(prev, updater)
         localStorage.setItem("options", JSON.stringify(next))
