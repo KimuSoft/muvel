@@ -135,7 +135,7 @@ export function useBlocksSync({
             actualSaveBlocksRef.current(doc)
           }
         },
-        1000,
+        500,
         { maxWait: 5000 },
       ),
     [],
