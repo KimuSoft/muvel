@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo } from "react" // useState, useCallback 제거 가능성 있음 (만약 모두 훅으로 이전된다면)
-import type { GetEpisodeResponseDto } from "muvel-api-types" // Block 타입은 이제 useBlocksSync에서 주로 사용
+import React, { useEffect, useMemo } from "react"
+import type { GetEpisodeResponseDto } from "muvel-api-types"
 import EditorTemplate from "~/features/novel-editor/EditorTemplate"
 import { EditorProvider } from "~/features/novel-editor/context/EditorContext"
 import OptionProvider from "~/providers/OptionProvider"
@@ -8,6 +8,7 @@ import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 import LoadingOverlay from "~/components/templates/LoadingOverlay"
 import { useEpisodeSync } from "~/features/novel-editor/hooks/useEpisodeSync"
 import { useBlocksSync } from "./hooks/useBlocksSync"
+import { combineSyncStates } from "~/utils/combineSyncStates"
 
 const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   episode: initialEpisode,
@@ -22,25 +23,7 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   })
 
   const combinedSyncState = useMemo(() => {
-    if (
-      episodeSyncState === SyncState.Error ||
-      blockSyncState === SyncState.Error
-    ) {
-      return SyncState.Error
-    }
-    if (
-      episodeSyncState === SyncState.Syncing ||
-      blockSyncState === SyncState.Syncing
-    ) {
-      return SyncState.Syncing
-    }
-    if (
-      episodeSyncState === SyncState.Waiting ||
-      blockSyncState === SyncState.Waiting
-    ) {
-      return SyncState.Waiting
-    }
-    return SyncState.Synced
+    return combineSyncStates(episodeSyncState, blockSyncState)
   }, [episodeSyncState, blockSyncState])
 
   useEffect(() => {
@@ -53,10 +36,6 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     window.addEventListener("beforeunload", handleBeforeUnload)
     return () => window.removeEventListener("beforeunload", handleBeforeUnload)
   }, [combinedSyncState])
-
-  useEffect(() => {
-    console.log("episodeData has Changed")
-  }, [episodeData])
 
   if (!episodeData || !initialBlocks) {
     return <LoadingOverlay />
