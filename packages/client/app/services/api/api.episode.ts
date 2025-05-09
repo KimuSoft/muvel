@@ -10,17 +10,17 @@ import {
   type GetEpisodeResponseDto,
 } from "muvel-api-types"
 
-export const getEpisodeBlocks = async (episodeId: string) => {
+export const getCloudEpisodeBlocks = async (episodeId: string) => {
   const { data } = await api.get<Block[]>(`episodes/${episodeId}/blocks`)
   return data
 }
 
-export const getEpisodeById = async (episodeId: string) => {
+export const getCloudEpisodeById = async (episodeId: string) => {
   const { data } = await api.get<GetEpisodeResponseDto>(`episodes/${episodeId}`)
   return data
 }
 
-export const updateEpisode = async (
+export const updateCloudEpisode = async (
   episodeId: string,
   patch: Partial<Episode>,
 ) => {
@@ -28,7 +28,7 @@ export const updateEpisode = async (
   return data
 }
 
-export const updateEpisodeBlocks = async (
+export const updateCloudEpisodeBlocks = async (
   episodeId: string,
   blocks: (
     | (Omit<Block, "text"> & { isDeleted?: boolean })
@@ -58,14 +58,14 @@ export const getAiAnalysis = async (episodeId: string) => {
   return data
 }
 
-export const getSnapshots = async (episodeId: string) => {
+export const getCloudSnapshots = async (episodeId: string) => {
   const { data } = await api.get<EpisodeSnapshot[]>(
     `episodes/${episodeId}/snapshots`,
   )
   return data
 }
 
-export const saveSnapshot = async (
+export const saveCloudSnapshot = async (
   episodeId: string,
   reason: SnapshotReason = SnapshotReason.Manual,
 ) => {

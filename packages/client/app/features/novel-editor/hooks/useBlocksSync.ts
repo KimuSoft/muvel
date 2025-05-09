@@ -5,8 +5,8 @@ import { getBlocksChange } from "~/features/novel-editor/utils/calculateBlockCha
 import { toaster } from "~/components/ui/toaster"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 import {
-  getEpisodeBlocks,
-  updateEpisodeBlocks as apiUpdateEpisodeBlocks,
+  getCloudEpisodeBlocks,
+  updateCloudEpisodeBlocks as apiUpdateEpisodeBlocks,
 } from "~/services/api/api.episode"
 import { Node as PMNode } from "prosemirror-model"
 import { docToBlocks } from "~/features/novel-editor/utils/blockConverter"
@@ -50,7 +50,7 @@ export function useBlocksSync({
     originalBlocksRef.current = null
     setBlockSyncState(SyncState.Syncing)
 
-    getEpisodeBlocks(episodeId)
+    getCloudEpisodeBlocks(episodeId)
       .then((fetchedBlocks) => {
         if (isMounted) {
           setBlocks(fetchedBlocks)

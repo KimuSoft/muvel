@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 import type { EpisodeSnapshot, GetEpisodeResponseDto } from "muvel-api-types"
-import { getSnapshots } from "~/services/api/api.episode"
+import { getCloudSnapshots } from "~/services/api/api.episode"
 import { TbHistory, TbSlash } from "react-icons/tb"
 import { toaster } from "~/components/ui/toaster"
 import type { EpisodeData } from "~/features/novel-editor/context/EditorContext"
@@ -77,7 +77,7 @@ const SnapshotDrawer: React.FC<{
 
   const fetchSnapshots = async () => {
     setIsLoading(true)
-    const snapshots = await getSnapshots(episode.id)
+    const snapshots = await getCloudSnapshots(episode.id)
 
     // ai 결과를 최신순으로 정렬 ai.createdAt: string
     snapshots.sort((a, b) => {

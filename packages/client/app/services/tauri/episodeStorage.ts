@@ -11,12 +11,12 @@ import type {
 const RUST_CMD_PREFIX = "storage_plugin:"
 
 // --- 에피소드 CRUD 관련 Rust 커맨드 이름 (예시) ---
-const CMD_CREATE_LOCAL_EPISODE = `${RUST_CMD_PREFIX}create_local_episode`
-const CMD_GET_LOCAL_EPISODE_DATA = `${RUST_CMD_PREFIX}get_local_episode_data`
-const CMD_UPDATE_LOCAL_EPISODE_BLOCKS = `${RUST_CMD_PREFIX}update_local_episode_blocks`
-const CMD_UPDATE_LOCAL_EPISODE_METADATA = `${RUST_CMD_PREFIX}update_local_episode_metadata`
-const CMD_DELETE_LOCAL_EPISODE = `${RUST_CMD_PREFIX}delete_local_episode`
-const CMD_LIST_LOCAL_EPISODE_SUMMARIES = `${RUST_CMD_PREFIX}list_local_episode_summaries` // 소설 내 에피소드 요약 목록
+const CMD_CREATE_LOCAL_EPISODE = `create_local_episode_command`
+const CMD_GET_LOCAL_EPISODE_DATA = `get_local_episode_data_command`
+const CMD_UPDATE_LOCAL_EPISODE_BLOCKS = `update_local_episode_blocks_command`
+const CMD_UPDATE_LOCAL_EPISODE_METADATA = `update_local_episode_metadata_command`
+const CMD_DELETE_LOCAL_EPISODE = `delete_local_episode_command`
+const CMD_LIST_LOCAL_EPISODE_SUMMARIES = `list_local_episode_summaries_command` // 소설 내 에피소드 요약 목록
 
 /**
  * 새로운 로컬 에피소드 생성을 Rust에 요청합니다.
@@ -28,10 +28,7 @@ export const createLocalEpisode = async (
   const { invoke } = await getCoreApi()
   try {
     // Rust는 새 episodeId 생성, 파일 생성, 부모 .muvl 업데이트 후 새 ApiEpisode 호환 객체 반환
-    return await invoke<ApiEpisode>(
-      CMD_CREATE_LOCAL_EPISODE,
-      options as Record<string, any>,
-    )
+    return await invoke<ApiEpisode>(CMD_CREATE_LOCAL_EPISODE, { options })
   } catch (error) {
     console.error(
       `Error creating local episode for novel ${options.novelId}:`,

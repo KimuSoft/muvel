@@ -1,9 +1,6 @@
 import type { Route } from "./+types/novel"
 import NovelDetailTemplate from "~/components/templates/NovelDetailTemplate"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
-import { api } from "~/utils/api"
-import type { GetNovelResponseDto } from "muvel-api-types"
-import { getNovel } from "~/services/novelService"
 import { getCloudNovel } from "~/services/api/api.novel"
 
 export function meta({ data }: Route.MetaArgs) {
