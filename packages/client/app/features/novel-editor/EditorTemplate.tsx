@@ -73,6 +73,7 @@ const EditorTemplate: React.FC<{
   return (
     <VStack
       bgColor={option.backgroundColor || undefined}
+      minH={"100dvh"}
       transition="background-color 0.2s ease-in-out"
       position={"relative"}
       alignItems={
