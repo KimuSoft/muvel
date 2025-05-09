@@ -1,21 +1,20 @@
 // app/services/tauri/novelStorage.ts
 import { getCoreApi } from "./tauriApiProvider"
-import type { Novel as ApiNovel } from "muvel-api-types" // API DTO 타입
+import { masterPermission, type Novel as ApiNovel } from "muvel-api-types" // API DTO 타입
 import type {
   CreateLocalNovelOptions,
+  GetLocalNovelDetailsResponse,
   LocalNovelData,
   UpdateLocalNovelData,
 } from "./types"
 // removeNovelDataAndFromIndex는 indexStorage로 이동했으므로 여기서 직접 사용 안 함
 
-const RUST_CMD_PREFIX = "storage_plugin:"
-
 // --- 소설 CRUD 관련 Rust 커맨드 이름 (예시) ---
-const CMD_CREATE_LOCAL_NOVEL = `${RUST_CMD_PREFIX}create_local_novel`
-const CMD_GET_LOCAL_NOVEL_DETAILS = `${RUST_CMD_PREFIX}get_local_novel_details`
-const CMD_UPDATE_LOCAL_NOVEL_METADATA = `${RUST_CMD_PREFIX}update_local_novel_metadata`
+const CMD_CREATE_LOCAL_NOVEL = `create_local_novel_command`
+const CMD_GET_LOCAL_NOVEL_DETAILS = `get_local_novel_details_command`
+const CMD_UPDATE_LOCAL_NOVEL_METADATA = `update_local_novel_metadata_command`
 // 실제 파일/폴더 삭제는 indexStorage의 removeNovelDataAndFromIndex가 담당 (Rust 내부에서 처리)
-const CMD_GENERATE_UUID = `${RUST_CMD_PREFIX}generate_uuid`
+const CMD_GENERATE_UUID = `generate_uuid_command`
 
 /**
  * 새로운 로컬 소설 생성을 Rust에 요청합니다.
@@ -27,10 +26,7 @@ export const createLocalNovel = async (
   const { invoke } = await getCoreApi()
   try {
     // Rust는 성공 시 ApiNovel과 호환되는 객체를 반환 (내부적으로 인덱스 업데이트까지 완료)
-    return await invoke<ApiNovel>(
-      CMD_CREATE_LOCAL_NOVEL,
-      options as Record<string, any>,
-    )
+    return await invoke<ApiNovel>(CMD_CREATE_LOCAL_NOVEL, { options })
   } catch (error) {
     console.error(`Error creating local novel "${options.title}":`, error)
     throw error
@@ -44,13 +40,17 @@ export const createLocalNovel = async (
  */
 export const getLocalNovelDetails = async (
   novelId: string,
-): Promise<LocalNovelData> => {
+): Promise<GetLocalNovelDetailsResponse> => {
   const { invoke } = await getCoreApi()
   try {
-    // Rust는 novelId를 사용해 내부 인덱스에서 경로를 찾아 .muvl 파일을 읽고 ApiNovel 호환 객체 반환
-    return await invoke<LocalNovelData>(CMD_GET_LOCAL_NOVEL_DETAILS, {
+    const novel = await invoke<LocalNovelData>(CMD_GET_LOCAL_NOVEL_DETAILS, {
       novelId,
     })
+
+    return {
+      ...novel,
+      permissions: masterPermission,
+    }
   } catch (error) {
     console.error(`Error fetching local novel details for ${novelId}:`, error)
     // 여기서 null을 반환하거나 에러를 그대로 던져 상위 서비스에서 처리하도록 함

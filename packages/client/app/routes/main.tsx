@@ -4,6 +4,7 @@ import { api } from "~/utils/api"
 import type { Novel } from "muvel-api-types"
 import { getUserFromRequest } from "~/utils/session.server"
 import MainTemplate from "~/components/templates/MainTemplate"
+import { getUserCount, getUserNovels } from "~/services/api/api.user"
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -15,12 +16,11 @@ export function meta({}: Route.MetaArgs) {
 export async function loader({ request }: LoaderFunctionArgs) {
   const cookie = request.headers.get("cookie") ?? ""
 
-  const { data: userCount } = await api.get<number>(`/users/count`)
-
+  const userCount = await getUserCount()
   const user = await getUserFromRequest(request)
   if (!user) return { novels: [], userCount }
 
-  const { data: novels } = await api.get<Novel[]>(`/users/recent-novels`, {
+  const novels = await getUserNovels(user.id, {
     headers: { cookie },
     withCredentials: true,
   })

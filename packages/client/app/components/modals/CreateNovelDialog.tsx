@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   Field,
+  HStack,
   Input,
   Portal,
   useDialog,
@@ -22,11 +23,13 @@ import { useUser } from "~/context/UserContext"
 import { useNavigate } from "react-router"
 import { type Novel, ShareType } from "muvel-api-types"
 import ShareSelect from "~/components/molecules/ShareSelect"
-import { createCloudNovel } from "~/services/api/api.novel"
+import { FaInfoCircle } from "react-icons/fa"
+import { createNovel } from "~/services/novelService"
+import type { LocalNovelData } from "~/services/tauri/types"
 
 const CreateNovelDialog: React.FC<{
   children?: React.ReactNode
-  onCreated?: (novel: Novel) => void
+  onCreated?: (novel: Novel | LocalNovelData) => void
   dialog?: UseDialogReturn
 }> = ({ children, onCreated, dialog }) => {
   const dialog_ = useDialog()
@@ -43,7 +46,7 @@ const CreateNovelDialog: React.FC<{
   }) => {
     if (!user) return
 
-    const data = await createCloudNovel({
+    const data = await createNovel({
       ...values,
       share: parseInt(values.share.toString()),
     })
@@ -106,6 +109,15 @@ const CreateNovelDialog: React.FC<{
                                 form.setFieldValue("share", value.value)
                               }
                             />
+                            {field.value == ShareType.Local && (
+                              <HStack mt={2} color={"purple.500"}>
+                                <FaInfoCircle />
+                                <Field.HelperText>
+                                  로컬 저장 시 뮤블 클라우드 실시간 연동 등 몇몇
+                                  기능이 제한될 수 있어요!
+                                </Field.HelperText>
+                              </HStack>
+                            )}
                           </Field.Root>
                         )}
                       </FormikField>

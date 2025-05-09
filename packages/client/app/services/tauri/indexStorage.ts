@@ -3,11 +3,10 @@ import { getCoreApi } from "./tauriApiProvider"
 import type { LocalNovelIndexEntry } from "./types" // LocalNovelListSummary 대신 LocalNovelIndexEntry 사용
 
 // Rust invoke 커맨드 이름 (실제 Rust 프로젝트와 일치시켜야 함)
-const RUST_CMD_PREFIX = "storage_plugin:" // 예시 접두사 (Tauri v2 스타일)
-const CMD_GET_ALL_LOCAL_NOVEL_ENTRIES = `${RUST_CMD_PREFIX}get_all_local_novel_entries`
-const CMD_GET_LOCAL_NOVEL_ENTRY = `${RUST_CMD_PREFIX}get_local_novel_entry`
-const CMD_REGISTER_NOVEL_FROM_PATH = `${RUST_CMD_PREFIX}register_novel_from_path`
-const CMD_REMOVE_NOVEL_FROM_INDEX_AND_FILES = `${RUST_CMD_PREFIX}remove_novel_from_index_and_files` // 인덱스 및 파일 모두 삭제
+const CMD_GET_ALL_LOCAL_NOVEL_ENTRIES = `get_all_local_novel_entries_command`
+const CMD_GET_LOCAL_NOVEL_ENTRY = `get_local_novel_entry_command`
+const CMD_REGISTER_NOVEL_FROM_PATH = `register_novel_from_path_command`
+const CMD_REMOVE_NOVEL_PROJECT = `remove_novel_project_command` // 인덱스 및 파일 모두 삭제
 
 /**
  * Rust에 인덱싱된 모든 로컬 소설의 요약 정보 목록을 요청합니다.
@@ -71,12 +70,10 @@ export const registerNovelFromPath = async (
  * 로컬 소설 삭제 시, 해당 소설 정보를 인덱스에서 제거하고 관련 파일도 모두 삭제하도록 Rust에 요청합니다.
  * @param novelId 제거할 소설의 UUID
  */
-export const removeNovelDataAndFromIndex = async (
-  novelId: string,
-): Promise<void> => {
+export const deleteLocalNovel = async (novelId: string): Promise<void> => {
   const { invoke } = await getCoreApi()
   try {
-    await invoke(CMD_REMOVE_NOVEL_FROM_INDEX_AND_FILES, { novelId })
+    await invoke(CMD_REMOVE_NOVEL_PROJECT, { novelId })
   } catch (error) {
     console.error(`Error removing novel ${novelId} data and from index:`, error)
     throw error

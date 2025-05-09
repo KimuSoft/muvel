@@ -1,6 +1,7 @@
 // app/services/tauri/types.ts
 
 import type {
+  BasePermission,
   Block as ApiBlock,
   Episode as ApiEpisode,
   Novel as ApiNovel,
@@ -20,8 +21,12 @@ export interface LocalNovelData
   extends Omit<ApiNovel, "share" | "author" | "episodes"> {
   share: ApiShareType.Local
   author: null
-  episodes?: ApiEpisode[]
+  episodes: ApiEpisode[]
   localPath?: string
+}
+
+export interface GetLocalNovelDetailsResponse extends LocalNovelData {
+  permissions: BasePermission
 }
 
 export interface LocalEpisodeData extends Omit<ApiEpisode, "novel"> {
@@ -33,7 +38,7 @@ export interface CreateLocalNovelOptions extends Pick<ApiNovel, "title"> {
 }
 
 export type UpdateLocalNovelData = Partial<
-  Pick<ApiNovel, "title" | "description" | "tags" | "thumbnail">
+  Pick<ApiNovel, "title" | "description" | "tags" | "thumbnail" | "share">
 >
 
 export interface CreateLocalEpisodeOptions

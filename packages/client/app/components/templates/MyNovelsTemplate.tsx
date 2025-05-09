@@ -18,9 +18,10 @@ import { useUser } from "~/context/UserContext"
 import CreateNovelDialog from "~/components/modals/CreateNovelDialog"
 import NovelEmptyState from "~/components/molecules/NovelEmptyState"
 import LoadingOverlay from "~/components/templates/LoadingOverlay"
+import type { LocalNovelData } from "~/services/tauri/types"
 
 const MyNovelsTemplate: React.FC<{
-  novels: Novel[]
+  novels: (Novel | LocalNovelData)[]
 }> = ({ novels }) => {
   const user = useUser()
 

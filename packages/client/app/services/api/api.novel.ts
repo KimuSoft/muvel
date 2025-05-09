@@ -6,9 +6,10 @@ import type {
   Novel,
 } from "muvel-api-types"
 import { api } from "~/utils/api"
+import type { AxiosRequestConfig } from "axios"
 
 export const createCloudNovel = async (
-  dto: Pick<Novel, "title" | "share">,
+  dto: Pick<Novel, "title" | "share"> & AxiosRequestConfig<any>,
 ): Promise<Novel> => {
   const { data } = await api.post<Novel>(`novels`, dto)
   return data
@@ -16,15 +17,16 @@ export const createCloudNovel = async (
 
 export const getCloudNovel = async (
   id: string,
+  config?: AxiosRequestConfig<any>,
 ): Promise<GetNovelResponseDto> => {
-  const { data } = await api.get<GetNovelResponseDto>(`/novels/${id}`)
+  const { data } = await api.get<GetNovelResponseDto>(`/novels/${id}`, config)
   return data
 }
 
-export const updateCloudNovel = async ({
-  id,
-  ...dto
-}: Partial<Novel>): Promise<Novel> => {
+export const updateCloudNovel = async (
+  id: string,
+  dto: Partial<Novel>,
+): Promise<Novel> => {
   const { data } = await api.patch<Novel>(`/novels/${id}`, dto)
   return data
 }

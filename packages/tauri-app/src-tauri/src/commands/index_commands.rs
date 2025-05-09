@@ -21,12 +21,11 @@ pub fn get_all_local_novel_entries_command(
     // index_manager의 get_all_novel_entries 함수를 호출합니다.
     // 이 함수는 Result<Vec<LocalNovelIndexEntry>, String>을 반환하므로,
     // 에러가 발생하면 `?` 연산자를 통해 자동으로 전파되거나, 여기서 직접 처리할 수 있습니다.
-    index_manager::get_all_novel_entries(&app_handle)
-        .map_err(|e| {
-            // 에러 발생 시 로깅을 추가하거나 에러 메시지를 가공할 수 있습니다.
-            eprintln!("Error in get_all_local_novel_entries_command: {}", e);
-            e // 원래 에러 메시지를 그대로 반환
-        })
+    index_manager::get_all_novel_entries(&app_handle).map_err(|e| {
+        // 에러 발생 시 로깅을 추가하거나 에러 메시지를 가공할 수 있습니다.
+        eprintln!("Error in get_all_local_novel_entries_command: {}", e);
+        e // 원래 에러 메시지를 그대로 반환
+    })
 }
 
 // TypeScript의 `getLocalNovelEntry` 함수에 대응하는 Tauri 커맨드입니다.
@@ -37,7 +36,10 @@ pub fn get_local_novel_entry_command(
 ) -> Result<Option<LocalNovelIndexEntry>, String> {
     index_manager::get_novel_entry(&app_handle, &novel_id) // &novel_id로 참조 전달
         .map_err(|e| {
-            eprintln!("Error in get_local_novel_entry_command for novel_id {}: {}", novel_id, e);
+            eprintln!(
+                "Error in get_local_novel_entry_command for novel_id {}: {}",
+                novel_id, e
+            );
             e
         })
 }
@@ -48,7 +50,8 @@ pub fn get_local_novel_entry_command(
 pub fn register_novel_from_path_command(
     app_handle: AppHandle,
     file_path: String, // 프론트엔드에서 파일 경로를 문자열로 받습니다.
-) -> Result<Option<String>, String> { // 성공 시 novel_id (Option) 반환, 실패 시 에러
+) -> Result<Option<String>, String> {
+    // 성공 시 novel_id (Option) 반환, 실패 시 에러
     // 이 커맨드의 실제 로직은 좀 더 복잡할 수 있습니다.
     // 1. file_path에서 novel_id (UUID)를 추출하거나 .muvl 파일을 읽어 가져옵니다.
     // 2. 해당 novel_id와 file_path(의 디렉토리)를 index_manager::upsert_novel_entry를 사용해 인덱스에 저장합니다.
@@ -87,13 +90,14 @@ pub fn register_novel_from_path_command(
         let entry = LocalNovelIndexEntry {
             id: id.clone(),
             title: format!("소설: {}", id), // 실제로는 .muvl에서 읽어야 함
-            path: Some( // 실제로는 file_path의 부모 디렉토리 경로
-                        PathBuf::from(&file_path)
-                            .parent()
-                            .unwrap_or_else(|| Path::new(""))
-                            .to_str()
-                            .unwrap_or("")
-                            .to_string()
+            path: Some(
+                // 실제로는 file_path의 부모 디렉토리 경로
+                PathBuf::from(&file_path)
+                    .parent()
+                    .unwrap_or_else(|| Path::new(""))
+                    .to_str()
+                    .unwrap_or("")
+                    .to_string(),
             ),
             episode_count: None,
             thumbnail: None,
@@ -105,36 +109,5 @@ pub fn register_novel_from_path_command(
         }
     } else {
         Err("파일 경로에서 소설 ID를 추출할 수 없습니다.".to_string())
-    }
-}
-
-
-// TypeScript의 `removeNovelDataAndFromIndex` 함수에 대응하는 Tauri 커맨드입니다.
-// 이 커맨드는 인덱스에서 항목을 제거하고, 관련 파일/폴더도 삭제합니다.
-#[command]
-pub fn remove_novel_project_command(
-    app_handle: AppHandle,
-    novel_id: String,
-) -> Result<(), String> {
-    // 1. 인덱스에서 해당 novel_id의 경로(novel_root_path)를 가져옵니다.
-    let entry_opt = index_manager::get_novel_entry(&app_handle, &novel_id)?;
-
-    if let Some(entry) = entry_opt {
-        if let Some(novel_root_str) = entry.path {
-            let novel_root_path = PathBuf::from(novel_root_str);
-            // 2. storage::novel_io 를 사용하여 실제 파일/폴더를 삭제합니다.
-            //    (novel_io.rs 에 delete_novel_project_directory 함수가 정의되어 있다고 가정)
-            crate::storage::novel_io::delete_novel_project_directory(&novel_root_path)?;
-
-            // 3. 파일/폴더 삭제 성공 시, 인덱스에서도 해당 항목을 제거합니다.
-            index_manager::remove_novel_entry(&app_handle, &novel_id)?;
-            Ok(())
-        } else {
-            // 경로 정보가 없는 경우, 인덱스에서만 제거 시도 (파일은 못 찾음)
-            index_manager::remove_novel_entry(&app_handle, &novel_id)?;
-            Err(format!("소설 ID {} 에 대한 경로 정보가 인덱스에 없어 파일은 삭제하지 못했지만, 인덱스에서는 제거 시도했습니다.", novel_id))
-        }
-    } else {
-        Err(format!("삭제할 소설 ID {} 를 인덱스에서 찾을 수 없습니다.", novel_id))
     }
 }

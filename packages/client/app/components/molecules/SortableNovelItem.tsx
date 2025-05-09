@@ -4,11 +4,11 @@ import NovelItem from "./NovelItem"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import React from "react"
+import type { LocalNovelData } from "~/services/tauri/types"
 
-const SortableNovelItem: React.FC<{ novel: Novel } & StackProps> = ({
-  novel,
-  ...props
-}) => {
+const SortableNovelItem: React.FC<
+  { novel: Novel | LocalNovelData } & StackProps
+> = ({ novel, ...props }) => {
   const {
     setNodeRef,
     attributes,

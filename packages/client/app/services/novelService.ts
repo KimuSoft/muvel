@@ -1,6 +1,7 @@
 // app/services/novelService.ts
 
 import {
+  type GetNovelResponseDto,
   type Novel as ApiNovel,
   ShareType as ApiShareType,
 } from "muvel-api-types"
@@ -22,7 +23,7 @@ import {
   getAllLocalNovelEntries as getAllTauriLocalNovelEntries,
   getLocalNovelEntry as getTauriLocalNovelEntry,
   registerNovelFromPath as registerTauriNovelFromPath,
-  removeNovelDataAndFromIndex as removeTauriNovelDataAndFromIndex,
+  deleteLocalNovel as removeTauriNovelDataAndFromIndex,
 } from "./tauri/indexStorage"
 import {
   openFileDialog as openTauriFileDialog,
@@ -31,9 +32,11 @@ import {
 
 import type {
   CreateLocalNovelOptions,
+  GetLocalNovelDetailsResponse,
   LocalNovelData,
   UpdateLocalNovelData,
 } from "./tauri/types"
+import { getUserNovels } from "~/services/api/api.user"
 
 const IS_TAURI_APP = import.meta.env.VITE_TAURI === "true"
 
@@ -47,23 +50,17 @@ export type NovelInput = string | NovelIdentifierContext
 /**
  * 새로운 소설을 생성합니다.
  */
-export const createNovel = async (options: {
-  title: string
-  shareTypeToCreate:
-    | ApiShareType.Local
-    | ApiShareType.Public
-    | ApiShareType.Private
-    | ApiShareType.Unlisted
-}): Promise<ApiNovel | LocalNovelData> => {
-  const { title, shareTypeToCreate } = options
+export const createNovel = async (
+  options: Pick<ApiNovel, "title" | "share">,
+): Promise<ApiNovel | LocalNovelData> => {
+  const { title, share } = options
 
-  if (shareTypeToCreate === ApiShareType.Local) {
+  if (share === ApiShareType.Local) {
     if (!IS_TAURI_APP) {
       throw new Error("로컬 소설 생성은 Tauri 앱 환경에서만 가능합니다.")
     }
-    const targetDirectoryPath = await openTauriFolderDialog(
-      "새 소설을 저장할 폴더를 선택하세요",
-    )
+    const targetDirectoryPath =
+      await openTauriFolderDialog("소설 프로젝트 생성")
     if (!targetDirectoryPath) {
       throw new Error("소설 생성이 취소되었습니다 (저장 폴더 미선택).")
     }
@@ -73,7 +70,7 @@ export const createNovel = async (options: {
     }
     return createTauriLocalNovel(tauriCreateOptions)
   } else {
-    return createCloudNovel({ title, share: shareTypeToCreate })
+    return createCloudNovel({ title, share: share })
   }
 }
 
@@ -82,7 +79,7 @@ export const createNovel = async (options: {
  */
 export const getNovel = async (
   novelId: string,
-): Promise<ApiNovel | LocalNovelData> => {
+): Promise<GetNovelResponseDto | GetLocalNovelDetailsResponse> => {
   if (IS_TAURI_APP) {
     const localNovelEntry = await getTauriLocalNovelEntry(novelId)
     if (localNovelEntry) {
@@ -146,8 +143,7 @@ export const updateNovel = async (
     }
     return updateTauriLocalNovelMetadata(novelId, patchData)
   } else {
-    const cloudPatchData: Partial<ApiNovel> = patchData
-    return updateCloudNovel({ id: novelId, ...cloudPatchData })
+    return updateCloudNovel(novelId, patchData)
   }
 }
 
@@ -172,16 +168,19 @@ export const deleteNovel = async (novelInput: NovelInput): Promise<void> => {
 /**
  * 사용자의 모든 소설 목록을 가져옵니다 (로컬 + 클라우드 조합).
  */
-export const getMyNovels = async (): Promise<(ApiNovel | LocalNovelData)[]> => {
+// TODO: myId같은 인자 없애기 (`users/me/novels`로 대체)
+export const getMyNovels = async (
+  myId?: string,
+): Promise<(ApiNovel | LocalNovelData)[]> => {
   let cloudNovels: ApiNovel[] = []
   const localNovels: LocalNovelData[] = []
   const combinedNovels: (ApiNovel | LocalNovelData)[] = []
 
   try {
-    // cloudNovels = await getMyCloudNovelsApi(); // 실제 API 호출 함수로 대체 필요
-    console.warn(
-      "getMyCloudNovelsApi is not implemented, returning empty cloud novels for now.",
-    )
+    // 오프라인이거나 로그인 안 했을 때는 클라우드 소설을 가져오지 않음
+    if (navigator.onLine && myId) {
+      cloudNovels = await getUserNovels(myId)
+    }
   } catch (error) {
     console.error("Error fetching cloud novels:", error)
   }

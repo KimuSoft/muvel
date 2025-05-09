@@ -1,29 +1,27 @@
-// src-tauri/src/models.rs
-
-// serde 라이브러리에서 Serialize와 Deserialize 트레잇(trait)을 가져옵니다.
-// 이를 통해 Rust 구조체와 JSON 간의 자동 변환이 가능해집니다.
 use serde::{Deserialize, Serialize};
-// Tauri 앱 핸들을 가져오기 위해 필요할 수 있습니다 (State 관리 등).
-// use tauri::AppHandle; // 지금 당장은 필요 없을 수 있습니다.
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 // TypeScript의 `ApiShareType` enum에 대응하는 Rust enum (예시)
 // 실제 muvel-api-types의 ShareType과 값을 일치시켜야 합니다.
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize_repr, Deserialize_repr, Debug, Clone, PartialEq)]
+#[repr(u8)]
 pub enum ShareType {
-    Private,
-    Unlisted,
-    Public,
-    Local, // 로컬 저장용 타입
+    Private = 0,
+    Unlisted = 1,
+    Public = 2,
+    Local = 3, // 로컬 저장용 타입
 }
 
 // TypeScript의 `ApiEpisodeType` enum에 대응하는 Rust enum (예시)
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize_repr, Deserialize_repr, Debug, Clone, PartialEq)]
+#[repr(u8)]
 pub enum EpisodeType {
-    Episode,
-    Prologue,
-    Epilogue,
-    Special,
-    EpisodeGroup, // TypeScript 타입에 있다면 추가
+    Episode = 0,
+    EpisodeGroup = 1,
+    Prologue = 2,
+    Epilogue = 3,
+    Special = 4,
+    Memo = 5,
 }
 
 // TypeScript의 `ApiUserPublicDto`에 대응하는 Rust 구조체 (예시)
@@ -45,9 +43,10 @@ pub struct Block {
     #[serde(rename = "blockType")]
     pub block_type: String, // 실제 BlockType enum을 정의하고 사용할 수도 있습니다.
     pub attr: Option<serde_json::Value>, // BlockAttrs | null 은 Option<JSON Value>로 표현
-    pub order: i32, // order는 정수형으로 가정
+    pub order: i32,                      // order는 정수형으로 가정
     #[serde(rename = "updatedAt")]
-    #[serde(skip_serializing_if = "Option::is_none")] // Option 필드는 serialize 시 none이면 생략
+    #[serde(skip_serializing_if = "Option::is_none")]
+    // Option 필드는 serialize 시 none이면 생략
     pub updated_at: Option<String>, // 날짜는 ISO 8601 문자열로 처리
 }
 
@@ -143,10 +142,10 @@ pub struct LocalEpisodeData {
 
     pub blocks: Vec<Block>, // 에피소드 내용은 블록 배열로 직접 포함
 
-    // GetEpisodeResponseDto 호환성을 위해 Rust가 채워줄 수 있는 필드 (선택적)
-    // 순환 참조나 데이터 크기 문제를 피하기 위해 요약 정보만 포함하거나 ID만 포함할 수 있음.
-    // 여기서는 일단 생략하고, 필요시 추가.
-    // pub novel: Option<SlimNovelDataForEpisodeContext>,
+                            // GetEpisodeResponseDto 호환성을 위해 Rust가 채워줄 수 있는 필드 (선택적)
+                            // 순환 참조나 데이터 크기 문제를 피하기 위해 요약 정보만 포함하거나 ID만 포함할 수 있음.
+                            // 여기서는 일단 생략하고, 필요시 추가.
+                            // pub novel: Option<SlimNovelDataForEpisodeContext>,
 }
 
 // --- Rust invoke 함수 호출 시 사용될 옵션 및 데이터 타입들 ---

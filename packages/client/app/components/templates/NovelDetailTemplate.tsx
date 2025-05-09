@@ -6,7 +6,6 @@ import {
   Container,
   Heading,
   HStack,
-  IconButton,
   Image,
   Spacer,
   Text,
@@ -14,14 +13,7 @@ import {
 } from "@chakra-ui/react"
 import Header from "../organisms/Header"
 import { type GetNovelResponseDto, ShareType } from "muvel-api-types"
-import {
-  TbEdit,
-  TbPencilPlus,
-  TbPlayerPlay,
-  TbShare,
-  TbSortAscending,
-  TbSortDescending,
-} from "react-icons/tb"
+import { TbEdit, TbPencilPlus, TbPlayerPlay, TbShare } from "react-icons/tb"
 import NovelTagList from "../organisms/NovelTagList"
 import { useNavigate, useRevalidator } from "react-router"
 import SortableEpisodeList, {
@@ -32,7 +24,6 @@ import { FaList } from "react-icons/fa6"
 import BlockLink from "~/components/atoms/BlockLink"
 import {
   createCloudNovelEpisode,
-  updateCloudNovel,
   updateCloudNovelEpisodes,
 } from "~/services/api/api.novel"
 import type { ReorderedEpisode } from "~/utils/reorderEpisode"
@@ -40,9 +31,11 @@ import { toaster } from "~/components/ui/toaster"
 import SortToggleButton from "~/components/atoms/SortToggleButton"
 import EpisodeListLayoutToggleButton from "~/components/atoms/EpisodeListLayoutToggleButton"
 import type { EpisodeItemVariant } from "~/components/molecules/EpisodeItem"
+import type { GetLocalNovelDetailsResponse } from "~/services/tauri/types"
+import { updateNovel } from "~/services/novelService"
 
 const NovelDetailTemplate: React.FC<{
-  novel: GetNovelResponseDto
+  novel: GetNovelResponseDto | GetLocalNovelDetailsResponse
 }> = ({ novel }) => {
   const { revalidate } = useRevalidator()
   const navigate = useNavigate()
@@ -77,6 +70,8 @@ const NovelDetailTemplate: React.FC<{
         return "일부 공개"
       case ShareType.Public:
         return "공개"
+      case ShareType.Local:
+        return "로컬"
     }
   }, [novel.share])
 
@@ -133,7 +128,7 @@ const NovelDetailTemplate: React.FC<{
                 tags={novel.tags}
                 editable={novel.permissions.edit}
                 onChange={async (tags) => {
-                  await updateCloudNovel({ id: novel.id, tags })
+                  await updateNovel(novel, { tags })
                   await revalidate()
                 }}
               />
@@ -172,7 +167,9 @@ const NovelDetailTemplate: React.FC<{
                     </Button>
                   </ModifyNovelModal>
                 ) : null}
-                {novel.share !== ShareType.Private && (
+                {[ShareType.Unlisted, ShareType.Public].includes(
+                  novel.share,
+                ) && (
                   <Button
                     gap={2.5}
                     flexShrink={0}
@@ -191,13 +188,6 @@ const NovelDetailTemplate: React.FC<{
                     <Box display={{ base: "none", md: "block" }}>공유하기</Box>
                   </Button>
                 )}
-
-                {/*{novel.permissions.edit ? (*/}
-                {/*  <Button size={"sm"} variant={"subtle"}>*/}
-                {/*    <TbShare />*/}
-                {/*    <Box display={{ base: "none", md: "block" }}>공유하기</Box>*/}
-                {/*  </Button>*/}
-                {/*) : null}*/}
               </HStack>
             </VStack>
           </HStack>

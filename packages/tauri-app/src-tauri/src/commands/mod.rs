@@ -1,5 +1,13 @@
-pub mod font_commands;
-pub mod auth_commands;
-pub mod index_commands;
-pub mod novel_commands;
-pub mod episode_commands;
+
+macro_rules! reexport_module {
+($x:ident) => {
+  mod $x;
+  pub use $x::*;
+}
+}
+
+reexport_module!(index_commands);
+reexport_module!(novel_commands);
+reexport_module!(font_commands);
+reexport_module!(auth_commands);
+reexport_module!(episode_commands);

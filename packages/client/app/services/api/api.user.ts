@@ -1,10 +1,10 @@
-import type { User } from "muvel-api-types"
+import type { Novel, User } from "muvel-api-types"
 import { api } from "~/utils/api"
-import { isAxiosError } from "axios"
+import { isAxiosError, type AxiosRequestConfig } from "axios"
 
-export const getMe = async () => {
+export const getMe = async (config?: AxiosRequestConfig<any>) => {
   try {
-    const { data } = await api.get<User>("/users/me")
+    const { data } = await api.get<User>("/users/me", config)
     return data
   } catch (e) {
     if (!isAxiosError(e)) throw e
@@ -12,4 +12,22 @@ export const getMe = async () => {
     console.error("Error fetching user data:", e)
     throw e
   }
+}
+
+export const getUserCount = async () => {
+  const { data } = await api.get<number>("/users/count")
+  return data
+}
+
+export const getMyRecentNovels = async (config?: AxiosRequestConfig<any>) => {
+  const { data } = await api.get<Novel[]>("/users/recent-novels", config)
+  return data
+}
+
+export const getUserNovels = async (
+  userId: string,
+  config?: AxiosRequestConfig<any>,
+) => {
+  const { data } = await api.get<Novel[]>(`/users/${userId}/novels`, config)
+  return data
 }
