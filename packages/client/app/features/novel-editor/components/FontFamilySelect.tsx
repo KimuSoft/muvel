@@ -118,12 +118,12 @@ const FontFamilySelect = ({
       }
 
       const { invoke } = await import("@tauri-apps/api/core")
-      const fonts = await invoke<string[]>("get_fonts_by_family", { family })
-      const filteredFonts = (fonts as string[])
-        .filter((font) => !!font && isNaN(Number(font)))
+      const fonts = await invoke("get_fonts_by_family", { family })
+      const filteredFonts = (fonts as { name: string; postscript: string }[])
+        .filter((font) => !!font.name && isNaN(Number(font.name)))
         .map((font) => ({
-          label: font.trim() || "기본",
-          value: font,
+          label: font.name.replace(family, "").trim() || "기본",
+          value: font.postscript,
         }))
 
       setFontStylesCache((prev) => ({
