@@ -7,7 +7,7 @@ import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 import {
   getEpisodeBlocks,
   updateEpisodeBlocks as apiUpdateEpisodeBlocks,
-} from "~/api/api.episode"
+} from "~/services/api/api.episode"
 import { Node as PMNode } from "prosemirror-model"
 import { docToBlocks } from "~/features/novel-editor/utils/blockConverter"
 

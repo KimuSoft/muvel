@@ -29,7 +29,7 @@ import DeleteNovelDialog from "./DeleteNovelDialog"
 import ShareSelect from "~/components/molecules/ShareSelect"
 import ImageUploader from "~/components/molecules/ImageUploader"
 import { useRevalidator } from "react-router"
-import { updateNovel } from "~/api/api.novel"
+import { updateNovel } from "~/services/api/api.novel"
 import ExportNovelMenu from "~/components/modals/ExportNovelMenu"
 
 const ModifyNovelModal: React.FC<{

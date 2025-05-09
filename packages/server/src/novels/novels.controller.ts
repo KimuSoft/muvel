@@ -73,7 +73,7 @@ export class NovelsController {
   async getNovel(
     @Request() req: NovelPermissionRequest,
     @Param() { id }: UuIdParamDto,
-  ): Promise<GetNovelResponseDto> {
+  ) {
     if (req.user?.id) {
       // 최근에 접속한 소설 업데이트
       void this.usersService.updateLastAccessedNovel(req.user.id, id)
@@ -87,7 +87,7 @@ export class NovelsController {
     description: "소설의 전체 내용을 json으로 다운받습니다.",
   })
   @RequirePermission("edit", NovelPermissionGuard)
-  async exportNovel(@Param("id") id: string): Promise<ExportNovelResponseDto> {
+  async exportNovel(@Param("id") id: string) {
     const novel = await this.novelsService.exportNovel(id)
     if (!novel) throw new NotFoundException("소설을 찾을 수 없습니다.")
 

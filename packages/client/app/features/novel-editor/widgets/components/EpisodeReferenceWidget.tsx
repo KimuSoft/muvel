@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react"
 import { LuBookMarked } from "react-icons/lu"
 import { toaster } from "~/components/ui/toaster"
-import { getNovel } from "~/api/api.novel"
+import { getNovel } from "~/services/api/api.novel"
 import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
 import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap"
 import {
@@ -21,7 +21,7 @@ import {
   WidgetHeader,
   WidgetTitle,
 } from "~/features/novel-editor/widgets/components/WidgetBase"
-import { getEpisodeBlocks } from "~/api/api.episode"
+import { getEpisodeBlocks } from "~/services/api/api.episode"
 import { useOption } from "~/context/OptionContext"
 
 interface EpisodeSelectItem {

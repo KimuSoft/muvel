@@ -34,7 +34,7 @@ import {
   createNovelEpisode,
   updateNovel,
   updateNovelEpisodes,
-} from "~/api/api.novel"
+} from "~/services/api/api.novel"
 import type { ReorderedEpisode } from "~/utils/reorderEpisode"
 import { toaster } from "~/components/ui/toaster"
 import SortToggleButton from "~/components/atoms/SortToggleButton"

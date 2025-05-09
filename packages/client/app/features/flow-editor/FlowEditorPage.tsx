@@ -2,7 +2,7 @@ import type { GetEpisodeResponseDto } from "muvel-api-types"
 import FlowEditorTemplate from "~/features/flow-editor/FlowEditorTemplate"
 import React, { useEffect } from "react"
 import { debounce } from "lodash-es"
-import { updateEpisode } from "~/api/api.episode"
+import { updateEpisode } from "~/services/api/api.episode"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 
 const FlowEditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({

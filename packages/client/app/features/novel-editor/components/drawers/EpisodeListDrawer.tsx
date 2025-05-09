@@ -26,7 +26,7 @@ import {
   createNovelEpisode,
   getNovel,
   updateNovelEpisodes,
-} from "~/api/api.novel"
+} from "~/services/api/api.novel"
 import type {
   BasePermission,
   EpisodeType,

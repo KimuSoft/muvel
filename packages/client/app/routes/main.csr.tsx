@@ -2,7 +2,7 @@ import { useLoaderData } from "react-router"
 import { api } from "~/utils/api"
 import type { Novel } from "muvel-api-types"
 import MainTemplate from "~/components/templates/MainTemplate"
-import { getMe } from "~/api/api.user"
+import { getMe } from "~/services/api/api.user"
 
 export async function clientLoader() {
   const { data: userCount } = await api.get<number>(`/users/count`)

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import type { GetEpisodeResponseDto } from "muvel-api-types"
 import { debounce, isEqual } from "lodash-es"
-import { updateEpisode as apiUpdateEpisode } from "~/api/api.episode" // API 함수 이름 변경 (충돌 방지)
+import { updateEpisode as apiUpdateEpisode } from "~/services/api/api.episode" // API 함수 이름 변경 (충돌 방지)
 import { toaster } from "~/components/ui/toaster"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 import type { EpisodeData } from "~/features/novel-editor/context/EditorContext" // EpisodeData 타입 가져오기

@@ -6,5 +6,5 @@ export interface EpisodeSnapshot {
   episodeId: string
   reason: SnapshotReason
   blocks: Block[]
-  createdAt: Date
+  createdAt: string
 }

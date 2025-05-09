@@ -8,18 +8,18 @@ export interface Novel {
   author: UserPublicDto
   thumbnail: string
   episodeCount: number
-  createdAt: Date
-  updatedAt: Date
   share: ShareType
   tags: string[]
+  createdAt: string
+  updatedAt: string
 }
 
 export const initialNovel: Novel = {
   id: "",
   title: "",
   description: "",
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
   episodeCount: 0,
   author: sampleUser,
   thumbnail: "",

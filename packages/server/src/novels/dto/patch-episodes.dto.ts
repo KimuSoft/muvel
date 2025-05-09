@@ -1,8 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { IsNumberString, IsString } from "class-validator"
-import { Transform } from "class-transformer"
+import { IsNumber, IsString } from "class-validator"
+import { Episode } from "muvel-api-types"
 
-export class PatchEpisodesDto {
+// TODO: 이거 말고 다른 필드도 그냥 들어오는 취약점 있음
+export class PatchEpisodesDto
+  implements Pick<Episode, "id" | "title" | "order">
+{
   @ApiProperty()
   @IsString()
   id: string
@@ -12,11 +15,6 @@ export class PatchEpisodesDto {
   title: string
 
   @ApiProperty()
-  @IsString()
-  chapter: string
-
-  @ApiProperty()
-  @Transform((value) => value.toString())
-  @IsNumberString()
-  order: string
+  @IsNumber()
+  order: number
 }

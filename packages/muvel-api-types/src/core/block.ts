@@ -8,21 +8,7 @@ export interface Block {
   blockType: BlockType
   attr: BlockAttrs | null
   order: number
-  updatedAt?: Date
-}
-
-export interface LegacyBlock {
-  id: string
-  episodeId?: string
-  content: string
-  blockType: LegacyBlockType
-  characterId?: string
-}
-
-export const sampleLegacyBlock: LegacyBlock = {
-  id: "1",
-  content: "테스트용 블록입니다.",
-  blockType: LegacyBlockType.Describe,
+  updatedAt?: string
 }
 
 export const sampleBlock: Block = {

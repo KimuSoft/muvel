@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 import type { EpisodeSnapshot, GetEpisodeResponseDto } from "muvel-api-types"
-import { getSnapshots } from "~/api/api.episode"
+import { getSnapshots } from "~/services/api/api.episode"
 import { TbHistory, TbSlash } from "react-icons/tb"
 import { toaster } from "~/components/ui/toaster"
 import type { EpisodeData } from "~/features/novel-editor/context/EditorContext"
@@ -50,8 +50,8 @@ const SnapshotItem: React.FC<{
     >
       <HStack>
         <Text fontWeight={"bold"}>
-          {snapshot.createdAt.toLocaleDateString()} (
-          {snapshot.createdAt.toLocaleTimeString()})
+          {new Date(snapshot.createdAt).toLocaleDateString()} (
+          {new Date(snapshot.createdAt).toLocaleTimeString()})
         </Text>
         <Text color={"gray.500"} fontSize={"sm"}>
           {snapshot.blocks
@@ -79,14 +79,9 @@ const SnapshotDrawer: React.FC<{
     setIsLoading(true)
     const snapshots = await getSnapshots(episode.id)
 
-    // string date를 Date로 변경 (createdAt)
-    snapshots.forEach((snapshot) => {
-      snapshot.createdAt = new Date(snapshot.createdAt.toString())
-    })
-
     // ai 결과를 최신순으로 정렬 ai.createdAt: string
     snapshots.sort((a, b) => {
-      return b.createdAt.getTime() - a.createdAt.getTime()
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     })
 
     setSnapshots(snapshots)

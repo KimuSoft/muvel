@@ -7,13 +7,11 @@ export interface Episode {
   authorComment?: string
   contentLength: number
   novelId: string
-  order: string | number
+  order: number
   episodeType: EpisodeType
   flowDoc: any
-  // API 응답을 통해 받으면 string이므로 주의!!
-  createdAt: Date
-  // API 응답을 통해 받으면 string이므로 주의!!
-  updatedAt: Date
+  createdAt: string
+  updatedAt: string
 }
 
 export const initialEpisode: Episode = {
@@ -24,8 +22,8 @@ export const initialEpisode: Episode = {
   contentLength: 0,
   flowDoc: {},
   novelId: "",
-  order: "0",
+  order: 0,
   episodeType: EpisodeType.Episode,
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 }

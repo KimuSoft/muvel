@@ -24,7 +24,7 @@ export class SearchService {
           // blockType: block.blockType,
           episodeId: episode.id,
           episodeName: episode.title,
-          episodeNumber: parseFloat(episode.order),
+          episodeNumber: episode.order,
           index: block.order,
           novelId: episode.novelId,
         })

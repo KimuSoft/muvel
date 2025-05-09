@@ -40,8 +40,15 @@ export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
 
   /** Caches */
 
-  @Column({ default: 0, type: "numeric" })
-  order: string
+  @Column({
+    default: 0,
+    type: "numeric",
+    transformer: {
+      to: (value: number) => value, // DB에 저장할 때
+      from: (value: string | number) => Number(value), // DB에서 가져올 때
+    },
+  })
+  order: number
 
   @Column({ default: 0 })
   contentLength: number
