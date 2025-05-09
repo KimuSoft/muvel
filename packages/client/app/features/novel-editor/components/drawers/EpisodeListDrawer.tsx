@@ -38,6 +38,7 @@ import type { EpisodeItemVariant } from "~/components/molecules/EpisodeItem"
 import { getNovel, updateNovelEpisodes } from "~/services/novelService"
 import type { GetLocalNovelDetailsResponse } from "~/services/tauri/types"
 import { createNovelEpisode } from "~/services/episodeService"
+import { useNavigate } from "react-router"
 
 const EpisodeListDrawer: React.FC<
   {
@@ -53,6 +54,8 @@ const EpisodeListDrawer: React.FC<
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc")
   const [episodeListLayout, setEpisodeListLayout] =
     React.useState<EpisodeItemVariant>("shallow")
+
+  const navigate = useNavigate()
 
   const fetchNovel = async () => {
     setIsLoading(true)
@@ -79,10 +82,10 @@ const EpisodeListDrawer: React.FC<
   if (!novel) return null
 
   const handleCreateEpisode = async (detail: MenuSelectionDetails) => {
-    await createNovelEpisode(novel.id, {
+    const episode = await createNovelEpisode(novel.id, {
       episodeType: parseInt(detail.value) as EpisodeType,
     })
-    void fetchNovel()
+    navigate(`/episodes/${episode.id}`)
   }
 
   return (

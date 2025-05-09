@@ -44,8 +44,7 @@ export const useLogin = () => {
         console.error("Login failed in Tauri:", e) // 상세 에러는 콘솔에 남겨둘 수 있습니다.
       }
     } else {
-      const apiBaseUrl = import.meta.env.VITE_API_BASE || ""
-      window.location.href = `${apiBaseUrl}/auth/login`
+      window.location.href = "/api/auth/login"
     }
   }, [isTauri])
 }
