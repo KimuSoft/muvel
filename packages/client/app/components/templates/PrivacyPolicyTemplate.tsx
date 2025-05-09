@@ -70,7 +70,13 @@ const PrivacyPolicyTemplate = () => {
         <Text mb={4}>
           Muvel의 일부 기능은 Google Gemini API와 연동되어 제공됩니다. 사용자가
           해당 기능을 이용할 경우, 입력한 소설 내용 일부가 Google Gemini API에
-          전송되며, 사전 동의 절차를 통해 이를 안내하고 있습니다.
+          전송될 수 있으며, 사전 동의 절차를 통해 이를 안내드리고 있습니다.
+          사용자가 동의하지 않은 경우 소설 콘텐츠는 Google 측에 전송되지
+          않습니다.
+        </Text>
+        <Text mb={4}>
+          또한, 뮤블은 사용자의 소설 콘텐츠를 사용자의 명시적인 동의 없이 자사의
+          <b>AI 학습을 위한 데이터로 절대 사용하지 않습니다.</b>
         </Text>
 
         <Heading as="h2" size="md" mt={8} mb={4}>
@@ -158,7 +164,7 @@ const PrivacyPolicyTemplate = () => {
           9. 개정 공지
         </Heading>
         <Text>
-          본 방침은 <strong>2025.05.15</strong>부터 적용됩니다. 내용 변경 시
+          본 방침은 <strong>2025.05.17</strong>부터 적용됩니다. 내용 변경 시
           최소 7일 전 공지를 통해 사전 안내드립니다.
         </Text>
       </Box>
