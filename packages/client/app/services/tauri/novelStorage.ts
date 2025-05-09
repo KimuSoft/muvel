@@ -1,7 +1,11 @@
 // app/services/tauri/novelStorage.ts
 import { getCoreApi } from "./tauriApiProvider"
 import type { Novel as ApiNovel } from "muvel-api-types" // API DTO 타입
-import type { CreateLocalNovelOptions, UpdateLocalNovelData } from "./types"
+import type {
+  CreateLocalNovelOptions,
+  LocalNovelData,
+  UpdateLocalNovelData,
+} from "./types"
 // removeNovelDataAndFromIndex는 indexStorage로 이동했으므로 여기서 직접 사용 안 함
 
 const RUST_CMD_PREFIX = "storage_plugin:"
@@ -40,11 +44,13 @@ export const createLocalNovel = async (
  */
 export const getLocalNovelDetails = async (
   novelId: string,
-): Promise<ApiNovel> => {
+): Promise<LocalNovelData> => {
   const { invoke } = await getCoreApi()
   try {
     // Rust는 novelId를 사용해 내부 인덱스에서 경로를 찾아 .muvl 파일을 읽고 ApiNovel 호환 객체 반환
-    return await invoke<ApiNovel>(CMD_GET_LOCAL_NOVEL_DETAILS, { novelId })
+    return await invoke<LocalNovelData>(CMD_GET_LOCAL_NOVEL_DETAILS, {
+      novelId,
+    })
   } catch (error) {
     console.error(`Error fetching local novel details for ${novelId}:`, error)
     // 여기서 null을 반환하거나 에러를 그대로 던져 상위 서비스에서 처리하도록 함

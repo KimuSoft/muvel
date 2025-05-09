@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react"
 import { LuBookMarked } from "react-icons/lu"
 import { toaster } from "~/components/ui/toaster"
-import { getNovel } from "~/services/api/api.novel"
+import { getCloudNovel } from "~/services/api/api.novel"
 import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
 import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap"
 import {
@@ -60,7 +60,7 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
     setIsNovelLoading(true)
     setError(null)
     try {
-      const novelData = await getNovel(novelId)
+      const novelData = await getCloudNovel(novelId)
       const formattedEpisodes = novelData.episodes
         .sort(
           (a, b) =>

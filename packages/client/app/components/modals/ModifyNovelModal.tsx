@@ -29,7 +29,7 @@ import DeleteNovelDialog from "./DeleteNovelDialog"
 import ShareSelect from "~/components/molecules/ShareSelect"
 import ImageUploader from "~/components/molecules/ImageUploader"
 import { useRevalidator } from "react-router"
-import { updateNovel } from "~/services/api/api.novel"
+import { updateCloudNovel } from "~/services/api/api.novel"
 import ExportNovelMenu from "~/components/modals/ExportNovelMenu"
 
 const ModifyNovelModal: React.FC<{
@@ -46,7 +46,7 @@ const ModifyNovelModal: React.FC<{
     share: string | number
     thumbnail: string | null
   }) => {
-    await updateNovel({
+    await updateCloudNovel({
       id: novel.id,
       ...values,
       share: parseInt(values.share.toString()),

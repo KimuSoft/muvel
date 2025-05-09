@@ -1,7 +1,8 @@
 use tauri_plugin_deep_link::DeepLinkExt;
 
-mod auth;
-mod font;
+mod storage;
+mod models;
+mod commands;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -24,9 +25,24 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            auth::wait_for_token,
-            font::get_system_font_families,
-            font::get_fonts_by_family,
+            // 보안 관련 명령어
+            commands::auth_commands::wait_for_token,
+
+            // 글꼴 관련 명령어
+            commands::font_commands::get_system_font_families,
+            commands::font_commands::get_fonts_by_family,
+
+            // 소설 인덱싱 관련 명령어
+            commands::index_commands::get_all_local_novel_entries_command,
+            commands::index_commands::get_local_novel_entry_command,
+            commands::index_commands::register_novel_from_path_command,
+            commands::index_commands::remove_novel_project_command,
+
+            // 소설 관련 명령어
+            commands::novel_commands::create_local_novel_command,
+            commands::novel_commands::get_local_novel_details_command,
+            commands::novel_commands::update_local_novel_metadata_command,
+            commands::novel_commands::generate_uuid_command,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -22,7 +22,7 @@ import { useUser } from "~/context/UserContext"
 import { useNavigate } from "react-router"
 import { type Novel, ShareType } from "muvel-api-types"
 import ShareSelect from "~/components/molecules/ShareSelect"
-import { createNovel } from "~/services/api/api.novel"
+import { createCloudNovel } from "~/services/api/api.novel"
 
 const CreateNovelDialog: React.FC<{
   children?: React.ReactNode
@@ -43,7 +43,7 @@ const CreateNovelDialog: React.FC<{
   }) => {
     if (!user) return
 
-    const data = await createNovel({
+    const data = await createCloudNovel({
       ...values,
       share: parseInt(values.share.toString()),
     })

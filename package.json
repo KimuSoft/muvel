@@ -6,15 +6,19 @@
     "dev": "pnpm run -rp dev",
     "dev:server": "pnpm --filter server dev",
     "dev:client": "pnpm --filter client dev",
+    "dev:tauri": "pnpm --filter tauri-app dev",
     "build": "pnpm run -rp build",
     "build:server": "pnpm --filter server build",
     "build:client": "pnpm --filter client build",
+    "build:tauri": "pnpm --filter tauri-app build",
     "build:api": "pnpm --filter muvel-api-types build",
     "dev:s": "pnpm dev:server",
     "dev:c": "pnpm dev:client",
+    "dev:t": "pnpm dev:tauri",
     "build:s": "pnpm build:server",
     "build:c": "pnpm build:client",
-    "build:a": "pnpm build:api"
+    "build:a": "pnpm build:api",
+    "build:t": "pnpm build:tauri"
   },
   "packageManager": "pnpm@10.10.0",
   "dependencies": {

@@ -23,9 +23,9 @@ import SortableEpisodeList, {
 } from "~/components/organisms/SortableEpisodeList"
 import React, { type PropsWithChildren, useEffect } from "react"
 import {
-  createNovelEpisode,
-  getNovel,
-  updateNovelEpisodes,
+  createCloudNovelEpisode,
+  getCloudNovel,
+  updateCloudNovelEpisodes,
 } from "~/services/api/api.novel"
 import type {
   BasePermission,
@@ -56,7 +56,7 @@ const EpisodeListDrawer: React.FC<
 
   const fetchNovel = async () => {
     setIsLoading(true)
-    const novel = await getNovel(novelId)
+    const novel = await getCloudNovel(novelId)
     setNovel(novel)
     setIsLoading(false)
   }
@@ -66,7 +66,7 @@ const EpisodeListDrawer: React.FC<
   }, [])
 
   const handleReorderEpisode = async (episodes: ReorderedEpisode[]) => {
-    await updateNovelEpisodes(
+    await updateCloudNovelEpisodes(
       novelId,
       episodes
         .filter((e) => e.isReordered)
@@ -78,7 +78,7 @@ const EpisodeListDrawer: React.FC<
   if (!novel) return null
 
   const handleCreateEpisode = async (detail: MenuSelectionDetails) => {
-    await createNovelEpisode(novel.id, {
+    await createCloudNovelEpisode(novel.id, {
       episodeType: parseInt(detail.value) as EpisodeType,
     })
     void fetchNovel()

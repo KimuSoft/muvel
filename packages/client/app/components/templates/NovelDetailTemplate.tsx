@@ -31,9 +31,9 @@ import ModifyNovelModal from "~/components/modals/ModifyNovelModal"
 import { FaList } from "react-icons/fa6"
 import BlockLink from "~/components/atoms/BlockLink"
 import {
-  createNovelEpisode,
-  updateNovel,
-  updateNovelEpisodes,
+  createCloudNovelEpisode,
+  updateCloudNovel,
+  updateCloudNovelEpisodes,
 } from "~/services/api/api.novel"
 import type { ReorderedEpisode } from "~/utils/reorderEpisode"
 import { toaster } from "~/components/ui/toaster"
@@ -53,13 +53,13 @@ const NovelDetailTemplate: React.FC<{
 
   const handleCreateEpisode = async () => {
     setIsEpisodesLoading(true)
-    const episode = await createNovelEpisode(novel.id)
+    const episode = await createCloudNovelEpisode(novel.id)
     navigate(`/episodes/${episode.id}`)
   }
 
   const handleReorderEpisode = async (episodes: ReorderedEpisode[]) => {
     setIsEpisodesLoading(true)
-    await updateNovelEpisodes(
+    await updateCloudNovelEpisodes(
       novel.id,
       episodes
         .filter((e) => e.isReordered)
@@ -133,7 +133,7 @@ const NovelDetailTemplate: React.FC<{
                 tags={novel.tags}
                 editable={novel.permissions.edit}
                 onChange={async (tags) => {
-                  await updateNovel({ id: novel.id, tags })
+                  await updateCloudNovel({ id: novel.id, tags })
                   await revalidate()
                 }}
               />

@@ -2,7 +2,7 @@ import { Box, Menu, Portal } from "@chakra-ui/react"
 import { LuFileJson } from "react-icons/lu"
 import React, { type PropsWithChildren } from "react"
 import { TbTxt } from "react-icons/tb"
-import { exportNovel } from "~/services/api/api.novel"
+import { exportCloudNovel } from "~/services/api/api.novel"
 import { toaster } from "~/components/ui/toaster"
 import type { Block } from "muvel-api-types"
 import dedent from "dedent"
@@ -27,7 +27,7 @@ const ExportNovelMenu: React.FC<PropsWithChildren & { novelId: string }> = ({
   }
 
   const exportJsonHandler = async () => {
-    const data = await exportNovel(novelId)
+    const data = await exportCloudNovel(novelId)
     const dataString = JSON.stringify(data, null, 2)
     const blob = new Blob([dataString], {
       type: "application/json",
@@ -40,7 +40,7 @@ const ExportNovelMenu: React.FC<PropsWithChildren & { novelId: string }> = ({
   }
 
   const exportTxtHandler = async () => {
-    const data = await exportNovel(novelId)
+    const data = await exportCloudNovel(novelId)
     let txt = dedent`
     # ${data.title}
     ## 개요
