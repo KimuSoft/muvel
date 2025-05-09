@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import type { Block, GetEpisodeResponseDto, ShareType } from "muvel-api-types"
+import type { Block, GetEpisodeResponseDto } from "muvel-api-types"
 import { debounce } from "lodash-es"
 import { getBlocksChange } from "~/features/novel-editor/utils/calculateBlockChanges"
 import { toaster } from "~/components/ui/toaster"

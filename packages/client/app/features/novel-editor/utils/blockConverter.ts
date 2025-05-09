@@ -1,5 +1,5 @@
 import { type Block, BlockType, type PMNodeJSON } from "muvel-api-types"
-import { Schema, type Node as PMNode } from "prosemirror-model"
+import { type Node as PMNode, Schema } from "prosemirror-model"
 
 // ✅ ProseMirror document를 생성하는 함수
 export function blocksToDoc(blocks: Block[], schema: Schema): PMNode {

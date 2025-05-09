@@ -12,16 +12,16 @@ import {
   DialogRoot,
   DialogTitle,
   DialogTrigger,
+  Field,
   Group,
   HStack,
+  Icon,
+  NumberInput,
   Portal,
   RadioCard,
   Stack,
   Text,
   VStack,
-  Icon,
-  NumberInput,
-  Field,
 } from "@chakra-ui/react"
 import { useWidgetOption } from "~/features/novel-editor/widgets/context/WidgetContext" // 경로 수정 필요
 import { GoNumber } from "react-icons/go"
@@ -30,7 +30,6 @@ import { RiLetterSpacing2 } from "react-icons/ri"
 import { BsAlphabet } from "react-icons/bs"
 import { PiParagraphFill } from "react-icons/pi"
 import { IoDocumentTextOutline } from "react-icons/io5"
-import { SiKakaotalk } from "react-icons/si"
 
 // --- 타입 및 Enum 정의 ---
 export enum CountUnit {
