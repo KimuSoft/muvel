@@ -78,14 +78,14 @@ const ShareSelect: React.FC<
       />
 
       <ShareItem
-        value={ShareType.Private}
+        value={ShareType.Unlisted}
         label={"일부 공개"}
         description={"링크로만 공유"}
         icon={<AiOutlineLink />}
       />
 
       <ShareItem
-        value={ShareType.Unlisted}
+        value={ShareType.Private}
         label={"비공개"}
         description={"나만 보기"}
         icon={<AiFillLock />}
