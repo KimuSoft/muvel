@@ -160,7 +160,6 @@ const OptionDrawer: React.FC<{
             <Stack gap={6}>
               <Field.Root>
                 <Field.Label>에디터 조작</Field.Label>
-
                 <Checkbox.Root
                   mt={5}
                   colorPalette="purple"
@@ -178,6 +177,29 @@ const OptionDrawer: React.FC<{
                 <Text color={"gray.500"} fontSize={"sm"}>
                   현재 글쓰는 곳을 화면 중앙으로 이동시킵니다.
                 </Text>
+              </Field.Root>
+              <Field.Root>
+                {option.typewriter && (
+                  <>
+                    <Checkbox.Root
+                      colorPalette="purple"
+                      defaultChecked={option.typewriterStrict}
+                      onCheckedChange={(d) =>
+                        setOption((draft) => {
+                          draft.typewriterStrict = !!d.checked
+                        })
+                      }
+                    >
+                      <Checkbox.HiddenInput />
+                      <Checkbox.Control />
+                      <Checkbox.Label>엄격한 타입라이터</Checkbox.Label>
+                    </Checkbox.Root>
+                    <Text color={"gray.500"} fontSize={"sm"}>
+                      실제 타이핑을 제외한 단순 위치 이동의 타입라이터 스크롤을
+                      방지합니다.
+                    </Text>{" "}
+                  </>
+                )}
               </Field.Root>
 
               {/* 폰트 선택 */}

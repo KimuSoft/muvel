@@ -1,5 +1,6 @@
 import { Plugin } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
+import type { EditorOption } from "~/providers/OptionProvider"
 
 export const typewriterPlugin = new Plugin({
   view() {
@@ -11,7 +12,7 @@ export const typewriterPlugin = new Plugin({
     return {
       update(view: EditorView, prevState) {
         const { state } = view
-        const { selection } = state // selection을 변수로 추출
+        const { selection, doc } = state // selection을 변수로 추출
 
         // 1. selection이 바뀐 경우만 처리
         if (selection.eq(prevState.selection)) return
@@ -22,7 +23,16 @@ export const typewriterPlugin = new Plugin({
 
         // typewriter 옵션이 false이면 아무것도 안 함`
         const options = localStorage.getItem("options")
-        if (options && !JSON.parse(options)?.typewriter) return
+        const parsedOptions = options
+          ? (JSON.parse(options) as EditorOption)
+          : null
+
+        if (!parsedOptions?.typewriter) return
+
+        if (parsedOptions?.typewriterStrict) {
+          // 문서 내용이 바뀌지 않았으면 (단순 커서 이동만 했다면) return
+          if (doc.eq(prevState.doc)) return
+        }
 
         // --- 이하 로직은 selection이 empty일 때만 실행됨 ---
 

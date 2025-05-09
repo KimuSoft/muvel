@@ -13,6 +13,7 @@ export const defaultOption: EditorOption = {
   backgroundColor: null,
   editorMaxWidth: 840,
   typewriter: true,
+  typewriterStrict: false,
 }
 
 export interface EditorOption {
@@ -38,6 +39,8 @@ export interface EditorOption {
   editorMaxWidth: number
   // 타입라이터 스크롤 기능
   typewriter: boolean
+  // 내용 변화가 있을 때만 타입라이터 적용
+  typewriterStrict: boolean
 }
 
 const getOption = (): EditorOption => {
