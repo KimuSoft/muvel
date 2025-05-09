@@ -5,8 +5,8 @@ export interface User {
   admin: boolean
   point: number
   googleDriveId?: number
-  // createdAt: number
-  // updatedAt: number
+  createdAt: string
+  updatedAt: string
 }
 
 export type UserPublicDto = Pick<User, "id" | "username" | "avatar">
@@ -17,4 +17,6 @@ export const sampleUser: User = {
   avatar: "https://example.com/avatar.png",
   admin: false,
   point: 0,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 }

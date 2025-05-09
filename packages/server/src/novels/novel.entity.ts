@@ -15,7 +15,7 @@ import { Novel, ShareType } from "muvel-api-types"
 import { CharacterEntity } from "../characters/character.entity"
 
 @Entity("novel")
-export class NovelEntity implements Novel {
+export class NovelEntity implements Omit<Novel, "createdAt" | "updatedAt"> {
   @PrimaryGeneratedColumn("uuid")
   id: string
 

@@ -1,6 +1,6 @@
-import { BasePermission, Block, Episode } from "../core"
+import { BasePermission, Episode, Novel } from "../core"
 
 export type GetEpisodeResponseDto = Episode & {
   permissions: BasePermission
-  novel: Episode
+  novel: Novel
 }

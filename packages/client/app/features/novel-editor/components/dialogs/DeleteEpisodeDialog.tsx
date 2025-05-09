@@ -5,9 +5,10 @@ import { useNavigate } from "react-router"
 import type { GetNovelResponseDto } from "muvel-api-types"
 import { TbTrash } from "react-icons/tb"
 import { toaster } from "~/components/ui/toaster"
+import type { GetLocalNovelDetailsResponse } from "~/services/tauri/types"
 
 const DeleteEpisodeDialog: React.FC<{
-  novel: GetNovelResponseDto
+  novel: GetNovelResponseDto | GetLocalNovelDetailsResponse
   episodeId: string
 }> = ({ novel, episodeId }) => {
   const navigate = useNavigate()

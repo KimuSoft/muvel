@@ -3,8 +3,8 @@ export interface AiAnalysis {
   overallRating: number
   scores: AiAnalysisScore
   comments: { nickname: string; content: string }[]
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string
+  updatedAt: string
 }
 
 export interface AiAnalysisScore {

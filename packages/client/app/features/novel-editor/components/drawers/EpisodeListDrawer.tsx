@@ -17,16 +17,11 @@ import {
   Spacer,
   Stack,
 } from "@chakra-ui/react"
-import { TbPlus, TbSortAscending, TbSortDescending } from "react-icons/tb"
+import { TbPlus } from "react-icons/tb"
 import SortableEpisodeList, {
   type SortDirection,
 } from "~/components/organisms/SortableEpisodeList"
 import React, { type PropsWithChildren, useEffect } from "react"
-import {
-  createNovelEpisode,
-  getNovel,
-  updateNovelEpisodes,
-} from "~/api/api.novel"
 import type {
   BasePermission,
   EpisodeType,
@@ -40,6 +35,9 @@ import DeleteEpisodeDialog from "~/features/novel-editor/components/dialogs/Dele
 import SortToggleButton from "~/components/atoms/SortToggleButton"
 import EpisodeListLayoutToggleButton from "~/components/atoms/EpisodeListLayoutToggleButton"
 import type { EpisodeItemVariant } from "~/components/molecules/EpisodeItem"
+import { getNovel, updateNovelEpisodes } from "~/services/novelService"
+import type { GetLocalNovelDetailsResponse } from "~/services/tauri/types"
+import { createNovelEpisode } from "~/services/episodeService"
 
 const EpisodeListDrawer: React.FC<
   {
@@ -48,7 +46,9 @@ const EpisodeListDrawer: React.FC<
     permissions: BasePermission
   } & PropsWithChildren
 > = ({ novelId, episodeId, permissions, children }) => {
-  const [novel, setNovel] = React.useState<GetNovelResponseDto | null>(null)
+  const [novel, setNovel] = React.useState<
+    GetNovelResponseDto | GetLocalNovelDetailsResponse | null
+  >(null)
   const [isLoading, setIsLoading] = React.useState(false)
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc")
   const [episodeListLayout, setEpisodeListLayout] =
@@ -56,6 +56,7 @@ const EpisodeListDrawer: React.FC<
 
   const fetchNovel = async () => {
     setIsLoading(true)
+    // TODO: novelId로 조회하면 로컬 최적화가 좋지 않음
     const novel = await getNovel(novelId)
     setNovel(novel)
     setIsLoading(false)

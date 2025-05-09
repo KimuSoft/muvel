@@ -2,7 +2,7 @@ import type { GetEpisodeResponseDto } from "muvel-api-types"
 import FlowEditorTemplate from "~/features/flow-editor/FlowEditorTemplate"
 import React, { useEffect } from "react"
 import { debounce } from "lodash-es"
-import { updateEpisode } from "~/api/api.episode"
+import { updateCloudEpisode } from "~/services/api/api.episode"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 
 const FlowEditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
@@ -12,13 +12,13 @@ const FlowEditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
 
   const debouncedUpdateTitle = debounce(async (title: string) => {
     setSyncState(SyncState.Syncing)
-    await updateEpisode(episode.id, { title })
+    await updateCloudEpisode(episode.id, { title })
     setSyncState(SyncState.Synced)
   }, 1000)
 
   const debouncedUpdateFlow = debounce(async (doc: any) => {
     setSyncState(SyncState.Syncing)
-    await updateEpisode(episode.id, { flowDoc: doc })
+    await updateCloudEpisode(episode.id, { flowDoc: doc })
     setSyncState(SyncState.Synced)
   }, 5000)
 

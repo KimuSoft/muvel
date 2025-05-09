@@ -19,7 +19,7 @@ import { TbCheck } from "react-icons/tb"
 import { SiGooglegemini } from "react-icons/si"
 import type { CreateAiAnalysisRequestBody, User } from "muvel-api-types"
 import ProgressBar from "~/components/atoms/ProgressBar"
-import { getMe } from "~/api/api.user"
+import { getMe } from "~/services/api/api.user"
 import { LuSparkle } from "react-icons/lu"
 
 const AiAnalysisWarningDialog: React.FC<

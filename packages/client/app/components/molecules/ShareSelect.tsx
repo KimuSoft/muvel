@@ -2,6 +2,7 @@ import {
   HStack,
   Icon,
   RadioCard,
+  type RadioCardItemProps,
   type RadioCardRootProps,
   Stack,
   Tag,
@@ -19,14 +20,15 @@ const ShareItem: React.FC<{
   description: string
   icon?: React.ReactNode
   tag?: string
-}> = ({ value, label, description, icon, tag }) => {
+  disabled?: boolean
+}> = ({ value, label, description, icon, tag, disabled }) => {
   const { isTauri } = usePlatform()
 
   return (
     <RadioCard.Item
-      cursor={"pointer"}
       minW={isTauri ? "200px" : "150px"}
       value={value.toString()}
+      disabled={disabled}
     >
       <RadioCard.ItemHiddenInput />
       <RadioCard.ItemControl>
@@ -43,8 +45,7 @@ const ShareItem: React.FC<{
             <HStack>
               <RadioCard.ItemText>{label}</RadioCard.ItemText>
               {tag && (
-                <Tag.Root>
-                  {icon}
+                <Tag.Root colorPalette={"purple"}>
                   <Tag.Label>{tag}</Tag.Label>
                 </Tag.Root>
               )}
@@ -58,7 +59,9 @@ const ShareItem: React.FC<{
   )
 }
 
-const ShareSelect: React.FC<RadioCardRootProps> = ({ ...props }) => {
+const ShareSelect: React.FC<
+  RadioCardRootProps & { disableLocalSelect?: boolean }
+> = ({ disableLocalSelect, ...props }) => {
   const { isTauri } = usePlatform()
 
   return (
@@ -75,14 +78,14 @@ const ShareSelect: React.FC<RadioCardRootProps> = ({ ...props }) => {
       />
 
       <ShareItem
-        value={ShareType.Private}
+        value={ShareType.Unlisted}
         label={"일부 공개"}
         description={"링크로만 공유"}
         icon={<AiOutlineLink />}
       />
 
       <ShareItem
-        value={ShareType.Unlisted}
+        value={ShareType.Private}
         label={"비공개"}
         description={"나만 보기"}
         icon={<AiFillLock />}
@@ -93,7 +96,9 @@ const ShareSelect: React.FC<RadioCardRootProps> = ({ ...props }) => {
           value={ShareType.Local}
           label={"로컬"}
           description={"내 컴퓨터에만 저장"}
+          tag={"데스크톱 버전"}
           icon={<TbFile />}
+          disabled={disableLocalSelect}
         />
       )}
     </RadioCard.Root>

@@ -9,6 +9,11 @@
     "core:default",
     "opener:default",
     "opener:default",
-    "deep-link:default"
+    "deep-link:default",
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "dialog:allow-ask",
+    "dialog:allow-confirm",
+    "dialog:allow-message"
   ]
 }

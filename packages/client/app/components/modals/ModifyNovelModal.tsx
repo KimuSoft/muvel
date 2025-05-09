@@ -29,11 +29,12 @@ import DeleteNovelDialog from "./DeleteNovelDialog"
 import ShareSelect from "~/components/molecules/ShareSelect"
 import ImageUploader from "~/components/molecules/ImageUploader"
 import { useRevalidator } from "react-router"
-import { updateNovel } from "~/api/api.novel"
 import ExportNovelMenu from "~/components/modals/ExportNovelMenu"
+import type { LocalNovelData } from "~/services/tauri/types"
+import { updateNovel } from "~/services/novelService"
 
 const ModifyNovelModal: React.FC<{
-  novel: Novel
+  novel: Novel | LocalNovelData
   onModify?: () => Promise<unknown>
   children: React.ReactNode
 }> = ({ novel, onModify, children }) => {
@@ -46,10 +47,9 @@ const ModifyNovelModal: React.FC<{
     share: string | number
     thumbnail: string | null
   }) => {
-    await updateNovel({
-      id: novel.id,
+    await updateNovel(novel, {
       ...values,
-      share: parseInt(values.share.toString()),
+      share: parseInt(values.share.toString()) as ShareType,
       thumbnail: values.thumbnail || undefined,
     })
     await revalidate()
@@ -122,10 +122,12 @@ const ModifyNovelModal: React.FC<{
                             <Field.Label>공개 범위</Field.Label>
                             <ShareSelect
                               w={"100%"}
+                              disabled={field.value == ShareType.Local}
                               value={field.value}
                               onValueChange={(value) =>
                                 form.setFieldValue("share", value.value)
                               }
+                              disableLocalSelect
                             />
                           </Field.Root>
                         )}
@@ -175,17 +177,19 @@ const ModifyNovelModal: React.FC<{
                       </DeleteNovelDialog>
                     </Tooltip>
 
-                    <ExportNovelMenu novelId={novel.id}>
-                      <Button
-                        aria-label="export novel"
-                        onClick={async () => {}}
-                        colorScheme="blue"
-                        variant="outline"
-                      >
-                        <TbFileExport />
-                        소설 내보내기
-                      </Button>
-                    </ExportNovelMenu>
+                    {novel.share !== ShareType.Local && (
+                      <ExportNovelMenu novelId={novel.id}>
+                        <Button
+                          aria-label="export novel"
+                          onClick={async () => {}}
+                          colorScheme="blue"
+                          variant="outline"
+                        >
+                          <TbFileExport />
+                          소설 내보내기
+                        </Button>
+                      </ExportNovelMenu>
+                    )}
 
                     <Spacer />
                     <Button

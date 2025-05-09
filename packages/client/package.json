@@ -1,7 +1,7 @@
 {
   "name": "client",
   "private": true,
-  "version": "2.2.7",
+  "version": "2.2.8",
   "type": "module",
   "scripts": {
     "build": "react-router build",
@@ -20,6 +20,7 @@
     "@react-router/node": "^7.5.0",
     "@react-router/serve": "^7.5.0",
     "@tauri-apps/api": "^2.5.0",
+    "@tauri-apps/plugin-dialog": "^2.2.1",
     "@tauri-apps/plugin-opener": "^2.2.6",
     "@xyflow/react": "^12.6.0",
     "axios": "^1.8.4",

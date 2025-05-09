@@ -6,35 +6,39 @@ import type {
   Novel,
 } from "muvel-api-types"
 import { api } from "~/utils/api"
+import type { AxiosRequestConfig } from "axios"
 
-export const createNovel = async (
-  dto: Pick<Novel, "title" | "share">,
+export const createCloudNovel = async (
+  dto: Pick<Novel, "title" | "share"> & AxiosRequestConfig<any>,
 ): Promise<Novel> => {
   const { data } = await api.post<Novel>(`novels`, dto)
   return data
 }
 
-export const getNovel = async (id: string): Promise<GetNovelResponseDto> => {
-  const { data } = await api.get<GetNovelResponseDto>(`/novels/${id}`)
+export const getCloudNovel = async (
+  id: string,
+  config?: AxiosRequestConfig<any>,
+): Promise<GetNovelResponseDto> => {
+  const { data } = await api.get<GetNovelResponseDto>(`/novels/${id}`, config)
   return data
 }
 
-export const updateNovel = async ({
-  id,
-  ...dto
-}: Partial<Novel>): Promise<Novel> => {
+export const updateCloudNovel = async (
+  id: string,
+  dto: Partial<Novel>,
+): Promise<Novel> => {
   const { data } = await api.patch<Novel>(`/novels/${id}`, dto)
   return data
 }
 
-export const exportNovel = async (
+export const exportCloudNovel = async (
   id: string,
 ): Promise<ExportNovelResponseDto> => {
   const { data } = await api.get<ExportNovelResponseDto>(`/novels/${id}/export`)
   return data
 }
 
-export const createNovelEpisode = async (
+export const createCloudNovelEpisode = async (
   novelId: string,
   dto: {
     title?: string
@@ -46,7 +50,7 @@ export const createNovelEpisode = async (
   return data
 }
 
-export const updateNovelEpisodes = async (
+export const updateCloudNovelEpisodes = async (
   novelId: string,
   episodeDiffs: ({ id: string } & Partial<Episode>)[],
 ) => {
@@ -54,5 +58,10 @@ export const updateNovelEpisodes = async (
     `/novels/${novelId}/episodes`,
     episodeDiffs,
   )
+  return data
+}
+
+export const deleteCloudNovel = async (id: string) => {
+  const { data } = await api.delete<Novel>(`/novels/${id}`)
   return data
 }

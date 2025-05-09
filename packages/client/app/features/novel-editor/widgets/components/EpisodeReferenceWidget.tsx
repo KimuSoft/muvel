@@ -12,7 +12,6 @@ import {
 } from "@chakra-ui/react"
 import { LuBookMarked } from "react-icons/lu"
 import { toaster } from "~/components/ui/toaster"
-import { getNovel } from "~/api/api.novel"
 import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
 import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap"
 import {
@@ -21,8 +20,9 @@ import {
   WidgetHeader,
   WidgetTitle,
 } from "~/features/novel-editor/widgets/components/WidgetBase"
-import { getEpisodeBlocks } from "~/api/api.episode"
+import { getCloudEpisodeBlocks } from "~/services/api/api.episode"
 import { useOption } from "~/context/OptionContext"
+import { getNovel } from "~/services/novelService"
 
 interface EpisodeSelectItem {
   label: string
@@ -95,7 +95,7 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
     setIsEpisodeLoading(true)
     setError(null)
     try {
-      const blocks = await getEpisodeBlocks(episodeId)
+      const blocks = await getCloudEpisodeBlocks(episodeId)
       const content = blocks.map((block) => block.text || "").join("\n\n")
       setSelectedEpisodeContent(content)
     } catch (err) {

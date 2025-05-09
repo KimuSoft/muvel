@@ -17,6 +17,7 @@ import { FaUser } from "react-icons/fa6"
 import { Tooltip } from "~/components/ui/tooltip"
 import { TbFile, TbLink, TbLock, TbWorld } from "react-icons/tb"
 import { useUser } from "~/context/UserContext"
+import type { LocalNovelData } from "~/services/tauri/types"
 
 const ShareIcon: React.FC<IconProps & { share: ShareType }> = ({
   share,
@@ -44,10 +45,30 @@ const ShareIcon: React.FC<IconProps & { share: ShareType }> = ({
   )
 }
 
-const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
+const NovelItem = forwardRef<HTMLDivElement, { novel: Novel | LocalNovelData }>(
   ({ novel, ...props }, ref) => {
     const navigate = useNavigate()
     const user = useUser()
+
+    const isAuthor = useMemo(() => {
+      if (novel.share === ShareType.Local) {
+        return true
+      }
+      return user?.id === novel.author.id
+    }, [novel, user])
+
+    const shareText = useMemo(() => {
+      switch (novel.share) {
+        case ShareType.Private:
+          return "비공개"
+        case ShareType.Public:
+          return "공개"
+        case ShareType.Unlisted:
+          return "일부 공개"
+        case ShareType.Local:
+          return "로컬"
+      }
+    }, [novel.share])
 
     return (
       <HStack
@@ -99,14 +120,11 @@ const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
           </HStack>
 
           <HStack gap={3}>
-            <Text
-              fontSize="12px"
-              color={user?.id === novel.author.id ? "purple.500" : "gray.500"}
-            >
+            <Text fontSize="12px" color={isAuthor ? "purple.500" : "gray.500"}>
               <Icon display={"inline"} mr={1.5} mb={1}>
                 <FaUser />
               </Icon>
-              {novel.author.username}
+              {novel.author?.username ?? (user?.username || "로컬")}
             </Text>
             <Text fontSize="12px" color={"gray.500"}>
               <ShareIcon
@@ -116,11 +134,7 @@ const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
                 mr={1.5}
                 mb={1}
               />
-              {novel.share === ShareType.Private
-                ? "비공개"
-                : novel.share === ShareType.Public
-                  ? "공개"
-                  : "일부 공개"}
+              {shareText}
             </Text>
           </HStack>
           <Text

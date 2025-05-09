@@ -1,8 +1,7 @@
 import type { Route } from "./+types/novel"
 import NovelDetailTemplate from "~/components/templates/NovelDetailTemplate"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
-import { api } from "~/utils/api"
-import type { GetNovelResponseDto } from "muvel-api-types"
+import { getCloudNovel } from "~/services/api/api.novel"
 
 export function meta({ data }: Route.MetaArgs) {
   if (!data?.novel) {
@@ -29,11 +28,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     throw new Response("Not Found", { status: 404 })
   }
 
-  const { data: novel } = await api.get<GetNovelResponseDto>(`/novels/${id}`, {
-    headers: {
-      cookie, // ✅ SSR 쿠키 인증
-    },
-    withCredentials: true, // ✅ Nest 쪽에서 쿠키 인증 받게
+  const novel = await getCloudNovel(id, {
+    headers: { cookie },
+    withCredentials: true,
   })
 
   return { novel }

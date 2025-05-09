@@ -3,3 +3,9 @@ export interface BasePermission {
   edit: boolean
   delete: boolean
 }
+
+export const masterPermission = {
+  read: true,
+  edit: true,
+  delete: true,
+}

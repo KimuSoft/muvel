@@ -30,7 +30,7 @@ import {
   getAiAnalysis,
   getAvgAiAnalysis,
   type getAvgAiAnalysisResponse,
-} from "~/api/api.episode"
+} from "~/services/api/api.episode"
 import {
   TbAnalyze,
   TbMessage,

@@ -1,9 +1,8 @@
 import type { Route } from "./+types/main"
 import MyNovelsTemplate from "~/components/templates/MyNovelsTemplate"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
-import { api } from "~/utils/api"
-import type { Novel } from "muvel-api-types"
 import { getUserFromRequest } from "~/utils/session.server"
+import { getUserCloudNovels } from "~/services/api/api.user"
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -18,7 +17,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUserFromRequest(request)
   if (!user) return { novels: [] }
 
-  const { data: novels } = await api.get<Novel[]>(`/users/${user.id}/novels`, {
+  const novels = await getUserCloudNovels(user.id, {
     headers: { cookie },
     withCredentials: true,
   })

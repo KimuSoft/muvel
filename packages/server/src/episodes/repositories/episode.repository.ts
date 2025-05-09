@@ -34,7 +34,7 @@ export class EpisodeRepository extends Repository<EpisodeEntity> {
     const episode = this.create({
       title: createEpisodeDto.title,
       episodeType: createEpisodeDto.episodeType,
-      order: order.toString(),
+      order: order,
       novel: { id: novelId },
     })
     await this.save(episode)
@@ -45,7 +45,7 @@ export class EpisodeRepository extends Repository<EpisodeEntity> {
   public async createInitialEpisode() {
     const episode = new EpisodeEntity()
     episode.title = "새 에피소드"
-    episode.order = "1"
+    episode.order = 1
 
     return this.save(episode)
   }

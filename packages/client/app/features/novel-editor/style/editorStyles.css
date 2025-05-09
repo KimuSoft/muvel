@@ -120,3 +120,20 @@
   background-color: rgba(128, 0, 128, 0.6);
   box-shadow: 0 0 0 1px rgba(128, 0, 128, 0.8);
 }
+
+body::-webkit-scrollbar {
+  width: 8px; /* 또는 height: 8px; */
+}
+
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

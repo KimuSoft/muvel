@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect } from "react"
 import type { User } from "muvel-api-types"
-import { getMe } from "~/api/api.user"
+import { getMe } from "~/services/api/api.user"
 import LoadingOverlay from "~/components/templates/LoadingOverlay"
 
 const UserContext = createContext<User | null>(null)

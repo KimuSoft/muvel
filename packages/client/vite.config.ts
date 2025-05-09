@@ -17,7 +17,11 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ["@tauri-apps/api/core", "@tauri-apps/plugin-opener"],
+      external: [
+        "@tauri-apps/api",
+        "@tauri-apps/plugin-opener",
+        "@tauri-apps/plugin-dialog",
+      ],
     },
   },
   define: {

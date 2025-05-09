@@ -95,7 +95,7 @@ export class EpisodesController {
   async getEpisodeBlocks(
     @Request() req: EpisodePermissionRequest,
     @Param() { id }: EpisodeIdParamDto,
-  ): Promise<Block[]> {
+  ) {
     return this.episodesService.findBlocksByEpisodeId(
       id,
       req.episode.permissions,

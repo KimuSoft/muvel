@@ -18,7 +18,7 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   })
 
   const { blockSyncState, initialBlocks, handleDocUpdate } = useBlocksSync({
-    episodeId: initialEpisode.id,
+    episode: initialEpisode,
     canEdit: !!initialEpisode.permissions.edit,
   })
 

@@ -1,8 +1,7 @@
 import { useLoaderData } from "react-router"
 import { api } from "~/utils/api"
-import type { Novel } from "muvel-api-types"
 import MainTemplate from "~/components/templates/MainTemplate"
-import { getMe } from "~/api/api.user"
+import { getMe, getMyRecentNovels } from "~/services/api/api.user"
 
 export async function clientLoader() {
   const { data: userCount } = await api.get<number>(`/users/count`)
@@ -10,7 +9,7 @@ export async function clientLoader() {
   const user = await getMe()
   if (!user) return { novels: [], userCount }
 
-  const { data: novels } = await api.get<Novel[]>(`/users/recent-novels`)
+  const novels = await getMyRecentNovels()
 
   return { novels, userCount }
 }

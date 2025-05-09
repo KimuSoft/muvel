@@ -40,7 +40,7 @@ export class EpisodesService {
     // 소설 총 회차 갱신
     await this.novelsRepository.update(
       { id: novelId },
-      { episodeCount: Math.round(parseFloat(episode.order)) },
+      { episodeCount: Math.round(episode.order) },
     )
 
     return episode
@@ -65,7 +65,7 @@ export class EpisodesService {
       // 에피소드 타입이 에피소드면 회차 수를 줄임
       await this.novelsRepository.update(
         { id: episode.novelId },
-        { episodeCount: Math.round(parseFloat(episode.order)) - 1 },
+        { episodeCount: Math.round(episode.order) - 1 },
       )
     }
 
@@ -109,7 +109,7 @@ export class EpisodesService {
         order: b.order,
         episodeId: episodeId,
         episodeName: episode.title,
-        episodeNumber: parseFloat(episode.order),
+        episodeNumber: episode.order,
         index: b.order,
         novelId: episode.novelId,
       })),

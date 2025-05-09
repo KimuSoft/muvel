@@ -1,15 +1,13 @@
 import MyNovelsTemplate from "~/components/templates/MyNovelsTemplate"
 import { useLoaderData } from "react-router"
-import { api } from "~/utils/api"
-import type { Novel } from "muvel-api-types"
-import { getMe } from "~/api/api.user"
+import { getMe } from "~/services/api/api.user"
+import { getMyNovels } from "~/services/novelService"
 
 export async function clientLoader() {
   const user = await getMe()
   if (!user) return { novels: [] }
 
-  const { data: novels } = await api.get<Novel[]>(`/users/${user.id}/novels`)
-
+  const novels = await getMyNovels(user.id)
   return { novels }
 }
 

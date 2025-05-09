@@ -5,7 +5,7 @@ type EditorOptionPreset = Partial<EditorOption>
 export const muvelMobilePreset: EditorOptionPreset = {
   lineHeight: 1.8,
   fontSize: 18,
-  indent: 1,
+  indent: 0,
   fontWeight: 400,
   fontFamily: `"Pretendard Variable"`,
   color: null,
