@@ -11,12 +11,14 @@ import {
   deleteCloudNovel,
   getCloudNovel,
   updateCloudNovel,
+  updateCloudNovelEpisodes,
 } from "./api/api.novel"
 
 // 개별 함수 임포트 및 별칭 사용으로 변경
 import {
   createLocalNovel as createTauriLocalNovel,
   getLocalNovelDetails as getTauriLocalNovelDetails,
+  updateLocalNovelEpisodes,
   updateLocalNovelMetadata as updateTauriLocalNovelMetadata,
 } from "./tauri/novelStorage"
 import {
@@ -33,10 +35,11 @@ import {
 import type {
   CreateLocalNovelOptions,
   GetLocalNovelDetailsResponse,
+  LocalEpisodeData,
   LocalNovelData,
   UpdateLocalNovelData,
 } from "./tauri/types"
-import { getUserNovels } from "~/services/api/api.user"
+import { getUserCloudNovels } from "~/services/api/api.user"
 
 const IS_TAURI_APP = import.meta.env.VITE_TAURI === "true"
 
@@ -179,7 +182,7 @@ export const getMyNovels = async (
   try {
     // 오프라인이거나 로그인 안 했을 때는 클라우드 소설을 가져오지 않음
     if (navigator.onLine && myId) {
-      cloudNovels = await getUserNovels(myId)
+      cloudNovels = await getUserCloudNovels(myId)
     }
   } catch (error) {
     console.error("Error fetching cloud novels:", error)
@@ -252,4 +255,31 @@ export const openAndRegisterLocalNovel = async (): Promise<
   }
 
   return getNovel(novelId)
+}
+
+/**
+ * 특정 소설에 속한 여러 에피소드들의 정보를 일괄 업데이트합니다. (주로 순서 변경 등)
+ * @param novelInput 업데이트할 에피소드들이 속한 소설의 ID 또는 컨텍스트
+ * @param episodeDiffs 변경할 에피소드 정보 배열. 각 객체는 id와 변경할 필드를 포함합니다.
+ * @returns 업데이트된 에피소드 정보 배열 (클라우드 API의 반환값 따름)
+ */
+export const updateNovelEpisodes = async (
+  novelInput: NovelInput,
+  episodeDiffs: ({ id: string } & Partial<LocalEpisodeData>)[],
+): Promise<Omit<LocalEpisodeData, "blocks">[]> => {
+  // 반환 타입은 클라우드 API와 맞추거나, 로컬의 경우 void 또는 성공 여부
+  const { id: novelId, share: shareTypeToUse } =
+    await resolveNovelContext(novelInput)
+
+  if (shareTypeToUse === ApiShareType.Local) {
+    if (!IS_TAURI_APP) {
+      throw new Error(
+        "로컬 소설의 에피소드 정보 수정은 Tauri 앱 환경에서만 가능합니다.",
+      )
+    }
+
+    return updateLocalNovelEpisodes(novelId, episodeDiffs)
+  } else {
+    return updateCloudNovelEpisodes(novelId, episodeDiffs)
+  }
 }

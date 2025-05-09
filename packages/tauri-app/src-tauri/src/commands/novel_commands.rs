@@ -4,7 +4,8 @@ use std::path::PathBuf;
 use tauri::{command, AppHandle};
 
 use crate::models::{
-    CreateLocalNovelOptions, LocalNovelData, LocalNovelIndexEntry, ShareType,
+    CreateLocalNovelOptions, EpisodeMetadataUpdatePayload, LocalNovelData,
+    LocalNovelDataEpisodesSummary, LocalNovelIndexEntry, ShareType,
     UpdateLocalNovelData as TsUpdateLocalNovelData,
 };
 use crate::storage::{index_manager, novel_io};
@@ -231,6 +232,86 @@ pub fn remove_novel_project_command(app_handle: AppHandle, novel_id: String) -> 
             novel_id
         ))
     }
+}
+
+#[command]
+pub fn update_local_novel_episodes_metadata_command(
+    app_handle: AppHandle,
+    novel_id: String,
+    episode_diffs: Vec<EpisodeMetadataUpdatePayload>,
+) -> Result<Vec<LocalNovelDataEpisodesSummary>, String> {
+    // 업데이트된 에피소드 요약 정보 배열 반환
+    let novel_entry = index_manager::get_novel_entry(&app_handle, &novel_id)?
+        .ok_or_else(|| format!("소설 ID {} 를 인덱스에서 찾을 수 없습니다.", novel_id))?;
+    let novel_root_path_str = novel_entry.path.ok_or_else(|| {
+        format!(
+            "소설 ID {} 에 대한 경로 정보가 인덱스에 없습니다.",
+            novel_id
+        )
+    })?;
+    let novel_root_path = PathBuf::from(novel_root_path_str);
+
+    let mut current_novel_data = novel_io::read_novel_metadata(&novel_root_path)?;
+
+    let mut episodes_updated_overall = false;
+    if let Some(ref mut current_episodes_summary_vec) = current_novel_data.episodes {
+        for diff_item in episode_diffs {
+            let mut individual_episode_updated = false;
+            if let Some(summary_to_update) = current_episodes_summary_vec
+                .iter_mut()
+                .find(|ep_summary| ep_summary.id == diff_item.id)
+            {
+                if let Some(new_title) = diff_item.title {
+                    if summary_to_update.title != new_title {
+                        summary_to_update.title = new_title;
+                        individual_episode_updated = true;
+                    }
+                }
+                if let Some(new_order) = diff_item.order {
+                    if summary_to_update.order != new_order {
+                        summary_to_update.order = new_order;
+                        individual_episode_updated = true;
+                    }
+                }
+                if let Some(new_ep_type) = diff_item.episode_type {
+                    if summary_to_update.episode_type != new_ep_type {
+                        // EpisodeType이 PartialEq를 derive 해야 함
+                        summary_to_update.episode_type = new_ep_type;
+                        individual_episode_updated = true;
+                    }
+                }
+
+                if individual_episode_updated {
+                    summary_to_update.updated_at = Utc::now().to_rfc3339();
+                    episodes_updated_overall = true;
+                }
+            } else {
+                eprintln!(
+                    "Warning: Episode ID {} in diffs not found in novel metadata for novel {}.",
+                    diff_item.id, novel_id
+                );
+            }
+        }
+
+        // 순서(order) 변경이 있었을 수 있으므로, 전체 에피소드 요약 목록을 order 기준으로 재정렬합니다.
+        // 실제로는 order 필드가 변경된 diff_item이 하나라도 있었는지 확인 후 정렬하는 것이 더 효율적입니다.
+        current_episodes_summary_vec.sort_by_key(|ep_summary| ep_summary.order);
+    } else {
+        if !episode_diffs.is_empty() {
+            return Err(format!(
+                "소설 ID {} 에는 업데이트할 에피소드 목록이 없습니다. (.muvl 파일 확인 필요)",
+                novel_id
+            ));
+        }
+    }
+
+    if episodes_updated_overall {
+        current_novel_data.updated_at = Utc::now().to_rfc3339();
+    }
+
+    novel_io::write_novel_metadata(&novel_root_path, &current_novel_data)?;
+
+    Ok(current_novel_data.episodes.unwrap_or_else(Vec::new))
 }
 
 /// 새로운 UUID를 생성하여 반환합니다.

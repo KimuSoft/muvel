@@ -24,7 +24,7 @@ export const getMyRecentNovels = async (config?: AxiosRequestConfig<any>) => {
   return data
 }
 
-export const getUserNovels = async (
+export const getUserCloudNovels = async (
   userId: string,
   config?: AxiosRequestConfig<any>,
 ) => {

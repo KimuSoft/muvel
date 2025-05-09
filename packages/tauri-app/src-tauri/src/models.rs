@@ -219,3 +219,19 @@ pub struct LocalNovelDataEpisodesSummary {
     #[serde(rename = "updatedAt")]
     pub updated_at: String,
 }
+
+#[derive(serde::Deserialize, Debug, Clone)]
+pub struct EpisodeMetadataUpdatePayload {
+    pub id: String, // 업데이트할 에피소드의 ID는 필수
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+    #[serde(rename = "episodeType")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub episode_type: Option<EpisodeType>, // models.rs에 정의된 EpisodeType enum
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub order: Option<i32>,
+    // 여기에 LocalNovelDataEpisodesSummary에 있는 다른 필드 중 업데이트 가능한 것 추가 가능
+    // 예: contentLength (프론트에서 계산해서 보내준다면)
+    // description, authorComment 등은 .mvle 파일에 있으므로, 이 커맨드에서는 직접 다루지 않음
+    // (만약 .muvl의 요약 정보에도 해당 필드가 있다면 추가 가능)
+}

@@ -4,7 +4,7 @@ import { api } from "~/utils/api"
 import type { Novel } from "muvel-api-types"
 import { getUserFromRequest } from "~/utils/session.server"
 import MainTemplate from "~/components/templates/MainTemplate"
-import { getUserCount, getUserNovels } from "~/services/api/api.user"
+import { getUserCount, getUserCloudNovels } from "~/services/api/api.user"
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -20,7 +20,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUserFromRequest(request)
   if (!user) return { novels: [], userCount }
 
-  const novels = await getUserNovels(user.id, {
+  const novels = await getUserCloudNovels(user.id, {
     headers: { cookie },
     withCredentials: true,
   })

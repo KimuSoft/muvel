@@ -22,17 +22,14 @@ import SortableEpisodeList, {
 import ModifyNovelModal from "~/components/modals/ModifyNovelModal"
 import { FaList } from "react-icons/fa6"
 import BlockLink from "~/components/atoms/BlockLink"
-import {
-  createCloudNovelEpisode,
-  updateCloudNovelEpisodes,
-} from "~/services/api/api.novel"
 import type { ReorderedEpisode } from "~/utils/reorderEpisode"
 import { toaster } from "~/components/ui/toaster"
 import SortToggleButton from "~/components/atoms/SortToggleButton"
 import EpisodeListLayoutToggleButton from "~/components/atoms/EpisodeListLayoutToggleButton"
 import type { EpisodeItemVariant } from "~/components/molecules/EpisodeItem"
 import type { GetLocalNovelDetailsResponse } from "~/services/tauri/types"
-import { updateNovel } from "~/services/novelService"
+import { updateNovel, updateNovelEpisodes } from "~/services/novelService"
+import { createNovelEpisode } from "~/services/episodeService"
 
 const NovelDetailTemplate: React.FC<{
   novel: GetNovelResponseDto | GetLocalNovelDetailsResponse
@@ -46,13 +43,13 @@ const NovelDetailTemplate: React.FC<{
 
   const handleCreateEpisode = async () => {
     setIsEpisodesLoading(true)
-    const episode = await createCloudNovelEpisode(novel.id)
+    const episode = await createNovelEpisode(novel.id, {})
     navigate(`/episodes/${episode.id}`)
   }
 
   const handleReorderEpisode = async (episodes: ReorderedEpisode[]) => {
     setIsEpisodesLoading(true)
-    await updateCloudNovelEpisodes(
+    await updateNovelEpisodes(
       novel.id,
       episodes
         .filter((e) => e.isReordered)

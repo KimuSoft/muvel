@@ -4,6 +4,7 @@ import { masterPermission, type Novel as ApiNovel } from "muvel-api-types" // AP
 import type {
   CreateLocalNovelOptions,
   GetLocalNovelDetailsResponse,
+  LocalEpisodeData,
   LocalNovelData,
   UpdateLocalNovelData,
 } from "./types"
@@ -13,6 +14,8 @@ import type {
 const CMD_CREATE_LOCAL_NOVEL = `create_local_novel_command`
 const CMD_GET_LOCAL_NOVEL_DETAILS = `get_local_novel_details_command`
 const CMD_UPDATE_LOCAL_NOVEL_METADATA = `update_local_novel_metadata_command`
+const CMD_UPDATE_LOCAL_NOVEL_EPISODES_METADATA = `update_local_novel_episodes_metadata_command`
+
 // 실제 파일/폴더 삭제는 indexStorage의 removeNovelDataAndFromIndex가 담당 (Rust 내부에서 처리)
 const CMD_GENERATE_UUID = `generate_uuid_command`
 
@@ -82,10 +85,28 @@ export const updateLocalNovelMetadata = async (
   }
 }
 
-/**
- * Rust를 통해 새 UUID를 생성합니다.
- */
-export const generateNewUuid = async (): Promise<string> => {
+export const updateLocalNovelEpisodes = async (
+  novelId: string,
+  episodeDiffs: ({ id: string } & Partial<LocalEpisodeData>)[],
+): Promise<Omit<LocalEpisodeData, "blocks">[]> => {
   const { invoke } = await getCoreApi()
-  return invoke<string>(CMD_GENERATE_UUID)
+  try {
+    // Rust 커맨드는 novelId와 episodeDiffs를 받고,
+    // 업데이트된 에피소드 요약 정보 (Omit<LocalEpisodeData, "blocks">[]와 호환되는) 배열을 반환해야 합니다.
+    // Rust 쪽에서는 이 diff를 받아 .muvl 파일 내 episodesSummary (또는 episodes) 배열을 업데이트합니다.
+    const updatedEpisodeSummaries = await invoke<
+      Omit<LocalEpisodeData, "blocks">[]
+    >(
+      CMD_UPDATE_LOCAL_NOVEL_EPISODES_METADATA,
+      { novelId, episodeDiffs }, // Rust 커맨드에 전달할 인자 객체
+    )
+    return updatedEpisodeSummaries
+  } catch (error) {
+    console.error(
+      `Error updating local novel episodes metadata for novel ${novelId}:`,
+      error,
+    )
+    // 에러를 다시 던져 상위 서비스(novelService)에서 처리하거나, 여기서 특정 기본값을 반환할 수 있습니다.
+    throw error
+  }
 }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import type { Block } from "muvel-api-types"
+import type { Block, GetEpisodeResponseDto, ShareType } from "muvel-api-types"
 import { debounce } from "lodash-es"
 import { getBlocksChange } from "~/features/novel-editor/utils/calculateBlockChanges"
 import { toaster } from "~/components/ui/toaster"
@@ -12,7 +12,7 @@ import { Node as PMNode } from "prosemirror-model"
 import { docToBlocks } from "~/features/novel-editor/utils/blockConverter"
 
 interface UseBlocksSyncProps {
-  episodeId: string
+  episode: GetEpisodeResponseDto
   canEdit: boolean
 }
 
@@ -24,7 +24,7 @@ interface UseBlocksSyncReturn {
 }
 
 export function useBlocksSync({
-  episodeId,
+  episode,
   canEdit,
 }: UseBlocksSyncProps): UseBlocksSyncReturn {
   const [initialBlocks, setBlocks] = useState<Block[] | null>(null)
@@ -36,7 +36,7 @@ export function useBlocksSync({
 
   useEffect(() => {
     // episodeId가 없을 경우 초기화 및 로딩 중단
-    if (!episodeId) {
+    if (!episode.id) {
       setIsLoadingBlocks(false)
       setBlocks([])
       originalBlocksRef.current = []
@@ -50,7 +50,7 @@ export function useBlocksSync({
     originalBlocksRef.current = null
     setBlockSyncState(SyncState.Syncing)
 
-    getCloudEpisodeBlocks(episodeId)
+    getCloudEpisodeBlocks(episode.id)
       .then((fetchedBlocks) => {
         if (isMounted) {
           setBlocks(fetchedBlocks)
@@ -79,7 +79,7 @@ export function useBlocksSync({
     return () => {
       isMounted = false
     }
-  }, [episodeId])
+  }, [episode.id])
 
   const actualSaveBlocks = useCallback(
     async (doc: PMNode) => {
@@ -104,7 +104,7 @@ export function useBlocksSync({
       setBlockSyncState(SyncState.Syncing)
       try {
         // API 함수 이름 충돌을 피하기 위해 apiUpdateEpisodeBlocks 사용
-        await apiUpdateEpisodeBlocks(episodeId, changes)
+        await apiUpdateEpisodeBlocks(episode.id, changes)
         originalBlocksRef.current = [...newBlocks]
         // setBlocks([...newBlocks]); // 이미 handleBlocksUpdate에서 UI 상태는 업데이트됨
         setBlockSyncState(SyncState.Synced)
@@ -117,7 +117,7 @@ export function useBlocksSync({
         setBlockSyncState(SyncState.Error)
       }
     },
-    [canEdit, episodeId, blockSyncState],
+    [canEdit, episode.id, blockSyncState],
   )
 
   useEffect(() => {

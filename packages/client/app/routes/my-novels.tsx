@@ -2,7 +2,7 @@ import type { Route } from "./+types/main"
 import MyNovelsTemplate from "~/components/templates/MyNovelsTemplate"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { getUserFromRequest } from "~/utils/session.server"
-import { getUserNovels } from "~/services/api/api.user"
+import { getUserCloudNovels } from "~/services/api/api.user"
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -17,7 +17,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUserFromRequest(request)
   if (!user) return { novels: [] }
 
-  const novels = await getUserNovels(user.id, {
+  const novels = await getUserCloudNovels(user.id, {
     headers: { cookie },
     withCredentials: true,
   })
