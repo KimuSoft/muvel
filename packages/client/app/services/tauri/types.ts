@@ -47,9 +47,9 @@ export interface CreateLocalEpisodeOptions
 }
 
 export type UpdateLocalEpisodeMetadata = Partial<
-  Pick<
+  Omit<
     ApiEpisode,
-    "title" | "description" | "authorComment" | "episodeType" | "order"
+    "id" | "novelId" | "contentLength" | "createdAt" | "updatedAt"
   >
 >
 

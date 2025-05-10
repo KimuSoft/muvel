@@ -7,12 +7,17 @@ import {
   Heading,
   HStack,
   Image,
+  type MenuSelectionDetails,
   Spacer,
   Text,
   VStack,
 } from "@chakra-ui/react"
 import Header from "../organisms/Header"
-import { type GetNovelResponseDto, ShareType } from "muvel-api-types"
+import {
+  EpisodeType,
+  type GetNovelResponseDto,
+  ShareType,
+} from "muvel-api-types"
 import { TbEdit, TbPencilPlus, TbPlayerPlay, TbShare } from "react-icons/tb"
 import NovelTagList from "../organisms/NovelTagList"
 import { useNavigate, useRevalidator } from "react-router"
@@ -30,6 +35,7 @@ import type { EpisodeItemVariant } from "~/components/molecules/EpisodeItem"
 import type { GetLocalNovelDetailsResponse } from "~/services/tauri/types"
 import { updateNovel, updateNovelEpisodes } from "~/services/novelService"
 import { createNovelEpisode } from "~/services/episodeService"
+import CreateEpisodeMenu from "~/features/novel-editor/components/menus/CreateEpisodeMenu"
 
 const NovelDetailTemplate: React.FC<{
   novel: GetNovelResponseDto | GetLocalNovelDetailsResponse
@@ -41,9 +47,10 @@ const NovelDetailTemplate: React.FC<{
   const [episodeListLayout, setEpisodeListLayout] =
     React.useState<EpisodeItemVariant>("detail")
 
-  const handleCreateEpisode = async () => {
-    setIsEpisodesLoading(true)
-    const episode = await createNovelEpisode(novel.id, {})
+  const handleCreateEpisode = async (detail: MenuSelectionDetails) => {
+    const episode = await createNovelEpisode(novel.id, {
+      episodeType: parseInt(detail.value) as EpisodeType,
+    })
     navigate(`/episodes/${episode.id}`)
   }
 
@@ -224,17 +231,18 @@ const NovelDetailTemplate: React.FC<{
             />
           </HStack>
           {novel.permissions.edit ? (
-            <Button
-              colorPalette={"purple"}
-              gap={3}
-              rounded={{ base: "full", md: 5 }}
-              size={"sm"}
-              loading={isEpisodesLoading}
-              onClick={handleCreateEpisode}
-            >
-              <TbPencilPlus />
-              <Box display={{ base: "none", md: "block" }}>새 편 쓰기</Box>
-            </Button>
+            <CreateEpisodeMenu onSelect={handleCreateEpisode}>
+              <Button
+                colorPalette={"purple"}
+                gap={3}
+                rounded={{ base: "full", md: 5 }}
+                size={"sm"}
+                loading={isEpisodesLoading}
+              >
+                <TbPencilPlus />
+                <Box display={{ base: "none", md: "block" }}>새 편 쓰기</Box>
+              </Button>
+            </CreateEpisodeMenu>
           ) : null}
         </HStack>
         <SortableEpisodeList

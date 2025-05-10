@@ -4,12 +4,10 @@ import { debounce } from "lodash-es"
 import { getBlocksChange } from "~/features/novel-editor/utils/calculateBlockChanges"
 import { toaster } from "~/components/ui/toaster"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
-import {
-  getCloudEpisodeBlocks,
-  updateCloudEpisodeBlocks as apiUpdateEpisodeBlocks,
-} from "~/services/api/api.episode"
+import { updateCloudEpisodeBlocks as apiUpdateEpisodeBlocks } from "~/services/api/api.episode"
 import { Node as PMNode } from "prosemirror-model"
 import { docToBlocks } from "~/features/novel-editor/utils/blockConverter"
+import { getEpisodeBlocks } from "~/services/episodeService"
 
 interface UseBlocksSyncProps {
   episode: GetEpisodeResponseDto
@@ -50,7 +48,7 @@ export function useBlocksSync({
     originalBlocksRef.current = null
     setBlockSyncState(SyncState.Syncing)
 
-    getCloudEpisodeBlocks(episode.id)
+    getEpisodeBlocks(episode)
       .then((fetchedBlocks) => {
         if (isMounted) {
           setBlocks(fetchedBlocks)

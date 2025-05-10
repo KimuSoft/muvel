@@ -20,9 +20,9 @@ import {
   WidgetHeader,
   WidgetTitle,
 } from "~/features/novel-editor/widgets/components/WidgetBase"
-import { getCloudEpisodeBlocks } from "~/services/api/api.episode"
 import { useOption } from "~/context/OptionContext"
 import { getNovel } from "~/services/novelService"
+import { getEpisodeBlocks } from "~/services/episodeService"
 
 interface EpisodeSelectItem {
   label: string
@@ -95,7 +95,8 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
     setIsEpisodeLoading(true)
     setError(null)
     try {
-      const blocks = await getCloudEpisodeBlocks(episodeId)
+      // TODO: EditorContext에서 share와 novelId를 내려주는 방식으로 최적화해야 함
+      const blocks = await getEpisodeBlocks(episodeId)
       const content = blocks.map((block) => block.text || "").join("\n\n")
       setSelectedEpisodeContent(content)
     } catch (err) {

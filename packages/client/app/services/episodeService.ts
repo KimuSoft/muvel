@@ -131,7 +131,7 @@ export const createNovelEpisode = async (
       episodeType: options.episodeType,
       order: options.order,
     }
-    return createCloudNovelEpisode(parentNovelId, episodeDataForCloud)
+    return createCloudNovelEpisode(parentNovelId, options)
   }
 }
 

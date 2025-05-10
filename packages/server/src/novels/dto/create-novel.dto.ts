@@ -1,8 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { IsEnum, IsOptional, IsString } from "class-validator"
-import { ShareType } from "muvel-api-types"
+import { CreateNovelRequestDto, ShareType } from "muvel-api-types"
 
-export class CreateNovelDto {
+export class CreateNovelDto implements CreateNovelRequestDto {
   @ApiProperty()
   @IsString()
   title: string
@@ -21,3 +21,8 @@ export class CreateNovelDto {
   @IsOptional()
   share: ShareType = ShareType.Private
 }
+
+// 타입 정합성 검사를 위한 코드
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _ =
+  {} as Required<CreateNovelDto> satisfies Required<CreateNovelRequestDto>
