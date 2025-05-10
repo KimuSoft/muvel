@@ -32,6 +32,6 @@ export default function Main() {
   if (!user) {
     return <InfoTemplate userCount={userCount} />
   } else {
-    return <MainTemplate novels={novels} userCount={userCount} />
+    return <MainTemplate novels={novels} />
   }
 }

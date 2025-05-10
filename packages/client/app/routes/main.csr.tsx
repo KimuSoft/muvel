@@ -23,5 +23,5 @@ export async function clientLoader() {
 export default function Main() {
   const { novels, userCount } = useLoaderData<typeof clientLoader>()
 
-  return <MainTemplate novels={novels || []} userCount={userCount} />
+  return <MainTemplate novels={novels || []} />
 }

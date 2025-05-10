@@ -1,19 +1,9 @@
-// src-tauri/src/commands/novel_image_commands.rs (또는 적절한 위치)
-
 use std::fs;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use tauri::{command, AppHandle};
 use uuid::Uuid;
 
-// 프로젝트의 index_manager 모듈을 사용합니다.
-// 이 모듈은 novel_id를 기반으로 소설의 루트 경로를 가져오는 기능을 제공해야 합니다.
-// 예시: use crate::storage::index_manager;
-// 아래 코드는 crate::storage::index_manager::get_novel_entry 함수가 존재하고,
-// NovelIndexEntry 구조체에 path 필드(Option<String>)가 있다고 가정합니다.
-// 실제 프로젝트 구조에 맞게 경로와 함수 호출을 수정해야 합니다.
-
-// novel_io.rs 에서 정의된 디렉토리 이름을 참고할 수 있습니다.
 const RESOURCES_DIRNAME: &str = "resources";
 const IMAGES_SUBDIR_IN_RESOURCES: &str = "images";
 
@@ -34,9 +24,6 @@ pub fn save_image_to_novel_resources_command(
     original_file_name: String,
     file_bytes: Vec<u8>,
 ) -> Result<String, String> {
-    // 1. novel_id를 사용하여 소설 프로젝트의 루트 경로를 가져옵니다.
-    //    `crate::storage::index_manager::get_novel_entry`는 예시이며,
-    //    실제 프로젝트의 인덱스 관리자 함수를 사용해야 합니다.
     let novel_entry = crate::storage::index_manager::get_novel_entry(&app_handle, &novel_id)
         .map_err(|e| format!("소설 인덱스 조회 실패 (ID: {}): {}", novel_id, e))?
         .ok_or_else(|| {
@@ -108,21 +95,3 @@ pub fn save_image_to_novel_resources_command(
             )
         })
 }
-
-// main.rs의 .setup 또는 .invoke_handler에 커맨드를 등록해야 합니다.
-// 예시:
-// fn main() {
-//     // ... 다른 모듈 use
-//     mod commands { // commands 모듈이 분리되어 있다면
-//         pub mod novel_image_commands;
-//         // ... other command modules
-//     }
-
-//     tauri::Builder::default()
-//         .invoke_handler(tauri::generate_handler![
-//             commands::novel_image_commands::save_image_to_novel_resources_command,
-//             // ... other commands
-//         ])
-//         .run(tauri::generate_context!())
-//         .expect("error while running tauri application");
-// }

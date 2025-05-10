@@ -62,11 +62,11 @@ export const useImageUpload = ({
               )
 
               // 절대 경로를 웹뷰에서 사용 가능한 URL로 변환
-              const assetUrl = convertFileSrc(absolutePath)
-              onUploaded(assetUrl) // 변환된 URL 콜백
+              // const assetUrl = convertFileSrc(absolutePath)
+              onUploaded(absolutePath) // 변환된 URL 콜백
               toaster.success({
                 title: "로컬 저장 완료",
-                description: `이미지가 소설 리소스에 저장되었습니다. 경로: ${assetUrl}`,
+                description: `이미지가 저장되었습니다!`,
               })
             } else {
               console.error("FileReader did not return ArrayBuffer.")

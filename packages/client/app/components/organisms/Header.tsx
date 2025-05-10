@@ -42,7 +42,7 @@ const Header: React.FC<{ logo?: boolean; nonWide?: boolean } & CenterProps> = ({
             </BlockLink>
             <Tag.Root>
               {envIcon}
-              <Tag.Label>{import.meta.env.VITE_APP_VERSION}</Tag.Label>
+              <Tag.Label ml={1}>v{import.meta.env.VITE_APP_VERSION}</Tag.Label>
             </Tag.Root>
           </>
         ) : null}
