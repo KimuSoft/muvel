@@ -1,7 +1,7 @@
 use chrono::Utc;
 use slug::slugify;
 use std::path::PathBuf;
-use tauri::{command, AppHandle};
+use tauri::{command, AppHandle, Manager};
 
 use crate::models::{
     CreateLocalNovelOptions, EpisodeMetadataUpdatePayload, LocalNovelData,
@@ -22,7 +22,16 @@ pub fn create_local_novel_command(
     let novel_id = Uuid::new_v4().to_string();
 
     // 2. 실제 소설 프로젝트가 저장될 루트 경로 구성
-    let mut novel_root_path = PathBuf::from(&options.target_directory_path);
+    let mut novel_root_path: PathBuf = if let Some(path_str) = &options.target_directory_path {
+        PathBuf::from(path_str)
+    } else {
+        app_handle
+            .path()
+            .app_local_data_dir()
+            .map(|p| p.join("novels"))
+            .expect("app_local_data_dir must be available")
+    };
+
     let novel_folder_name = slugify(&options.title);
     novel_root_path.push(novel_folder_name); // 예: /Users/Me/MyNovels/여신이 되어버린 이야기!
 

@@ -154,7 +154,7 @@ pub struct LocalEpisodeData {
 pub struct CreateLocalNovelOptions {
     pub title: String,
     #[serde(rename = "targetDirectoryPath")]
-    pub target_directory_path: String,
+    pub target_directory_path: Option<String>,
 }
 
 // TypeScript의 UpdateLocalNovelData에 대응

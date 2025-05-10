@@ -41,6 +41,7 @@ import type {
   LocalNovelData,
 } from "./tauri/types"
 import { getUserCloudNovels } from "~/services/api/api.user"
+import { checkIsMobileView } from "~/hooks/usePlatform"
 
 const IS_TAURI_APP = import.meta.env.VITE_TAURI === "true"
 
@@ -50,6 +51,8 @@ export interface NovelIdentifierContext {
   share?: ApiShareType // share 타입은 선택적으로 포함될 수 있음
 }
 export type NovelInput = string | NovelIdentifierContext
+
+const isMobile = checkIsMobileView()
 
 /**
  * 새로운 소설을 생성합니다.
@@ -63,10 +66,13 @@ export const createNovel = async (
     if (!IS_TAURI_APP) {
       throw new Error("로컬 소설 생성은 Tauri 앱 환경에서만 가능합니다.")
     }
-    const targetDirectoryPath =
-      await openTauriFolderDialog("소설 프로젝트 생성")
-    if (!targetDirectoryPath) {
-      throw new Error("소설 생성이 취소되었습니다 (저장 폴더 미선택).")
+    let targetDirectoryPath: string | null = null
+
+    if (!isMobile) {
+      targetDirectoryPath = await openTauriFolderDialog("소설 프로젝트 생성")
+      if (!targetDirectoryPath) {
+        throw new Error("소설 생성이 취소되었습니다 (저장 폴더 미선택).")
+      }
     }
     const tauriCreateOptions: CreateLocalNovelOptions = {
       title,

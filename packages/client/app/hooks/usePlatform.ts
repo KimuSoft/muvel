@@ -1,4 +1,22 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+
+const checkAndroidWebView = () => {
+  const ua = navigator.userAgent || ""
+  const isAndroid = ua.includes("Android")
+  const isWebView = ua.includes("wv") || ua.includes("Version/")
+  return isAndroid && isWebView
+}
+
+const checkIOSWebView = () => {
+  const ua = navigator.userAgent || ""
+  const isIOS = /iPad|iPhone|iPod/.test(ua)
+  const isSafari = /Safari/.test(ua)
+  const isStandalone = (navigator as any).standalone === true
+  return isIOS && !isSafari && !isStandalone
+}
+
+export const checkIsMobileView = () =>
+  checkAndroidWebView() || checkIOSWebView()
 
 export const usePlatform = () => {
   const isClient = typeof window !== "undefined"
@@ -7,6 +25,9 @@ export const usePlatform = () => {
   const isWeb = isClient && !isTauri
 
   const [isOnline, setIsOnline] = useState(isClient ? navigator.onLine : true)
+
+  const isAndroid = useMemo(() => checkAndroidWebView(), [])
+  const isIOS = useMemo(() => checkIOSWebView(), [])
 
   useEffect(() => {
     if (!isClient) return
@@ -30,5 +51,8 @@ export const usePlatform = () => {
     isWeb,
     isOnline,
     isOffline: !isOnline,
+    isAndroid,
+    isIOS,
+    isMobile: isAndroid || isIOS,
   }
 }

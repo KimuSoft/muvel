@@ -36,7 +36,8 @@ export interface GetLocalNovelDetailsResponse extends LocalNovelData {
 }
 
 export interface CreateLocalNovelOptions extends CreateNovelRequestDto {
-  targetDirectoryPath: string
+  // null인 경우 기본 경로에 저장
+  targetDirectoryPath: string | null
 }
 
 export type UpdateLocalEpisodeBlocksData = ApiBlock[]
