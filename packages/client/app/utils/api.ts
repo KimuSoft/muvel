@@ -7,7 +7,7 @@ console.info(
 const api = axios.create({
   baseURL:
     (typeof window === "undefined"
-      ? process.env.VITE_API_BASE
+      ? process.env.API_PROXY
       : import.meta.env.VITE_API_BASE) || "/api",
   withCredentials: import.meta.env.VITE_TAURI != "true",
 })

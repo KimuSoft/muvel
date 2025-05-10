@@ -15,6 +15,7 @@ export const getMe = async (config?: AxiosRequestConfig<any>) => {
 }
 
 export const getUserCount = async () => {
+  console.log("BASE_URL", api.defaults.baseURL)
   const { data } = await api.get<number>("/users/count")
   return data
 }
