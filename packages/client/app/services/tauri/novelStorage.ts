@@ -1,12 +1,15 @@
 // app/services/tauri/novelStorage.ts
 import { getCoreApi } from "./tauriApiProvider"
-import { masterPermission, type Novel as ApiNovel } from "muvel-api-types" // API DTO 타입
+import {
+  masterPermission,
+  type Novel as ApiNovel,
+  type UpdateNovelRequestDto,
+} from "muvel-api-types" // API DTO 타입
 import type {
   CreateLocalNovelOptions,
   GetLocalNovelDetailsResponse,
   LocalEpisodeData,
   LocalNovelData,
-  UpdateLocalNovelData,
 } from "./types"
 // removeNovelDataAndFromIndex는 indexStorage로 이동했으므로 여기서 직접 사용 안 함
 
@@ -69,7 +72,7 @@ export const getLocalNovelDetails = async (
  */
 export const updateLocalNovelMetadata = async (
   novelId: string,
-  data: UpdateLocalNovelData,
+  data: UpdateNovelRequestDto,
 ): Promise<ApiNovel> => {
   const { invoke } = await getCoreApi()
   try {
@@ -94,13 +97,10 @@ export const updateLocalNovelEpisodes = async (
     // Rust 커맨드는 novelId와 episodeDiffs를 받고,
     // 업데이트된 에피소드 요약 정보 (Omit<LocalEpisodeData, "blocks">[]와 호환되는) 배열을 반환해야 합니다.
     // Rust 쪽에서는 이 diff를 받아 .muvl 파일 내 episodesSummary (또는 episodes) 배열을 업데이트합니다.
-    const updatedEpisodeSummaries = await invoke<
-      Omit<LocalEpisodeData, "blocks">[]
-    >(
+    return await invoke<Omit<LocalEpisodeData, "blocks">[]>(
       CMD_UPDATE_LOCAL_NOVEL_EPISODES_METADATA,
       { novelId, episodeDiffs }, // Rust 커맨드에 전달할 인자 객체
     )
-    return updatedEpisodeSummaries
   } catch (error) {
     console.error(
       `Error updating local novel episodes metadata for novel ${novelId}:`,

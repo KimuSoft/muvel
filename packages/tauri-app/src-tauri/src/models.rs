@@ -129,7 +129,7 @@ pub struct LocalEpisodeData {
     pub content_length: Option<i32>,
     #[serde(rename = "episodeType")]
     pub episode_type: EpisodeType,
-    pub order: i32, // 정수형 순서
+    pub order: f32, // 실수형 순서
 
     #[serde(rename = "flowDoc")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -173,15 +173,13 @@ pub struct UpdateLocalNovelData {
 // TypeScript의 CreateLocalEpisodeOptions에 대응
 #[derive(Deserialize, Debug)]
 pub struct CreateLocalEpisodeOptions {
-    #[serde(rename = "novelId")]
-    pub novel_id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
     #[serde(rename = "episodeType")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub episode_type: Option<EpisodeType>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub order: Option<i32>,
+    pub order: Option<f32>,
 }
 
 // TypeScript의 UpdateLocalEpisodeMetadata에 대응
@@ -198,7 +196,7 @@ pub struct UpdateLocalEpisodeMetadata {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub episode_type: Option<EpisodeType>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub order: Option<i32>,
+    pub order: Option<f32>,
 }
 
 // TypeScript의 UpdateLocalEpisodeBlocksData에 대응 (Block 구조체 배열)
@@ -208,7 +206,7 @@ pub type UpdateLocalEpisodeBlocksData = Vec<Block>;
 pub struct LocalNovelDataEpisodesSummary {
     pub id: String,
     pub title: String,
-    pub order: i32,
+    pub order: f32,
     #[serde(rename = "episodeType")]
     pub episode_type: EpisodeType,
     #[serde(rename = "contentLength")]
@@ -229,7 +227,7 @@ pub struct EpisodeMetadataUpdatePayload {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub episode_type: Option<EpisodeType>, // models.rs에 정의된 EpisodeType enum
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub order: Option<i32>,
+    pub order: Option<f32>,
     // 여기에 LocalNovelDataEpisodesSummary에 있는 다른 필드 중 업데이트 가능한 것 추가 가능
     // 예: contentLength (프론트에서 계산해서 보내준다면)
     // description, authorComment 등은 .mvle 파일에 있으므로, 이 커맨드에서는 직접 다루지 않음
@@ -270,7 +268,7 @@ pub struct LocalEpisodeDataResponse {
     pub content_length: Option<i32>,
     #[serde(rename = "episodeType")]
     pub episode_type: EpisodeType,
-    pub order: i32,
+    pub order: f32,
     #[serde(rename = "flowDoc")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub flow_doc: Option<serde_json::Value>,

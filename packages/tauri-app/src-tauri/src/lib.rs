@@ -1,9 +1,9 @@
-use tauri_plugin_deep_link::DeepLinkExt;
 use commands::*;
+use tauri_plugin_deep_link::DeepLinkExt;
 
-mod storage;
-mod models;
 mod commands;
+mod models;
+mod storage;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -29,22 +29,27 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             // 보안 관련 명령어
             wait_for_token,
-
             // 글꼴 관련 명령어
             get_system_font_families,
             get_fonts_by_family,
-
             // 소설 인덱싱 관련 명령어
             get_all_local_novel_entries_command,
             get_local_novel_entry_command,
             register_novel_from_path_command,
             remove_novel_project_command,
-
             // 소설 관련 명령어
             create_local_novel_command,
             get_local_novel_details_command,
             update_local_novel_metadata_command,
             generate_uuid_command,
+            update_local_novel_episodes_metadata_command,
+            // 에피소드 관련 명령어
+            create_local_episode_command,
+            get_local_episode_data_command,
+            update_local_episode_blocks_command,
+            update_local_episode_metadata_command,
+            delete_local_episode_command,
+            list_local_episode_summaries_command
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

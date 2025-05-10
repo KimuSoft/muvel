@@ -1,4 +1,4 @@
-import { BlockType, LegacyBlockType } from "../enums"
+import { BlockType } from "../enums"
 import { BlockAttrs, PMNodeJSON } from "../editor"
 
 export interface Block {

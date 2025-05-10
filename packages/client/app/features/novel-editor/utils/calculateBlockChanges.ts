@@ -1,11 +1,5 @@
 import { isEqual, keyBy } from "lodash-es"
-import type { Block } from "muvel-api-types"
-
-export type BlockChange =
-  | (Block & {
-      isDeleted?: boolean
-    })
-  | { id: string; isDeleted: true }
+import type { Block, BlockChange } from "muvel-api-types"
 
 export const getBlocksChange = (
   previous: Block[],

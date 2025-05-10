@@ -14,11 +14,12 @@ use crate::storage::{episode_io, index_manager, item_index_manager, novel_io};
 
 /// 새로운 로컬 에피소드를 생성하고, 부모 소설의 메타데이터(.muvl)도 업데이트하며,
 /// 아이템-소설 ID 맵에도 등록합니다.
+/// `order` 관련 로직이 f32를 사용하도록 수정되었습니다.
 #[command]
 pub fn create_local_episode_command(
     app_handle: AppHandle,
     novel_id: String,
-    options: RustCreateLocalEpisodeOptions,
+    options: RustCreateLocalEpisodeOptions, // 이 구조체의 order 필드가 Option<f32>라고 가정
 ) -> Result<LocalEpisodeDataResponse, String> {
     // 반환 타입을 LocalEpisodeDataResponse로 명시
     let novel_entry = index_manager::get_novel_entry(&app_handle, &novel_id)?
@@ -35,41 +36,47 @@ pub fn create_local_episode_command(
     let current_time_iso = chrono::Utc::now().to_rfc3339();
     let mut novel_data = novel_io::read_novel_metadata(&novel_root_path)?;
 
-    let new_order = options.order.unwrap_or_else(|| {
-        novel_data
-            .episodes
-            .as_ref()
-            .map_or(1, |eps| eps.iter().map(|e| e.order).max().unwrap_or(0) + 1)
+    // order를 f32로 처리합니다.
+    // RustCreateLocalEpisodeOptions.order가 Option<f32>라고 가정합니다.
+    // LocalNovelDataEpisodesSummary.order가 f32라고 가정합니다.
+    let new_order: f32 = options.order.unwrap_or_else(|| {
+        novel_data.episodes.as_ref().map_or(1.0, |eps| {
+            eps.iter()
+                    .map(|e| e.order) // e.order가 f32라고 가정
+                    .fold(0.0_f32, f32::max) // f32::max를 사용하여 최대값을 찾습니다.
+                    + 1.0
+        })
     });
 
     // 1. 파일에 저장될 순수 LocalEpisodeData 생성 (novel 컨텍스트 없음)
+    // LocalEpisodeData.order가 f32라고 가정합니다.
     let episode_data_for_file = LocalEpisodeData {
         id: episode_id.clone(),
         novel_id: novel_id.clone(),
         title: options
             .title
-            .clone() // Option<String>이므로 clone 필요
-            .unwrap_or_else(|| format!("새 에피소드 {}", new_order)),
-        description: None,    // options에서 받을 수 있도록 models.rs 수정 가능
-        author_comment: None, // options에서 받을 수 있도록 models.rs 수정 가능
+            .clone()
+            .unwrap_or_else(|| format!("새 에피소드 {}", new_order)), // new_order는 f32
+        description: None,
+        author_comment: None,
         content_length: Some(0),
-        episode_type: options.episode_type.clone().unwrap_or(EpisodeType::Episode), // Option<EpisodeType> clone
-        order: new_order,
+        episode_type: options.episode_type.clone().unwrap_or(EpisodeType::Episode),
+        order: new_order, // f32 값 할당
         flow_doc: None,
         created_at: current_time_iso.clone(),
         updated_at: current_time_iso.clone(),
         blocks: Vec::new(),
-        // novel 필드는 여기에 포함하지 않음
     };
 
     // 2. 생성된 LocalEpisodeData를 .mvle 파일에 저장
     episode_io::write_episode_content(&novel_root_path, &episode_id, &episode_data_for_file)?;
 
     // 3. 부모 소설의 메타데이터(.muvl)에 새 에피소드 요약 정보 추가/업데이트
+    // LocalNovelDataEpisodesSummary.order가 f32라고 가정합니다.
     let episode_summary_for_novel = LocalNovelDataEpisodesSummary {
         id: episode_id.clone(),
         title: episode_data_for_file.title.clone(),
-        order: episode_data_for_file.order,
+        order: episode_data_for_file.order, // f32 값 할당
         episode_type: episode_data_for_file.episode_type.clone(),
         content_length: episode_data_for_file.content_length,
         created_at: episode_data_for_file.created_at.clone(),
@@ -78,7 +85,12 @@ pub fn create_local_episode_command(
 
     if let Some(ref mut episodes_summary_vec) = novel_data.episodes {
         episodes_summary_vec.push(episode_summary_for_novel);
-        episodes_summary_vec.sort_by_key(|e| e.order);
+        // f32 정렬을 위해 sort_by와 partial_cmp 사용
+        episodes_summary_vec.sort_by(|a, b| {
+            a.order
+                .partial_cmp(&b.order)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
     } else {
         novel_data.episodes = Some(vec![episode_summary_for_novel]);
     }
@@ -94,6 +106,7 @@ pub fn create_local_episode_command(
     )?;
 
     // 5. 프론트엔드에 반환할 LocalEpisodeDataResponse 생성 (novel 컨텍스트 포함)
+    // LocalEpisodeDataResponse.order가 f32라고 가정합니다.
     let response_data = LocalEpisodeDataResponse {
         id: episode_data_for_file.id,
         novel_id: episode_data_for_file.novel_id,
@@ -102,13 +115,13 @@ pub fn create_local_episode_command(
         author_comment: episode_data_for_file.author_comment,
         content_length: episode_data_for_file.content_length,
         episode_type: episode_data_for_file.episode_type,
-        order: episode_data_for_file.order,
+        order: episode_data_for_file.order, // f32 값 할당
         flow_doc: episode_data_for_file.flow_doc,
         created_at: episode_data_for_file.created_at,
         updated_at: episode_data_for_file.updated_at,
         blocks: episode_data_for_file.blocks,
         novel: EpisodeParentNovelContext {
-            id: novel_id.clone(), // novel_id는 이미 함수 인자로 있음
+            id: novel_id.clone(),
             share: novel_data.share.clone(),
             title: Some(novel_data.title.clone()),
         },
@@ -118,13 +131,13 @@ pub fn create_local_episode_command(
 }
 
 /// 특정 로컬 에피소드의 전체 데이터(메타데이터 + 블록 + 부모 소설 컨텍스트)를 가져옵니다.
+/// `order` 필드는 f32로 처리됩니다.
 #[command]
 pub fn get_local_episode_data_command(
     app_handle: AppHandle,
     episode_id: String,
 ) -> Result<LocalEpisodeDataResponse, String> {
-    // 1. item_index_manager를 사용하여 episode_id로부터 부모 novel_id를 가져옵니다.
-    let parent_novel_id = item_index_manager::get_novel_id_for_item(&app_handle, &episode_id)? // parent_novel_id 변수에 할당
+    let parent_novel_id = item_index_manager::get_novel_id_for_item(&app_handle, &episode_id)?
         .ok_or_else(|| {
             format!(
                 "아이템 인덱스에서 에피소드 ID {} 에 대한 부모 소설 정보를 찾을 수 없습니다.",
@@ -132,10 +145,8 @@ pub fn get_local_episode_data_command(
             )
         })?;
 
-    // 2. novel_id를 사용하여 index_manager에서 소설 루트 경로를 가져옵니다.
     let novel_entry =
         index_manager::get_novel_entry(&app_handle, &parent_novel_id)?.ok_or_else(|| {
-            // parent_novel_id 사용
             format!(
                 "소설 ID {} 를 인덱스에서 찾을 수 없습니다 (에피소드 {} 조회 중).",
                 parent_novel_id, episode_id
@@ -149,29 +160,26 @@ pub fn get_local_episode_data_command(
     })?;
     let novel_root_path = PathBuf::from(novel_root_path_str);
 
-    // 3. 부모 소설의 메타데이터를 읽어 novel 컨텍스트 정보를 준비합니다.
     let parent_novel_meta = novel_io::read_novel_metadata(&novel_root_path)?;
-
-    // 4. episode_io를 사용하여 실제 에피소드 파일(.mvle) 내용을 읽습니다.
-    //    이때 read_episode_content는 LocalEpisodeData (novel 필드 없는 순수 에피소드 데이터)를 반환합니다.
+    // LocalEpisodeData.order가 f32라고 가정합니다.
     let episode_data_core = episode_io::read_episode_content(&novel_root_path, &episode_id)?;
 
-    // 5. 최종 LocalEpisodeDataResponse 객체를 구성하면서 novel 필드를 채웁니다.
+    // LocalEpisodeDataResponse.order가 f32라고 가정합니다.
     let full_episode_data_response = LocalEpisodeDataResponse {
         id: episode_data_core.id,
-        novel_id: parent_novel_id.clone(), // 찾은 부모 novel_id
+        novel_id: parent_novel_id.clone(),
         title: episode_data_core.title,
         description: episode_data_core.description,
         author_comment: episode_data_core.author_comment,
         content_length: episode_data_core.content_length,
         episode_type: episode_data_core.episode_type,
-        order: episode_data_core.order,
+        order: episode_data_core.order, // f32 값
         flow_doc: episode_data_core.flow_doc,
         created_at: episode_data_core.created_at,
         updated_at: episode_data_core.updated_at,
         blocks: episode_data_core.blocks,
         novel: EpisodeParentNovelContext {
-            id: parent_novel_id.clone(), // novel_id 변수 사용
+            id: parent_novel_id.clone(),
             share: parent_novel_meta.share,
             title: Some(parent_novel_meta.title),
         },
@@ -204,23 +212,24 @@ pub fn update_local_episode_blocks_command(
     })?;
     let novel_root_path = PathBuf::from(novel_root_path_str);
 
-    // episode_io::read_episode_content는 LocalEpisodeData (novel 필드 없는) 타입을 반환해야 함
+    // LocalEpisodeData.order가 f32라고 가정합니다.
     let mut episode_data_for_file =
         episode_io::read_episode_content(&novel_root_path, &episode_id)?;
     episode_data_for_file.blocks = blocks;
     episode_data_for_file.updated_at = chrono::Utc::now().to_rfc3339();
     // TODO: episode_data_for_file.content_length 업데이트 로직 (blocks 기반으로 계산)
-    // TODO: 부모 소설 .muvl의 해당 에피소드 요약 정보(updated_at, contentLength)도 업데이트 필요 (별도 함수 또는 이 함수 확장)
+    // TODO: 부모 소설 .muvl의 해당 에피소드 요약 정보(updated_at, contentLength)도 업데이트 필요
 
     episode_io::write_episode_content(&novel_root_path, &episode_id, &episode_data_for_file)
 }
 
 /// 특정 로컬 에피소드의 메타데이터를 업데이트합니다. (주로 .muvl 파일 내 정보)
+/// `order` 관련 로직이 f32를 사용하도록 수정되었습니다.
 #[command]
 pub fn update_local_episode_metadata_command(
     app_handle: AppHandle,
     episode_id: String,
-    metadata: RustUpdateLocalEpisodeMetadata,
+    metadata: RustUpdateLocalEpisodeMetadata, // 이 구조체의 order 필드가 Option<f32>라고 가정
 ) -> Result<LocalNovelDataEpisodesSummary, String> {
     let novel_id = item_index_manager::get_novel_id_for_item(&app_handle, &episode_id)?
         .ok_or_else(|| {
@@ -244,25 +253,29 @@ pub fn update_local_episode_metadata_command(
     let mut episodes_updated_overall = false;
 
     if let Some(ref mut episodes_summary_vec) = novel_data.episodes {
+        // LocalNovelDataEpisodesSummary.order가 f32라고 가정합니다.
         if let Some(ep_summary) = episodes_summary_vec.iter_mut().find(|e| e.id == episode_id) {
             let mut individual_episode_updated = false;
+            // metadata.order가 Option<f32>라고 가정합니다.
             if let Some(title) = metadata.title {
-                // metadata는 RustUpdateLocalEpisodeMetadata 타입
                 if ep_summary.title != title {
                     ep_summary.title = title;
                     individual_episode_updated = true;
                 }
             }
-            if let Some(order) = metadata.order {
-                if ep_summary.order != order {
-                    ep_summary.order = order;
+            if let Some(order_val) = metadata.order {
+                // order_val은 f32
+                // f32 비교 시에는 근사값을 고려해야 할 수 있으나, 여기서는 직접 비교합니다.
+                // 필요하다면 작은 epsilon 값을 사용한 비교를 고려할 수 있습니다.
+                // (예: (ep_summary.order - order_val).abs() > f32::EPSILON)
+                // 하지만 순서 값의 경우 보통 정확한 값이 할당되므로 직접 비교도 괜찮을 수 있습니다.
+                if ep_summary.order != order_val {
+                    ep_summary.order = order_val;
                     individual_episode_updated = true;
                 }
             }
             if let Some(ep_type) = metadata.episode_type {
-                // metadata.episode_type은 Option<EpisodeType>
                 if ep_summary.episode_type != ep_type {
-                    // EpisodeType이 PartialEq를 derive 해야 함
                     ep_summary.episode_type = ep_type;
                     individual_episode_updated = true;
                 }
@@ -273,6 +286,7 @@ pub fn update_local_episode_metadata_command(
                 updated_summary = Some(ep_summary.clone());
                 episodes_updated_overall = true;
             } else {
+                // 변경 사항이 없더라도 현재 요약 정보를 반환하기 위해 설정
                 updated_summary = Some(ep_summary.clone());
             }
         } else {
@@ -281,8 +295,15 @@ pub fn update_local_episode_metadata_command(
                 episode_id
             ));
         }
+
+        // order 값이 변경되었을 경우에만 정렬 수행
         if episodes_updated_overall && metadata.order.is_some() {
-            episodes_summary_vec.sort_by_key(|e| e.order);
+            // f32 정렬을 위해 sort_by와 partial_cmp 사용
+            episodes_summary_vec.sort_by(|a, b| {
+                a.order
+                    .partial_cmp(&b.order)
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            });
         }
     } else {
         return Err(format!("소설 ID {} 에 에피소드 목록이 없습니다.", novel_id));
@@ -293,7 +314,15 @@ pub fn update_local_episode_metadata_command(
         novel_io::write_novel_metadata(&novel_root_path, &novel_data)?;
     }
 
-    updated_summary.ok_or_else(|| "에피소드 메타데이터 업데이트 후 요약 정보를 가져올 수 없습니다. 변경사항이 없었을 수 있습니다.".to_string())
+    updated_summary.ok_or_else(|| {
+        // 이 경우는 individual_episode_updated가 false이고, episodes_summary_vec에서 해당 에피소드를 찾았지만,
+        // updated_summary가 None으로 남는 논리적 경로가 없도록 위에서 수정했습니다.
+        // 만약 에피소드를 찾지 못했다면 이미 위에서 Err가 반환됩니다.
+        // 따라서 "변경사항이 없었을 수 있습니다" 보다 구체적인 에러 또는 정상 반환이 됩니다.
+        // 만약 updated_summary가 None이라면, 위의 로직에서 에피소드를 찾지 못했거나 하는 다른 문제가 발생했을 가능성이 있습니다.
+        // 하지만 현재 로직상으로는 updated_summary는 항상 Some 값을 가지게 됩니다 (에피소드를 찾았다면).
+        "에피소드 메타데이터 업데이트 후 요약 정보를 가져오는 데 실패했습니다. 해당 에피소드를 찾지 못했을 수 있습니다.".to_string()
+    })
 }
 
 /// 특정 로컬 에피소드 파일(.mvle) 및 관련 메타데이터(.muvl 내 정보)를 삭제합니다.
@@ -337,6 +366,7 @@ pub fn delete_local_episode_command(
             index_manager::upsert_novel_entry(&app_handle, novel_id.clone(), entry_to_update)?;
         }
     } else {
+        // 에피소드 파일은 삭제 시도했지만, 메타데이터에는 해당 에피소드가 없었던 경우 경고 출력
         println!("Warning: Episode {} was not found in novel metadata (novel: {}), but its .mvle file deletion was attempted.", episode_id, novel_data.title);
     }
 
@@ -346,11 +376,13 @@ pub fn delete_local_episode_command(
 }
 
 /// 특정 로컬 소설에 속한 모든 에피소드의 요약 정보 목록을 가져옵니다.
+/// `order` 필드는 f32로 처리됩니다.
 #[command]
 pub fn list_local_episode_summaries_command(
     app_handle: AppHandle,
     novel_id: String,
 ) -> Result<Vec<LocalNovelDataEpisodesSummary>, String> {
+    // LocalNovelDataEpisodesSummary.order가 f32라고 가정합니다.
     let novel_entry = index_manager::get_novel_entry(&app_handle, &novel_id)?
         .ok_or_else(|| format!("소설 ID {} 를 인덱스에서 찾을 수 없습니다.", novel_id))?;
     let novel_root_path_str = novel_entry.path.ok_or_else(|| {

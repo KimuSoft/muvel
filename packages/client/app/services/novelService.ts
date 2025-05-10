@@ -1,9 +1,11 @@
 // app/services/novelService.ts
 
 import {
+  type CreateNovelRequestDto,
   type GetNovelResponseDto,
   type Novel as ApiNovel,
   ShareType as ApiShareType,
+  type UpdateNovelRequestDto,
 } from "muvel-api-types"
 // 개별 함수 임포트 및 별칭 사용으로 변경
 import {
@@ -22,10 +24,10 @@ import {
   updateLocalNovelMetadata as updateTauriLocalNovelMetadata,
 } from "./tauri/novelStorage"
 import {
+  deleteLocalNovel as removeTauriNovelDataAndFromIndex,
   getAllLocalNovelEntries as getAllTauriLocalNovelEntries,
   getLocalNovelEntry as getTauriLocalNovelEntry,
   registerNovelFromPath as registerTauriNovelFromPath,
-  deleteLocalNovel as removeTauriNovelDataAndFromIndex,
 } from "./tauri/indexStorage"
 import {
   openFileDialog as openTauriFileDialog,
@@ -37,7 +39,6 @@ import type {
   GetLocalNovelDetailsResponse,
   LocalEpisodeData,
   LocalNovelData,
-  UpdateLocalNovelData,
 } from "./tauri/types"
 import { getUserCloudNovels } from "~/services/api/api.user"
 
@@ -54,7 +55,7 @@ export type NovelInput = string | NovelIdentifierContext
  * 새로운 소설을 생성합니다.
  */
 export const createNovel = async (
-  options: Pick<ApiNovel, "title" | "share">,
+  options: CreateNovelRequestDto,
 ): Promise<ApiNovel | LocalNovelData> => {
   const { title, share } = options
 
@@ -135,7 +136,7 @@ const resolveNovelContext = async (
  */
 export const updateNovel = async (
   novelInput: NovelInput,
-  patchData: UpdateLocalNovelData,
+  patchData: UpdateNovelRequestDto,
 ): Promise<ApiNovel | LocalNovelData> => {
   const { id: novelId, share: shareTypeToUse } =
     await resolveNovelContext(novelInput)

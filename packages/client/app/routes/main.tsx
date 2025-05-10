@@ -1,10 +1,8 @@
 import type { Route } from "./+types/main"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
-import { api } from "~/utils/api"
-import type { Novel } from "muvel-api-types"
 import { getUserFromRequest } from "~/utils/session.server"
 import MainTemplate from "~/components/templates/MainTemplate"
-import { getUserCount, getUserCloudNovels } from "~/services/api/api.user"
+import { getUserCloudNovels, getUserCount } from "~/services/api/api.user"
 
 export function meta({}: Route.MetaArgs) {
   return [

@@ -4,10 +4,12 @@ import { debounce } from "lodash-es"
 import { getBlocksChange } from "~/features/novel-editor/utils/calculateBlockChanges"
 import { toaster } from "~/components/ui/toaster"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
-import { updateCloudEpisodeBlocks as apiUpdateEpisodeBlocks } from "~/services/api/api.episode"
 import { Node as PMNode } from "prosemirror-model"
 import { docToBlocks } from "~/features/novel-editor/utils/blockConverter"
-import { getEpisodeBlocks } from "~/services/episodeService"
+import {
+  getEpisodeBlocks,
+  updateEpisodeBlocks,
+} from "~/services/episodeService"
 
 interface UseBlocksSyncProps {
   episode: GetEpisodeResponseDto
@@ -102,7 +104,7 @@ export function useBlocksSync({
       setBlockSyncState(SyncState.Syncing)
       try {
         // API 함수 이름 충돌을 피하기 위해 apiUpdateEpisodeBlocks 사용
-        await apiUpdateEpisodeBlocks(episode.id, changes)
+        await updateEpisodeBlocks(episode, changes)
         originalBlocksRef.current = [...newBlocks]
         // setBlocks([...newBlocks]); // 이미 handleBlocksUpdate에서 UI 상태는 업데이트됨
         setBlockSyncState(SyncState.Synced)

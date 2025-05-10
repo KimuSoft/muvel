@@ -295,7 +295,7 @@ pub fn update_local_novel_episodes_metadata_command(
 
         // 순서(order) 변경이 있었을 수 있으므로, 전체 에피소드 요약 목록을 order 기준으로 재정렬합니다.
         // 실제로는 order 필드가 변경된 diff_item이 하나라도 있었는지 확인 후 정렬하는 것이 더 효율적입니다.
-        current_episodes_summary_vec.sort_by_key(|ep_summary| ep_summary.order);
+        current_episodes_summary_vec.sort_by(|a, b| a.order.partial_cmp(&b.order).unwrap());
     } else {
         if !episode_diffs.is_empty() {
             return Err(format!(

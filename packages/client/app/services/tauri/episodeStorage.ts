@@ -1,12 +1,13 @@
 // app/services/tauri/episodeStorage.ts
 import { getCoreApi } from "./tauriApiProvider"
-import type { Episode as ApiEpisode } from "muvel-api-types"
-import type {
-  CreateLocalEpisodeOptions,
-  LocalEpisodeData,
-  UpdateLocalEpisodeBlocksData,
-  UpdateLocalEpisodeMetadata,
-} from "./types"
+import {
+  type BlockChange,
+  type CreateEpisodeBodyDto,
+  type Episode as ApiEpisode,
+  type UpdateEpisodeBodyDto,
+  masterPermission,
+} from "muvel-api-types"
+import type { GetLocalEpisodeResponse } from "./types"
 
 const RUST_CMD_PREFIX = "storage_plugin:"
 
@@ -22,18 +23,20 @@ const CMD_LIST_LOCAL_EPISODE_SUMMARIES = `list_local_episode_summaries_command` 
  * 새로운 로컬 에피소드 생성을 Rust에 요청합니다.
  * Rust는 .mvle 파일을 생성하고, 부모 소설의 .muvl 파일 내 에피소드 목록도 업데이트합니다.
  */
-export const createLocalEpisode = async (
-  options: CreateLocalEpisodeOptions,
+export const createLocalNovelEpisode = async (
+  novelId: string,
+  options: CreateEpisodeBodyDto,
 ): Promise<ApiEpisode> => {
   const { invoke } = await getCoreApi()
   try {
+    console.log(novelId, options)
     // Rust는 새 episodeId 생성, 파일 생성, 부모 .muvl 업데이트 후 새 ApiEpisode 호환 객체 반환
-    return await invoke<ApiEpisode>(CMD_CREATE_LOCAL_EPISODE, { options })
+    return await invoke<ApiEpisode>(CMD_CREATE_LOCAL_EPISODE, {
+      novelId,
+      options,
+    })
   } catch (error) {
-    console.error(
-      `Error creating local episode for novel ${options.novelId}:`,
-      error,
-    )
+    console.error(`Error creating local episode for novel ${novelId}:`, error)
     throw error
   }
 }
@@ -43,16 +46,20 @@ export const createLocalEpisode = async (
  * @param episodeId 조회할 에피소드의 UUID
  * @returns 에피소드 데이터 (LocalEpisodeData 또는 ApiEpisode + blocks 형태)
  */
-export const getLocalEpisodeData = async (
+export const getLocalEpisodeById = async (
   episodeId: string,
-): Promise<LocalEpisodeData> => {
+): Promise<GetLocalEpisodeResponse> => {
   const { invoke } = await getCoreApi()
   try {
-    // Rust는 episodeId로 부모 novelId 찾고 -> 경로 찾고 -> .mvle 파일 읽어서 반환
-    // LocalEpisodeData는 { ...ApiEpisode, blocks: ApiBlock[] } 형태일 수 있음
-    return await invoke<LocalEpisodeData>(CMD_GET_LOCAL_EPISODE_DATA, {
-      episodeId,
-    })
+    const episode = await invoke<GetLocalEpisodeResponse>(
+      CMD_GET_LOCAL_EPISODE_DATA,
+      { episodeId },
+    )
+
+    return {
+      ...episode,
+      permissions: masterPermission,
+    }
   } catch (error) {
     console.error(`Error fetching local episode data for ${episodeId}:`, error)
     throw error
@@ -66,7 +73,7 @@ export const getLocalEpisodeData = async (
  */
 export const updateLocalEpisodeBlocks = async (
   episodeId: string,
-  blocks: UpdateLocalEpisodeBlocksData,
+  blocks: BlockChange[],
 ): Promise<void> => {
   const { invoke } = await getCoreApi()
   try {
@@ -90,7 +97,7 @@ export const updateLocalEpisodeBlocks = async (
  */
 export const updateLocalEpisodeMetadata = async (
   episodeId: string,
-  metadata: UpdateLocalEpisodeMetadata,
+  metadata: UpdateEpisodeBodyDto,
 ): Promise<ApiEpisode | void> => {
   const { invoke } = await getCoreApi()
   try {
