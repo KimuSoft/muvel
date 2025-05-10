@@ -19,11 +19,11 @@ const CsrRoutes = [
   route("my-novels", "routes/my-novels.csr.tsx"),
   route("novels/:id", "routes/novel.csr.tsx"),
   route("episodes/:id", "routes/episode.csr.tsx"),
+  route("info", "routes/info.csr.tsx"),
 
   // SSR 공통
   route("privacy-policy", "routes/privacy-policy.tsx"),
   route("terms-of-use", "routes/terms-of-use.tsx"),
-  route("info", "routes/info.tsx"),
 ] satisfies RouteConfig
 
 // export default CsrRoutes
