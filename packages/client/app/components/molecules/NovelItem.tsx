@@ -66,7 +66,7 @@ const NovelItem = forwardRef<HTMLDivElement, { novel: Novel | LocalNovelData }>(
         case ShareType.Unlisted:
           return "일부 공개"
         case ShareType.Local:
-          return "로컬"
+          return "로컬 소설"
       }
     }, [novel.share])
 
@@ -120,13 +120,24 @@ const NovelItem = forwardRef<HTMLDivElement, { novel: Novel | LocalNovelData }>(
           </HStack>
 
           <HStack gap={3}>
-            <Text fontSize="12px" color={isAuthor ? "purple.500" : "gray.500"}>
-              <Icon display={"inline"} mr={1.5} mb={1}>
-                <FaUser />
-              </Icon>
-              {novel.author?.username ?? (user?.username || "로컬")}
-            </Text>
-            <Text fontSize="12px" color={"gray.500"}>
+            {!!novel.author && (
+              <Text
+                fontSize="12px"
+                color={isAuthor ? "purple.500" : "gray.500"}
+              >
+                <Icon display={"inline"} mr={1.5} mb={1}>
+                  <FaUser />
+                </Icon>
+                {user?.username}
+              </Text>
+            )}
+
+            <Text
+              fontSize="12px"
+              color={
+                novel.share === ShareType.Local ? "purple.500" : "gray.500"
+              }
+            >
               <ShareIcon
                 share={novel.share}
                 display={"inline"}
