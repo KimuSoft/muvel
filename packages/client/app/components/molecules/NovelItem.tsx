@@ -5,7 +5,6 @@ import {
   HStack,
   Icon,
   type IconProps,
-  Image,
   Spacer,
   Tag,
   Text,
@@ -18,6 +17,7 @@ import { Tooltip } from "~/components/ui/tooltip"
 import { TbFile, TbLink, TbLock, TbWorld } from "react-icons/tb"
 import { useUser } from "~/context/UserContext"
 import type { LocalNovelData } from "~/services/tauri/types"
+import Kimuage from "~/components/molecules/Kimuage"
 
 const ShareIcon: React.FC<IconProps & { share: ShareType }> = ({
   share,
@@ -95,17 +95,15 @@ const NovelItem = forwardRef<HTMLDivElement, { novel: Novel | LocalNovelData }>(
           }}
           overflow={"hidden"}
         >
-          <Image
+          <Kimuage
             w={"100%"}
             h={"100%"}
             transition="all 0.3s ease"
             _groupHover={{ w: "130%", h: "130%" }}
             bgColor={{ base: "gray.200", _dark: "gray.800" }}
-            src={
-              novel.thumbnail
-                ? `${novel.thumbnail}/thumbnail?width=100`
-                : "/cover.png"
-            }
+            isThumbnail
+            src={novel.thumbnail}
+            thumbnailWidth={100}
             backgroundRepeat={"no-repeat"}
             backgroundSize={"cover"}
             backgroundPosition={"center"}

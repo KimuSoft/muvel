@@ -1,6 +1,13 @@
 import React, { useMemo } from "react"
-import { Center, Image, type ImageProps, Skeleton } from "@chakra-ui/react"
+import {
+  Center,
+  Icon,
+  Image,
+  type ImageProps,
+  Skeleton,
+} from "@chakra-ui/react"
 import { TbPhotoOff } from "react-icons/tb"
+import { FaBookOpen } from "react-icons/fa6"
 
 const Kimuage: React.FC<
   ImageProps & {
@@ -9,6 +16,9 @@ const Kimuage: React.FC<
   }
 > = ({ src, isThumbnail, thumbnailWidth, ...props }) => {
   const image = useMemo(() => {
+    // 키뮈지 이미지 서버 URL이 아닌 경우
+    if (!src?.toString().includes("image.kimustory.net")) return src
+
     let i = src + (isThumbnail ? "/thumbnail" : "/view")
     if (thumbnailWidth) {
       i += `?width=${thumbnailWidth}`
@@ -19,16 +29,17 @@ const Kimuage: React.FC<
 
   const [loaded, setLoaded] = React.useState(false)
 
+  // if (!loaded)
+  //   return <Skeleton w={"100%"} h={"150px"} {...props} />
+
   return src ? (
-    <Skeleton loading={!loaded} flexShrink={0}>
-      <Image
-        src={image}
-        fit={"cover"}
-        w={"100%"}
-        onLoad={() => setLoaded(true)}
-        {...props}
-      />
-    </Skeleton>
+    <Image
+      src={image}
+      fit={"cover"}
+      w={"100%"}
+      onLoad={() => setLoaded(true)}
+      {...props}
+    />
   ) : (
     <Center
       w={"100%"}
@@ -36,7 +47,15 @@ const Kimuage: React.FC<
       bgColor={{ base: "gray.800", _light: "gray.100" }}
       {...props}
     >
-      <TbPhotoOff color={"gray"} size={32} />
+      <Icon
+        color={{
+          base: "white",
+          _dark: "gray.700",
+        }}
+        fontSize={"4xl"}
+      >
+        <FaBookOpen />
+      </Icon>
     </Center>
   )
 }

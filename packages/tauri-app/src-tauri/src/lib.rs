@@ -43,13 +43,16 @@ pub fn run() {
             update_local_novel_metadata_command,
             generate_uuid_command,
             update_local_novel_episodes_metadata_command,
+            open_novel_project_folder_command,
             // 에피소드 관련 명령어
             create_local_episode_command,
             get_local_episode_data_command,
             update_local_episode_blocks_command,
             update_local_episode_metadata_command,
             delete_local_episode_command,
-            list_local_episode_summaries_command
+            list_local_episode_summaries_command,
+            // 이미지 리소스 관련 명령어
+            save_image_to_novel_resources_command
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

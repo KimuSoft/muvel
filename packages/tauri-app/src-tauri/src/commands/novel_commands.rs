@@ -1,6 +1,7 @@
 use chrono::Utc;
 use slug::slugify;
 use std::path::PathBuf;
+use std::process::Command;
 use tauri::{command, AppHandle, Manager};
 
 use crate::models::{
@@ -328,4 +329,70 @@ pub fn update_local_novel_episodes_metadata_command(
 #[command]
 pub fn generate_uuid_command() -> Result<String, String> {
     Ok(Uuid::new_v4().to_string())
+}
+
+#[command]
+pub fn open_novel_project_folder_command(
+    app_handle: AppHandle,
+    novel_id: String,
+) -> Result<(), String> {
+    // 1. novel_id를 사용하여 소설 프로젝트의 루트 경로를 가져옵니다.
+    let novel_entry = crate::storage::index_manager::get_novel_entry(&app_handle, &novel_id)
+        .map_err(|e| format!("소설 인덱스 조회 실패 (ID: {}): {}", novel_id, e))?
+        .ok_or_else(|| {
+            format!(
+                "소설 ID '{}'에 해당하는 프로젝트를 찾을 수 없습니다.",
+                novel_id
+            )
+        })?;
+
+    let novel_root_path_str = novel_entry.path.ok_or_else(|| {
+        format!(
+            "소설 ID '{}'의 프로젝트 경로가 인덱스에 설정되지 않았습니다.",
+            novel_id
+        )
+    })?;
+
+    let novel_root_path = PathBuf::from(&novel_root_path_str);
+
+    // 2. 경로가 실제로 존재하는 디렉토리인지 확인합니다.
+    if !novel_root_path.exists() {
+        return Err(format!(
+            "소설 프로젝트 경로를 찾을 수 없습니다: '{}'",
+            novel_root_path.display()
+        ));
+    }
+    if !novel_root_path.is_dir() {
+        return Err(format!(
+            "소설 프로젝트 경로가 디렉토리가 아닙니다: '{}'",
+            novel_root_path.display()
+        ));
+    }
+
+    // 3. 시스템 파일 탐색기에서 해당 경로를 엽니다.
+    // PathBuf를 문자열 슬라이스로 변환하여 명령어 인자로 사용합니다.
+    let path_to_open = novel_root_path
+        .to_str()
+        .ok_or_else(|| format!("경로를 문자열로 변환할 수 없습니다: {:?}", novel_root_path))?;
+
+    let open_result = if cfg!(target_os = "windows") {
+        Command::new("explorer")
+            .arg(path_to_open) // Windows에서는 디렉토리 경로를 직접 인자로 전달
+            .spawn()
+    } else if cfg!(target_os = "macos") {
+        Command::new("open").arg(path_to_open).spawn()
+    } else if cfg!(target_os = "linux") {
+        Command::new("xdg-open").arg(path_to_open).spawn()
+    } else {
+        return Err("지원되지 않는 운영체제입니다.".to_string());
+    };
+
+    match open_result {
+        Ok(_) => Ok(()),
+        Err(e) => Err(format!(
+            "파일 탐색기에서 폴더를 여는 데 실패했습니다 ('{}'): {}",
+            novel_root_path.display(),
+            e
+        )),
+    }
 }

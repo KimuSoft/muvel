@@ -19,6 +19,7 @@ const CMD_CREATE_LOCAL_NOVEL = `create_local_novel_command`
 const CMD_GET_LOCAL_NOVEL_DETAILS = `get_local_novel_details_command`
 const CMD_UPDATE_LOCAL_NOVEL_METADATA = `update_local_novel_metadata_command`
 const CMD_UPDATE_LOCAL_NOVEL_EPISODES_METADATA = `update_local_novel_episodes_metadata_command`
+const CMD_OPEN_NOVEL_PROJECT_FOLDER = `open_novel_project_folder_command`
 
 // 실제 파일/폴더 삭제는 indexStorage의 removeNovelDataAndFromIndex가 담당 (Rust 내부에서 처리)
 const CMD_GENERATE_UUID = `generate_uuid_command`
@@ -126,6 +127,24 @@ export const getMyLocalNovels = async () => {
     return resolvedLocalNovels.filter((novel) => novel !== null)
   } catch (error) {
     console.error("Error fetching local novels:", error)
+    throw error
+  }
+}
+
+/**
+ * 특정 로컬 소설의 프로젝트 폴더를 엽니다.
+ * @param novelId 열고 싶은 소설의 UUID
+ */
+export const openLocalNovelProjectFolder = async (novelId: string) => {
+  const { invoke } = await getCoreApi()
+  try {
+    // Rust는 novelId로 경로 찾아 해당 폴더 열기
+    await invoke(CMD_OPEN_NOVEL_PROJECT_FOLDER, { novelId })
+  } catch (error) {
+    console.error(
+      `Error opening local novel project folder for ${novelId}:`,
+      error,
+    )
     throw error
   }
 }

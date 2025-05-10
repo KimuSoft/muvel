@@ -45,7 +45,12 @@ pub fn read_novel_metadata(novel_root_path: &Path) -> Result<LocalNovelData, Str
 
     let mut file_content = String::new();
     fs::File::open(&metadata_path)
-        .map_err(|e| format!("소설 메타데이터 파일을 열 수 없습니다 (경로: {:?}): {}", metadata_path, e))?
+        .map_err(|e| {
+            format!(
+                "소설 메타데이터 파일을 열 수 없습니다 (경로: {:?}): {}",
+                metadata_path, e
+            )
+        })?
         .read_to_string(&mut file_content)
         .map_err(|e| format!("소설 메타데이터 파일 내용을 읽을 수 없습니다: {}", e))?;
 
@@ -62,28 +67,39 @@ pub fn read_novel_metadata(novel_root_path: &Path) -> Result<LocalNovelData, Str
 ///
 /// # Returns
 /// * `Result<(), String>`: 성공 시 빈 튜플, 실패 시 에러 메시지.
-pub fn write_novel_metadata(
-    novel_root_path: &Path,
-    data: &LocalNovelData,
-) -> Result<(), String> {
+pub fn write_novel_metadata(novel_root_path: &Path, data: &LocalNovelData) -> Result<(), String> {
     let metadata_path = get_metadata_file_path(novel_root_path);
     let parent_dir = metadata_path.parent().ok_or_else(|| {
-        format!("메타데이터 파일의 부모 디렉토리를 찾을 수 없습니다: {:?}", metadata_path)
+        format!(
+            "메타데이터 파일의 부모 디렉토리를 찾을 수 없습니다: {:?}",
+            metadata_path
+        )
     })?;
 
     if !parent_dir.exists() {
         fs::create_dir_all(parent_dir).map_err(|e| {
-            format!("소설 루트 디렉토리 생성에 실패했습니다 (경로: {:?}): {}", parent_dir, e)
+            format!(
+                "소설 루트 디렉토리 생성에 실패했습니다 (경로: {:?}): {}",
+                parent_dir, e
+            )
         })?;
     }
 
     let temp_file_path = metadata_path.with_extension("muvl.tmp");
 
-    let mut temp_file = fs::File::create(&temp_file_path)
-        .map_err(|e| format!("임시 메타데이터 파일을 생성할 수 없습니다 (경로: {:?}): {}", temp_file_path, e))?;
+    let mut temp_file = fs::File::create(&temp_file_path).map_err(|e| {
+        format!(
+            "임시 메타데이터 파일을 생성할 수 없습니다 (경로: {:?}): {}",
+            temp_file_path, e
+        )
+    })?;
 
-    let json_string = serde_json::to_string_pretty(data)
-        .map_err(|e| format!("소설 메타데이터를 JSON으로 직렬화하는 데 실패했습니다: {}", e))?;
+    let json_string = serde_json::to_string_pretty(data).map_err(|e| {
+        format!(
+            "소설 메타데이터를 JSON으로 직렬화하는 데 실패했습니다: {}",
+            e
+        )
+    })?;
 
     temp_file
         .write_all(json_string.as_bytes())
@@ -108,18 +124,30 @@ pub fn write_novel_metadata(
 /// * `Result<(), String>`: 성공 시 빈 튜플, 실패 시 에러 메시지.
 pub fn create_novel_directories(novel_root_path: &Path) -> Result<(), String> {
     // 루트 디렉토리 생성 (이미 존재할 수 있으므로 create_dir_all 사용)
-    fs::create_dir_all(novel_root_path)
-        .map_err(|e| format!("소설 루트 디렉토리 생성에 실패했습니다 (경로: {:?}): {}", novel_root_path, e))?;
+    fs::create_dir_all(novel_root_path).map_err(|e| {
+        format!(
+            "소설 루트 디렉토리 생성에 실패했습니다 (경로: {:?}): {}",
+            novel_root_path, e
+        )
+    })?;
 
     // episodes 디렉토리 생성
     let episodes_path = novel_root_path.join(EPISODES_DIRNAME);
-    fs::create_dir_all(&episodes_path)
-        .map_err(|e| format!("에피소드 디렉토리 생성에 실패했습니다 (경로: {:?}): {}", episodes_path, e))?;
+    fs::create_dir_all(&episodes_path).map_err(|e| {
+        format!(
+            "에피소드 디렉토리 생성에 실패했습니다 (경로: {:?}): {}",
+            episodes_path, e
+        )
+    })?;
 
     // resources 디렉토리 생성
     let resources_path = novel_root_path.join(RESOURCES_DIRNAME);
-    fs::create_dir_all(&resources_path)
-        .map_err(|e| format!("리소스 디렉토리 생성에 실패했습니다 (경로: {:?}): {}", resources_path, e))?;
+    fs::create_dir_all(&resources_path).map_err(|e| {
+        format!(
+            "리소스 디렉토리 생성에 실패했습니다 (경로: {:?}): {}",
+            resources_path, e
+        )
+    })?;
 
     Ok(())
 }
@@ -135,13 +163,19 @@ pub fn create_novel_directories(novel_root_path: &Path) -> Result<(), String> {
 pub fn delete_novel_project_directory(novel_root_path: &Path) -> Result<(), String> {
     if novel_root_path.exists() && novel_root_path.is_dir() {
         fs::remove_dir_all(novel_root_path).map_err(|e| {
-            format!("소설 프로젝트 디렉토리 삭제에 실패했습니다 (경로: {:?}): {}", novel_root_path, e)
+            format!(
+                "소설 프로젝트 디렉토리 삭제에 실패했습니다 (경로: {:?}): {}",
+                novel_root_path, e
+            )
         })?;
         Ok(())
     } else {
         // 삭제할 디렉토리가 없거나 디렉토리가 아니어도 성공으로 처리하거나,
         // 경고를 로깅할 수 있습니다. 여기서는 성공으로 간주합니다.
-        println!("삭제할 소설 프로젝트 디렉토리가 존재하지 않거나 디렉토리가 아닙니다: {:?}", novel_root_path);
+        println!(
+            "삭제할 소설 프로젝트 디렉토리가 존재하지 않거나 디렉토리가 아닙니다: {:?}",
+            novel_root_path
+        );
         Ok(())
     }
 }
