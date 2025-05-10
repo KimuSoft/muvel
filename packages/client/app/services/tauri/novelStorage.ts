@@ -11,6 +11,7 @@ import type {
   LocalEpisodeData,
   LocalNovelData,
 } from "./types"
+import { getAllLocalNovelEntries as getAllTauriLocalNovelEntries } from "~/services/tauri/indexStorage"
 // removeNovelDataAndFromIndex는 indexStorage로 이동했으므로 여기서 직접 사용 안 함
 
 // --- 소설 CRUD 관련 Rust 커맨드 이름 (예시) ---
@@ -107,6 +108,24 @@ export const updateLocalNovelEpisodes = async (
       error,
     )
     // 에러를 다시 던져 상위 서비스(novelService)에서 처리하거나, 여기서 특정 기본값을 반환할 수 있습니다.
+    throw error
+  }
+}
+
+export const getMyLocalNovels = async () => {
+  try {
+    const localNovelEntries = await getAllTauriLocalNovelEntries()
+    const detailedLocalNovelsPromises = localNovelEntries.map((entry) =>
+      getLocalNovelDetails(entry.id).catch((e) => {
+        console.error(`Error fetching details for local novel ${entry.id}:`, e)
+        return null
+      }),
+    )
+
+    const resolvedLocalNovels = await Promise.all(detailedLocalNovelsPromises)
+    return resolvedLocalNovels.filter((novel) => novel !== null)
+  } catch (error) {
+    console.error("Error fetching local novels:", error)
     throw error
   }
 }

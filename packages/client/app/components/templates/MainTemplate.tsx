@@ -6,7 +6,6 @@ import {
   HStack,
   Icon,
   Image,
-  Link,
   Stack,
   type StackProps,
   Text,
@@ -26,6 +25,7 @@ import { TbPencilPlus } from "react-icons/tb"
 import CreateNovelDialog from "~/components/modals/CreateNovelDialog"
 import { Tooltip } from "~/components/ui/tooltip"
 import Footer from "~/components/organisms/Footer"
+import type { GetLocalNovelDetailsResponse } from "~/services/tauri/types"
 
 const BuyMeACoffeText = "Buy me a coffee!"
 
@@ -78,7 +78,7 @@ const NovelItemActionButton: React.FC<
 }
 
 const MainTemplate: React.FC<{
-  novels: Novel[]
+  novels: (Novel | GetLocalNovelDetailsResponse)[]
   userCount: number
 }> = ({ novels, userCount }) => {
   const navigate = useNavigate()

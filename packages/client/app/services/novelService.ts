@@ -20,6 +20,7 @@ import {
 import {
   createLocalNovel as createTauriLocalNovel,
   getLocalNovelDetails as getTauriLocalNovelDetails,
+  getMyLocalNovels,
   updateLocalNovelEpisodes,
   updateLocalNovelMetadata as updateTauriLocalNovelMetadata,
 } from "./tauri/novelStorage"
@@ -197,21 +198,11 @@ export const getMyNovels = async (
 
   if (IS_TAURI_APP) {
     try {
-      const localNovelEntries = await getAllTauriLocalNovelEntries()
-      const detailedLocalNovelsPromises = localNovelEntries.map((entry) =>
-        getTauriLocalNovelDetails(entry.id).catch((e) => {
-          console.error(
-            `Error fetching details for local novel ${entry.id}:`,
-            e,
-          )
-          return null
-        }),
-      )
-
-      const resolvedLocalNovels = await Promise.all(detailedLocalNovelsPromises)
-      resolvedLocalNovels.forEach((novel) => {
-        if (novel) {
-          localNovels.push(novel)
+      const localNovels = await getMyLocalNovels()
+      // 나중에 로컬에 저장된 클라우드 소설을 구분하기 위해 만들어 둠
+      localNovels.forEach((ln) => {
+        if (ln.share === ApiShareType.Local) {
+          localNovels.push(ln)
         }
       })
     } catch (error) {
