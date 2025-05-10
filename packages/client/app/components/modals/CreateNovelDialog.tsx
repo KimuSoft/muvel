@@ -44,8 +44,6 @@ const CreateNovelDialog: React.FC<{
     title: string
     share: string | number
   }) => {
-    if (!user) return
-
     const data = await createNovel({
       ...values,
       share: parseInt(values.share.toString()),
@@ -71,7 +69,9 @@ const CreateNovelDialog: React.FC<{
             <Formik
               initialValues={{
                 title: "",
-                share: ShareType.Private.toString(),
+                share: user
+                  ? ShareType.Private.toString()
+                  : ShareType.Local.toString(),
               }}
               onSubmit={onSubmit}
             >
@@ -103,18 +103,38 @@ const CreateNovelDialog: React.FC<{
                           <Field.Root>
                             <Field.Label>공개 범위</Field.Label>
                             <ShareSelect
+                              mb={2}
                               w={"100%"}
                               value={field.value.toString()}
                               onValueChange={(value) =>
                                 form.setFieldValue("share", value.value)
                               }
+                              isOffline={!user}
                             />
                             {field.value == ShareType.Local && (
-                              <HStack mt={2} color={"purple.500"}>
+                              <>
+                                <HStack color={"purple.500"}>
+                                  <FaInfoCircle />
+                                  <Field.HelperText>
+                                    로컬 저장 시 뮤블 클라우드 실시간 연동 등
+                                    몇몇 기능이 제한될 수 있어요!
+                                  </Field.HelperText>
+                                </HStack>
+                                <HStack color={"purple.500"}>
+                                  <FaInfoCircle />
+                                  <Field.HelperText>
+                                    현재 한 번 로컬 소설로 생성하면 이후
+                                    클라우드 소설로 전환할 수 없어요!
+                                  </Field.HelperText>
+                                </HStack>
+                              </>
+                            )}
+                            {!user && (
+                              <HStack color={"red.500"}>
                                 <FaInfoCircle />
                                 <Field.HelperText>
-                                  로컬 저장 시 뮤블 클라우드 실시간 연동 등 몇몇
-                                  기능이 제한될 수 있어요!
+                                  현재 뮤블 로그인이 되어 있지 않아 클라우드
+                                  소설을 만들 수 없어요!
                                 </Field.HelperText>
                               </HStack>
                             )}

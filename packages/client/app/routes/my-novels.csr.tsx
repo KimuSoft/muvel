@@ -5,9 +5,8 @@ import { getMyNovels } from "~/services/novelService"
 
 export async function clientLoader() {
   const user = await getMe()
-  if (!user) return { novels: [] }
 
-  const novels = await getMyNovels(user.id)
+  const novels = await getMyNovels(user?.id)
   return { novels }
 }
 
