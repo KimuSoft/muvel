@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo } from "react"
 import {
   HStack,
   IconButton,
@@ -28,6 +28,7 @@ import { PiGear } from "react-icons/pi"
 import type { EpisodeData } from "~/features/novel-editor/context/EditorContext"
 import { usePlatform } from "~/hooks/usePlatform"
 import { IoCloudOffline } from "react-icons/io5"
+import { ShareType } from "muvel-api-types"
 
 const EditorHeader: React.FC<
   StackProps & {
@@ -46,6 +47,11 @@ const EditorHeader: React.FC<
   const commentDialog = useDialog()
   const settingDialog = useDialog()
   const searchDialog = useDialog()
+
+  const isLocal = useMemo(
+    () => episode.novel.share === ShareType.Local,
+    [episode.novel.share],
+  )
 
   return (
     <HStack
@@ -80,7 +86,7 @@ const EditorHeader: React.FC<
           </IconButton>
         </EpisodeListDrawer>
         <SyncIndicator ml={5} state={syncState} />
-        {isOffline && (
+        {isOffline && !isLocal && (
           <Tooltip
             content={
               "현재 인터넷에 연결되어 있지 않지만 걱정 마세요. 뮤블은 오프라인 상태에서도 소설 편집이 가능합니다. 변경사항이 자동 저장되고 이후 인터넷이 연결됐을 때 자동으로 동기화되므로 브라우저를 끄셔도 좋습니다."
@@ -116,6 +122,7 @@ const EditorHeader: React.FC<
               <IconButton
                 aria-label="소설 검색하기"
                 variant="ghost"
+                disabled={isLocal}
                 onClick={() => searchDialog.setOpen(true)}
               >
                 <BiSearch />
@@ -132,7 +139,6 @@ const EditorHeader: React.FC<
                 <BiExport />
               </IconButton>
             </Tooltip>
-
             {/* 위젯 설정하기 */}
             <Tooltip content={"위젯 설정하기"} openDelay={200}>
               <IconButton
@@ -144,12 +150,12 @@ const EditorHeader: React.FC<
                 <MdOutlineWidgets />
               </IconButton>
             </Tooltip>
-
             {/* 버전 관리하기 */}
             <Tooltip content={"버전 관리하기"} openDelay={200}>
               <IconButton
                 variant="ghost"
                 aria-label="버전 관리하기"
+                disabled={isLocal}
                 onClick={() => snapshotDialog.setOpen(true)}
               >
                 <BiHistory />
@@ -163,6 +169,7 @@ const EditorHeader: React.FC<
           <IconButton
             variant={"ghost"}
             aria-label="리뷰 보기"
+            disabled={isLocal}
             onClick={() => commentDialog.setOpen(true)}
           >
             <TbMessage />

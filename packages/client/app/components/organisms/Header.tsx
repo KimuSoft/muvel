@@ -1,16 +1,27 @@
-import React from "react"
+import React, { useMemo } from "react"
 import { Center, type CenterProps, HStack, Spacer, Tag } from "@chakra-ui/react"
 
 import Auth from "../molecules/Auth"
 import Logo from "../molecules/Logo"
 import { ColorModeButton } from "~/components/ui/color-mode"
 import BlockLink from "~/components/atoms/BlockLink"
+import { usePlatform } from "~/hooks/usePlatform"
+import { FaDesktop, FaMobile } from "react-icons/fa6"
+import { CiGlobe } from "react-icons/ci"
 
 const Header: React.FC<{ logo?: boolean; nonWide?: boolean } & CenterProps> = ({
   nonWide,
   logo = true,
   ...props
 }) => {
+  const { isMobile, isTauri } = usePlatform()
+
+  const envIcon = useMemo(() => {
+    if (!isTauri) return <CiGlobe />
+    if (isMobile) return <FaMobile />
+    return <FaDesktop />
+  }, [isTauri, isMobile])
+
   return (
     <Center
       h="70px"
@@ -31,7 +42,8 @@ const Header: React.FC<{ logo?: boolean; nonWide?: boolean } & CenterProps> = ({
               <Logo w={128} cursor={"pointer"} />
             </BlockLink>
             <Tag.Root>
-              <Tag.Label>v{import.meta.env.VITE_APP_VERSION}</Tag.Label>
+              {envIcon}
+              <Tag.Label ml={1}>v{import.meta.env.VITE_APP_VERSION}</Tag.Label>
             </Tag.Root>
           </>
         ) : null}

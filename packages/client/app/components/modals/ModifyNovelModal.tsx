@@ -13,7 +13,6 @@ import {
   Field,
   HStack,
   IconButton,
-  Image,
   Input,
   Portal,
   Spacer,
@@ -32,6 +31,9 @@ import { useRevalidator } from "react-router"
 import ExportNovelMenu from "~/components/modals/ExportNovelMenu"
 import type { LocalNovelData } from "~/services/tauri/types"
 import { updateNovel } from "~/services/novelService"
+import Kimuage from "~/components/molecules/Kimuage"
+import { openLocalNovelProjectFolder } from "~/services/tauri/novelStorage"
+import { FaFolderOpen } from "react-icons/fa6"
 
 const ModifyNovelModal: React.FC<{
   novel: Novel | LocalNovelData
@@ -142,12 +144,9 @@ const ModifyNovelModal: React.FC<{
                               권장합니다.
                             </Text>
                             <HStack gap={3} alignItems={"flex-start"}>
-                              <Image
-                                src={
-                                  field.value
-                                    ? `${field.value}/thumbnail`
-                                    : undefined
-                                }
+                              <Kimuage
+                                src={field.value}
+                                isThumbnail
                                 mb={3}
                                 w={"100px"}
                                 h={"150px"}
@@ -156,6 +155,7 @@ const ModifyNovelModal: React.FC<{
                                 onUploaded={(url) => {
                                   void form.setFieldValue("thumbnail", url)
                                 }}
+                                storageNovelId={novel.id}
                               />
                             </HStack>
                           </Field.Root>
@@ -189,6 +189,16 @@ const ModifyNovelModal: React.FC<{
                           소설 내보내기
                         </Button>
                       </ExportNovelMenu>
+                    )}
+
+                    {novel.share === ShareType.Local && (
+                      <Button
+                        variant="outline"
+                        onClick={() => openLocalNovelProjectFolder(novel.id)}
+                      >
+                        <FaFolderOpen />
+                        프로젝트 폴더 열기
+                      </Button>
                     )}
 
                     <Spacer />

@@ -3,13 +3,13 @@ import { EpisodeType } from "muvel-api-types"
 import EditorPage from "~/features/novel-editor/EditorPage"
 import React from "react"
 import FlowEditorPage from "~/features/flow-editor/FlowEditorPage"
-import { getCloudEpisodeById } from "~/services/api/api.episode"
+import { getEpisodeById } from "~/services/episodeService"
 
 export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
   const id = params.id
   if (!id) throw new Response("Not Found", { status: 404 })
 
-  const episode = await getCloudEpisodeById(id)
+  const episode = await getEpisodeById(id)
 
   return { episode }
 }

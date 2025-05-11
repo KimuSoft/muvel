@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { GetEpisodeResponseDto } from "muvel-api-types"
 import { debounce, isEqual } from "lodash-es"
-import { updateCloudEpisode as apiUpdateEpisode } from "~/services/api/api.episode" // API 함수 이름 변경 (충돌 방지)
 import { toaster } from "~/components/ui/toaster"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
-import type { EpisodeData } from "~/features/novel-editor/context/EditorContext" // EpisodeData 타입 가져오기
+import type { EpisodeData } from "~/features/novel-editor/context/EditorContext"
+import { updateEpisodeMetadata } from "~/services/episodeService" // EpisodeData 타입 가져오기
 
 type EpisodePatchData = Partial<
   Omit<EpisodeData, "id" | "permissions" | "createdAt" | "updatedAt" | "novel">
@@ -89,7 +89,7 @@ export function useEpisodeSync({
 
     try {
       console.log("Saving episode changes (via hook):", changes)
-      await apiUpdateEpisode(initialEpisode.id, changes) // API 호출 시 ID 사용
+      await updateEpisodeMetadata(initialEpisode, changes) // API 호출 시 ID 사용
       setEpisodeSyncState(SyncState.Synced)
       onSyncStateChange?.(SyncState.Synced)
       previousEpisodeDataRef.current = currentData

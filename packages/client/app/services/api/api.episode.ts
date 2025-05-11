@@ -1,13 +1,14 @@
 import { api } from "~/utils/api"
 import {
-  SnapshotReason,
   type AiAnalysis,
   type AiAnalysisScore,
   type Block,
+  type BlockChange,
   type CreateAiAnalysisRequestBody,
   type Episode,
   type EpisodeSnapshot,
   type GetEpisodeResponseDto,
+  SnapshotReason,
 } from "muvel-api-types"
 
 export const getCloudEpisodeBlocks = async (episodeId: string) => {
@@ -30,14 +31,11 @@ export const updateCloudEpisode = async (
 
 export const updateCloudEpisodeBlocks = async (
   episodeId: string,
-  blocks: (
-    | (Omit<Block, "text"> & { isDeleted?: boolean })
-    | { id: string; isDeleted: boolean }
-  )[],
+  blockChanges: BlockChange[],
 ) => {
   const { data } = await api.patch<Block[]>(
     `episodes/${episodeId}/blocks`,
-    blocks,
+    blockChanges,
   )
   return data
 }

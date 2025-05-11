@@ -7,12 +7,17 @@ import {
   Heading,
   HStack,
   Image,
+  type MenuSelectionDetails,
   Spacer,
   Text,
   VStack,
 } from "@chakra-ui/react"
 import Header from "../organisms/Header"
-import { type GetNovelResponseDto, ShareType } from "muvel-api-types"
+import {
+  EpisodeType,
+  type GetNovelResponseDto,
+  ShareType,
+} from "muvel-api-types"
 import { TbEdit, TbPencilPlus, TbPlayerPlay, TbShare } from "react-icons/tb"
 import NovelTagList from "../organisms/NovelTagList"
 import { useNavigate, useRevalidator } from "react-router"
@@ -30,6 +35,8 @@ import type { EpisodeItemVariant } from "~/components/molecules/EpisodeItem"
 import type { GetLocalNovelDetailsResponse } from "~/services/tauri/types"
 import { updateNovel, updateNovelEpisodes } from "~/services/novelService"
 import { createNovelEpisode } from "~/services/episodeService"
+import CreateEpisodeMenu from "~/features/novel-editor/components/menus/CreateEpisodeMenu"
+import { getKimuageUrl } from "~/utils/getKimuageUrl"
 
 const NovelDetailTemplate: React.FC<{
   novel: GetNovelResponseDto | GetLocalNovelDetailsResponse
@@ -41,9 +48,10 @@ const NovelDetailTemplate: React.FC<{
   const [episodeListLayout, setEpisodeListLayout] =
     React.useState<EpisodeItemVariant>("detail")
 
-  const handleCreateEpisode = async () => {
-    setIsEpisodesLoading(true)
-    const episode = await createNovelEpisode(novel.id, {})
+  const handleCreateEpisode = async (detail: MenuSelectionDetails) => {
+    const episode = await createNovelEpisode(novel.id, {
+      episodeType: parseInt(detail.value) as EpisodeType,
+    })
     navigate(`/episodes/${episode.id}`)
   }
 
@@ -75,36 +83,69 @@ const NovelDetailTemplate: React.FC<{
   return (
     <VStack gap={12} pb={100}>
       <Header logo={true} />
-      <Center
-        w={"100%"}
-        py={8}
-        background={{
-          base: "linear-gradient(90deg, var(--chakra-colors-gray-200) 0%, var(--chakra-colors-gray-300)  100%)",
-          _dark: "linear-gradient(90deg, rgba(24, 24, 27) 0%, #434145 100%)",
-        }}
-      >
+      <Center w={"100%"} py={8} position="relative" overflow={"hidden"}>
+        {novel.thumbnail ? (
+          <Box
+            position="absolute"
+            w={"100%"}
+            h={"100%"}
+            inset={0}
+            backgroundImage={`url(${getKimuageUrl(novel.thumbnail)})`}
+            backgroundSize="cover"
+            backgroundPosition="center"
+            transform={"scale(1.2)"}
+            filter="blur(40px)"
+            zIndex={0}
+            _after={{
+              content: `""`,
+              position: "absolute",
+              inset: 0,
+              bg: "rgba(255, 255, 255, 0.4)", // optional: 밝기 조정
+              _dark: { bg: "rgba(0, 0, 0, 0.4)" },
+            }}
+          />
+        ) : (
+          // 기본 그라디언트 배경
+          <Box
+            position="absolute"
+            w={"100%"}
+            h={"100%"}
+            inset={0}
+            background={{
+              base: "linear-gradient(90deg, var(--chakra-colors-gray-200) 0%, var(--chakra-colors-gray-300)  100%)",
+              _dark:
+                "linear-gradient(90deg, rgba(24, 24, 27) 0%, #434145 100%)",
+            }}
+            zIndex={0}
+          />
+        )}
+
         <Container w={"100%"} maxW={"4xl"} px={5} mt={10}>
           <HStack
+            minH={"300px"}
             gap={{ base: 5, md: 8 }}
             flexDir={{ base: "column", md: "row-reverse" }}
             alignItems={{ base: "flex-start", md: "center" }}
           >
-            <Image
-              w={{ base: "120px", md: "260px" }}
-              h={{ base: "180px", md: "390px" }}
-              borderRadius="md"
-              bgColor={{ base: "gray.100", _dark: "gray.700" }}
-              src={
-                novel.thumbnail
-                  ? `${novel.thumbnail}/thumbnail?width=260`
-                  : "/cover.png"
-              }
-              backgroundRepeat={"no-repeat"}
-              backgroundSize={"cover"}
-              backgroundPosition={"center"}
-              boxShadow={"md"}
-              flexShrink={0}
-            />
+            {novel.thumbnail && (
+              <Image
+                w={{ base: "120px", md: "260px" }}
+                h={{ base: "180px", md: "390px" }}
+                borderRadius="md"
+                bgColor={{ base: "gray.100", _dark: "gray.700" }}
+                src={
+                  novel.thumbnail
+                    ? `${novel.thumbnail}/thumbnail?width=260`
+                    : "/cover.png"
+                }
+                backgroundRepeat={"no-repeat"}
+                backgroundSize={"cover"}
+                backgroundPosition={"center"}
+                boxShadow={"md"}
+                flexShrink={0}
+              />
+            )}
+
             <VStack w={"100%"} alignItems={"baseline"}>
               <HStack rowGap={1} columnGap={4} flexWrap={"wrap"}>
                 <Heading
@@ -115,7 +156,7 @@ const NovelDetailTemplate: React.FC<{
                 </Heading>
                 <Text
                   flexShrink={0}
-                  color={"gray.500"}
+                  color={{ base: "gray.700", _dark: "gray.300" }}
                   fontSize={{ base: "xs", md: "md" }}
                 >
                   {novel.episodeCount}편 · {shareText}
@@ -224,17 +265,18 @@ const NovelDetailTemplate: React.FC<{
             />
           </HStack>
           {novel.permissions.edit ? (
-            <Button
-              colorPalette={"purple"}
-              gap={3}
-              rounded={{ base: "full", md: 5 }}
-              size={"sm"}
-              loading={isEpisodesLoading}
-              onClick={handleCreateEpisode}
-            >
-              <TbPencilPlus />
-              <Box display={{ base: "none", md: "block" }}>새 편 쓰기</Box>
-            </Button>
+            <CreateEpisodeMenu onSelect={handleCreateEpisode}>
+              <Button
+                colorPalette={"purple"}
+                gap={3}
+                rounded={{ base: "full", md: 5 }}
+                size={"sm"}
+                loading={isEpisodesLoading}
+              >
+                <TbPencilPlus />
+                <Box display={{ base: "none", md: "block" }}>새 편 쓰기</Box>
+              </Button>
+            </CreateEpisodeMenu>
           ) : null}
         </HStack>
         <SortableEpisodeList

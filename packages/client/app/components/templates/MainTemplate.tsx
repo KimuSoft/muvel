@@ -1,40 +1,31 @@
-import React, { type PropsWithChildren, type ReactNode } from "react"
+import React, { type ReactNode } from "react"
 import {
   Box,
-  Button,
   Center,
   Heading,
   HStack,
   Icon,
   Image,
-  Link,
-  Mark,
-  Spacer,
   Stack,
   type StackProps,
-  Tag,
   Text,
   useDialog,
   VStack,
-  Wrap,
 } from "@chakra-ui/react"
 import Header from "../organisms/Header"
 import type { Novel } from "muvel-api-types"
 import { useNavigate } from "react-router"
 import Logo from "~/components/molecules/Logo"
-import { useUser } from "~/context/UserContext"
 import BlockLink from "~/components/atoms/BlockLink"
 import NovelItem from "~/components/molecules/NovelItem"
 import { IoLibrary } from "react-icons/io5"
 import { motion } from "motion/react"
 import { MotionSimpleGrid } from "~/components/atoms/motions"
-import { TbLogin2, TbPencilPlus } from "react-icons/tb"
+import { TbPencilPlus } from "react-icons/tb"
 import CreateNovelDialog from "~/components/modals/CreateNovelDialog"
-import { LuPackageSearch, LuPartyPopper } from "react-icons/lu"
-import { FaDoorOpen } from "react-icons/fa6"
 import { Tooltip } from "~/components/ui/tooltip"
-import { usePlatform } from "~/hooks/usePlatform"
-import { useLogin } from "~/hooks/useLogin"
+import Footer from "~/components/organisms/Footer"
+import type { GetLocalNovelDetailsResponse } from "~/services/tauri/types"
 
 const BuyMeACoffeText = "Buy me a coffee!"
 
@@ -86,23 +77,11 @@ const NovelItemActionButton: React.FC<
   )
 }
 
-const SimpleTag: React.FC<PropsWithChildren> = ({ children }) => {
-  return (
-    <Tag.Root colorPalette={"purple"} variant={"solid"} size={"sm"}>
-      <Tag.Label>{children}</Tag.Label>
-    </Tag.Root>
-  )
-}
-
 const MainTemplate: React.FC<{
-  novels: Novel[]
-  userCount: number
-}> = ({ novels, userCount }) => {
-  const { isTauri } = usePlatform()
-  const user = useUser()
+  novels: (Novel | GetLocalNovelDetailsResponse)[]
+}> = ({ novels }) => {
   const navigate = useNavigate()
   const createNovelDialog = useDialog()
-  const login = useLogin()
 
   return (
     <Stack p={0}>
@@ -110,7 +89,7 @@ const MainTemplate: React.FC<{
       <Center w={"100%"} minH={"100vh"} px={3}>
         <Center flexDir={"column"} w={"100%"} maxW={"4xl"} gap={3} my={100}>
           <Tooltip
-            content={`${userCount}명의 작가님과 함께하고 있어요! (Muvel v${import.meta.env.VITE_APP_VERSION})`}
+            content={`Muvel v${import.meta.env.VITE_APP_VERSION}`}
             positioning={{
               placement: "top",
             }}
@@ -132,200 +111,33 @@ const MainTemplate: React.FC<{
           {/*  />*/}
           {/*</InputGroup>*/}
           {/*</HStack>*/}
-          {user ? (
-            <MotionSimpleGrid w={"100%"} minChildWidth={"250px"} gap={2} mt={8}>
-              {novels.slice(0, 5).map((novel) => (
-                <motion.div key={novel.id}>
-                  <BlockLink key={novel.id} to={"/novels/" + novel.id}>
-                    <NovelItem novel={novel} />
-                  </BlockLink>
-                </motion.div>
-              ))}
-              <VStack gap={2}>
-                <CreateNovelDialog dialog={createNovelDialog} />
-                <NovelItemActionButton
-                  icon={<TbPencilPlus />}
-                  title={"새 소설 쓰기"}
-                  description={"새 아이디어가 있으신가요?"}
-                  onClick={() => createNovelDialog.setOpen(true)}
-                />
-                <NovelItemActionButton
-                  icon={<IoLibrary />}
-                  title={"내 도서관 가기"}
-                  description={"내 소설을 모두 볼 수 있어요!"}
-                  onClick={() => navigate("/my-novels")}
-                />
-              </VStack>
-            </MotionSimpleGrid>
-          ) : (
-            <HStack mt={7} flexDir={{ base: "column", md: "row" }}>
-              <Stack
-                rounded={8}
-                w={"100%"}
-                minW={"280px"}
-                p={5}
-                borderWidth={1}
-                h={"350px"}
-              >
-                <Icon fontSize={"4xl"} color={"purple.500"}>
-                  <LuPartyPopper />
-                </Icon>
-                <Heading mt={3}>
-                  <Mark variant={"solid"} colorPalette={"purple"}>
-                    뮤블 {isTauri ? "데스크탑" : "웹"}
-                  </Mark>
-                  에 어서오세요!
-                </Heading>
-                <Text
-                  fontSize={"sm"}
-                  color={{ base: "gray.500", _dark: "gray.400" }}
-                  lineHeight={1.5}
-                >
-                  <b>뮤블(Muvel)</b>은 웹소설 작가님들을 위해{" "}
-                  <Link href={"https://kimustory.net"} colorPalette={"purple"}>
-                    키뮤스토리
-                  </Link>
-                  에서 개발한 <b>온라인 소설 편집기</b>
-                  예요!
-                </Text>
-                <Text
-                  fontSize={"sm"}
-                  color={{ base: "gray.500", _dark: "gray.400" }}
-                  lineHeight={1.5}
-                >
-                  불필요한 기능이 많고 무거운 일반 워드프로세서에 비해, 웹소설
-                  작성에 특화된 여러 기능을 가지고 있어요!
-                </Text>
-                <Spacer />
-                <Text fontSize={"xs"} color={"purple.500"}>
-                  뮤블은 아직 얼리 액세스 중이에요! 미완성이라 정식 출시
-                  전까지는 불안정한 부분이 있을 수 있어요...!
-                </Text>
-              </Stack>
-              <Stack
-                rounded={8}
-                w={"100%"}
-                minW={"280px"}
-                p={5}
-                borderWidth={1}
-                h={"350px"}
-              >
-                <Icon fontSize={"4xl"} color={"purple.500"}>
-                  <LuPackageSearch />
-                </Icon>
-                <Heading mt={3}>
-                  <Mark variant={"solid"} colorPalette={"purple"}>
-                    무슨 기능
-                  </Mark>
-                  이 있나요?
-                </Heading>
-                <Text
-                  fontSize={"sm"}
-                  color={{ base: "gray.500", _dark: "gray.400" }}
-                  lineHeight={1.5}
-                >
-                  <b>뮤블</b>에는 여러가지 기능이 있어요!
-                </Text>
-                <Wrap gap={1}>
-                  <SimpleTag>실시간 클라우드</SimpleTag>
-                  <SimpleTag>크로스플랫폼 지원</SimpleTag>
-                  <SimpleTag>에디터 위젯</SimpleTag>
-                  <SimpleTag>타입라이터</SimpleTag>
-                  <SimpleTag>빠른 따옴표</SimpleTag>
-                  <SimpleTag>에디터 커스텀</SimpleTag>
-                  <SimpleTag>회차 내보내기</SimpleTag>
-                  <SimpleTag>플롯 에디터</SimpleTag>
-                  <SimpleTag>AI 리뷰</SimpleTag>
-                  <SimpleTag>버전 관리</SimpleTag>
-                  <SimpleTag>기호 자동 대치</SimpleTag>
-                  <SimpleTag>소설 공유</SimpleTag>
-                </Wrap>
-                <Text
-                  fontSize={"sm"}
-                  color={{ base: "gray.500", _dark: "gray.400" }}
-                  lineHeight={1.5}
-                >
-                  ...등등 이거 외에도 많은 기능이 있고, 피드백을 받아 계속
-                  추가되고 있어요!
-                </Text>
-              </Stack>
-              <Stack
-                rounded={8}
-                w={"100%"}
-                minW={"280px"}
-                p={5}
-                borderWidth={1}
-                h={"350px"}
-              >
-                <Icon fontSize={"4xl"} color={"purple.500"}>
-                  <FaDoorOpen />
-                </Icon>
-                <Heading mt={3}>
-                  지금{" "}
-                  <Mark variant={"solid"} colorPalette={"purple"}>
-                    시작해봐요!
-                  </Mark>
-                </Heading>
-                <Text
-                  fontSize={"sm"}
-                  color={{ base: "gray.500", _dark: "gray.400" }}
-                  lineHeight={1.5}
-                >
-                  <b>뮤블</b>은 작가님들이 더욱 편하게 글을 쓸 수 있도록 무료로
-                  제공되고 있으며, 현재 <b>{userCount}명</b>의 작가님들과
-                  함께하고 있어요!
-                </Text>
-                <Text
-                  fontSize={"sm"}
-                  color={{ base: "gray.500", _dark: "gray.400" }}
-                  lineHeight={1.5}
-                >
-                  업데이트를 위해 후원을 받는 거라면 몰라도, 사이트 전체를
-                  유료로 돌릴 예정은 없으니 마음껏 쓰세요!
-                </Text>
-                <Spacer />
-                <Text fontSize={"xs"} color={"purple.500"}>
-                  현재 Google과 Discord 로그인만 가능해요!
-                </Text>
-                <Button colorPalette={"purple"} onClick={login}>
-                  <TbLogin2 />
-                  뮤블에 로그인하기
-                </Button>
-              </Stack>
-            </HStack>
-          )}
+          <MotionSimpleGrid w={"100%"} minChildWidth={"250px"} gap={2} mt={8}>
+            {novels.slice(0, 5).map((novel) => (
+              <motion.div key={novel.id}>
+                <BlockLink key={novel.id} to={"/novels/" + novel.id}>
+                  <NovelItem novel={novel} />
+                </BlockLink>
+              </motion.div>
+            ))}
+            <VStack gap={2}>
+              <CreateNovelDialog dialog={createNovelDialog} />
+              <NovelItemActionButton
+                icon={<TbPencilPlus />}
+                title={"새 소설 쓰기"}
+                description={"새 아이디어가 있으신가요?"}
+                onClick={() => createNovelDialog.setOpen(true)}
+              />
+              <NovelItemActionButton
+                icon={<IoLibrary />}
+                title={"내 도서관 가기"}
+                description={"내 소설을 모두 볼 수 있어요!"}
+                onClick={() => navigate("/my-novels")}
+              />
+            </VStack>
+          </MotionSimpleGrid>
 
-          <HStack
-            mt={8}
-            gap={3}
-            rowGap={2}
-            fontSize={"sm"}
-            color={"gray.400"}
-            flexDir={{ base: "column", md: "row" }}
-            justifyContent={"center"}
-          >
-            <Text>
-              © 2025{" "}
-              <Link href={"https://kimustory.net"} colorPalette={"purple"}>
-                Kimustory
-              </Link>
-              . All rights reserved
-            </Text>
-            {/*<Text>·</Text>*/}
-            {/*<Link color={"gray.500"} href={"https://discord.gg/kQ27qbCJ6V"}>*/}
-            {/*  Official Discord*/}
-            {/*</Link>*/}
-            <Text display={{ base: "none", md: "inline" }}>·</Text>
-            <BlockLink to={"/privacy-policy"}>
-              <Link color={"gray.400"} fontWeight={500}>
-                개인정보처리방침
-              </Link>
-            </BlockLink>
-            <Text display={{ base: "none", md: "inline" }}>·</Text>
-            <BlockLink to={"/terms-of-use"}>
-              <Link color={"gray.400"}>이용약관</Link>
-            </BlockLink>
-          </HStack>
+          <Footer />
+
           <HStack color={"gray.400"} fontSize={"sm"}></HStack>
           <Box
             position={{ base: undefined, md: "fixed" }}

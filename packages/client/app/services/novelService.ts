@@ -1,9 +1,11 @@
 // app/services/novelService.ts
 
 import {
+  type CreateNovelRequestDto,
   type GetNovelResponseDto,
   type Novel as ApiNovel,
   ShareType as ApiShareType,
+  type UpdateNovelRequestDto,
 } from "muvel-api-types"
 // 개별 함수 임포트 및 별칭 사용으로 변경
 import {
@@ -18,14 +20,15 @@ import {
 import {
   createLocalNovel as createTauriLocalNovel,
   getLocalNovelDetails as getTauriLocalNovelDetails,
+  getMyLocalNovels,
   updateLocalNovelEpisodes,
   updateLocalNovelMetadata as updateTauriLocalNovelMetadata,
 } from "./tauri/novelStorage"
 import {
+  deleteLocalNovel as removeTauriNovelDataAndFromIndex,
   getAllLocalNovelEntries as getAllTauriLocalNovelEntries,
   getLocalNovelEntry as getTauriLocalNovelEntry,
   registerNovelFromPath as registerTauriNovelFromPath,
-  deleteLocalNovel as removeTauriNovelDataAndFromIndex,
 } from "./tauri/indexStorage"
 import {
   openFileDialog as openTauriFileDialog,
@@ -37,9 +40,9 @@ import type {
   GetLocalNovelDetailsResponse,
   LocalEpisodeData,
   LocalNovelData,
-  UpdateLocalNovelData,
 } from "./tauri/types"
 import { getUserCloudNovels } from "~/services/api/api.user"
+import { checkIsMobileView } from "~/hooks/usePlatform"
 
 const IS_TAURI_APP = import.meta.env.VITE_TAURI === "true"
 
@@ -50,11 +53,13 @@ export interface NovelIdentifierContext {
 }
 export type NovelInput = string | NovelIdentifierContext
 
+const isMobile = checkIsMobileView()
+
 /**
  * 새로운 소설을 생성합니다.
  */
 export const createNovel = async (
-  options: Pick<ApiNovel, "title" | "share">,
+  options: CreateNovelRequestDto,
 ): Promise<ApiNovel | LocalNovelData> => {
   const { title, share } = options
 
@@ -62,10 +67,13 @@ export const createNovel = async (
     if (!IS_TAURI_APP) {
       throw new Error("로컬 소설 생성은 Tauri 앱 환경에서만 가능합니다.")
     }
-    const targetDirectoryPath =
-      await openTauriFolderDialog("소설 프로젝트 생성")
-    if (!targetDirectoryPath) {
-      throw new Error("소설 생성이 취소되었습니다 (저장 폴더 미선택).")
+    let targetDirectoryPath: string | null = null
+
+    if (!isMobile) {
+      targetDirectoryPath = await openTauriFolderDialog("소설 프로젝트 생성")
+      if (!targetDirectoryPath) {
+        throw new Error("소설 생성이 취소되었습니다 (저장 폴더 미선택).")
+      }
     }
     const tauriCreateOptions: CreateLocalNovelOptions = {
       title,
@@ -135,7 +143,7 @@ const resolveNovelContext = async (
  */
 export const updateNovel = async (
   novelInput: NovelInput,
-  patchData: UpdateLocalNovelData,
+  patchData: UpdateNovelRequestDto,
 ): Promise<ApiNovel | LocalNovelData> => {
   const { id: novelId, share: shareTypeToUse } =
     await resolveNovelContext(novelInput)
@@ -190,21 +198,11 @@ export const getMyNovels = async (
 
   if (IS_TAURI_APP) {
     try {
-      const localNovelEntries = await getAllTauriLocalNovelEntries()
-      const detailedLocalNovelsPromises = localNovelEntries.map((entry) =>
-        getTauriLocalNovelDetails(entry.id).catch((e) => {
-          console.error(
-            `Error fetching details for local novel ${entry.id}:`,
-            e,
-          )
-          return null
-        }),
-      )
-
-      const resolvedLocalNovels = await Promise.all(detailedLocalNovelsPromises)
-      resolvedLocalNovels.forEach((novel) => {
-        if (novel) {
-          localNovels.push(novel)
+      const localNovels = await getMyLocalNovels()
+      // 나중에 로컬에 저장된 클라우드 소설을 구분하기 위해 만들어 둠
+      localNovels.forEach((ln) => {
+        if (ln.share === ApiShareType.Local) {
+          localNovels.push(ln)
         }
       })
     } catch (error) {

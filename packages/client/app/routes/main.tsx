@@ -1,15 +1,16 @@
-import type { Route } from "./+types/main"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
-import { api } from "~/utils/api"
-import type { Novel } from "muvel-api-types"
 import { getUserFromRequest } from "~/utils/session.server"
 import MainTemplate from "~/components/templates/MainTemplate"
-import { getUserCount, getUserCloudNovels } from "~/services/api/api.user"
+import { getUserCloudNovels, getUserCount } from "~/services/api/api.user"
+import InfoTemplate from "~/components/templates/InfoTemplate"
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return [
-    { title: "Muvel" },
-    { name: "description", content: "뮤블: 당신의 이야기를 위한 작은 방" },
+    { title: "뮤블" },
+    {
+      name: "description",
+      content: "뮤블: 웹소설 작가를 위한 최고의 크로스플랫폼 소설 편집기",
+    },
   ]
 }
 
@@ -25,11 +26,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
     withCredentials: true,
   })
 
-  return { novels, userCount }
+  return { novels, userCount, user }
 }
 
 export default function Main() {
-  const { novels, userCount } = useLoaderData<typeof loader>()
+  const { novels, userCount, user } = useLoaderData<typeof loader>()
 
-  return <MainTemplate novels={novels} userCount={userCount} />
+  if (!user) {
+    return <InfoTemplate userCount={userCount} />
+  } else {
+    return <MainTemplate novels={novels} />
+  }
 }

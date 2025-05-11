@@ -2,7 +2,6 @@ import {
   HStack,
   Icon,
   RadioCard,
-  type RadioCardItemProps,
   type RadioCardRootProps,
   Stack,
   Tag,
@@ -60,8 +59,8 @@ const ShareItem: React.FC<{
 }
 
 const ShareSelect: React.FC<
-  RadioCardRootProps & { disableLocalSelect?: boolean }
-> = ({ disableLocalSelect, ...props }) => {
+  RadioCardRootProps & { isOffline?: boolean; disableLocalSelect?: boolean }
+> = ({ disableLocalSelect, isOffline, ...props }) => {
   const { isTauri } = usePlatform()
 
   return (
@@ -74,6 +73,7 @@ const ShareSelect: React.FC<
         value={ShareType.Public}
         label={"공개"}
         description={"검색 노출"}
+        disabled={isOffline}
         icon={<MdPublic />}
       />
 
@@ -81,6 +81,7 @@ const ShareSelect: React.FC<
         value={ShareType.Unlisted}
         label={"일부 공개"}
         description={"링크로만 공유"}
+        disabled={isOffline}
         icon={<AiOutlineLink />}
       />
 
@@ -88,6 +89,7 @@ const ShareSelect: React.FC<
         value={ShareType.Private}
         label={"비공개"}
         description={"나만 보기"}
+        disabled={isOffline}
         icon={<AiFillLock />}
       />
 

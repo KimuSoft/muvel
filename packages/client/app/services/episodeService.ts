@@ -2,9 +2,12 @@
 
 import {
   type Block as ApiBlock,
+  type BlockChange,
+  type CreateEpisodeBodyDto,
   type Episode as ApiEpisode,
   type GetEpisodeResponseDto,
   ShareType as ApiShareType,
+  type UpdateEpisodeBodyDto,
 } from "muvel-api-types"
 
 // 클라우드 API 호출 함수 임포트
@@ -18,9 +21,9 @@ import { createCloudNovelEpisode } from "./api/api.novel"
 
 // Tauri 로컬 스토리지 호출 함수 임포트
 import {
-  createLocalEpisode as createTauriLocalEpisode,
+  createLocalNovelEpisode as createTauriLocalEpisode,
   deleteLocalEpisode as deleteTauriLocalEpisode,
-  getLocalEpisodeData as getTauriLocalEpisodeData,
+  getLocalEpisodeById,
   listLocalEpisodeSummaries as listTauriLocalEpisodeSummaries,
   updateLocalEpisodeBlocks as updateTauriLocalEpisodeBlocks,
   updateLocalEpisodeMetadata as updateTauriLocalEpisodeMetadata,
@@ -28,12 +31,7 @@ import {
 
 // Novel 서비스 및 타입 (부모 소설 정보 확인용)
 import { getNovel, type NovelInput } from "./novelService" // getNovel은 NovelInput을 처리할 수 있어야 함
-import type {
-  CreateLocalEpisodeOptions,
-  LocalEpisodeData,
-  UpdateLocalEpisodeBlocksData,
-  UpdateLocalEpisodeMetadata,
-} from "./tauri/types"
+import type { LocalEpisodeData } from "./tauri/types"
 
 const IS_TAURI_APP = import.meta.env.VITE_TAURI === "true"
 
@@ -75,9 +73,15 @@ const resolveEpisodeContext = async (
   input: EpisodeInput,
 ): Promise<ResolvedEpisodeContext> => {
   if (typeof input === "string") {
+    console.warn(
+      '"resolveEpisodeContext" called with episodeId string. It may affect performance.',
+    )
+
     // episodeId만 주어진 경우, getEpisodeData를 호출하여 novel 정보를 가져옵니다.
     // getEpisodeData는 novel 필드를 포함한 객체를 반환해야 합니다.
-    const episodeData = await getEpisodeData(input) // 재귀 호출 방지를 위해 getEpisodeData 시그니처 변경 필요
+    console.time("getEpisodeData")
+    const episodeData = await getEpisodeById(input)
+    console.timeEnd("getEpisodeData")
     if (!episodeData.novel) {
       throw new Error(
         `Episode (ID: ${input}) data does not contain novel context.`,
@@ -106,7 +110,7 @@ const resolveEpisodeContext = async (
  */
 export const createNovelEpisode = async (
   novelInput: NovelInput, // 부모 소설 ID 또는 컨텍스트
-  options: Omit<CreateLocalEpisodeOptions, "novelId">,
+  options: CreateEpisodeBodyDto,
 ): Promise<ApiEpisode | LocalEpisodeData> => {
   const parentNovelId =
     typeof novelInput === "string" ? novelInput : novelInput.id
@@ -118,20 +122,10 @@ export const createNovelEpisode = async (
     if (!IS_TAURI_APP) {
       throw new Error("로컬 에피소드 생성은 Tauri 앱 환경에서만 가능합니다.")
     }
-    const tauriCreateOptions: CreateLocalEpisodeOptions = {
-      novelId: parentNovelId,
-      ...options,
-    }
-    return createTauriLocalEpisode(tauriCreateOptions)
+
+    return createTauriLocalEpisode(parentNovelId, options)
   } else {
-    const episodeDataForCloud: Partial<
-      Omit<ApiEpisode, "id" | "novelId" | "createdAt" | "updatedAt">
-    > = {
-      title: options.title,
-      episodeType: options.episodeType,
-      order: options.order,
-    }
-    return createCloudNovelEpisode(parentNovelId, episodeDataForCloud)
+    return createCloudNovelEpisode(parentNovelId, options)
   }
 }
 
@@ -140,48 +134,19 @@ export const createNovelEpisode = async (
  * 이 함수는 EpisodeInput 대신 episodeId만 받도록 유지하여, resolveEpisodeContext 내부에서 사용될 수 있도록 합니다.
  * 반환 객체는 novel: { id, share } 필드를 반드시 포함해야 합니다.
  */
-export const getEpisodeData = async (
+export const getEpisodeById = async (
   episodeId: string,
-): Promise<
-  | (ApiEpisode & { novel: { id: string; share: ApiShareType } })
-  | (LocalEpisodeData & { novel: { id: string; share: ApiShareType } })
-> => {
-  // 1. Tauri 환경이고, 로컬에 해당 episodeId가 있는지 먼저 확인 (Rust 인덱스 활용)
+): Promise<GetEpisodeResponseDto> => {
   if (IS_TAURI_APP) {
     try {
-      // getTauriLocalEpisodeData는 LocalEpisodeData를 반환하며,
-      // 이 LocalEpisodeData는 novel: {id, share} 필드를 포함하도록 Rust에서 구현되어야 함.
-      // const localEpisode = await getTauriLocalEpisodeData(episodeId)
-      // if (localEpisode && localEpisode.novel) {
-      //   // novel 컨텍스트가 있는지 확인
-      //   return localEpisode as LocalEpisodeData & {
-      //     novel: { id: string; share: ApiShareType }
-      //   }
-      // }
-      // 로컬에 없거나 novel 컨텍스트가 없으면 클라우드 시도
+      return await getLocalEpisodeById(episodeId)
     } catch (e) {
-      console.warn(
-        `Failed to get local episode ${episodeId}, trying cloud. Error:`,
-        e,
-      )
+      // TODO: 커스텀 에러 필요
+      return getCloudEpisodeById(episodeId)
     }
   }
 
-  // 2. 웹 환경이거나 로컬에서 못 찾은 경우 클라우드 API 호출
-  // getCloudEpisodeById는 GetEpisodeResponseDto (ApiEpisode & { novel: ApiNovel 요약 })를 반환
-  const cloudEpisode = (await getCloudEpisodeById(
-    episodeId,
-  )) as GetEpisodeResponseDto // 타입 단언
-  if (!cloudEpisode.novel) {
-    throw new Error(
-      `Cloud episode (ID: ${episodeId}) data does not contain novel context.`,
-    )
-  }
-  // GetEpisodeResponseDto.novel의 타입이 ApiEpisode로 되어있으므로, 실제 Novel 요약 타입과 맞는지 확인 필요
-  // 여기서는 cloudEpisode.novel이 {id, share}를 가지고 있다고 가정
-  return cloudEpisode as ApiEpisode & {
-    novel: { id: string; share: ApiShareType }
-  }
+  return getCloudEpisodeById(episodeId)
 }
 
 /**
@@ -189,7 +154,7 @@ export const getEpisodeData = async (
  */
 export const updateEpisodeMetadata = async (
   episodeInput: EpisodeInput,
-  metadata: UpdateLocalEpisodeMetadata,
+  metadata: UpdateEpisodeBodyDto,
 ): Promise<ApiEpisode | void> => {
   const { episodeId, novelId, novelShareType } =
     await resolveEpisodeContext(episodeInput)
@@ -212,7 +177,7 @@ export const updateEpisodeMetadata = async (
  */
 export const updateEpisodeBlocks = async (
   episodeInput: EpisodeInput,
-  blocks: UpdateLocalEpisodeBlocksData,
+  blockChanges: BlockChange[],
 ): Promise<ApiBlock[] | void> => {
   const { episodeId, novelId, novelShareType } =
     await resolveEpisodeContext(episodeInput)
@@ -223,10 +188,10 @@ export const updateEpisodeBlocks = async (
         "로컬 에피소드 내용 수정은 Tauri 앱 환경에서만 가능합니다.",
       )
     // updateTauriLocalEpisodeBlocks는 novelId도 인자로 받도록 수정 (Rust 커맨드에 따라)
-    await updateTauriLocalEpisodeBlocks(episodeId, blocks) // 또는 updateTauriLocalEpisodeBlocks(novelId, episodeId, blocks)
+    await updateTauriLocalEpisodeBlocks(episodeId, blockChanges) // 또는 updateTauriLocalEpisodeBlocks(novelId, episodeId, blocks)
     return
   } else {
-    return updateCloudEpisodeBlocks(episodeId, blocks)
+    return updateCloudEpisodeBlocks(episodeId, blockChanges)
   }
 }
 
@@ -265,7 +230,7 @@ export const getEpisodeBlocks = async (
       throw new Error(
         "로컬 에피소드 블록 조회는 Tauri 앱 환경에서만 가능합니다.",
       )
-    const localEpisodeData = await getTauriLocalEpisodeData(episodeId) // novelId 필요시 전달
+    const localEpisodeData = await getLocalEpisodeById(episodeId) // novelId 필요시 전달
     return localEpisodeData.blocks
   } else {
     return getCloudEpisodeBlocks(episodeId)

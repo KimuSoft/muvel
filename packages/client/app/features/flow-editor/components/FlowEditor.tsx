@@ -45,7 +45,6 @@ const FlowEditor: React.FC<{
     setEdges((eds) => addEdge(params, eds))
 
   useEffect(() => {
-    console.log("변경!!!!")
     if (onChange) onChange({ nodes, edges })
   }, [nodes, edges])
 

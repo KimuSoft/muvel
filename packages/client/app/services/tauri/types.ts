@@ -3,7 +3,11 @@
 import type {
   BasePermission,
   Block as ApiBlock,
+  Block,
+  CreateNovelRequestDto,
   Episode as ApiEpisode,
+  Episode,
+  GetEpisodeResponseDto,
   Novel as ApiNovel,
   ShareType as ApiShareType,
 } from "muvel-api-types"
@@ -25,32 +29,19 @@ export interface LocalNovelData
   localPath?: string
 }
 
+export interface LocalEpisodeData extends Episode {}
+
 export interface GetLocalNovelDetailsResponse extends LocalNovelData {
   permissions: BasePermission
 }
 
-export interface LocalEpisodeData extends Omit<ApiEpisode, "novel"> {
-  blocks: ApiBlock[]
+export interface CreateLocalNovelOptions extends CreateNovelRequestDto {
+  // null인 경우 기본 경로에 저장
+  targetDirectoryPath: string | null
 }
-
-export interface CreateLocalNovelOptions extends Pick<ApiNovel, "title"> {
-  targetDirectoryPath: string
-}
-
-export type UpdateLocalNovelData = Partial<
-  Pick<ApiNovel, "title" | "description" | "tags" | "thumbnail" | "share">
->
-
-export interface CreateLocalEpisodeOptions
-  extends Partial<Pick<ApiEpisode, "title" | "episodeType" | "order">> {
-  novelId: string
-}
-
-export type UpdateLocalEpisodeMetadata = Partial<
-  Pick<
-    ApiEpisode,
-    "title" | "description" | "authorComment" | "episodeType" | "order"
-  >
->
 
 export type UpdateLocalEpisodeBlocksData = ApiBlock[]
+
+export interface GetLocalEpisodeResponse extends GetEpisodeResponseDto {
+  blocks: Block[]
+}

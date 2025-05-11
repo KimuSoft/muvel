@@ -12,10 +12,9 @@ import {
   UseInterceptors,
 } from "@nestjs/common"
 import { EpisodesService } from "./services/episodes.service"
-import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger"
+import { ApiOperation, ApiTags } from "@nestjs/swagger"
 import { UpdateEpisodeDto } from "./dto/update-episode.dto"
 import { PatchBlocksDto } from "./dto/patch-blocks.dto"
-import { PartialEpisodeDto } from "./dto/episode.dto"
 import { EpisodeIdParamDto } from "./dto/episode-id-param.dto"
 import { EpisodeAnalysisService } from "./services/episode-analysis.service"
 import { RequirePermission } from "../permissions/require-permission.decorator"
@@ -26,7 +25,6 @@ import {
 import { CreateAiAnalysisRequestBodyDto } from "./dto/create-ai-analysis-request-body.dto"
 import { CreateEpisodeSnapshotDto } from "./dto/create-episode-snapshot.dto"
 import { EpisodeSnapshotService } from "./services/episode-snapshot.service"
-import { Block } from "muvel-api-types"
 import { CacheInterceptor, CacheTTL } from "@nestjs/cache-manager"
 
 @Controller("episodes")
@@ -67,7 +65,6 @@ export class EpisodesController {
     summary: "에피소드 정보 수정하기",
     description: "에피소드의 정보를 수정합니다.",
   })
-  @ApiOkResponse({ type: PartialEpisodeDto })
   @RequirePermission("edit", EpisodePermissionGuard)
   async updateEpisode(
     @Param() { id }: EpisodeIdParamDto,

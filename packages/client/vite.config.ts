@@ -13,7 +13,10 @@ const packageJson = JSON.parse(
 export default defineConfig({
   server: {
     allowedHosts: [".kimustory.net"],
-    proxy: { "/api": process.env.API_PROXY || "http://localhost:2556" },
+    proxy: {
+      "/api":
+        process.env.API_PROXY?.replace("/api", "") || "http://localhost:2556",
+    },
   },
   build: {
     rollupOptions: {

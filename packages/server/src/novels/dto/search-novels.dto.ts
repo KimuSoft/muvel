@@ -1,8 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { IsInt, IsOptional, IsString, Min } from "class-validator"
 import { Transform } from "class-transformer"
-import { NovelDto } from "./novel.dto"
-import { PartialUserDto } from "../../users/dto/user.dto"
 
 export class SearchNovelsDto {
   @ApiProperty({ description: "제목 검색", required: false })
@@ -28,9 +26,4 @@ export class SearchNovelsDto {
   @IsInt()
   @Min(1)
   display: number = 20
-}
-
-export class SearchNovelsResponseDto extends NovelDto {
-  @ApiProperty()
-  author: PartialUserDto
 }

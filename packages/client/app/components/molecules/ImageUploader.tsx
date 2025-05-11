@@ -7,8 +7,11 @@ interface ImageUploaderProps {
   onUploaded: (url: string) => void
 }
 
-const ImageUploader = ({ onUploaded }: ImageUploaderProps) => {
-  const { uploadFile, loading } = useImageUpload(onUploaded)
+const ImageUploader = ({
+  onUploaded,
+  storageNovelId,
+}: ImageUploaderProps & { storageNovelId?: string }) => {
+  const { uploadFile, loading } = useImageUpload({ onUploaded, storageNovelId })
   const [clipboardAvailable, setClipboardAvailable] = useState(false)
   const [fileFromClipboard, setFileFromClipboard] = useState<File | null>(null)
 

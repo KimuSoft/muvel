@@ -1,6 +1,7 @@
 import React, { useMemo } from "react"
-import { Center, Image, type ImageProps, Skeleton } from "@chakra-ui/react"
-import { TbPhotoOff } from "react-icons/tb"
+import { Center, Icon, Image, type ImageProps } from "@chakra-ui/react"
+import { FaBookOpen } from "react-icons/fa6"
+import { getKimuageUrl } from "~/utils/getKimuageUrl"
 
 const Kimuage: React.FC<
   ImageProps & {
@@ -8,27 +9,24 @@ const Kimuage: React.FC<
     thumbnailWidth?: number
   }
 > = ({ src, isThumbnail, thumbnailWidth, ...props }) => {
-  const image = useMemo(() => {
-    let i = src + (isThumbnail ? "/thumbnail" : "/view")
-    if (thumbnailWidth) {
-      i += `?width=${thumbnailWidth}`
-    }
-
-    return i
-  }, [src, isThumbnail, thumbnailWidth])
+  const image = useMemo(
+    () => getKimuageUrl(src, isThumbnail, thumbnailWidth),
+    [src, isThumbnail, thumbnailWidth],
+  )
 
   const [loaded, setLoaded] = React.useState(false)
 
+  // if (!loaded)
+  //   return <Skeleton w={"100%"} h={"150px"} {...props} />
+
   return src ? (
-    <Skeleton loading={!loaded} flexShrink={0}>
-      <Image
-        src={image}
-        fit={"cover"}
-        w={"100%"}
-        onLoad={() => setLoaded(true)}
-        {...props}
-      />
-    </Skeleton>
+    <Image
+      src={image}
+      fit={"cover"}
+      w={"100%"}
+      onLoad={() => setLoaded(true)}
+      {...props}
+    />
   ) : (
     <Center
       w={"100%"}
@@ -36,7 +34,15 @@ const Kimuage: React.FC<
       bgColor={{ base: "gray.800", _light: "gray.100" }}
       {...props}
     >
-      <TbPhotoOff color={"gray"} size={32} />
+      <Icon
+        color={{
+          base: "white",
+          _dark: "gray.700",
+        }}
+        fontSize={"4xl"}
+      >
+        <FaBookOpen />
+      </Icon>
     </Center>
   )
 }

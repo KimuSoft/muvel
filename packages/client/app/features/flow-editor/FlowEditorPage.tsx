@@ -2,23 +2,24 @@ import type { GetEpisodeResponseDto } from "muvel-api-types"
 import FlowEditorTemplate from "~/features/flow-editor/FlowEditorTemplate"
 import React, { useEffect } from "react"
 import { debounce } from "lodash-es"
-import { updateCloudEpisode } from "~/services/api/api.episode"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
+import { updateEpisodeMetadata } from "~/services/episodeService"
 
 const FlowEditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   episode,
 }) => {
   const [syncState, setSyncState] = React.useState(SyncState.Synced)
 
+  // TODO: useEpisodeSync 훅으로 리팩토링
   const debouncedUpdateTitle = debounce(async (title: string) => {
     setSyncState(SyncState.Syncing)
-    await updateCloudEpisode(episode.id, { title })
+    await updateEpisodeMetadata(episode, { title })
     setSyncState(SyncState.Synced)
   }, 1000)
 
   const debouncedUpdateFlow = debounce(async (doc: any) => {
     setSyncState(SyncState.Syncing)
-    await updateCloudEpisode(episode.id, { flowDoc: doc })
+    await updateEpisodeMetadata(episode, { flowDoc: doc })
     setSyncState(SyncState.Synced)
   }, 5000)
 

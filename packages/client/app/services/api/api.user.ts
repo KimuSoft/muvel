@@ -3,6 +3,9 @@ import { api } from "~/utils/api"
 import { isAxiosError, type AxiosRequestConfig } from "axios"
 
 export const getMe = async (config?: AxiosRequestConfig<any>) => {
+  // 저장된 토큰이 없고 config(쿠키 등 인증정보)가 없으면 애초에 요청할 필요가 없으니 null 반환
+  if (!localStorage.getItem("auth_token") && !config) return null
+
   try {
     const { data } = await api.get<User>("/users/me", config)
     return data
@@ -15,6 +18,7 @@ export const getMe = async (config?: AxiosRequestConfig<any>) => {
 }
 
 export const getUserCount = async () => {
+  console.log("BASE_URL", api.defaults.baseURL)
   const { data } = await api.get<number>("/users/count")
   return data
 }

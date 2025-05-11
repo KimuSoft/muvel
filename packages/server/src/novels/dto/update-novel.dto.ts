@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { ShareType } from "muvel-api-types"
+import { ShareType, UpdateNovelRequestDto } from "muvel-api-types"
 import {
   IsEnum,
   IsNumber,
@@ -10,7 +10,7 @@ import {
 } from "class-validator"
 import { Transform } from "class-transformer"
 
-export class UpdateNovelDto {
+export class UpdateNovelDto implements UpdateNovelRequestDto {
   @ApiProperty({
     description: "소설 제목",
     example: "파링의 모험",
@@ -62,4 +62,16 @@ export class UpdateNovelDto {
   @IsOptional()
   @IsNumber()
   order?: number
+
+  @ApiProperty({
+    description: "소설 총 회차 수",
+  })
+  @IsOptional()
+  @IsNumber()
+  episodeCount?: number
 }
+
+// 타입 정합성 검사를 위한 코드
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _ =
+  {} as Required<UpdateNovelDto> satisfies Required<UpdateNovelRequestDto>
