@@ -120,9 +120,14 @@ jobs:
           sudo unzip -q android-tools.zip -d /opt/android-sdk/cmdline-tools
           sudo mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest
           echo "ANDROID_SDK_ROOT=/opt/android-sdk" >> $GITHUB_ENV
+          # add cmdline-tools to PATH for current shell as well
+          export PATH="/opt/android-sdk/cmdline-tools/latest/bin:/opt/android-sdk/platform-tools:$PATH"
           echo "/opt/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
           echo "/opt/android-sdk/platform-tools" >> $GITHUB_PATH
+
+          # accept licenses and install required packages
           yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --licenses > /dev/null || true
+          sdkmanager --sdk_root="$ANDROID_SDK_ROOT" "platforms;android-33" "build-tools;33.0.0" "platform-tools" --sdk_root="$ANDROID_SDK_ROOT" --licenses > /dev/null || true
           sdkmanager --sdk_root="$ANDROID_SDK_ROOT" "platforms;android-33" "build-tools;33.0.0" "platform-tools"
 
       - name: Check Android SDK installation
