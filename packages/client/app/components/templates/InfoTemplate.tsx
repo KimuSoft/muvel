@@ -179,10 +179,20 @@ const InfoTemplate: React.FC<{
             )}
             <Menu.Root>
               <Menu.Trigger asChild>
-                <Button>
-                  <TbDownload />
-                  뮤블 데스크톱 다운받기
-                </Button>
+                <Tooltip
+                  content={
+                    "프로그램 완성은 했는데 정작 다운로드 링크랑 배포 세팅을 못했네요 이런"
+                  }
+                  openDelay={100}
+                >
+                  <Button disabled>
+                    <TbDownload />
+                    뮤블 데스크톱 다운받기
+                    <Tag.Root ml={1}>
+                      <Tag.Label>BETA</Tag.Label>
+                    </Tag.Root>
+                  </Button>
+                </Tooltip>
               </Menu.Trigger>
               <Menu.Positioner>
                 <Menu.Content>
@@ -287,14 +297,14 @@ const InfoTemplate: React.FC<{
           >
             웹소설 편집 특화
           </FunctionCard>
-          <FunctionCard
-            icon={<MdDevices />}
-            description={
-              "뮤블은 크로스플랫폼 에디터예요! PC, 모바일, 웹에서 모두 동일하게 사용 가능해요! 웹 버전은 브라우저가 있는 거의 모든 기기, 설치 버전은 Windows, MacOS, Linux, Android에서 똑같이 사용 가능해요!"
-            }
-          >
-            크로스플랫폼 에디터
-          </FunctionCard>
+          {/*<FunctionCard*/}
+          {/*  icon={<MdDevices />}*/}
+          {/*  description={*/}
+          {/*    "뮤블은 크로스플랫폼 에디터예요! PC, 모바일, 웹에서 모두 동일하게 사용 가능해요! 웹 버전은 브라우저가 있는 거의 모든 기기, 설치 버전은 Windows, MacOS, Linux, Android에서 똑같이 사용 가능해요!"*/}
+          {/*  }*/}
+          {/*>*/}
+          {/*  크로스플랫폼 에디터*/}
+          {/*</FunctionCard>*/}
           <FunctionCard
             description={
               "뮤블은 무료인 대신 여러분의 후원으로 운영되고 있어요. 만약 후원하지 않아도 누구나 무료로 사용 가능해요! 설치 버전은 계정 없이도 사용 가능하니까, 평생 무료로 사용하실 수 있어요!"
@@ -343,14 +353,14 @@ const InfoTemplate: React.FC<{
           >
             플롯 에디터
           </FunctionCard>
-          <FunctionCard
-            description={
-              "혹시 보안이나 안정성이 중요하거나, 오프라인 환경에 주로 계셔도 걱정 마세요! 데스크톱 버전에서 클라우드 연동을 포기하는 대신, 로컬에만 소설을 생성할 수도 있어요!"
-            }
-            icon={<MdWifiOff />}
-          >
-            로컬에만도 저장 가능!
-          </FunctionCard>
+          {/*<FunctionCard*/}
+          {/*  description={*/}
+          {/*    "혹시 보안이나 안정성이 중요하거나, 오프라인 환경에 주로 계셔도 걱정 마세요! 데스크톱 버전에서 클라우드 연동을 포기하는 대신, 로컬에만 소설을 생성할 수도 있어요!"*/}
+          {/*  }*/}
+          {/*  icon={<MdWifiOff />}*/}
+          {/*>*/}
+          {/*  로컬에만도 저장 가능!*/}
+          {/*</FunctionCard>*/}
           <FunctionCard
             description={
               "소설 쓸 때 제일 많이 쓰는 건 따옴표죠! 뮤블은 따옴표 입력 시 자동으로 쌍이 생기고, 이후 닫는 따옴표 직전에서 줄바꿈을 하면 바로 다음 줄로 넘어가는 '빠른 따옴표' 기능을 제공해요!"
