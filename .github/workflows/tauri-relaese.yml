@@ -16,7 +16,7 @@ jobs:
             target: x86_64-apple-darwin
           - os: macos-latest
             target: aarch64-apple-darwin
-          - os: ubuntu-latest
+          - os: ubuntu-22.04  # Ubuntu 24.04에서 libwebkit2gtk-4.0-dev 설치 불가 이슈로 버전 고정
             target: x86_64-unknown-linux-gnu
     runs-on: ${{ matrix.os }}
     steps:
@@ -26,7 +26,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install dependencies (Linux)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-22.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev
@@ -58,31 +58,31 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tauri-app-windows-exe
-          path: packages/tauri-app/src-tauri/target/release/*.exe # 경로 수정됨
+          path: packages/tauri-app/src-tauri/target/release/*.exe
 
       - name: Upload Windows MSI Installer
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: tauri-app-windows-msi
-          path: packages/tauri-app/src-tauri/target/release/bundle/msi/*.msi # 경로 수정됨
+          path: packages/tauri-app/src-tauri/target/release/bundle/msi/*.msi
 
       - name: Upload macOS DMG
         if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
           name: tauri-app-macos-dmg
-          path: packages/tauri-app/src-tauri/target/release/bundle/dmg/*.dmg # 경로 수정됨
+          path: packages/tauri-app/src-tauri/target/release/bundle/dmg/*.dmg
 
       - name: Upload Linux AppImage
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-22.04'
         uses: actions/upload-artifact@v4
         with:
           name: tauri-app-linux-appimage
-          path: packages/tauri-app/src-tauri/target/release/bundle/appimage/*.AppImage # 경로 수정됨
+          path: packages/tauri-app/src-tauri/target/release/bundle/appimage/*.AppImage
 
   build-android:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04  # Ubuntu 22.04로 버전 고정
     steps:
       - uses: actions/checkout@v4
 
@@ -99,7 +99,7 @@ jobs:
       - name: Install Android dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk
+          sudo apt-get install -y openjdk-17-jdk unzip wget
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406961_latest.zip -O android-tools.zip
           sudo mkdir -p /opt/android-sdk/cmdline-tools/cmdline-tools
           sudo unzip -q android-tools.zip -d /opt/android-sdk/cmdline-tools
@@ -108,6 +108,13 @@ jobs:
           export PATH="$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools"
           yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --install "platforms;android-33" "build-tools;33.0.0"
 
+      - name: Check Android SDK installation
+        run: |
+          if [ ! -d "/opt/android-sdk/platforms" ]; then
+            echo "Android SDK not properly installed"
+            exit 1
+          fi
+
       - name: Build Tauri Android app
         run: pnpm run build:tauri:prod -- --target android
 
@@ -115,7 +122,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tauri-app-android
-          path: packages/tauri-app/src-tauri/target/android/app/build/outputs/apk/release/app-release-unsigned.apk # 경로 수정됨
+          path: packages/tauri-app/src-tauri/target/android/app/build/outputs/apk/release/app-release-unsigned.apk
 
   release:
     needs: [build, build-android]
