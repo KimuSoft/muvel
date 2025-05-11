@@ -68,7 +68,7 @@ const AiAnalysisWarningDialog: React.FC<
                     {user?.point || 0}점)
                   </Text>
                   <Text color={"gray.500"} fontSize={"xs"}>
-                    뮤블 포인트는 1시간에 100포인트씩, 최대 1,000포인트까지
+                    뮤블 포인트는 1시간에 50포인트씩, 최대 1,000포인트까지
                     자동으로 쌓여요!
                   </Text>
                   <ProgressBar
