@@ -1,0 +1,154 @@
+name: Build and Release Tauri App
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+          - os: macos-latest
+            target: x86_64-apple-darwin
+          - os: macos-latest
+            target: aarch64-apple-darwin
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev
+
+      - name: Install dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew update || true
+          brew install webkitgtk
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Install app dependencies
+        run: pnpm install
+
+      - name: Build Tauri app
+        run: pnpm run build:tauri:prod -- --target ${{ matrix.target }}
+
+      - name: Upload Windows EXE
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-app-windows-exe
+          path: packages/tauri-app/src-tauri/target/release/*.exe # 경로 수정됨
+
+      - name: Upload Windows MSI Installer
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-app-windows-msi
+          path: packages/tauri-app/src-tauri/target/release/bundle/msi/*.msi # 경로 수정됨
+
+      - name: Upload macOS DMG
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-app-macos-dmg
+          path: packages/tauri-app/src-tauri/target/release/bundle/dmg/*.dmg # 경로 수정됨
+
+      - name: Upload Linux AppImage
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-app-linux-appimage
+          path: packages/tauri-app/src-tauri/target/release/bundle/appimage/*.AppImage # 경로 수정됨
+
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Install Android dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jdk
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406961_latest.zip -O android-tools.zip
+          sudo mkdir -p /opt/android-sdk/cmdline-tools/cmdline-tools
+          sudo unzip -q android-tools.zip -d /opt/android-sdk/cmdline-tools
+          sudo ln -s /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest
+          export ANDROID_SDK_ROOT=/opt/android-sdk
+          export PATH="$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools"
+          yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --install "platforms;android-33" "build-tools;33.0.0"
+
+      - name: Build Tauri Android app
+        run: pnpm run build:tauri:prod -- --target android
+
+      - name: Upload Android artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-app-android
+          path: packages/tauri-app/src-tauri/target/android/app/build/outputs/apk/release/app-release-unsigned.apk # 경로 수정됨
+
+  release:
+    needs: [build, build-android]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Get package.json version
+        id: package_version
+        run: echo "PACKAGE_VERSION=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+
+      - name: Create Release on Public Repository
+        uses: softprops/action-gh-release@v1
+        with:
+          github_token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          owner: KimuSoft
+          repo: muvel-public
+          files: |
+            tauri-app-windows-exe/*.exe
+            tauri-app-windows-msi/*.msi
+            tauri-app-macos-dmg/*.dmg
+            tauri-app-linux-appimage/*.AppImage
+            tauri-app-android/*.apk
+          tag_name: v${{ steps.package_version.outputs.PACKAGE_VERSION }}
+          name: "v${{ steps.package_version.outputs.PACKAGE_VERSION }}"
+          body: |
+            자동 빌드된 Tauri 앱입니다.
+            production 브랜치 푸시 시 자동 릴리스.
+            package.json 버전: ${{ steps.package_version.outputs.PACKAGE_VERSION }}
+          draft: false
+          prerelease: false
