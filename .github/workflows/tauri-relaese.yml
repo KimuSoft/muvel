@@ -35,7 +35,6 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           brew update || true
-          brew install webkitgtk
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
