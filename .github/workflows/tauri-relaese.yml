@@ -12,18 +12,23 @@ jobs:
         include:
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-          - os: macos-latest
+          - os: macos-13          # Intel runner
             target: x86_64-apple-darwin
-          - os: macos-latest
+          - os: macos-14          # Apple Silicon runner
             target: aarch64-apple-darwin
-          - os: ubuntu-22.04  # Ubuntu 24.04에서 libwebkit2gtk-4.0-dev 설치 불가 이슈로 버전 고정
+          - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}   # NOTE: "targets" (plural) fixes missing stdlib error
 
       - name: Install dependencies (Linux)
         if: matrix.os == 'ubuntu-22.04'
@@ -31,16 +36,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev
 
-      # macOS에서는 webkitgtk 불필요하므로 설치 제거
       - name: Install dependencies (macOS)
-        if: matrix.os == 'macos-latest'
-        run: |
-          brew update || true
+        if: startsWith(matrix.os, 'macos')
+        run: brew update || true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20          # LTS, fewer gradle warnings than v22
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -50,49 +53,58 @@ jobs:
       - name: Install app dependencies
         run: pnpm install
 
-      - name: Build API types package  # muvel-api-types 빌드 사전 수행
+      - name: Build API types package
         run: pnpm build:api
 
       - name: Build Tauri app
         run: pnpm run build:tauri:prod -- --target ${{ matrix.target }}
 
-      - name: Upload Windows EXE
+      # ─── Upload artifacts ─────────────────────────────────────────────┐
+      - name: Upload Windows Portable EXE
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: tauri-app-windows-exe
-          path: packages/tauri-app/src-tauri/target/release/*.exe
+          path: packages/tauri-app/src-tauri/target/${{ matrix.target }}/release/*.exe
+
+      - name: Upload Windows NSIS Installer
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-app-windows-nsis
+          path: packages/tauri-app/src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*-setup.exe
 
       - name: Upload Windows MSI Installer
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: tauri-app-windows-msi
-          path: packages/tauri-app/src-tauri/target/release/bundle/msi/*.msi
+          path: packages/tauri-app/src-tauri/target/${{ matrix.target }}/release/bundle/msi/*.msi
 
       - name: Upload macOS DMG
-        if: matrix.os == 'macos-latest'
+        if: startsWith(matrix.os, 'macos')
         uses: actions/upload-artifact@v4
         with:
-          name: tauri-app-macos-dmg
-          path: packages/tauri-app/src-tauri/target/release/bundle/dmg/*.dmg
+          name: tauri-app-macos-dmg-${{ matrix.target }}
+          path: packages/tauri-app/src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
 
       - name: Upload Linux AppImage
         if: matrix.os == 'ubuntu-22.04'
         uses: actions/upload-artifact@v4
         with:
           name: tauri-app-linux-appimage
-          path: packages/tauri-app/src-tauri/target/release/bundle/appimage/*.AppImage
+          path: packages/tauri-app/src-tauri/target/${{ matrix.target }}/release/bundle/appimage/*.AppImage
 
+  # ─────────────────────────────── Android build ────────────────────────
   build-android:
-    runs-on: ubuntu-22.04  # Ubuntu 22.04로 버전 고정
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -106,30 +118,52 @@ jobs:
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406961_latest.zip -O android-tools.zip
           sudo mkdir -p /opt/android-sdk/cmdline-tools/cmdline-tools
           sudo unzip -q android-tools.zip -d /opt/android-sdk/cmdline-tools
-          sudo ln -s /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest
-          export ANDROID_SDK_ROOT=/opt/android-sdk
-          export PATH="$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools"
-          yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --install "platforms;android-33" "build-tools;33.0.0"
+          sudo mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest
+          echo "ANDROID_SDK_ROOT=/opt/android-sdk" >> $GITHUB_ENV
+          echo "/opt/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "/opt/android-sdk/platform-tools" >> $GITHUB_PATH
+          yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --licenses > /dev/null || true
+          sdkmanager --sdk_root="$ANDROID_SDK_ROOT" "platforms;android-33" "build-tools;33.0.0" "platform-tools"
 
       - name: Check Android SDK installation
         run: |
-          if [ ! -d "/opt/android-sdk/platforms" ]; then
-            echo "Android SDK not properly installed"
+          echo "ANDROID_SDK_ROOT is: $ANDROID_SDK_ROOT"
+          echo "PATH is: $PATH"
+          ls -la $ANDROID_SDK_ROOT/platforms
+          if [ ! -d "$ANDROID_SDK_ROOT/platforms/android-33" ]; then
+            echo "Android SDK platform 33 not properly installed"
+            ls -R $ANDROID_SDK_ROOT
             exit 1
           fi
+          adb version || echo "adb not found, but may not be critical for build"
 
-      - name: Build API types package  # muvel-api-types 빌드 사전 수행
+      - name: Install Rust stable and Android targets
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi
+          components: rust-src
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install app dependencies
+        run: pnpm install
+
+      - name: Build API types package
         run: pnpm build:api
 
       - name: Build Tauri Android app
-        run: pnpm run build:tauri:prod -- --target android
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_SDK_ROOT }}
+        run: pnpm tauri android build --release
 
       - name: Upload Android artifact
         uses: actions/upload-artifact@v4
         with:
           name: tauri-app-android
-          path: packages/tauri-app/src-tauri/target/android/app/build/outputs/apk/release/app-release-unsigned.apk
+          path: packages/tauri-app/src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk
 
+  # ─────────────────────────────── Release job ──────────────────────────
   release:
     needs: [build, build-android]
     runs-on: ubuntu-latest
@@ -140,23 +174,29 @@ jobs:
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: List downloaded artifacts for debugging
+        run: ls -R artifacts
 
       - name: Get package.json version
         id: package_version
         run: echo "PACKAGE_VERSION=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
 
       - name: Create Release on Public Repository
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          github_token: ${{ secrets.PUBLIC_REPO_TOKEN }}
-          owner: KimuSoft
-          repo: muvel-public
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          repository: KimuSoft/muvel-public
           files: |
-            tauri-app-windows-exe/*.exe
-            tauri-app-windows-msi/*.msi
-            tauri-app-macos-dmg/*.dmg
-            tauri-app-linux-appimage/*.AppImage
-            tauri-app-android/*.apk
+            artifacts/tauri-app-windows-exe/*.exe
+            artifacts/tauri-app-windows-nsis/*-setup.exe
+            artifacts/tauri-app-windows-msi/*.msi
+            artifacts/tauri-app-macos-dmg-x86_64-apple-darwin/*.dmg
+            artifacts/tauri-app-macos-dmg-aarch64-apple-darwin/*.dmg
+            artifacts/tauri-app-linux-appimage/*.AppImage
+            artifacts/tauri-app-android/*.apk
           tag_name: v${{ steps.package_version.outputs.PACKAGE_VERSION }}
           name: "v${{ steps.package_version.outputs.PACKAGE_VERSION }}"
           body: |
