@@ -115,7 +115,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y openjdk-17-jdk unzip wget
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406961_latest.zip -O android-tools.zip
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O android-tools.zip
           sudo mkdir -p /opt/android-sdk/cmdline-tools/cmdline-tools
           sudo unzip -q android-tools.zip -d /opt/android-sdk/cmdline-tools
           sudo mv /opt/android-sdk/cmdline-tools/cmdline-tools /opt/android-sdk/cmdline-tools/latest
