@@ -6,7 +6,8 @@ import Logo from "../molecules/Logo"
 import { ColorModeButton } from "~/components/ui/color-mode"
 import BlockLink from "~/components/atoms/BlockLink"
 import { usePlatform } from "~/hooks/usePlatform"
-import { FaDesktop, FaGlobe, FaMobile } from "react-icons/fa6"
+import { FaDesktop, FaMobile } from "react-icons/fa6"
+import { CiGlobe } from "react-icons/ci"
 
 const Header: React.FC<{ logo?: boolean; nonWide?: boolean } & CenterProps> = ({
   nonWide,
@@ -16,7 +17,7 @@ const Header: React.FC<{ logo?: boolean; nonWide?: boolean } & CenterProps> = ({
   const { isMobile, isTauri } = usePlatform()
 
   const envIcon = useMemo(() => {
-    if (!isTauri) return <FaGlobe />
+    if (!isTauri) return <CiGlobe />
     if (isMobile) return <FaMobile />
     return <FaDesktop />
   }, [isTauri, isMobile])
