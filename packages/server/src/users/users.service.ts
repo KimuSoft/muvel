@@ -98,7 +98,7 @@ export class UsersService {
         .createQueryBuilder()
         .update(UserEntity)
         .set({
-          point: () => `LEAST(point + 100, 1000)`,
+          point: () => `LEAST(point + 50, 1000)`,
         })
         .where("point < 1000")
         .execute()
