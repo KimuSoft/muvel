@@ -71,8 +71,11 @@ jobs:
         run: brew update || true
 
       # 7️⃣ Install JS workspace deps
-      - run: pnpm install      # 8️⃣ Build API types
-      - name: Build API types        run: pnpm build:api
+      - run: pnpm install
+
+      # 8️⃣ Build API types
+      - name: Build API types
+        run: pnpm build:api
 
       # 9️⃣ Build, sign & release via tauri‑action
       - uses: tauri-apps/tauri-action@v0
