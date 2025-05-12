@@ -1,17 +1,19 @@
 import MyNovelsTemplate from "~/components/templates/MyNovelsTemplate"
 import { useLoaderData } from "react-router"
-import { getMe } from "~/services/api/api.user"
-import { getMyNovels } from "~/services/novelService"
+import { getMe, getUserCloudNovels } from "~/services/api/api.user"
+import { getMyLocalNovels } from "~/services/tauri/novelStorage"
 
 export async function clientLoader() {
   const user = await getMe()
 
-  const novels = await getMyNovels(user?.id)
-  return { novels }
+  const novels = user ? await getUserCloudNovels(user?.id) : []
+  const localNovels = await getMyLocalNovels()
+  console.log("localNovels", localNovels)
+  return { novels, localNovels }
 }
 
 export default function Main() {
-  const { novels } = useLoaderData<typeof clientLoader>()
+  const { novels, localNovels } = useLoaderData<typeof clientLoader>()
 
-  return <MyNovelsTemplate novels={novels} />
+  return <MyNovelsTemplate novels={novels} localNovels={localNovels} />
 }

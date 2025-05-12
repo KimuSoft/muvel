@@ -3,13 +3,20 @@ import { api } from "~/utils/api"
 import MainTemplate from "~/components/templates/MainTemplate"
 import { getMe, getMyRecentNovels } from "~/services/api/api.user"
 import { getMyLocalNovels } from "~/services/tauri/novelStorage"
+import type { Novel, User } from "muvel-api-types"
 
 export async function clientLoader() {
-  const { data: userCount } = await api.get<number>(`/users/count`)
+  let user: User | void | null = null
+  let cloudNovels: Novel[] = []
 
-  const user = await getMe()
+  // API 서버 연결 이슈 / 버전 호환 이슈 고려
+  try {
+    user = await getMe()
+    cloudNovels = user ? await getMyRecentNovels() : []
+  } catch (e) {
+    console.error("Error fetching user count:", e)
+  }
 
-  const cloudNovels = user ? await getMyRecentNovels() : []
   const localNovels = (await getMyLocalNovels()) || []
 
   // 어쩔 수 없이 로컬 판은 updatedAt 기준으로 정렬
@@ -17,11 +24,11 @@ export async function clientLoader() {
     (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
   )
 
-  return { novels, userCount }
+  return { novels }
 }
 
 export default function Main() {
-  const { novels, userCount } = useLoaderData<typeof clientLoader>()
+  const { novels } = useLoaderData<typeof clientLoader>()
 
   return <MainTemplate novels={novels || []} />
 }

@@ -10,6 +10,10 @@ import {
 import { IoMdArrowBack } from "react-icons/io"
 import React, { useEffect } from "react"
 import { IoLogIn } from "react-icons/io5"
+import { TbDownload } from "react-icons/tb"
+import { usePlatform } from "~/hooks/usePlatform"
+import BlockLink from "~/components/atoms/BlockLink"
+import { getOpenerPlugin } from "~/services/tauri/tauriApiProvider"
 
 const ErrorTemplate: React.FC<{
   icon: React.ReactNode
@@ -18,6 +22,7 @@ const ErrorTemplate: React.FC<{
   stack?: string
 }> = ({ icon, title, details, stack }) => {
   const [isLogined, setIsLogined] = React.useState(false)
+  const { isTauri } = usePlatform()
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token")
@@ -51,6 +56,19 @@ const ErrorTemplate: React.FC<{
             >
               <IoLogIn />
               로그인하기
+            </Button>
+          )}
+          {isTauri && (
+            <Button
+              size={"sm"}
+              colorPalette={"purple"}
+              onClick={async () => {
+                const { openUrl } = await getOpenerPlugin()
+                await openUrl("https://muvel.kimustory.net/info")
+              }}
+            >
+              <TbDownload />
+              최신 버전 다운받기
             </Button>
           )}
         </HStack>

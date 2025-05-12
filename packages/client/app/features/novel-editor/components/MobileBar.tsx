@@ -65,7 +65,7 @@ const MobileBar = () => {
 
   return (
     <Box
-      display={{ base: "block", md: "none" }}
+      display={isKeyboardVisible ? { base: "block", md: "none" } : "none"}
       position="fixed"
       w={"100vw"}
       h={"100dvh"}
@@ -114,14 +114,14 @@ const MobileBar = () => {
           variant={"ghost"}
           onClick={() => insertSymbolPair("‘", "’")}
         >
-          ‘’
+          ‘⋯’
         </Button>
         <Button
           size={"sm"}
           variant={"ghost"}
           onClick={() => insertSymbolPair("“", "”")}
         >
-          “”
+          “⋯”
         </Button>
       </HStack>
     </Box>

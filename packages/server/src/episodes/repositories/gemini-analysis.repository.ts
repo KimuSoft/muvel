@@ -1,5 +1,8 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common"
-import { GoogleGenerativeAI } from "@google/generative-ai"
+import {
+  GenerateContentResult,
+  GoogleGenerativeAI,
+} from "@google/generative-ai"
 
 // Gemini API 응답 구조 타입 정의
 export interface GeminiAnalysisResponse {
@@ -17,7 +20,6 @@ export interface GeminiAnalysisResponse {
 
 // 사용할 모델 (예: gemini-1.5-flash-latest 또는 gemini-1.0-pro)
 // const GEMINI_MODEL = "models/gemini-2.5-flash-preview-04-17"
-const GEMINI_MODEL = "gemini-2.0-flash"
 const SYSTEM_INSTRUCTION = `
       소설 회차 내용을 제공하면 분석하여 JSON 형식으로 평가 결과를 제공해 주세요.
       평가는 종합 평점, 개별 항목 점수, 그리고 댓글 형식의 리뷰로 구성됩니다.
@@ -80,6 +82,8 @@ const SYSTEM_INSTRUCTION = `
 export class GeminiAnalysisRepository {
   private genAI: GoogleGenerativeAI
   private model
+  // 429 에러가 나면 해당 요청은 대체 모델로 전환
+  private alternativeModel
 
   constructor() {
     const apiKey = process.env.GEMINI_API_KEY
@@ -88,7 +92,11 @@ export class GeminiAnalysisRepository {
     }
     this.genAI = new GoogleGenerativeAI(apiKey)
     this.model = this.genAI.getGenerativeModel({
-      model: GEMINI_MODEL,
+      model: "gemini-2.5-pro-exp-03-25",
+      systemInstruction: SYSTEM_INSTRUCTION,
+    })
+    this.alternativeModel = this.genAI.getGenerativeModel({
+      model: "gemini-2.0-flash",
       systemInstruction: SYSTEM_INSTRUCTION,
     })
   }
@@ -97,7 +105,22 @@ export class GeminiAnalysisRepository {
     episodeContent: string,
   ): Promise<GeminiAnalysisResponse> {
     try {
-      const result = await this.model.generateContent(episodeContent)
+      let result: GenerateContentResult
+      try {
+        result = await this.model.generateContent(episodeContent)
+      } catch (e) {
+        // 429 에러가 발생하면 대체 모델로 전환
+        if (e.response?.status === 429) {
+          console.warn("Switching to alternative model due to 429 error.")
+          result = await this.alternativeModel.generateContent(episodeContent)
+        } else if (e.response?.status === 500) {
+          // 500 에러가 발생하면 대체 모델로 전환
+          console.warn("Switching to alternative model due to 500 error.")
+          result = await this.alternativeModel.generateContent(episodeContent)
+        } else {
+          throw e
+        }
+      }
       const response = result.response
       const text = response.text()
 

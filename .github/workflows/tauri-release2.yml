@@ -1,0 +1,108 @@
+name: Build and Release Tauri App
+
+on:
+  push:
+    branches:
+      - production
+  workflow_dispatch:
+
+jobs:
+  publish-tauri:
+    permissions:
+      contents: write        # Release creation & asset uploads
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+            args: ''
+          - platform: macos-latest   # Intel
+            target: x86_64-apple-darwin
+            args: '--target x86_64-apple-darwin'
+          - platform: macos-latest   # Apple Silicon
+            target: aarch64-apple-darwin
+            args: '--target aarch64-apple-darwin'
+          - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            args: '--target x86_64-unknown-linux-gnu'
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      # 1. Checkout the repo
+      - uses: actions/checkout@v4
+
+      # 2. Cache Rust build artifacts
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+
+      # 3. Install Rust (add cross‑targets when building on macOS)
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || matrix.target }}
+
+      # 4. System packages for GTK / WebKit & AppImage
+      - name: Install dependencies (Linux)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf
+
+      - name: Install dependencies (macOS)
+        if: startsWith(matrix.platform, 'macos')
+        run: brew update || true
+
+      # 5. Node / pnpm workspace setup
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Install JS workspace packages
+        run: pnpm install
+
+      # (선택) 공유 패키지 사전 빌드
+      - name: Build API types
+        run: pnpm build:api
+
+      # 6. Build, sign & release via tauri‑action (latest.json 자동 포함)
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          # 토큰은 공개 레포(muvel-public)에 업로드할 write 권한 필요
+          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          # 서명 키 쌍 (tauri signer generate)
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+        with:
+          # ---- 프로젝트 경로 / 빌드 스크립트 ----
+          projectPath: packages/tauri-app
+          tauriScript: pnpm tauri
+
+          # ---- GitHub Release 메타 ----
+          owner: KimuSoft
+          repo: muvel-public
+          tagName: v__VERSION__            # __VERSION__ → package.json version
+          releaseName: "Muvel v__VERSION__"
+          releaseBody: |
+            ## 뮤블 v__VERSION__ 버전 업데이트
+            아직 개발자가 설명을 작성하지 않았습니다.
+          releaseDraft: false
+          prerelease: true
+
+          # ---- Updater JSON ----
+          includeUpdaterJson: true         # latest.json 생성·첨부
+          updaterJsonPreferNsis: true      # Windows용 NSIS(.exe) 우선 사용
+
+          # ---- 빌드 인자 ----
+          args: ${{ matrix.args }}

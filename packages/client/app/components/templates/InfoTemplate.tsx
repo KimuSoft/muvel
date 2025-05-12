@@ -31,7 +31,7 @@ import { Tooltip } from "~/components/ui/tooltip"
 import { useLogin } from "~/hooks/useLogin"
 import Footer from "~/components/organisms/Footer"
 import { useUser } from "~/context/UserContext"
-import { SiBuymeacoffee, SiIos, SiLinux } from "react-icons/si"
+import { SiAppstore, SiBuymeacoffee, SiLinux } from "react-icons/si"
 import BlockLink from "~/components/atoms/BlockLink"
 import {
   MdDarkMode,
@@ -42,58 +42,13 @@ import {
   MdWifi,
   MdWifiOff,
 } from "react-icons/md"
-import { FaPenFancy } from "react-icons/fa6"
+import { FaEllipsis, FaPenFancy } from "react-icons/fa6"
 import { IoColorPalette, IoSparklesSharp } from "react-icons/io5"
 import { GoWorkflow } from "react-icons/go"
 import { BsQuote } from "react-icons/bs"
 
-// <Stack
-// rounded={8}
-// w={"100%"}
-// minW={"280px"}
-// p={5}
-// borderWidth={1}
-// h={"350px"}
-//   >
-//   <Icon fontSize={"4xl"} color={"purple.500"}>
-//   <LuPackageSearch />
-//   </Icon>
-// <Heading mt={3}>
-//   <Mark variant={"solid"} colorPalette={"purple"}>
-//     무슨 기능
-//   </Mark>
-//   이 있나요?
-// </Heading>
-// <Text
-//   fontSize={"sm"}
-//   color={{ base: "gray.500", _dark: "gray.400" }}
-//   lineHeight={1.5}
-// >
-//   <b>뮤블</b>에는 여러가지 기능이 있어요!
-// </Text>
-// <Wrap gap={1}>
-//   <SimpleTag>실시간 클라우드</SimpleTag>
-//   <SimpleTag>크로스플랫폼 지원</SimpleTag>
-//   <SimpleTag>에디터 위젯</SimpleTag>
-//   <SimpleTag>타입라이터</SimpleTag>
-//   <SimpleTag>빠른 따옴표</SimpleTag>
-//   <SimpleTag>에디터 커스텀</SimpleTag>
-//   <SimpleTag>회차 내보내기</SimpleTag>
-//   <SimpleTag>플롯 에디터</SimpleTag>
-//   <SimpleTag>AI 리뷰</SimpleTag>
-//   <SimpleTag>버전 관리</SimpleTag>
-//   <SimpleTag>기호 자동 대치</SimpleTag>
-//   <SimpleTag>소설 공유</SimpleTag>
-// </Wrap>
-// <Text
-//   fontSize={"sm"}
-//   color={{ base: "gray.500", _dark: "gray.400" }}
-//   lineHeight={1.5}
-// >
-//   ...등등 이거 외에도 많은 기능이 있고, 피드백을 받아 계속
-//   추가되고 있어요!
-// </Text>
-// </Stack>
+const DOWNLOAD_URL_BASE =
+  "https://github.com/KimuSoft/muvel-public/releases/latest/download"
 
 const FunctionCard: React.FC<{
   icon?: React.ReactNode
@@ -179,58 +134,96 @@ const InfoTemplate: React.FC<{
             )}
             <Menu.Root>
               <Menu.Trigger asChild>
-                <Tooltip
-                  content={
-                    "프로그램 완성은 했는데 정작 다운로드 링크랑 배포 세팅을 못했네요 이런"
-                  }
-                  openDelay={100}
-                >
-                  <Button disabled>
-                    <TbDownload />
-                    뮤블 데스크톱 다운받기
-                    <Tag.Root ml={1}>
-                      <Tag.Label>BETA</Tag.Label>
-                    </Tag.Root>
-                  </Button>
-                </Tooltip>
+                <Button>
+                  <TbDownload />
+                  뮤블 데스크톱 다운받기
+                  <Tag.Root ml={1}>
+                    <Tag.Label>BETA</Tag.Label>
+                  </Tag.Root>
+                </Button>
               </Menu.Trigger>
               <Menu.Positioner>
                 <Menu.Content>
                   <Menu.ItemGroup>
-                    <Menu.Item value={"windows"}>
-                      <TbBrandWindows /> Windows
-                      <Spacer />
-                      <Text fontSize={"xs"} color={"gray.500"}>
-                        Windows 7 이상
-                      </Text>
-                    </Menu.Item>
-                    <Menu.Item value={"macos"}>
-                      <TbBrandApple /> MacOS
-                      <Spacer />
-                      <Text fontSize={"xs"} color={"gray.500"}>
-                        10.15 Catalina 이상
-                      </Text>
-                    </Menu.Item>
-                    <Menu.Item value={"linux"}>
-                      <SiLinux /> Linux
-                    </Menu.Item>
+                    <BlockLink
+                      to={`${DOWNLOAD_URL_BASE}/muvel-windows-x64-setup.exe`}
+                    >
+                      <Menu.Item value={"windows"}>
+                        <TbBrandWindows /> Windows
+                        <Spacer />
+                        <Text fontSize={"xs"} color={"gray.500"}>
+                          Windows 7 이상
+                        </Text>
+                      </Menu.Item>
+                    </BlockLink>
+                    <BlockLink
+                      to={`${DOWNLOAD_URL_BASE}/muvel-macos-arm64.dmg`}
+                    >
+                      <Menu.Item value={"macos-silicon"}>
+                        <TbBrandApple /> MacOS (Apple Silicon)
+                        <Spacer />
+                        <Text fontSize={"xs"} color={"gray.500"}>
+                          11.0 이상
+                        </Text>
+                      </Menu.Item>
+                    </BlockLink>
+                    <BlockLink to={`${DOWNLOAD_URL_BASE}/muvel-macos-x64.dmg`}>
+                      <Menu.Item value={"macos-intel"}>
+                        <TbBrandApple /> MacOS (Intel)
+                        <Spacer />
+                        <Text fontSize={"xs"} color={"gray.500"}>
+                          10.13 이상
+                        </Text>
+                      </Menu.Item>
+                    </BlockLink>
+                    <BlockLink
+                      to={`${DOWNLOAD_URL_BASE}/muvel-linux-x64.AppImage`}
+                    >
+                      <Menu.Item value={"linux"}>
+                        <SiLinux /> Linux
+                      </Menu.Item>
+                    </BlockLink>
                   </Menu.ItemGroup>
                   <Menu.Separator />
                   <Menu.ItemGroup>
-                    <Menu.Item value={"android"}>
-                      <TbBrandGooglePlay /> Android
-                      <Spacer />
-                      <Text fontSize={"xs"} color={"gray.500"}>
-                        Android 8 이상
-                      </Text>
-                    </Menu.Item>
-                    <Menu.Item value={"ios"}>
-                      <SiIos /> iOS
-                      <Spacer />
-                      <Text fontSize={"xs"} color={"gray.500"}>
-                        iOS 9 이상
-                      </Text>
-                    </Menu.Item>
+                    <Tooltip
+                      content={"Google 개발자 인증 중..."}
+                      openDelay={100}
+                    >
+                      <Menu.Item value={"android"} disabled>
+                        <TbBrandGooglePlay /> Android
+                        <Spacer />
+                        <Text fontSize={"xs"} color={"gray.500"}>
+                          Android 8 이상
+                        </Text>
+                      </Menu.Item>
+                    </Tooltip>
+                    <Tooltip
+                      content={"돈이 없어서 앱스토어에 못 올리는 중..."}
+                      openDelay={100}
+                    >
+                      <Menu.Item value={"ios"} disabled>
+                        <SiAppstore /> iOS
+                        <Spacer />
+                        <Text fontSize={"xs"} color={"gray.500"}>
+                          iOS 9 이상
+                        </Text>
+                      </Menu.Item>
+                    </Tooltip>
+                  </Menu.ItemGroup>
+                  <Menu.Separator />
+                  <Menu.ItemGroup>
+                    <BlockLink
+                      to={`https://github.com/KimuSoft/muvel-public/releases/latest`}
+                    >
+                      <Menu.Item value={"other"}>
+                        <FaEllipsis /> 그 외 버전...
+                        <Spacer />
+                        <Text fontSize={"xs"} color={"gray.500"}>
+                          구버전, 포터블 등
+                        </Text>
+                      </Menu.Item>
+                    </BlockLink>
                   </Menu.ItemGroup>
                 </Menu.Content>
               </Menu.Positioner>
@@ -297,14 +290,14 @@ const InfoTemplate: React.FC<{
           >
             웹소설 편집 특화
           </FunctionCard>
-          {/*<FunctionCard*/}
-          {/*  icon={<MdDevices />}*/}
-          {/*  description={*/}
-          {/*    "뮤블은 크로스플랫폼 에디터예요! PC, 모바일, 웹에서 모두 동일하게 사용 가능해요! 웹 버전은 브라우저가 있는 거의 모든 기기, 설치 버전은 Windows, MacOS, Linux, Android에서 똑같이 사용 가능해요!"*/}
-          {/*  }*/}
-          {/*>*/}
-          {/*  크로스플랫폼 에디터*/}
-          {/*</FunctionCard>*/}
+          <FunctionCard
+            icon={<MdDevices />}
+            description={
+              "뮤블은 크로스플랫폼 에디터예요! PC, 모바일, 웹에서 모두 동일하게 사용 가능해요! 웹 버전은 브라우저가 있는 거의 모든 기기, 설치 버전은 Windows, MacOS, Linux, Android에서 똑같이 사용 가능해요!"
+            }
+          >
+            크로스플랫폼 에디터
+          </FunctionCard>
           <FunctionCard
             description={
               "뮤블은 무료인 대신 여러분의 후원으로 운영되고 있어요. 만약 후원하지 않아도 누구나 무료로 사용 가능해요! 설치 버전은 계정 없이도 사용 가능하니까, 평생 무료로 사용하실 수 있어요!"
@@ -353,14 +346,14 @@ const InfoTemplate: React.FC<{
           >
             플롯 에디터
           </FunctionCard>
-          {/*<FunctionCard*/}
-          {/*  description={*/}
-          {/*    "혹시 보안이나 안정성이 중요하거나, 오프라인 환경에 주로 계셔도 걱정 마세요! 데스크톱 버전에서 클라우드 연동을 포기하는 대신, 로컬에만 소설을 생성할 수도 있어요!"*/}
-          {/*  }*/}
-          {/*  icon={<MdWifiOff />}*/}
-          {/*>*/}
-          {/*  로컬에만도 저장 가능!*/}
-          {/*</FunctionCard>*/}
+          <FunctionCard
+            description={
+              "혹시 보안이나 안정성이 중요하거나, 오프라인 환경에 주로 계셔도 걱정 마세요! 데스크톱 버전에서 클라우드 연동을 포기하는 대신, 로컬에만 소설을 생성할 수도 있어요!"
+            }
+            icon={<MdWifiOff />}
+          >
+            로컬에만도 저장 가능!
+          </FunctionCard>
           <FunctionCard
             description={
               "소설 쓸 때 제일 많이 쓰는 건 따옴표죠! 뮤블은 따옴표 입력 시 자동으로 쌍이 생기고, 이후 닫는 따옴표 직전에서 줄바꿈을 하면 바로 다음 줄로 넘어가는 '빠른 따옴표' 기능을 제공해요!"

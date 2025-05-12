@@ -1,10 +1,11 @@
 import "dotenv/config"
 
-import { NestFactory } from "@nestjs/core"
+import { NestFactory, Reflector } from "@nestjs/core"
 import { AppModule } from "./app.module"
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
 import { Logger, ValidationPipe } from "@nestjs/common"
 import * as cookieParser from "cookie-parser"
+import { ClientVersionGuard } from "./client-version.guard"
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -18,6 +19,9 @@ async function bootstrap() {
   )
   app.setGlobalPrefix("api")
   app.use(cookieParser())
+
+  // 클라이언트 버전 체크 (데스크톱 앱 때문에)
+  app.useGlobalGuards(new ClientVersionGuard())
 
   const config = new DocumentBuilder()
     .setTitle("Muvel API")
