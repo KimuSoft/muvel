@@ -71,15 +71,22 @@ jobs:
         run: brew update || true
 
       # 7️⃣ Install JS workspace deps
-      - run: pnpm install      # 8️⃣ Build API types
-      - name: Build API types        run: pnpm build:api
+      - run: pnpm install
+
+      # 8️⃣ Build API types
+      - name: Build API types
+        run: pnpm build:api
 
       # 9️⃣ Build, sign & release via tauri‑action
-      - uses: tauri-apps/tauri-action@v0
+      - uses: tauri-apps/tauri-action@v0.5.16
         env:
           GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}   # write access to muvel-public
+          # Tauri 2.x uses TAURI_PRIVATE_KEY, older bundlers expect TAURI_SIGNING_PRIVATE_KEY
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          # backward‑compat env names (no harm if unused)
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           # — Repo / tag info —
           owner: KimuSoft

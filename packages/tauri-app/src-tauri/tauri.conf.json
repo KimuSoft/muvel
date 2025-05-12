@@ -1,7 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Muvel",
-  "version": "2.3.0",
   "identifier": "com.muvel",
   "build": {
     "frontendDist": "../../client/build-tauri/client",

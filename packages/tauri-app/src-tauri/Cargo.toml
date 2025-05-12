@@ -1,6 +1,5 @@
 [package]
 name = "muvel"
-version = "2.3.0"
 description = "Web-Novel Editor"
 authors = ["you"]
 license = ""
