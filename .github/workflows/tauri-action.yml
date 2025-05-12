@@ -71,7 +71,7 @@ jobs:
       - name: Build API types
         run: pnpm build:api
 
-      - uses: tauri-apps/tauri-action@v0.5.16
+      - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}

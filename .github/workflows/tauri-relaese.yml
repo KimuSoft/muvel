@@ -1,9 +1,11 @@
 name: Build and Release Tauri App
+# ./tauri-action.yml을 사용하세요.
 
 on:
-  push:
-    branches:
-      - production
+#  push:
+#    branches:
+#      - production
+  workflow_dispatch:
 
 jobs:
   build:
