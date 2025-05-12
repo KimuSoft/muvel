@@ -8,7 +8,7 @@ on:
 jobs:
   publish-tauri:
     permissions:
-      contents: write
+      contents: write   # allow creating releases & uploading assets
     strategy:
       fail-fast: false
       matrix:
@@ -33,29 +33,29 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-      # 1️⃣ Check out source
+      # 1️⃣ Check out source
       - uses: actions/checkout@v4
 
-      # 2️⃣ pnpm first (required before setup‑node cache=pnpm)
+      # 2️⃣ Install pnpm (must precede setup‑node caching)
       - uses: pnpm/action-setup@v2
         with:
           version: 10
 
-      # 3️⃣ Node.js (enables pnpm‑lock cache)
+      # 3️⃣ Node.js — enables pnpm‑lock cache
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
 
-      # 4️⃣ Cache Rust build artifacts
+      # 4️⃣ Cache Rust artifacts
       - uses: Swatinem/rust-cache@v2
 
-      # 5️⃣ Install Rust toolchain & cross‑targets
+      # 5️⃣ Install Rust toolchain & cross‑targets
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
 
-      # 6️⃣ System packages for GTK / WebKit & AppImage
+      # 6️⃣ System packages for GTK / WebKit (Linux only)
       - name: Install Linux dependencies
         if: matrix.platform == 'ubuntu-22.04'
         run: |
@@ -70,37 +70,35 @@ jobs:
         if: startsWith(matrix.platform, 'macos')
         run: brew update || true
 
-      # 7️⃣ Install JS workspace deps
-      - run: pnpm install
+      # 7️⃣ Install JS workspace deps
+      - run: pnpm install      # 8️⃣ Build API types
+      - name: Build API types        run: pnpm build:api
 
-      # 8️⃣ Optional shared package build (remove if 미사용)
-      - run: pnpm build:api
-        if: exists(packages/api)
-
-      # 9️⃣ Build, sign & release via tauri‑action
+      # 9️⃣ Build, sign & release via tauri‑action
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}   # write access to muvel-public
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          # — Repo / tag info —
+          # — Repo / tag info —
           owner: KimuSoft
           repo: muvel-public
           tagName: v__VERSION__
           releaseName: "Muvel v__VERSION__"
           releaseBody: |
             ## 뮤블 v__VERSION__ 버전 업데이트
-            아직 개발자가 설명을 작성하지 않았습니다.          releaseDraft: false
+            아직 개발자가 설명을 작성하지 않았습니다.
+          releaseDraft: false
           prerelease: true
 
-          # — Paths (monorepo) —
+          # — Paths (monorepo) —
           projectPath: packages/tauri-app
           tauriScript: pnpm tauri
 
-          # — Updater JSON —
+          # — Updater JSON —
           includeUpdaterJson: true        # latest.json + .sig 업로드
           updaterJsonPreferNsis: true     # Windows는 setup.exe 우선
 
-          # — Extra build flags per matrix —
+          # — Extra build flags per matrix —
           args: ${{ matrix.args }}
