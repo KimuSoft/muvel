@@ -1,7 +1,7 @@
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { getUserFromRequest } from "~/utils/session.server"
 import MainTemplate from "~/components/templates/MainTemplate"
-import { getUserCloudNovels, getUserCount } from "~/services/api/api.user"
+import { getMyRecentNovels, getUserCount } from "~/services/api/api.user"
 import InfoTemplate from "~/components/templates/InfoTemplate"
 
 export function meta() {
@@ -21,7 +21,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUserFromRequest(request)
   if (!user) return { novels: [], userCount }
 
-  const novels = await getUserCloudNovels(user.id, {
+  const novels = await getMyRecentNovels({
     headers: { cookie },
     withCredentials: true,
   })

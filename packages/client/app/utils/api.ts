@@ -10,6 +10,9 @@ const api = axios.create({
       ? process.env.API_PROXY
       : import.meta.env.VITE_API_BASE) || "/api",
   withCredentials: import.meta.env.VITE_TAURI != "true",
+  headers: {
+    "x-client-version": import.meta.env.VITE_APP_VERSION,
+  },
 })
 
 if (import.meta.env.VITE_TAURI === "true") {

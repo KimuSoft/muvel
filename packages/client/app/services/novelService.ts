@@ -26,7 +26,6 @@ import {
 } from "./tauri/novelStorage"
 import {
   deleteLocalNovel as removeTauriNovelDataAndFromIndex,
-  getAllLocalNovelEntries as getAllTauriLocalNovelEntries,
   getLocalNovelEntry as getTauriLocalNovelEntry,
   registerNovelFromPath as registerTauriNovelFromPath,
 } from "./tauri/indexStorage"
@@ -43,6 +42,8 @@ import type {
 } from "./tauri/types"
 import { getUserCloudNovels } from "~/services/api/api.user"
 import { checkIsMobileView } from "~/hooks/usePlatform"
+import { isAxiosError } from "axios"
+import { toaster } from "~/components/ui/toaster"
 
 const IS_TAURI_APP = import.meta.env.VITE_TAURI === "true"
 
@@ -184,7 +185,7 @@ export const getMyNovels = async (
   myId?: string,
 ): Promise<(ApiNovel | LocalNovelData)[]> => {
   let cloudNovels: ApiNovel[] = []
-  const localNovels: LocalNovelData[] = []
+  let localNovels: LocalNovelData[] = []
   const combinedNovels: (ApiNovel | LocalNovelData)[] = []
 
   try {
@@ -193,12 +194,20 @@ export const getMyNovels = async (
       cloudNovels = await getUserCloudNovels(myId)
     }
   } catch (error) {
+    if (isAxiosError(error) && error.response?.status === 426) {
+      toaster.error({
+        title: "앱 버전이 너무 낮습니다.",
+        description:
+          "더 이상 뮤블 클라우드가 지원되지 않는 버전입니다. 앱을 업데이트 해주세요.",
+      })
+    }
     console.error("Error fetching cloud novels:", error)
   }
 
   if (IS_TAURI_APP) {
+    console.log('"Fetching local novels..."')
     try {
-      const localNovels = await getMyLocalNovels()
+      localNovels = await getMyLocalNovels()
       // 나중에 로컬에 저장된 클라우드 소설을 구분하기 위해 만들어 둠
       localNovels.forEach((ln) => {
         if (ln.share === ApiShareType.Local) {

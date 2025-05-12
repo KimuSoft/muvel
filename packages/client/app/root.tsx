@@ -118,6 +118,10 @@ export function ErrorBoundary() {
       message = "서버 오류에요!"
       details = "서버에서 오류가 발생했어요."
       break
+    case 426:
+      message = "업데이트가 필요해요!"
+      details = "더 이상 뮤블 클라우드가 지원되지 않는 버전이에요."
+      break
     default:
       if (isAxiosError(error)) {
         message = error.message
