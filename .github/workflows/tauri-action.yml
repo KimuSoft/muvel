@@ -1,0 +1,142 @@
+name: Tauri Action
+
+on:
+  push:
+    branches: [production]
+  workflow_dispatch:
+
+jobs:
+  # ─────────────────────────────────────────────────────────────
+  # 1) Build & Release (tauri-action per platform)
+  # ─────────────────────────────────────────────────────────────
+  publish-tauri:
+    permissions:
+      contents: write   # allow creating releases & uploading assets
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Windows
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+            args: ''
+          # macOS (Intel)
+          - platform: macos-latest
+            target: x86_64-apple-darwin
+            args: '--target x86_64-apple-darwin'
+          # macOS (Apple Silicon)
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+            args: '--target aarch64-apple-darwin'
+          # Linux
+          - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            args: '--target x86_64-unknown-linux-gnu'
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with: { version: 10 }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - uses: Swatinem/rust-cache@v2
+
+      - uses: dtolnay/rust-toolchain@stable
+        with: { targets: ${{ matrix.target }} }
+
+      - name: Install Linux dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf
+
+      - name: brew update (macOS)
+        if: startsWith(matrix.platform, 'macos')
+        run: brew update || true
+
+      - run: pnpm install
+
+      - name: Build API types
+        run: pnpm build:api
+
+      - uses: tauri-apps/tauri-action@v0.5.16
+        env:
+          GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+        with:
+          owner: KimuSoft
+          repo: muvel-public
+          tagName: v__VERSION__
+          releaseName: "Muvel v__VERSION__"
+          releaseBody: |
+            ## 뮤블 v__VERSION__ 버전 업데이트
+            아직 개발자가 설명을 작성하지 않았습니다.
+          releaseDraft: false
+          prerelease: true
+          projectPath: packages/tauri-app
+          tauriScript: pnpm tauri
+          includeUpdaterJson: true
+          updaterJsonPreferNsis: true
+          args: ${{ matrix.args }}
+
+  # ─────────────────────────────────────────────────────────────
+  # 2) Copy assets to constant‑name files (one run after all builds)
+  # ─────────────────────────────────────────────────────────────
+  copy-constant-assets:
+    runs-on: ubuntu-latest
+    needs: publish-tauri
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: Find version
+        id: ver
+        run: echo "version=$(jq -r .version package.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Upload constant‑name assets
+        run: |
+          VERSION=${{ steps.ver.outputs.version }}
+          REPO="KimuSoft/muvel-public"
+
+          # Windows NSIS installer
+          gh release upload "v$VERSION" \
+            packages/tauri-app/src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*-setup.exe \
+            --repo "$REPO" --clobber --name muvel-latest-windows-x64-setup.exe
+
+          # Windows portable EXE
+          gh release upload "v$VERSION" \
+            packages/tauri-app/src-tauri/target/release/muvel.exe \
+            --repo "$REPO" --clobber --name muvel-latest-windows-x64.exe
+
+          # macOS DMG (Intel)
+          gh release upload "v$VERSION" \
+            packages/tauri-app/src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg \
+            --repo "$REPO" --clobber --name muvel-latest-macos-x64.dmg
+
+          # macOS DMG (Apple Silicon)
+          gh release upload "v$VERSION" \
+            packages/tauri-app/src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg \
+            --repo "$REPO" --clobber --name muvel-latest-macos-arm64.dmg
+
+          # Linux AppImage
+          gh release upload "v$VERSION" \
+            packages/tauri-app/src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/appimage/*.AppImage \
+            --repo "$REPO" --clobber --name muvel-latest-linux-x64.AppImage
