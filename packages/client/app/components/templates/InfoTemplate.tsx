@@ -35,10 +35,12 @@ import { SiAppstore, SiBuymeacoffee, SiLinux } from "react-icons/si"
 import BlockLink from "~/components/atoms/BlockLink"
 import {
   MdDarkMode,
+  MdDevices,
   MdMoneyOff,
   MdOutlineVerticalAlignCenter,
   MdOutlineWidgets,
   MdWifi,
+  MdWifiOff,
 } from "react-icons/md"
 import { FaEllipsis, FaPenFancy } from "react-icons/fa6"
 import { IoColorPalette, IoSparklesSharp } from "react-icons/io5"
