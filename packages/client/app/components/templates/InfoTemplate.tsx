@@ -48,7 +48,7 @@ import { GoWorkflow } from "react-icons/go"
 import { BsQuote } from "react-icons/bs"
 
 // (임시) 나중에 고정 링크를 생성해야 함
-const DOWNLOAD_VERSION = "2.3.1"
+const DOWNLOAD_VERSION = "2.3.2"
 const DOWNLOAD_URL_BASE =
   "https://github.com/KimuSoft/muvel-public/releases/latest/download"
 

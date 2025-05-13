@@ -2595,7 +2595,7 @@ dependencies = [
 
 [[package]]
 name = "muvel"
-version = "2.3.1"
+version = "2.3.2"
 dependencies = [
  "chrono",
  "font-kit",
