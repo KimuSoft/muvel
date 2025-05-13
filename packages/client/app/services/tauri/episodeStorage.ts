@@ -6,6 +6,7 @@ import {
   type Episode as ApiEpisode,
   type UpdateEpisodeBodyDto,
   masterPermission,
+  type DeltaBlock,
 } from "muvel-api-types"
 import type { GetLocalEpisodeResponse } from "./types"
 
@@ -18,6 +19,7 @@ const CMD_UPDATE_LOCAL_EPISODE_BLOCKS = `update_local_episode_blocks_command`
 const CMD_UPDATE_LOCAL_EPISODE_METADATA = `update_local_episode_metadata_command`
 const CMD_DELETE_LOCAL_EPISODE = `delete_local_episode_command`
 const CMD_LIST_LOCAL_EPISODE_SUMMARIES = `list_local_episode_summaries_command` // 소설 내 에피소드 요약 목록
+const CMD_SYNC_LOCAL_DELTA_BLOCKS = `sync_local_delta_blocks_command` // 로컬 델타 블록 동기화
 
 /**
  * 새로운 로컬 에피소드 생성을 Rust에 요청합니다.
@@ -152,5 +154,18 @@ export const listLocalEpisodeSummaries = async (
       error,
     )
     return []
+  }
+}
+
+export const syncLocalDeltaBlocks = async (
+  episodeId: string,
+  deltaBlocks: DeltaBlock[],
+) => {
+  const { invoke } = await getCoreApi()
+  try {
+    return await invoke(CMD_SYNC_LOCAL_DELTA_BLOCKS, { episodeId, deltaBlocks })
+  } catch (error) {
+    console.error(`Error syncing local delta blocks:`, error)
+    throw error
   }
 }

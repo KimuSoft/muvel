@@ -65,6 +65,7 @@ export const getDeltaBlock = (
       deltas.push({
         id: currentBlock.id,
         action: DeltaBlockAction.Update,
+        // TODO: 지금은 무조건 now로 설정하지만, 실제 업데이트된 시간으로 변경 필요
         date: now,
         ...changedFields,
       })

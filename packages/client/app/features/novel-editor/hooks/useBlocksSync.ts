@@ -1,15 +1,23 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import type { Block, GetEpisodeResponseDto } from "muvel-api-types"
-import { debounce } from "lodash-es"
-import { getBlocksChange } from "~/features/novel-editor/utils/calculateBlockChanges"
+import {
+  type Block,
+  type GetEpisodeResponseDto,
+  SnapshotReason,
+} from "muvel-api-types"
+import { chunk, debounce } from "lodash-es"
 import { toaster } from "~/components/ui/toaster"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 import { Node as PMNode } from "prosemirror-model"
 import { docToBlocks } from "~/features/novel-editor/utils/blockConverter"
+import { getEpisodeBlocks, syncDeltaBlocks } from "~/services/episodeService"
+import { getDeltaBlock } from "~/features/novel-editor/utils/getDeltaBlocks"
 import {
-  getEpisodeBlocks,
-  updateEpisodeBlocks,
-} from "~/services/episodeService"
+  deleteDeltaBlockBackup,
+  findDeltaBlockBackup,
+  saveDeltaBlockBackup,
+} from "~/utils/indexeddb"
+import { saveCloudSnapshot } from "~/services/api/api.episode"
+import { usePlatform } from "~/hooks/usePlatform"
 
 interface UseBlocksSyncProps {
   episode: GetEpisodeResponseDto
@@ -33,6 +41,40 @@ export function useBlocksSync({
   const [blockSyncState, setBlockSyncState] = useState<SyncState>(
     SyncState.Synced,
   )
+  const { isOffline } = usePlatform()
+
+  const init = async () => {
+    // 백업된 데이터가 있는지 확인
+    const backupDelta = await findDeltaBlockBackup(episode.id)
+
+    if (backupDelta && backupDelta.length) {
+      await saveCloudSnapshot(episode.id, SnapshotReason.Merge)
+      await syncDeltaBlocks(episode, backupDelta)
+      toaster.success({
+        title: "블록 동기화 완료",
+        description:
+          "오프라인 작업 또는 오류로 브라우저에 백업된 블록 데이터가 자동 동기화되었습니다. 만약을 대비해 동기화 이전 상태가 버전으로 백업되었습니다.",
+      })
+    }
+
+    try {
+      // 초기 블록 데이터 가져오기
+      const fetchedBlocks = await getEpisodeBlocks(episode)
+
+      setBlocks(fetchedBlocks)
+      originalBlocksRef.current = fetchedBlocks
+      setBlockSyncState(SyncState.Synced)
+    } catch (e) {
+      console.error("Failed to fetch initial blocks:", e)
+      toaster.error({
+        title: "블록 로딩 실패",
+        description: "초기 블록 데이터를 가져오는 데 실패했습니다.",
+      })
+      setBlocks([])
+      originalBlocksRef.current = []
+      setBlockSyncState(SyncState.Error)
+    }
+  }
 
   useEffect(() => {
     // episodeId가 없을 경우 초기화 및 로딩 중단
@@ -40,45 +82,17 @@ export function useBlocksSync({
       setIsLoadingBlocks(false)
       setBlocks([])
       originalBlocksRef.current = []
-      setBlockSyncState(SyncState.Synced) // 또는 Error 상태로 처리
+      setBlockSyncState(SyncState.Error)
       return
     }
 
     let isMounted = true
     setIsLoadingBlocks(true)
-    setBlocks(null) // 이전 블록 데이터 클리어
+    setBlocks(null)
     originalBlocksRef.current = null
     setBlockSyncState(SyncState.Syncing)
 
-    getEpisodeBlocks(episode)
-      .then((fetchedBlocks) => {
-        if (isMounted) {
-          setBlocks(fetchedBlocks)
-          originalBlocksRef.current = fetchedBlocks
-          setBlockSyncState(SyncState.Synced)
-        }
-      })
-      .catch((error) => {
-        console.error("Failed to fetch initial blocks:", error)
-        toaster.error({
-          title: "블록 로딩 실패",
-          description: "초기 블록 데이터를 가져오는 데 실패했습니다.",
-        })
-        if (isMounted) {
-          setBlocks([])
-          originalBlocksRef.current = []
-          setBlockSyncState(SyncState.Error)
-        }
-      })
-      .finally(() => {
-        if (isMounted) {
-          setIsLoadingBlocks(false)
-        }
-      })
-
-    return () => {
-      isMounted = false
-    }
+    void init()
   }, [episode.id])
 
   const actualSaveBlocks = useCallback(
@@ -90,10 +104,14 @@ export function useBlocksSync({
       }
 
       const newBlocks = docToBlocks(doc)
+      const changes = getDeltaBlock(originalBlocksRef.current, newBlocks)
 
-      // getBlocksChange의 두 번째 인자는 현재 UI에 표시된 블록 (newBlocks)
-      // 첫 번째 인자는 마지막으로 저장 성공한 원본 블록 (originalBlocksRef.current)
-      const changes = getBlocksChange(originalBlocksRef.current, newBlocks)
+      if (!navigator.onLine) {
+        console.warn("Offline mode detected. Saving changes to IndexedDB.")
+        await saveDeltaBlockBackup(episode.id, changes)
+        setBlockSyncState(SyncState.Waiting)
+        return
+      }
 
       if (!changes.length) {
         if (blockSyncState === SyncState.Waiting)
@@ -103,10 +121,12 @@ export function useBlocksSync({
 
       setBlockSyncState(SyncState.Syncing)
       try {
-        // API 함수 이름 충돌을 피하기 위해 apiUpdateEpisodeBlocks 사용
-        await updateEpisodeBlocks(episode, changes)
+        for (const dChunk of chunk(changes, 30)) {
+          await syncDeltaBlocks(episode, dChunk)
+        }
+        // TODO: chunk 시마다 반영하면 최적화 가능
         originalBlocksRef.current = [...newBlocks]
-        // setBlocks([...newBlocks]); // 이미 handleBlocksUpdate에서 UI 상태는 업데이트됨
+        await deleteDeltaBlockBackup(episode.id)
         setBlockSyncState(SyncState.Synced)
       } catch (e) {
         console.error("Failed to save block changes (via useBlocksSync):", e)
@@ -115,6 +135,8 @@ export function useBlocksSync({
           description: "변경 사항을 저장하는 데 실패했습니다.",
         })
         setBlockSyncState(SyncState.Error)
+
+        await saveDeltaBlockBackup(episode.id, changes)
       }
     },
     [canEdit, episode.id, blockSyncState],
@@ -145,13 +167,18 @@ export function useBlocksSync({
     (doc: PMNode) => {
       if (!canEdit || initialBlocks === null) return
 
-      if (blockSyncState !== SyncState.Syncing) {
+      if (![SyncState.Syncing, SyncState.Error].includes(blockSyncState)) {
         setBlockSyncState(SyncState.Waiting)
       }
       debouncedSave(doc)
     },
     [canEdit, initialBlocks, debouncedSave, blockSyncState],
   )
+
+  useEffect(() => {
+    if (isOffline) return
+    void init()
+  }, [isOffline])
 
   return {
     initialBlocks,

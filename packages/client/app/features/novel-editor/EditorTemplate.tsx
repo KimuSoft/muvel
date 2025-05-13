@@ -9,6 +9,7 @@ import {
   Menu,
   Separator,
   Text,
+  Center,
   VStack,
 } from "@chakra-ui/react"
 import { useOption } from "~/context/OptionContext"
@@ -76,8 +77,11 @@ const EditorTemplate: React.FC<{
       minH={"100dvh"}
       transition="background-color 0.2s ease-in-out"
       position={"relative"}
+      px={2}
       alignItems={
-        isWidgetUsing ? { base: "flex-start", xl: "center" } : "center"
+        isWidgetUsing
+          ? { base: "center", md: "flex-start", xl: "center" }
+          : "center"
       }
     >
       {episode.permissions.edit && (
@@ -102,53 +106,62 @@ const EditorTemplate: React.FC<{
         my={100}
         px={2}
       >
-        <Menu.Root
-          onSelect={(d) => {
-            updateEpisodeData((e) => {
-              e.episodeType = parseInt(d.value) as EpisodeType
-            })
-          }}
-        >
-          <Menu.Trigger asChild>
-            <Button variant={"ghost"} color={"gray.500"} size={"md"}>
-              {episodeCountText}
-            </Button>
-          </Menu.Trigger>
-          <Menu.Positioner>
-            <Menu.Content>
-              {episode.episodeType !== EpisodeType.Episode && (
-                <Menu.Item value={EpisodeType.Episode.toString()}>
-                  <FaBookOpen />
-                  일반 회차로 지정
-                </Menu.Item>
-              )}
-              {episode.episodeType !== EpisodeType.Prologue && (
-                <Menu.Item value={EpisodeType.Prologue.toString()}>
-                  <GoMoveToStart />
-                  프롤로그로 지정
-                </Menu.Item>
-              )}
-              {episode.episodeType !== EpisodeType.Epilogue && (
-                <Menu.Item value={EpisodeType.Epilogue.toString()}>
-                  <GoMoveToEnd />
-                  에필로그로 지정
-                </Menu.Item>
-              )}
-              {episode.episodeType !== EpisodeType.Special && (
-                <Menu.Item value={EpisodeType.Special.toString()}>
-                  <FaStarOfLife />
-                  특별편으로 지정
-                </Menu.Item>
-              )}
-            </Menu.Content>
-          </Menu.Positioner>
-        </Menu.Root>
+        <Center>
+          <Menu.Root
+            onSelect={(d) => {
+              updateEpisodeData((e) => {
+                e.episodeType = parseInt(d.value) as EpisodeType
+              })
+            }}
+          >
+            <Menu.Trigger asChild>
+              <Button
+                variant={"ghost"}
+                color={"gray.500"}
+                size={"md"}
+                fontFamily={option.fontFamily}
+              >
+                {episodeCountText}
+              </Button>
+            </Menu.Trigger>
+            <Menu.Positioner>
+              <Menu.Content>
+                {episode.episodeType !== EpisodeType.Episode && (
+                  <Menu.Item value={EpisodeType.Episode.toString()}>
+                    <FaBookOpen />
+                    일반 회차로 지정
+                  </Menu.Item>
+                )}
+                {episode.episodeType !== EpisodeType.Prologue && (
+                  <Menu.Item value={EpisodeType.Prologue.toString()}>
+                    <GoMoveToStart />
+                    프롤로그로 지정
+                  </Menu.Item>
+                )}
+                {episode.episodeType !== EpisodeType.Epilogue && (
+                  <Menu.Item value={EpisodeType.Epilogue.toString()}>
+                    <GoMoveToEnd />
+                    에필로그로 지정
+                  </Menu.Item>
+                )}
+                {episode.episodeType !== EpisodeType.Special && (
+                  <Menu.Item value={EpisodeType.Special.toString()}>
+                    <FaStarOfLife />
+                    특별편으로 지정
+                  </Menu.Item>
+                )}
+              </Menu.Content>
+            </Menu.Positioner>
+          </Menu.Root>
+        </Center>
         <Input
           key={episode.id + "-title"}
           fontSize={"2xl"}
           fontWeight={"bold"}
           color={option.color || undefined}
           border={"none"}
+          textAlign={"center"}
+          fontFamily={option.fontFamily}
           _focus={{
             border: "none",
             outline: "none",
@@ -166,7 +179,6 @@ const EditorTemplate: React.FC<{
         />
         {episode.description ? (
           <Text
-            px={4}
             mt={3}
             fontWeight={300}
             fontSize={"sm"}
@@ -178,9 +190,8 @@ const EditorTemplate: React.FC<{
         ) : null}
         <Separator
           borderColor={option.color || undefined}
-          opacity={0.5}
-          mt={5}
-          mb={3}
+          opacity={0.7}
+          my={8}
         />
         <ClientOnly>
           <NovelEditor

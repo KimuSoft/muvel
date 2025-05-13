@@ -4,6 +4,7 @@ import {
   type Block as ApiBlock,
   type BlockChange,
   type CreateEpisodeBodyDto,
+  type DeltaBlock,
   type Episode as ApiEpisode,
   type GetEpisodeResponseDto,
   ShareType as ApiShareType,
@@ -12,8 +13,10 @@ import {
 
 // 클라우드 API 호출 함수 임포트
 import {
+  deleteCloudEpisode,
   getCloudEpisodeBlocks,
   getCloudEpisodeById,
+  syncCloudDeltaBlocks,
   updateCloudEpisode,
   updateCloudEpisodeBlocks,
 } from "./api/api.episode" // 경로 및 함수 이름은 실제 프로젝트에 맞게
@@ -25,6 +28,7 @@ import {
   deleteLocalEpisode as deleteTauriLocalEpisode,
   getLocalEpisodeById,
   listLocalEpisodeSummaries as listTauriLocalEpisodeSummaries,
+  syncLocalDeltaBlocks,
   updateLocalEpisodeBlocks as updateTauriLocalEpisodeBlocks,
   updateLocalEpisodeMetadata as updateTauriLocalEpisodeMetadata,
 } from "./tauri/episodeStorage"
@@ -210,9 +214,7 @@ export const deleteEpisode = async (
     // deleteTauriLocalEpisode는 novelId도 인자로 받도록 수정 (Rust 커맨드에 따라)
     await deleteTauriLocalEpisode(episodeId) // 또는 deleteTauriLocalEpisode(novelId, episodeId)
   } else {
-    console.warn(`Cloud episode deletion for ${episodeId} is not implemented.`)
-    throw new Error("클라우드 에피소드 삭제 기능이 구현되지 않았습니다.")
-    // await deleteCloudEpisode(episodeId);
+    await deleteCloudEpisode(episodeId)
   }
 }
 
@@ -278,5 +280,32 @@ export const listEpisodeSummaries = async (
   } else {
     // 클라우드의 경우, getNovel을 통해 받은 novel 객체 내의 episodes 사용
     return parentNovel.episodes || []
+  }
+}
+
+export const syncDeltaBlocks = async (
+  episodeInput: EpisodeInput,
+  deltaBlocks: DeltaBlock[] = [],
+): Promise<void> => {
+  const { episodeId, novelId, novelShareType } =
+    await resolveEpisodeContext(episodeInput)
+
+  if (novelShareType === ApiShareType.Local) {
+    if (!IS_TAURI_APP) {
+      throw new Error(
+        "로컬 에피소드 블록 동기화는 Tauri 앱 환경에서만 가능합니다.",
+      )
+    }
+
+    if (deltaBlocks.length) {
+      throw new Error(
+        "로컬 에피소드 블록 자동 병합 동기화는 지원하지 않습니다.",
+      )
+    }
+
+    await syncLocalDeltaBlocks(episodeId, deltaBlocks)
+    return
+  } else {
+    return syncCloudDeltaBlocks(episodeId, deltaBlocks)
   }
 }

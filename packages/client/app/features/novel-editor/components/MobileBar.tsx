@@ -167,7 +167,7 @@ const MobileBar = () => {
         // 보이지 않을 때 상호작용 막기 (선택 사항)
         pointerEvents={"auto"}
       >
-        <Text>
+        <Text fontSize={"sm"}>
           {contentLength.toLocaleString()}
           {unitSuffix[options.unit]}
         </Text>

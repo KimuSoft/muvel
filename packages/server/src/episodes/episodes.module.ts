@@ -15,6 +15,7 @@ import { EpisodeRepository } from "./repositories/episode.repository"
 import { BlockRepository } from "../blocks/block.repository"
 import { EpisodeAnalysisService } from "./services/episode-analysis.service"
 import { EpisodePermissionService } from "./services/episode-permission.service"
+import { BlockSyncRepository } from "./repositories/block-sync.repository"
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { EpisodePermissionService } from "./services/episode-permission.service"
     EpisodeRepository,
     BlockRepository,
     GeminiAnalysisRepository,
+    BlockSyncRepository,
 
     // services
     EpisodesService,

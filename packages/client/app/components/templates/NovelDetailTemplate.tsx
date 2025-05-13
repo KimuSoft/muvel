@@ -83,7 +83,13 @@ const NovelDetailTemplate: React.FC<{
   return (
     <VStack gap={12} pb={100}>
       <Header logo={true} />
-      <Center w={"100%"} py={8} position="relative" overflow={"hidden"}>
+      <Center
+        w={"100%"}
+        h={"100%"}
+        py={8}
+        position="relative"
+        overflow={"hidden"}
+      >
         {novel.thumbnail ? (
           <Box
             position="absolute"

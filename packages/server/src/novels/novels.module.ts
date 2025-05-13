@@ -14,6 +14,7 @@ import { EpisodesService } from "../episodes/services/episodes.service"
 import { BlockRepository } from "../blocks/block.repository"
 import { UsersService } from "../users/users.service"
 import { NovelPermissionService } from "./services/novel-permission.service"
+import { BlockSyncRepository } from "../episodes/repositories/block-sync.repository"
 
 @Global()
 @Module({
@@ -38,6 +39,7 @@ import { NovelPermissionService } from "./services/novel-permission.service"
     SearchRepository,
     GeminiAnalysisRepository,
     EpisodeRepository,
+    BlockSyncRepository,
   ],
   controllers: [NovelsController],
 })
