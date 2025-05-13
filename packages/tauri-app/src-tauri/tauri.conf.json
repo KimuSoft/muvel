@@ -58,7 +58,7 @@
       "endpoints": [
         "https://github.com/KimuSoft/muvel-public/releases/latest/download/latest.json"
       ],
-      "windows": {"installMode": "passive"}
+      "windows": { "installMode": "passive" }
     },
     "cli": {
       "description": "Open‑by‑double‑click interface",
