@@ -38,7 +38,7 @@ pub fn run() {
     builder
         .manage(PendingOpen::default())
         .setup(|app| {
-
+            #[cfg(not(any(target_os = "android", target_os = "ios")))]
             {
                 // Auto Update
                 // let handle = app.handle().clone();
