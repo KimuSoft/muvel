@@ -159,7 +159,7 @@ const InfoTemplate: React.FC<{
                       </Menu.Item>
                     </BlockLink>
                     <BlockLink
-                      to={`${DOWNLOAD_URL_BASE}/Muvel_${DOWNLOAD_VERSION}_arrch64.dmg`}
+                      to={`${DOWNLOAD_URL_BASE}/Muvel_${DOWNLOAD_VERSION}_aarch64.dmg`}
                     >
                       <Menu.Item value={"macos-silicon"}>
                         <TbBrandApple /> MacOS (Apple Silicon)
