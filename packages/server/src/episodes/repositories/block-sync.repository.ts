@@ -56,7 +56,8 @@ export class BlockSyncRepository {
 
     await this.blocksRepository.upsert(
       updatedBlocks.map((prevBlock) => {
-        const newBlock = blockMap.get(prevBlock.id)
+        const newBlock: (DeltaBlock & { text?: string }) | undefined =
+          blockMap.get(prevBlock.id)
         if (!newBlock) return prevBlock
 
         if (prevBlock.updatedAt.getTime() > new Date(newBlock.date).getTime()) {
