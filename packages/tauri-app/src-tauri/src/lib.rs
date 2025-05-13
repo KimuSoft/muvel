@@ -1,12 +1,15 @@
-use crate::handle_open_file::handle_opened_file;
+use crate::file_handler::take_initial_open;
+use crate::models::PendingOpen;
 use commands::*;
-use tauri::Emitter;
+use file_handler::handle_opened_file;
+use tauri::{Emitter, Manager};
+use tauri_plugin_cli::CliExt;
 use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_updater::UpdaterExt;
 
 mod commands;
-mod handle_open_file;
+mod file_handler;
 mod models;
 mod storage;
 mod update;
@@ -14,11 +17,13 @@ mod update;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        // 플러그인 로드
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_cli::init())
+        .manage(PendingOpen::default())
         .setup(|app| {
             // Auto Update
             let handle = app.handle().clone();
@@ -27,34 +32,21 @@ pub fn run() {
             });
 
             // Open With
-            let args: Vec<_> = std::env::args_os().collect();
-            if args.len() > 1 {
-                let file_path_osstr = &args[1];
-                println!(
-                    "애플리케이션이 다음 파일 인자와 함께 실행됨: {:?}",
-                    file_path_osstr
-                );
-
-                if let Err(e) = handle_opened_file(app, file_path_osstr) {
-                    eprintln!("열린 파일 처리 중 오류 발생 {:?}: {}", file_path_osstr, e);
-
-                    let dialog_app_handle = app.handle().clone();
-                    let error_message_for_dialog = e.clone();
-
-                    dialog_app_handle
-                        .dialog()
-                        .message(error_message_for_dialog)
-                        .title("파일 열기 오류")
-                        .kind(tauri_plugin_dialog::MessageDialogKind::Error)
-                        .show(|confirmed| {
-                            println!(
-                                "오류 다이얼로그가 닫혔습니다. 사용자가 확인했는지: {}",
-                                confirmed
-                            );
-                        });
+            let matches = app.cli().matches()?;
+            let pending_state = app.state::<models::PendingOpen>();
+            if let Some(paths) = matches.args.get("file").and_then(|a| a.value.as_array()) {
+                for p in paths {
+                    if let Some(path_str) = p.as_str() {
+                        let path = std::path::PathBuf::from(path_str);
+                        if let Err(e) =
+                            file_handler::handle_opened_file(&app.handle(), &pending_state, &path)
+                        {
+                            eprintln!("파일 처리 실패: {e}");
+                        }
+                    } else {
+                        eprintln!("CLI 인자 형식 오류(문자열 아님): {p:?}");
+                    }
                 }
-            } else {
-                println!("Application started without file arguments.");
             }
 
             // Debug
@@ -99,7 +91,9 @@ pub fn run() {
             delete_local_episode_command,
             list_local_episode_summaries_command,
             // 이미지 리소스 관련 명령어
-            save_image_to_novel_resources_command
+            save_image_to_novel_resources_command,
+            // 파일 열기 관련 명령어
+            take_initial_open,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

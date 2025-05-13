@@ -1,7 +1,5 @@
 import React, { type PropsWithChildren, useEffect } from "react"
 import {
-  getCliPlugin,
-  getEventApi,
   getProcessPlugin,
   getUpdaterPlugin,
 } from "~/services/tauri/tauriApiProvider"
@@ -42,36 +40,6 @@ const TauriEventProvider: React.FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     if (!isTauri) return
     void checkForUpdates()
-
-    // Tauri 이벤트 리스너 설정
-    let unlistenNovel: () => void
-    let unlistenEpisode: () => void
-
-    console.log("타우리 리스너~!")
-
-    const setupListeners = async () => {
-      const { listen } = await getEventApi()
-
-      unlistenNovel = await listen<string>("on_open_novel", (event) => {
-        console.log(event.payload)
-        navigate(`/novels/${event.payload}`)
-      })
-
-      unlistenEpisode = await listen<{ episodeId: string }>(
-        "on_open_episode",
-        (event) => {
-          const { episodeId } = event.payload
-          if (episodeId) navigate(`/episodes/${episodeId}`)
-        },
-      )
-    }
-
-    void setupListeners()
-
-    return () => {
-      if (unlistenNovel) unlistenNovel()
-      if (unlistenEpisode) unlistenEpisode()
-    }
   }, [isTauri, navigate])
 
   return <>{children}</>
