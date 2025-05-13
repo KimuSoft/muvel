@@ -47,6 +47,8 @@ import { IoColorPalette, IoSparklesSharp } from "react-icons/io5"
 import { GoWorkflow } from "react-icons/go"
 import { BsQuote } from "react-icons/bs"
 
+// (임시) 나중에 고정 링크를 생성해야 함
+const DOWNLOAD_VERSION = "2.3.1"
 const DOWNLOAD_URL_BASE =
   "https://github.com/KimuSoft/muvel-public/releases/latest/download"
 
@@ -146,7 +148,7 @@ const InfoTemplate: React.FC<{
                 <Menu.Content>
                   <Menu.ItemGroup>
                     <BlockLink
-                      to={`${DOWNLOAD_URL_BASE}/muvel-windows-x64-setup.exe`}
+                      to={`${DOWNLOAD_URL_BASE}/Muvel_${DOWNLOAD_VERSION}_x64-setup.exe`}
                     >
                       <Menu.Item value={"windows"}>
                         <TbBrandWindows /> Windows
@@ -157,7 +159,7 @@ const InfoTemplate: React.FC<{
                       </Menu.Item>
                     </BlockLink>
                     <BlockLink
-                      to={`${DOWNLOAD_URL_BASE}/muvel-macos-arm64.dmg`}
+                      to={`${DOWNLOAD_URL_BASE}/Muvel_${DOWNLOAD_VERSION}_arrch64.dmg`}
                     >
                       <Menu.Item value={"macos-silicon"}>
                         <TbBrandApple /> MacOS (Apple Silicon)
@@ -167,7 +169,9 @@ const InfoTemplate: React.FC<{
                         </Text>
                       </Menu.Item>
                     </BlockLink>
-                    <BlockLink to={`${DOWNLOAD_URL_BASE}/muvel-macos-x64.dmg`}>
+                    <BlockLink
+                      to={`${DOWNLOAD_URL_BASE}/Muvel_${DOWNLOAD_VERSION}_x64.dmg`}
+                    >
                       <Menu.Item value={"macos-intel"}>
                         <TbBrandApple /> MacOS (Intel)
                         <Spacer />
@@ -177,7 +181,7 @@ const InfoTemplate: React.FC<{
                       </Menu.Item>
                     </BlockLink>
                     <BlockLink
-                      to={`${DOWNLOAD_URL_BASE}/muvel-linux-x64.AppImage`}
+                      to={`${DOWNLOAD_URL_BASE}/Muvel_${DOWNLOAD_VERSION}_amd64.AppImage`}
                     >
                       <Menu.Item value={"linux"}>
                         <SiLinux /> Linux
