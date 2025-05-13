@@ -71,10 +71,6 @@ jobs:
       - name: Build API types
         run: pnpm build:api
 
-      - name: Get package.json version
-        id: package_version
-        run: echo "PACKAGE_VERSION=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
-
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.PUBLIC_REPO_TOKEN }}

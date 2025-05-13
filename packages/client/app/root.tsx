@@ -22,6 +22,7 @@ import { TbSlash } from "react-icons/tb"
 import { IoWarning } from "react-icons/io5"
 import { isAxiosError } from "axios"
 import ErrorTemplate from "~/components/templates/ErrorTemplate"
+import TauriEventProvider from "./providers/TauriEventProvider"
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -76,6 +77,7 @@ export default function App() {
         {isLoading && <LoadingOverlay />}
         <Toaster />
         <Outlet />
+        <TauriEventProvider />
       </UserProvider>
     </Provider>
   )
