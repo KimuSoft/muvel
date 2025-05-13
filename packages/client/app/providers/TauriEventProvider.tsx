@@ -30,6 +30,11 @@ const TauriEventProvider: React.FC<PropsWithChildren> = ({ children }) => {
           },
         },
       })
+    } else {
+      toaster.info({
+        title: "업데이트 확인",
+        description: "현재 최신 버전입니다.",
+      })
     }
   }
 

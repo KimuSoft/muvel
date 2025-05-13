@@ -41,12 +41,12 @@ const Header: React.FC<{ logo?: boolean; nonWide?: boolean } & CenterProps> = ({
             <BlockLink to={"/"}>
               <Logo w={128} cursor={"pointer"} />
             </BlockLink>
-            <Tag.Root>
-              {envIcon}
-              <Tag.Label ml={1}>v{import.meta.env.VITE_APP_VERSION}</Tag.Label>
-            </Tag.Root>
           </>
         ) : null}
+        <Tag.Root>
+          {envIcon}
+          <Tag.Label ml={1}>v{import.meta.env.VITE_APP_VERSION}</Tag.Label>
+        </Tag.Root>
         <Spacer />
         <ColorModeButton />
         <Auth />
