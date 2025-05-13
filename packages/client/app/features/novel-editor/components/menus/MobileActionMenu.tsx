@@ -12,12 +12,14 @@ const MobileActionMenu: React.FC<{
   exportDialog: UseDialogReturn
   snapshotDialog: UseDialogReturn
   settingDialog: UseDialogReturn
+  isLocalNovel?: boolean
 }> = ({
   searchDialog,
   commentDialog,
   exportDialog,
   snapshotDialog,
   settingDialog,
+  isLocalNovel,
 }) => {
   const { colorMode, toggleColorMode } = useColorMode()
 
@@ -28,6 +30,26 @@ const MobileActionMenu: React.FC<{
           case "setting":
             console.log('"setting"')
             settingDialog.setOpen(true)
+            break
+          case "search":
+            console.log('"search"')
+            searchDialog.setOpen(true)
+            break
+          case "review":
+            console.log('"review"')
+            commentDialog.setOpen(true)
+            break
+          case "export":
+            console.log('"export"')
+            exportDialog.setOpen(true)
+            break
+          case "snapshot":
+            console.log('"snapshot"')
+            snapshotDialog.setOpen(true)
+            break
+          case "color-mode":
+            console.log('"color-mode"')
+            toggleColorMode()
             break
         }
       }}
@@ -45,25 +67,22 @@ const MobileActionMenu: React.FC<{
 
       <Menu.Positioner>
         <Menu.Content>
-          <Menu.Item value="search" onClick={() => searchDialog.setOpen(true)}>
+          <Menu.Item value="search" disabled={isLocalNovel}>
             <BiSearch /> 소설 검색하기
           </Menu.Item>
-          <Menu.Item value="review" onClick={() => commentDialog.setOpen(true)}>
+          <Menu.Item value="review" disabled={isLocalNovel}>
             <TbMessage /> 리뷰 보기
           </Menu.Item>
-          <Menu.Item value="export" onClick={() => exportDialog.setOpen(true)}>
+          <Menu.Item value="export">
             <BiExport /> 회차 내보내기
           </Menu.Item>
-          <Menu.Item
-            value="snapshot"
-            onClick={() => snapshotDialog.setOpen(true)}
-          >
+          <Menu.Item disabled={isLocalNovel} value="snapshot">
             <BiHistory /> 버전 관리하기
           </Menu.Item>
           <Menu.Item value="setting">
             <PiGear /> 에디터 설정하기
           </Menu.Item>
-          <Menu.Item value="color-mode" onClick={() => toggleColorMode()}>
+          <Menu.Item value="color-mode">
             {colorMode === "dark" ? <TbSun /> : <TbMoon />}{" "}
             {colorMode === "dark" ? "라이트모드" : "다크모드"}로 전환하기
           </Menu.Item>
