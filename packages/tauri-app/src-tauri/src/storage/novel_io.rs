@@ -9,7 +9,7 @@ use std::path::{Path, PathBuf}; // 경로 관련 타입
 use crate::models::LocalNovelData;
 
 // 소설 메타데이터 파일의 표준 이름
-const NOVEL_METADATA_FILENAME: &str = "novel-metadata.muvl";
+pub const NOVEL_METADATA_FILENAME: &str = "novel-metadata.muvl";
 // 에피소드 파일들을 저장할 폴더 이름
 const EPISODES_DIRNAME: &str = "episodes";
 // 리소스 파일들(표지 이미지 등)을 저장할 폴더 이름

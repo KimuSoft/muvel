@@ -5,6 +5,9 @@ type TauriCoreApiType = typeof import("@tauri-apps/api/core")
 type TauriDialogPluginType = typeof import("@tauri-apps/plugin-dialog")
 type TauriPathApiType = typeof import("@tauri-apps/api/path") // 경로 수정: 핵심 API에 포함
 type TauriOpenerPluginType = typeof import("@tauri-apps/plugin-opener")
+type TauriEventType = typeof import("@tauri-apps/api/event")
+type TauriUpdatePluginType = typeof import("@tauri-apps/plugin-updater")
+type TauriProcessPluginType = typeof import("@tauri-apps/plugin-process")
 
 // Vite 환경 변수를 사용하여 Tauri 앱 환경인지 확인
 const IS_TAURI_APP = import.meta.env.VITE_TAURI === "true"
@@ -118,4 +121,49 @@ export const preloadTauriApis = async (): Promise<void> => {
     })
     console.log("Tauri API & Plugin preloading attempt finished.")
   }
+}
+
+/**
+ * @tauri-apps/api/event 모듈을 가져옵니다.
+ */
+export const getEventApi = (): Promise<TauriEventType> => {
+  if (!IS_TAURI_APP) {
+    return Promise.reject(
+      new Error("Tauri Event API is not available in this environment."),
+    )
+  }
+  return import("@tauri-apps/api/event").catch((error) => {
+    console.error("Failed to load @tauri-apps/api/event:", error)
+    throw error
+  })
+}
+
+/**
+ * @tauri-apps/plugin-updater 모듈을 가져옵니다.
+ */
+export const getUpdaterPlugin = (): Promise<TauriUpdatePluginType> => {
+  if (!IS_TAURI_APP) {
+    return Promise.reject(
+      new Error("Tauri Updater Plugin is not available in this environment."),
+    )
+  }
+  return import("@tauri-apps/plugin-updater").catch((error) => {
+    console.error("Failed to load @tauri-apps/plugin-updater:", error)
+    throw error
+  })
+}
+
+/**
+ * @tauri-apps/plugin-process 모듈을 가져옵니다.
+ */
+export const getProcessPlugin = (): Promise<TauriProcessPluginType> => {
+  if (!IS_TAURI_APP) {
+    return Promise.reject(
+      new Error("Tauri Process Plugin is not available in this environment."),
+    )
+  }
+  return import("@tauri-apps/plugin-process").catch((error) => {
+    console.error("Failed to load @tauri-apps/plugin-process:", error)
+    throw error
+  })
 }
