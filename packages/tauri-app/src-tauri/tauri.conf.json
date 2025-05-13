@@ -55,7 +55,7 @@
     },
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEY5NkY0MTQ4MzJCRTY1NjkKUldScFpiNHlTRUZ2K1htMWUwcFpVR2RHQS9HTnZjZnIxdElXcGEwVVN1cE1Nd28xeE9NUi9ZMDkK",
-      "endpoint": [
+      "endpoints": [
         "https://github.com/KimuSoft/muvel-public/releases/latest/download/latest.json"
       ],
       "windows": {"installMode": "passive"}

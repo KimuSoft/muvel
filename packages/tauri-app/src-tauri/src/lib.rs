@@ -3,6 +3,7 @@ use crate::models::PendingOpen;
 use commands::*;
 use file_handler::handle_opened_file;
 use tauri::{Emitter, Manager};
+use tauri_plugin_cli::CliExt;
 use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_dialog::DialogExt;
 
@@ -27,7 +28,7 @@ pub fn run() {
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init());
-    
+
     #[cfg(not(any(target_os = "android", target_os = "ios")))]
     {
         builder = builder
@@ -41,10 +42,10 @@ pub fn run() {
             #[cfg(not(any(target_os = "android", target_os = "ios")))]
             {
                 // Auto Update
-                let handle = app.handle().clone();
-                tauri::async_runtime::spawn(async move {
-                    update::update(handle).await.unwrap();
-                });
+                // let handle = app.handle().clone();
+                // tauri::async_runtime::spawn(async move {
+                //     update::update(handle).await.unwrap();
+                // });
 
                 // Open With
                 let matches = app.cli().matches()?;
@@ -53,9 +54,11 @@ pub fn run() {
                     for p in paths {
                         if let Some(path_str) = p.as_str() {
                             let path = std::path::PathBuf::from(path_str);
-                            if let Err(e) =
-                                file_handler::handle_opened_file(&app.handle(), &pending_state, &path)
-                            {
+                            if let Err(e) = file_handler::handle_opened_file(
+                                &app.handle(),
+                                &pending_state,
+                                &path,
+                            ) {
                                 eprintln!("파일 처리 실패: {e}");
                             }
                         } else {
@@ -64,7 +67,7 @@ pub fn run() {
                     }
                 }
             }
-            
+
             // Debug
             if cfg!(debug_assertions) {
                 app.handle().plugin(

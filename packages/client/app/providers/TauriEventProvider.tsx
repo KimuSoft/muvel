@@ -19,7 +19,7 @@ const TauriEventProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     if (update) {
       toaster.info({
-        title: "업데이트가 있습니다",
+        title: "새로운 뮤블 업데이트가 있어요!",
         description: "새로운 버전이 설치 가능합니다.",
         action: {
           label: "업데이트",
