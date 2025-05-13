@@ -3,15 +3,14 @@ use crate::models::PendingOpen;
 use commands::*;
 use file_handler::handle_opened_file;
 use tauri::{Emitter, Manager};
-use tauri_plugin_cli::CliExt;
 use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_dialog::DialogExt;
 
 #[cfg(not(any(target_os = "android", target_os = "ios")))]
-mod desktop_only {
-    pub use tauri_plugin_cli::CliExt;
-    pub use tauri_plugin_updater::UpdaterExt;
-}
+use tauri_plugin_cli::CliExt;
+
+#[cfg(not(any(target_os = "android", target_os = "ios")))]
+use tauri_plugin_updater::UpdaterExt;
 
 mod commands;
 mod file_handler;
@@ -39,7 +38,7 @@ pub fn run() {
     builder
         .manage(PendingOpen::default())
         .setup(|app| {
-            #[cfg(not(any(target_os = "android", target_os = "ios")))]
+
             {
                 // Auto Update
                 // let handle = app.handle().clone();
