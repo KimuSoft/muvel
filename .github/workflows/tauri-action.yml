@@ -71,12 +71,12 @@ jobs:
       - name: Build API types
         run: pnpm build:api
 
-      - name: Get package.json version
-        id: package_version
-        run: |
-          VERSION=$(jq -r .version package.json)
-          echo "PACKAGE_VERSION=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "Detected package.json version → $VERSION"
+      # - name: Get package.json version
+      #   id: package_version
+      #   run: |
+      #     VERSION=$(jq -r .version package.json)
+      #     echo "PACKAGE_VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+      #     echo "Detected package.json version → $VERSION"
 
       # 주의: 현재 해당 버전의 태그와 릴리즈를 미리 작성해야 작동함!
       - uses: tauri-apps/tauri-action@v0
