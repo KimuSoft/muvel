@@ -14,6 +14,7 @@ import { autoQuotePlugin } from "~/features/novel-editor/plugins/autoQuotePlugin
 import { typewriterPlugin } from "~/features/novel-editor/plugins/typewriterPlugin"
 import { highlightPlugin } from "~/features/novel-editor/plugins/highlightPlugin"
 import { Fragment, Node as PMNode, Slice } from "prosemirror-model"
+import { placeholderPlugin } from "~/features/novel-editor/plugins/placeholderPlugin"
 
 interface UseEditorProps {
   containerRef: React.RefObject<HTMLDivElement>
@@ -49,6 +50,7 @@ export const useEditor = ({
         autoQuotePlugin,
         typewriterPlugin,
         highlightPlugin(),
+        placeholderPlugin,
         keymap({
           "Mod-z": undo,
           "Mod-y": redo,
