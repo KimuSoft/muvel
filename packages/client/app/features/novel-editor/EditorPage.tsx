@@ -7,8 +7,8 @@ import { WidgetProvider } from "~/features/novel-editor/widgets/context/WidgetCo
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 import LoadingOverlay from "~/components/templates/LoadingOverlay"
 import { useEpisodeSync } from "~/features/novel-editor/hooks/useEpisodeSync"
-import { useBlocksSync } from "./hooks/useBlocksSync"
 import { combineSyncStates } from "~/utils/combineSyncStates"
+import { useBlocksSync } from "~/features/novel-editor/hooks/useBlocksSync"
 
 const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   episode: initialEpisode,

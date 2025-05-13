@@ -196,6 +196,7 @@ const EditorHeader: React.FC<
         exportDialog={exportDialog}
         snapshotDialog={snapshotDialog}
         settingDialog={settingDialog}
+        isLocalNovel={isLocal}
       />
     </HStack>
   )

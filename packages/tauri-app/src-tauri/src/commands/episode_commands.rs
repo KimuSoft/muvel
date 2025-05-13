@@ -1,12 +1,14 @@
 // src-tauri/src/app_lib/commands/episode_commands.rs
 
+use std::collections::HashMap;
 use std::path::PathBuf;
 use tauri::{command, AppHandle};
 use uuid::Uuid;
 
 use crate::models::{
-    CreateLocalEpisodeOptions as RustCreateLocalEpisodeOptions, EpisodeParentNovelContext,
-    EpisodeType, LocalEpisodeData, LocalEpisodeDataResponse, LocalNovelDataEpisodesSummary,
+    Block, CreateLocalEpisodeOptions as RustCreateLocalEpisodeOptions, DeltaBlockActionRust,
+    EpisodeParentNovelContext, EpisodeType, LocalEpisodeData, LocalEpisodeDataResponse,
+    LocalNovelDataEpisodesSummary, RustDeltaBlock,
     UpdateLocalEpisodeBlocksData as RustUpdateLocalEpisodeBlocksData,
     UpdateLocalEpisodeMetadata as RustUpdateLocalEpisodeMetadata,
 };
@@ -395,4 +397,180 @@ pub fn list_local_episode_summaries_command(
 
     let novel_data = novel_io::read_novel_metadata(&novel_root_path)?;
     Ok(novel_data.episodes.unwrap_or_else(Vec::new))
+}
+
+/// ProseMirror의 content JSON 배열에서 순수 텍스트를 추출합니다.
+/// content는 일반적으로 인라인 노드(예: text, mark)의 배열입니다.
+fn calculate_block_text(content: &Vec<serde_json::Value>) -> String {
+    content
+        .iter()
+        .filter_map(|node| {
+            if let Some(obj) = node.as_object() {
+                // type이 "text"인 노드에서 text 값을 추출합니다.
+                if obj.get("type").and_then(|t| t.as_str()) == Some("text") {
+                    obj.get("text").and_then(|t| t.as_str()).map(str::to_string)
+                } else {
+                    // 다른 타입의 노드 (예: hardBreak는 텍스트가 없을 수 있음)
+                    // 또는 중첩된 content를 가진 노드를 재귀적으로 처리할 수도 있습니다.
+                    // 여기서는 간단하게 직접적인 text 노드만 처리합니다.
+                    None
+                }
+            } else {
+                None
+            }
+        })
+        .collect::<Vec<String>>()
+        .join("")
+}
+
+#[command]
+pub fn sync_local_delta_blocks_command(
+    app_handle: AppHandle,
+    episode_id: String,
+    delta_blocks: Vec<RustDeltaBlock>,
+) -> Result<(), String> {
+    // 1. 에피소드 및 관련 정보 불러오기
+    let novel_id = item_index_manager::get_novel_id_for_item(&app_handle, &episode_id)?
+        .ok_or_else(|| {
+            format!(
+                "아이템 인덱스에서 에피소드 ID {} 에 대한 부모 소설 정보를 찾을 수 없습니다.",
+                episode_id
+            )
+        })?;
+
+    let novel_entry = index_manager::get_novel_entry(&app_handle, &novel_id)?
+        .ok_or_else(|| format!("소설 ID {} 를 인덱스에서 찾을 수 없습니다.", novel_id))?;
+
+    let novel_root_path_str = novel_entry.path.ok_or_else(|| {
+        format!(
+            "소설 ID {} 에 대한 경로 정보가 인덱스에 없습니다.",
+            novel_id
+        )
+    })?;
+    let novel_root_path = PathBuf::from(novel_root_path_str);
+
+    let mut episode_data = episode_io::read_episode_content(&novel_root_path, &episode_id)?;
+
+    // 현재 블록들을 HashMap으로 변환하여 빠른 접근 및 수정을 용이하게 함
+    // 이제 EpisodeBlockData 대신 models::Block을 사용합니다.
+    let mut current_blocks_map: HashMap<String, Block> = episode_data
+        .blocks
+        .into_iter()
+        .map(|b| (b.id.clone(), b))
+        .collect();
+
+    let server_update_time = chrono::Utc::now().to_rfc3339();
+
+    // 2. DeltaBlock 적용
+    for delta in delta_blocks {
+        match delta.action {
+            DeltaBlockActionRust::Create => {
+                let block_content = delta.content.ok_or_else(|| {
+                    format!("생성 액션 시 블록 ID {}에 content가 없습니다.", delta.id)
+                })?;
+
+                let block_text = calculate_block_text(&block_content);
+
+                // order는 f32로 받지만 Block에는 i32로 저장
+                let new_block_f_order = delta.order.unwrap_or_else(|| {
+                    current_blocks_map
+                        .values()
+                        .map(|b| b.order as f32) // i32를 f32로 변환하여 계산
+                        .fold(0.0_f32, |max, ord| if ord > max { ord } else { max })
+                        + 1.0
+                });
+
+                let new_block = Block {
+                    id: delta.id.clone(),
+                    text: block_text, // 파생된 텍스트 사용
+                    content: block_content,
+                    block_type: delta.block_type.ok_or_else(|| {
+                        format!("생성 액션 시 블록 ID {}에 blockType이 없습니다.", delta.id)
+                    })?,
+                    attr: delta.attr,
+                    order: new_block_f_order.round() as i32, // f32를 i32로 변환
+                    // Block 모델에는 created_at이 없으므로, delta.date를 사용하지 않음.
+                    // updated_at은 Option<String>이므로 Some(delta.date) 사용
+                    updated_at: Some(delta.date.clone()),
+                };
+                current_blocks_map.insert(delta.id, new_block);
+            }
+            DeltaBlockActionRust::Update => {
+                if let Some(block_to_update) = current_blocks_map.get_mut(&delta.id) {
+                    let mut changed = false;
+                    if let Some(content_val) = delta.content {
+                        block_to_update.content = content_val;
+                        // content가 변경되면 text도 다시 계산
+                        block_to_update.text = calculate_block_text(&block_to_update.content);
+                        changed = true;
+                    }
+                    if let Some(block_type_val) = delta.block_type {
+                        block_to_update.block_type = block_type_val;
+                        changed = true;
+                    }
+                    // delta.attr이 Some일 때만 업데이트 (Some(Value::Null) 포함)
+                    if delta.attr.is_some() {
+                        block_to_update.attr = delta.attr;
+                        changed = true;
+                    }
+                    if let Some(f_order_val) = delta.order {
+                        block_to_update.order = f_order_val.round() as i32; // f32를 i32로 변환
+                        changed = true;
+                    }
+
+                    if changed {
+                        block_to_update.updated_at = Some(delta.date); // Delta의 날짜 사용
+                    }
+                } else {
+                    println!(
+                        "Warning: 업데이트하려는 블록 ID {}를 찾을 수 없습니다.",
+                        delta.id
+                    );
+                }
+            }
+            DeltaBlockActionRust::Delete => {
+                current_blocks_map.remove(&delta.id);
+            }
+        }
+    }
+
+    // HashMap에서 Vec<Block>으로 다시 변환하고 순서대로 정렬 (i32 기준)
+    let mut updated_blocks_vec: Vec<Block> = current_blocks_map.into_values().collect();
+    updated_blocks_vec.sort_by(|a, b| a.order.cmp(&b.order));
+
+    // 3. 에피소드 데이터 업데이트 및 저장
+    episode_data.blocks = updated_blocks_vec;
+    episode_data.updated_at = server_update_time.clone();
+
+    let new_content_length = episode_data.blocks.len() as i32;
+    episode_data.content_length = Some(new_content_length);
+
+    episode_io::write_episode_content(&novel_root_path, &episode_id, &episode_data)?;
+
+    // 4. 부모 소설 메타데이터(.muvl)의 에피소드 요약 정보 업데이트
+    let mut novel_data = novel_io::read_novel_metadata(&novel_root_path)?;
+    let mut novel_meta_updated = false;
+
+    if let Some(episodes_summary_vec) = novel_data.episodes.as_mut() {
+        if let Some(summary_to_update) =
+            episodes_summary_vec.iter_mut().find(|s| s.id == episode_id)
+        {
+            summary_to_update.updated_at = server_update_time.clone();
+            summary_to_update.content_length = Some(new_content_length);
+            novel_meta_updated = true;
+        }
+    }
+
+    if novel_meta_updated {
+        novel_data.updated_at = server_update_time;
+        novel_io::write_novel_metadata(&novel_root_path, &novel_data)?;
+
+        if let Some(mut entry_to_update) = index_manager::get_novel_entry(&app_handle, &novel_id)? {
+            // NovelIndexEntry에 updated_at이나 contentLength 같은 필드가 있다면 여기서 업데이트
+            // 예: entry_to_update.updated_at = Some(novel_data.updated_at.clone());
+            index_manager::upsert_novel_entry(&app_handle, novel_id.clone(), entry_to_update)?;
+        }
+    }
+
+    Ok(())
 }

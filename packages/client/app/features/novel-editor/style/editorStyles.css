@@ -137,3 +137,9 @@ body::-webkit-scrollbar-thumb {
 body::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.placeholder::before {
+  content: var(--placeholder-text);
+  color: #aaa;
+  position: absolute;
+}

@@ -18,7 +18,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import React, { useEffect } from "react"
-import type { EpisodeSnapshot } from "muvel-api-types"
+import { SnapshotReason, type EpisodeSnapshot } from "muvel-api-types"
 import { getCloudSnapshots } from "~/services/api/api.episode"
 import { TbHistory, TbSlash } from "react-icons/tb"
 import { toaster } from "~/components/ui/toaster"
@@ -59,8 +59,18 @@ const SnapshotItem: React.FC<{
             .reduce((acc, cur) => acc + cur)}
           자
         </Text>
-        <Tag.Root variant={"outline"} colorPalette={"purple"} size={"sm"}>
-          <Tag.Label>자동 생성</Tag.Label>
+        <Tag.Root
+          variant={"outline"}
+          colorPalette={
+            snapshot.reason === SnapshotReason.Autosave ? "purple" : "yellow"
+          }
+          size={"sm"}
+        >
+          <Tag.Label>
+            {snapshot.reason === SnapshotReason.Autosave
+              ? "자동 생성"
+              : "병합 전 백업"}
+          </Tag.Label>
         </Tag.Root>
       </HStack>
     </Stack>

@@ -1,0 +1,104 @@
+name: Tauri Android
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  build-android:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r27c
+          link-to-sdk: true
+          add-to-path: false
+
+      - name: Install Rust stable and Android targets
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+          components: rust-src
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install app dependencies
+        run: pnpm install
+
+      - name: Build API types package
+        run: pnpm build:api
+
+      - name: Build Tauri Android app
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_SDK_ROOT }}
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: pnpm --filter tauri-app tauri android build
+
+      - name: Upload Android artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-app-android
+          path: packages/tauri-app/src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk
+
+  # ─────────────────────────────── Release job ──────────────────────────
+  release:
+    needs: build-android
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: List downloaded artifacts for debugging
+        run: ls -R artifacts
+
+      - name: Get package.json version
+        id: package_version
+        run: echo "PACKAGE_VERSION=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+
+      - name: Create Release on Public Repository
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+          repository: KimuSoft/muvel-public
+          files: |
+            artifacts/tauri-app-android/*.apk
+          tag_name: v${{ steps.package_version.outputs.PACKAGE_VERSION }}
+          name: "v${{ steps.package_version.outputs.PACKAGE_VERSION }}"
+          body: |
+            자동 빌드된 Tauri 앱입니다.
+            production 브랜치 푸시 시 자동 릴리스.
+            package.json 버전: ${{ steps.package_version.outputs.PACKAGE_VERSION }}
+          draft: false
+          prerelease: false

@@ -1,6 +1,5 @@
 import React, { type PropsWithChildren, useEffect } from "react"
 import {
-  getEventApi,
   getProcessPlugin,
   getUpdaterPlugin,
 } from "~/services/tauri/tauriApiProvider"
@@ -20,8 +19,8 @@ const TauriEventProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     if (update) {
       toaster.info({
-        title: "업데이트가 있습니다",
-        description: "새로운 버전이 설치 가능합니다.",
+        title: "새로운 뮤블 업데이트가 있어요!",
+        description: "새로운 버전을 바로 설치할 수 있어요!",
         action: {
           label: "업데이트",
           onClick: async () => {
@@ -36,36 +35,6 @@ const TauriEventProvider: React.FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     if (!isTauri) return
     void checkForUpdates()
-
-    // Tauri 이벤트 리스너 설정
-    let unlistenNovel: () => void
-    let unlistenEpisode: () => void
-
-    console.log("타우리 리스너~!")
-
-    const setupListeners = async () => {
-      const { listen } = await getEventApi()
-
-      unlistenNovel = await listen<string>("on_open_novel", (event) => {
-        console.log(event.payload)
-        navigate(`/novels/${event.payload}`)
-      })
-
-      unlistenEpisode = await listen<{ episodeId: string }>(
-        "on_open_episode",
-        (event) => {
-          const { episodeId } = event.payload
-          if (episodeId) navigate(`/episodes/${episodeId}`)
-        },
-      )
-    }
-
-    void setupListeners()
-
-    return () => {
-      if (unlistenNovel) unlistenNovel()
-      if (unlistenEpisode) unlistenEpisode()
-    }
   }, [isTauri, navigate])
 
   return <>{children}</>

@@ -8,6 +8,8 @@ const CMD_GET_LOCAL_NOVEL_ENTRY = `get_local_novel_entry_command`
 const CMD_REGISTER_NOVEL_FROM_PATH = `register_novel_from_path_command`
 const CMD_REMOVE_NOVEL_PROJECT = `remove_novel_project_command` // 인덱스 및 파일 모두 삭제
 
+const CMD_TAKE_INITIAL_OPEN = `take_initial_open`
+
 /**
  * Rust에 인덱싱된 모든 로컬 소설의 요약 정보 목록을 요청합니다.
  * (UI의 "내 로컬 소설" 목록 표시에 사용)
@@ -77,5 +79,30 @@ export const deleteLocalNovel = async (novelId: string): Promise<void> => {
   } catch (error) {
     console.error(`Error removing novel ${novelId} data and from index:`, error)
     throw error
+  }
+}
+
+export type OpenedItem =
+  | {
+      kind: "novel"
+      novel_id: string
+    }
+  | {
+      kind: "episode"
+      novel_id: string
+      episode_id: string
+    }
+
+/**
+ * 앱이 처음 열릴 때, Rust에 초기화된 소설 목록을 요청합니다. (실행 시 요청)
+ * @returns 초기화된 소설 목록
+ */
+export const takeInitialOpen = async (): Promise<OpenedItem[]> => {
+  const { invoke } = await getCoreApi()
+  try {
+    return await invoke<OpenedItem[]>(CMD_TAKE_INITIAL_OPEN)
+  } catch (error) {
+    console.error("Error taking initial open:", error)
+    return []
   }
 }

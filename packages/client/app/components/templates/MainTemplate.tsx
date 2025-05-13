@@ -26,6 +26,7 @@ import CreateNovelDialog from "~/components/modals/CreateNovelDialog"
 import { Tooltip } from "~/components/ui/tooltip"
 import Footer from "~/components/organisms/Footer"
 import type { GetLocalNovelDetailsResponse } from "~/services/tauri/types"
+import { useTauriFileOpen } from "~/hooks/useTauriFileOpen"
 
 const BuyMeACoffeText = "Buy me a coffee!"
 
@@ -82,6 +83,8 @@ const MainTemplate: React.FC<{
 }> = ({ novels }) => {
   const navigate = useNavigate()
   const createNovelDialog = useDialog()
+
+  useTauriFileOpen()
 
   return (
     <Stack p={0}>

@@ -181,7 +181,7 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
               >
                 {episodeCountText}
               </Text>
-              <Text truncate>{episode.title}</Text>
+              <Text truncate>{episode.title || "제목 없음"}</Text>
             </HStack>
             {variant !== "simple" && (
               <Text

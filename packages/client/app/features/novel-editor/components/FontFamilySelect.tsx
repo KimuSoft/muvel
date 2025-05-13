@@ -210,7 +210,8 @@ const FontFamilySelect = ({
           if (selectedValue === CUSTOM_VALUE) {
             setSelectedFamily(null)
             setFamilyStyles([])
-            onChange(customValue)
+            setCustomValue("")
+            onChange("")
           } else {
             const isPredefined = predefinedFonts.some(
               (font) => font.value === selectedValue,

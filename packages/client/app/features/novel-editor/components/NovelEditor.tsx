@@ -23,15 +23,18 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
   const containerRef = useRef<HTMLDivElement>(null!)
   const [options] = useOption()
 
+  const pasteAlertFlagRef = useRef(false)
+
   useEffect(() => {
     const handlePaste = (e: ClipboardEvent) => {
       const pastedText = e.clipboardData?.getData("text/plain") ?? ""
-      if (pastedText.includes("\n")) {
+      if (pastedText.includes("\n") && !pasteAlertFlagRef.current) {
         toaster.info({
           title: "붙여넣기 팁",
           description:
             "소설 전체를 붙여넣는 게 의도대로 안 될 경우에는 Ctrl(CMD)+Shift+V를 사용해 보세요!",
         })
+        pasteAlertFlagRef.current = true
       }
     }
 
@@ -56,7 +59,7 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
       ref={containerRef}
       w={"100%"}
       borderRadius="md"
-      p={4}
+      p={0}
       pb={"40vh"}
       spellCheck={false}
       tabIndex={0}

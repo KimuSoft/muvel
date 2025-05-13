@@ -7,13 +7,14 @@ import { history, redo, undo } from "prosemirror-history"
 import { baseSchema } from "../schema/baseSchema"
 import { blocksToDoc } from "../utils/blockConverter"
 import { useEditorContext } from "../context/EditorContext"
-import type { Block } from "muvel-api-types"
+import { type Block, BlockType } from "muvel-api-types"
 import { createInputRules } from "~/features/novel-editor/plugins/inputRules"
 import { assignIdPlugin } from "~/features/novel-editor/plugins/assignIdPlugin"
 import { autoQuotePlugin } from "~/features/novel-editor/plugins/autoQuotePlugin"
 import { typewriterPlugin } from "~/features/novel-editor/plugins/typewriterPlugin"
 import { highlightPlugin } from "~/features/novel-editor/plugins/highlightPlugin"
 import { Fragment, Node as PMNode, Slice } from "prosemirror-model"
+import { placeholderPlugin } from "~/features/novel-editor/plugins/placeholderPlugin"
 
 interface UseEditorProps {
   containerRef: React.RefObject<HTMLDivElement>
@@ -37,18 +38,35 @@ export const useEditor = ({
     if (!containerRef.current) return
     if (viewRef.current) return // ✅ 에디터 중복 생성 방지
 
-    const doc = blocksToDoc(initialBlocks, baseSchema)
+    const doc = blocksToDoc(
+      initialBlocks.length
+        ? initialBlocks
+        : [
+            {
+              id: crypto.randomUUID() as string,
+              blockType: BlockType.Describe,
+              content: [],
+              text: "",
+              order: 0,
+              attr: {},
+            },
+          ],
+      baseSchema,
+    )
 
     const state = EditorState.create({
       schema: baseSchema,
       doc,
       plugins: [
-        history(),
+        history({
+          newGroupDelay: 100,
+        }),
         assignIdPlugin,
         createInputRules(baseSchema),
         autoQuotePlugin,
         typewriterPlugin,
         highlightPlugin(),
+        placeholderPlugin,
         keymap({
           "Mod-z": undo,
           "Mod-y": redo,
@@ -57,8 +75,8 @@ export const useEditor = ({
           "Mod-i": toggleMark(baseSchema.marks.em), // Italic
           "Mod-u": toggleMark(baseSchema.marks.underline), // Underline (스키마에 있다면)
           "Mod-`": toggleMark(baseSchema.marks.code), // Inline code
+          ...baseKeymap,
         }),
-        keymap(baseKeymap),
       ],
     })
 

@@ -1,19 +1,19 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common"
+import { ForbiddenException, Injectable } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
 import { PatchEpisodesDto } from "../../novels/dto/patch-episodes.dto"
 import { CreateEpisodeDto } from "../dto/create-episode.dto"
 import { NovelEntity } from "../../novels/novel.entity"
-import { SearchRepository } from "src/search/search.repository"
-import { BasePermission, BlockType, EpisodeType } from "muvel-api-types"
+import {
+  BasePermission,
+  BlockType,
+  DeltaBlock,
+  EpisodeType,
+} from "muvel-api-types"
 import { UpdateEpisodeDto } from "../dto/update-episode.dto"
-import { PatchBlocksDto } from "../dto/patch-blocks.dto"
-import { BlockRepository } from "../../blocks/block.repository"
+import { PatchBlocksDto } from "../../blocks/dto/patch-blocks.dto"
 import { EpisodeRepository } from "../repositories/episode.repository"
+import { BlockSyncRepository } from "../repositories/block-sync.repository"
 
 @Injectable()
 export class EpisodesService {
@@ -21,8 +21,7 @@ export class EpisodesService {
     @InjectRepository(NovelEntity)
     private readonly novelsRepository: Repository<NovelEntity>,
     private readonly episodesRepository: EpisodeRepository,
-    private readonly blocksRepository: BlockRepository,
-    private readonly searchRepository: SearchRepository,
+    private readonly blockSyncRepository: BlockSyncRepository,
   ) {}
 
   async findEpisodeById(id: string, permissions: BasePermission) {
@@ -46,20 +45,10 @@ export class EpisodesService {
     return episode
   }
 
-  async patchEpisodes(_id: string, episodesDiff: PatchEpisodesDto[]) {
-    await this.upsert(episodesDiff)
-  }
-
-  async findOne(id: string, relations: string[] = []) {
-    return this.episodesRepository.findOne({
-      where: { id },
-      relations,
-    })
-  }
-
   async deleteEpisode(id: string) {
-    const episode = await this.findOne(id, ["novel"])
-    if (!episode) throw new NotFoundException(`Episode with id ${id} not found`)
+    const episode = await this.episodesRepository.findOneOrFail({
+      where: { id },
+    })
 
     if (episode.episodeType === EpisodeType.Episode) {
       // 에피소드 타입이 에피소드면 회차 수를 줄임
@@ -76,71 +65,27 @@ export class EpisodesService {
     return this.episodesRepository.update({ id }, dto)
   }
 
-  async upsert(episodes: PatchEpisodesDto[]) {
-    return this.episodesRepository.upsert(episodes, ["id"])
-  }
+  async upsertEpisode(novelId: string, episodes: PatchEpisodesDto[]) {
+    // 해당 소설의 에피소드가 맞는지 검증
+    const novel = await this.novelsRepository.findOneOrFail({
+      where: { id: novelId },
+      relations: ["episodes"],
+    })
 
-  async updateBlocks(episodeId: string, blockDiffs: PatchBlocksDto[]) {
-    const episode = await this.episodesRepository.findOneBy({ id: episodeId })
-    if (!episode) return null
+    const episodeIdsSet = new Set(novel.episodes.map((episode) => episode.id))
+    const invalidEpisodes = episodes.filter(
+      (episode) => !episodeIdsSet.has(episode.id),
+    )
 
-    // 블록 id 중복 있는지 확인하고 있으면 throw 401
-    const blockIds = blockDiffs.map((b) => b.id)
-    const uniqueBlockIds = new Set(blockIds)
-    if (blockIds.length !== uniqueBlockIds.size) {
-      console.warn(
-        `중복된 블록 ID가 있습니다. episodeId=${episodeId}, blockIds=${blockIds}`,
+    if (invalidEpisodes.length) {
+      throw new ForbiddenException(
+        `해당 소설(${novelId})의 에피소드가 아닙니다. ${invalidEpisodes
+          .map((episode) => episode.id)
+          .join(", ")}`,
       )
-      console.warn(blockDiffs)
-      throw new BadRequestException("중복된 블록 ID가 있습니다.")
     }
 
-    const createdOrUpdatedBlocks = blockDiffs.filter((b) => !b.isDeleted)
-    const deletedBlockIds = blockDiffs
-      .filter((b) => b.isDeleted)
-      .map((b) => b.id)
-
-    // 변경사항 meilisearch 저장
-    void this.searchRepository.insertBlocks(
-      createdOrUpdatedBlocks.map((b) => ({
-        id: b.id,
-        content: b.content.map((c) => c.text).join(),
-        blockType: b.blockType,
-        order: b.order,
-        episodeId: episodeId,
-        episodeName: episode.title,
-        episodeNumber: episode.order,
-        index: b.order,
-        novelId: episode.novelId,
-      })),
-    )
-
-    void this.searchRepository.deleteBlocks(deletedBlockIds)
-
-    if (deletedBlockIds.length > 0) {
-      await this.blocksRepository.delete(deletedBlockIds)
-      console.info(`블록 ${deletedBlockIds.length}개 삭제됨`)
-    }
-
-    await this.blocksRepository.upsert(
-      createdOrUpdatedBlocks
-        .filter((b) => !b.isDeleted)
-        .map((b) => ({
-          id: b.id,
-          content: b.content,
-          text: b.content.map((c) => c.text).join(),
-          blockType: b.blockType,
-          order: b.order,
-          episode,
-        })),
-      ["id"],
-    )
-
-    await this.episodesRepository.update(
-      { id: episodeId },
-      { isSnapshotted: false },
-    )
-    console.info(`블록 ${createdOrUpdatedBlocks.length}개 생성/수정됨`)
+    return this.episodesRepository.upsert(episodes, ["id"])
   }
 
   async findBlocksByEpisodeId(episodeId: string, permissions: BasePermission) {
@@ -158,5 +103,14 @@ export class EpisodesService {
     }
 
     return episode.blocks
+  }
+
+  // @deprecated
+  async updateBlocks(episodeId: string, blockDiffs: PatchBlocksDto[]) {
+    return this.blockSyncRepository.upsertBlocks(episodeId, blockDiffs)
+  }
+
+  public async episodeBlocksSync(episodeId: string, deltaBlocks: DeltaBlock[]) {
+    return this.blockSyncRepository.syncDeltaBlocks(episodeId, deltaBlocks)
   }
 }

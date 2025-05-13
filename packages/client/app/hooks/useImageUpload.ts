@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react"
 import axios from "axios"
-// getCoreApi를 tauriApiProvider에서 가져옵니다.
-import { getCoreApi } from "~/services/tauri/tauriApiProvider" // 실제 경로로 수정해주세요.
-import { toaster } from "~/components/ui/toaster" // 기존 toaster 사용 경로 확인 필요
+import { getCoreApi } from "~/services/tauri/tauriApiProvider"
+import { toaster } from "~/components/ui/toaster"
+import { usePlatform } from "~/hooks/usePlatform"
 
 // 웹 업로드 URL (환경 변수 등으로 관리하는 것이 좋습니다)
 const UPLOAD_URL = "https://image.kimustory.net/images"
@@ -20,6 +20,7 @@ export const useImageUpload = ({
   storageNovelId, // novelId에서 storageNovelId로 변경하고 옵셔널로 처리
 }: UseImageUploadOptions) => {
   const [loading, setLoading] = useState(false)
+  const { isTauri } = usePlatform()
 
   // 이미지 파일인지 확인하는 함수
   const isValidImage = (file: File) => file.type.startsWith("image/")
@@ -36,7 +37,7 @@ export const useImageUpload = ({
 
       setLoading(true)
 
-      if (storageNovelId) {
+      if (isTauri && storageNovelId) {
         // storageNovelId가 제공된 경우: Tauri를 사용하여 로컬 소설 리소스 폴더에 이미지 저장
         try {
           // getCoreApi를 사용하여 Tauri 핵심 API 함수들을 가져옵니다.

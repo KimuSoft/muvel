@@ -6,6 +6,7 @@ import type { GetNovelResponseDto } from "muvel-api-types"
 import { TbTrash } from "react-icons/tb"
 import { toaster } from "~/components/ui/toaster"
 import type { GetLocalNovelDetailsResponse } from "~/services/tauri/types"
+import { deleteEpisode } from "~/services/episodeService"
 
 const DeleteEpisodeDialog: React.FC<{
   novel: GetNovelResponseDto | GetLocalNovelDetailsResponse
@@ -16,7 +17,7 @@ const DeleteEpisodeDialog: React.FC<{
 
   const onClick = async () => {
     setIsLoading(true)
-    await api.delete(`/episodes/${episodeId}`)
+    await deleteEpisode(episodeId)
     toaster.info({ title: "에피소드가 삭제되었어요..." })
     setIsLoading(false)
     navigate(`/novels/${novel.id}`)

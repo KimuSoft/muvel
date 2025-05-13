@@ -1,3 +1,3 @@
-package com.muvel.app
+package com.muvel
 
 class MainActivity : TauriActivity()

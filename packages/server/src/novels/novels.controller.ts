@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  InternalServerErrorException,
   NotFoundException,
   Param,
   Patch,
@@ -20,7 +19,6 @@ import { PatchEpisodesDto } from "./dto/patch-episodes.dto"
 import { SearchRepository } from "../search/search.repository"
 import { SearchInNovelDto } from "../search/dto/search-in-novel.dto"
 import { EpisodesService } from "../episodes/services/episodes.service"
-import { ExportNovelResponseDto, GetNovelResponseDto } from "muvel-api-types"
 import { AuthenticatedRequest, RequireAuth } from "../auth/jwt-auth.guard"
 import { CreateNovelDto } from "./dto/create-novel.dto"
 import { RequirePermission } from "../permissions/require-permission.decorator"
@@ -140,7 +138,7 @@ export class NovelsController {
     @Param("id") id: string,
     @Body() dto: PatchEpisodesDto[],
   ) {
-    return this.episodesService.patchEpisodes(id, dto)
+    return this.episodesService.upsertEpisode(id, dto)
   }
 
   @Get(":id/search")

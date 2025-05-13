@@ -13,7 +13,7 @@ export const defaultOption: EditorOption = {
   backgroundColor: null,
   editorMaxWidth: 840,
   typewriter: true,
-  typewriterStrict: false,
+  typewriterStrict: true,
 }
 
 export interface EditorOption {

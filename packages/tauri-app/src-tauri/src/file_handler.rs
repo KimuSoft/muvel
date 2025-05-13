@@ -2,14 +2,15 @@
 // (main.rs의 역할 과중을 피하기 위해 이 파일로 분리했다고 가정합니다)
 
 // models.rs에 정의된 구조체 사용
-use crate::models::{LocalNovelData, LocalNovelIndexEntry};
+use crate::models::{LocalNovelData, LocalNovelIndexEntry, OpenedItem, PendingOpen};
 // storage 모듈에 정의된 함수들 사용
 use crate::storage::{episode_io, index_manager, item_index_manager, novel_io};
 
+use crate::models;
 use chrono::Utc;
 use std::ffi::OsStr;
-use std::path::Path;
-use tauri::{App, Emitter}; // App 및 Emitter 사용 // 마지막으로 열람한 시간을 기록하기 위해 chrono 사용
+use tauri::{AppHandle, State};
+// App 및 Emitter 사용 // 마지막으로 열람한 시간을 기록하기 위해 chrono 사용
 
 /// 에피소드 열림 이벤트 페이로드 구조체
 #[derive(Clone, serde::Serialize)]
@@ -26,11 +27,11 @@ struct EpisodeOpenedPayload {
 ///
 /// # 반환값
 /// * `Result<(), String>`: 성공 시 빈 튜플, 실패 시 에러 메시지 문자열.
-pub fn handle_opened_file(app: &App, file_path_osstr: &OsStr) -> Result<(), String> {
-    let file_path = Path::new(file_path_osstr);
-    // 다른 곳에서 사용할 수 있도록 AppHandle 복사
-    let app_handle = app.handle().clone();
-
+pub fn handle_opened_file(
+    app_handle: &AppHandle,
+    pending: &State<PendingOpen>,
+    file_path: &std::path::Path, // ← &Path 로 변경
+) -> Result<(), String> {
     println!("파일 열기 시도: {:?}", file_path); // 파일 열기 시도 로그
 
     if !file_path.exists() {
@@ -85,9 +86,11 @@ pub fn handle_opened_file(app: &App, file_path_osstr: &OsStr) -> Result<(), Stri
                 novel_id, novel_root_path
             );
 
-            app.emit("novel-opened", novel_id.clone())
-                .map_err(|e| format!("novel-opened 이벤트 발생 실패 (ID: {}): {}", novel_id, e))?;
-            println!("novel-opened 이벤트 발생 (ID: {})", novel_id);
+            pending
+                .0
+                .lock()
+                .unwrap()
+                .push(OpenedItem::Novel { novel_id });
         }
         Some("mvle") => {
             // *.mvle 파일 처리 (에피소드 데이터)
@@ -180,20 +183,10 @@ pub fn handle_opened_file(app: &App, file_path_osstr: &OsStr) -> Result<(), Stri
                 ),
             }
 
-            let payload = EpisodeOpenedPayload {
+            pending.0.lock().unwrap().push(OpenedItem::Episode {
                 novel_id: parent_novel_id.clone(),
                 episode_id: episode_id.clone(),
-            };
-            app.emit("episode-opened", payload).map_err(|e| {
-                format!(
-                    "episode-opened 이벤트 발생 실패 (에피소드 ID: {}): {}",
-                    episode_id, e
-                )
-            })?;
-            println!(
-                "episode-opened 이벤트 발생 (에피소드 ID: {}, 소설 ID: {})",
-                episode_id, parent_novel_id
-            );
+            });
         }
         _ => {
             return Err(format!(
@@ -203,4 +196,9 @@ pub fn handle_opened_file(app: &App, file_path_osstr: &OsStr) -> Result<(), Stri
         }
     }
     Ok(())
+}
+
+#[tauri::command]
+pub fn take_initial_open(state: State<models::PendingOpen>) -> Vec<models::OpenedItem> {
+    state.0.lock().unwrap().drain(..).collect()
 }
