@@ -132,6 +132,7 @@ const NovelDetailTemplate: React.FC<{
             gap={{ base: 5, md: 8 }}
             flexDir={{ base: "column", md: "row-reverse" }}
             alignItems={{ base: "flex-start", md: "center" }}
+            justifyContent={"center"}
           >
             {novel.thumbnail && (
               <Image
