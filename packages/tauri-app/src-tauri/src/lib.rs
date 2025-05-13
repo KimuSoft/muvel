@@ -3,52 +3,68 @@ use crate::models::PendingOpen;
 use commands::*;
 use file_handler::handle_opened_file;
 use tauri::{Emitter, Manager};
-use tauri_plugin_cli::CliExt;
 use tauri_plugin_deep_link::DeepLinkExt;
 use tauri_plugin_dialog::DialogExt;
-use tauri_plugin_updater::UpdaterExt;
+
+#[cfg(not(any(target_os = "android", target_os = "ios")))]
+mod desktop_only {
+    pub use tauri_plugin_cli::CliExt;
+    pub use tauri_plugin_updater::UpdaterExt;
+}
 
 mod commands;
 mod file_handler;
 mod models;
 mod storage;
+
+#[cfg(not(any(target_os = "android", target_os = "ios")))]
 mod update;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let mut builder = tauri::Builder::default()
         // 플러그인 로드
-        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_opener::init())
-        .plugin(tauri_plugin_dialog::init())
-        .plugin(tauri_plugin_cli::init())
+        .plugin(tauri_plugin_dialog::init());
+    
+    #[cfg(not(any(target_os = "android", target_os = "ios")))]
+    {
+        builder = builder
+            .plugin(tauri_plugin_updater::Builder::new().build())
+            .plugin(tauri_plugin_cli::init());
+    }
+
+    builder
         .manage(PendingOpen::default())
         .setup(|app| {
-            // Auto Update
-            let handle = app.handle().clone();
-            tauri::async_runtime::spawn(async move {
-                update::update(handle).await.unwrap();
-            });
+            #[cfg(not(any(target_os = "android", target_os = "ios")))]
+            {
+                // Auto Update
+                let handle = app.handle().clone();
+                tauri::async_runtime::spawn(async move {
+                    update::update(handle).await.unwrap();
+                });
 
-            // Open With
-            let matches = app.cli().matches()?;
-            let pending_state = app.state::<models::PendingOpen>();
-            if let Some(paths) = matches.args.get("file").and_then(|a| a.value.as_array()) {
-                for p in paths {
-                    if let Some(path_str) = p.as_str() {
-                        let path = std::path::PathBuf::from(path_str);
-                        if let Err(e) =
-                            file_handler::handle_opened_file(&app.handle(), &pending_state, &path)
-                        {
-                            eprintln!("파일 처리 실패: {e}");
+                // Open With
+                let matches = app.cli().matches()?;
+                let pending_state = app.state::<models::PendingOpen>();
+                if let Some(paths) = matches.args.get("file").and_then(|a| a.value.as_array()) {
+                    for p in paths {
+                        if let Some(path_str) = p.as_str() {
+                            let path = std::path::PathBuf::from(path_str);
+                            if let Err(e) =
+                                file_handler::handle_opened_file(&app.handle(), &pending_state, &path)
+                            {
+                                eprintln!("파일 처리 실패: {e}");
+                            }
+                        } else {
+                            eprintln!("CLI 인자 형식 오류(문자열 아님): {p:?}");
                         }
-                    } else {
-                        eprintln!("CLI 인자 형식 오류(문자열 아님): {p:?}");
                     }
                 }
             }
-
+            
             // Debug
             if cfg!(debug_assertions) {
                 app.handle().plugin(
