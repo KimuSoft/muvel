@@ -297,12 +297,6 @@ export const syncDeltaBlocks = async (
       )
     }
 
-    if (deltaBlocks.length) {
-      throw new Error(
-        "로컬 에피소드 블록 자동 병합 동기화는 지원하지 않습니다.",
-      )
-    }
-
     await syncLocalDeltaBlocks(episodeId, deltaBlocks)
     return
   } else {

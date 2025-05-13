@@ -298,3 +298,26 @@ pub enum OpenedItem {
 /// Tauri State – 남아있는 이벤트 큐
 #[derive(Default)]
 pub struct PendingOpen(pub std::sync::Mutex<Vec<OpenedItem>>);
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub enum DeltaBlockActionRust {
+    Create,
+    Update,
+    Delete,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct RustDeltaBlock {
+    pub id: String,
+    pub action: DeltaBlockActionRust,
+    pub date: String, // Delta 생성 시각 (ISO 8601), 블록의 created_at/updated_at에 사용될 수 있음
+
+    // Partial<Omit<Block, "updatedAt" | "id" | "text">>에 해당하는 필드들
+    // 'text' 필드는 DeltaBlock 정의에 따라 포함되지 않음
+    pub content: Option<Vec<serde_json::Value>>,
+    pub block_type: Option<String>,
+    pub attr: Option<serde_json::Value>, // Option<serde_json::Value> 사용, serde_json::Value::Null 가능
+    pub order: Option<f32>,
+}

@@ -108,6 +108,7 @@ pub fn run() {
             update_local_episode_metadata_command,
             delete_local_episode_command,
             list_local_episode_summaries_command,
+            sync_local_delta_blocks_command,
             // 이미지 리소스 관련 명령어
             save_image_to_novel_resources_command,
             // 파일 열기 관련 명령어
