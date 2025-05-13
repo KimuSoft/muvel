@@ -17,15 +17,3 @@ export type UpdateEpisodeBodyDto = Partial<
 export type BlockChange =
   | (Omit<Block, "text" | "updatedAt"> & { isDeleted?: boolean })
   | { id: string; isDeleted: boolean }
-
-export enum DeltaBlockAction {
-  Create = "create",
-  Update = "update",
-  Delete = "delete",
-}
-
-export type DeltaBlock = Pick<Block, "id"> &
-  Partial<Omit<Block, "updatedAt" | "id">> & {
-    action: DeltaBlockAction
-    date: Date | string
-  }
