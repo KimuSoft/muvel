@@ -90,8 +90,6 @@ jobs:
           releaseBody: |
             ## 뮤블 v${{ steps.package_version.outputs.PACKAGE_VERSION }} 버전 업데이트
             아직 개발자가 설명을 작성하지 않았습니다.
-          releaseDraft: false
-          prerelease: true
           projectPath: packages/tauri-app
           tauriScript: pnpm tauri
           includeUpdaterJson: true
