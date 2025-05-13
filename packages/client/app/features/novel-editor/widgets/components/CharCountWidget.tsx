@@ -24,10 +24,10 @@ import {
 import { useWidgetOption } from "~/features/novel-editor/widgets/context/WidgetContext" // 경로 수정 필요
 
 // 위젯 ID
-const WIDGET_ID = "charCount"
+export const CHAR_COUNT_WIDGET_ID = "charCount"
 
 // 기본 옵션 정의
-const defaultCharCountOptions: CharCountWidgetOptions = {
+export const defaultCharCountOptions: CharCountWidgetOptions = {
   unit: CountUnit.Char,
   excludeSpaces: true,
   excludeSpecialChars: false,
@@ -52,7 +52,7 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
 }) => {
   const { view } = useEditorContext()
   const [options, _setOptions] = useWidgetOption<CharCountWidgetOptions>(
-    WIDGET_ID,
+    CHAR_COUNT_WIDGET_ID,
     defaultCharCountOptions,
   )
 
