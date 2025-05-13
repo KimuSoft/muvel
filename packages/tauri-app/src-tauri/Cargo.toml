@@ -35,4 +35,5 @@ slug = "0.1.6"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 font-kit = "0.11"
+tauri-plugin-cli = "2"
 tauri-plugin-updater = "2"

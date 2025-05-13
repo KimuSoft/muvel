@@ -15,6 +15,7 @@
     "dialog:allow-ask",
     "dialog:allow-confirm",
     "dialog:allow-message",
-    "updater:default"
+    "updater:default",
+    "cli:default"
   ]
 }

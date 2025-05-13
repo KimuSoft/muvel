@@ -1,5 +1,6 @@
 import React, { type PropsWithChildren, useEffect } from "react"
 import {
+  getCliPlugin,
   getEventApi,
   getProcessPlugin,
   getUpdaterPlugin,

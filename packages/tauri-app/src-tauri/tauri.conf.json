@@ -31,6 +31,20 @@
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.ico"
+    ],
+    "fileAssociations": [
+      {
+        "ext": ["muvl"],
+        "mimeType": "application/vnd.muvel.novel+json",
+        "name": "Muvel Novel File",
+        "role": "Editor"
+      },
+      {
+        "ext": ["mvle"],
+        "mimeType": "application/vnd.muvel.episode+json",
+        "name": "Muvel Episode File",
+        "role": "Editor"
+      }
     ]
   },
   "plugins": {
@@ -45,6 +59,12 @@
         "https://github.com/KimuSoft/muvel-public/releases/latest/download/latest.json"
       ],
       "windows": {"installMode": "passive"}
+    },
+    "cli": {
+      "description": "Open‑by‑double‑click interface",
+      "args": [
+        { "name": "file", "index": 1, "multiple": true, "takesValue": true }
+      ]
     }
   }
 }

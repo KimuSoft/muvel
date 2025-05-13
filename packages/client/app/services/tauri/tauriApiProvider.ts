@@ -8,6 +8,7 @@ type TauriOpenerPluginType = typeof import("@tauri-apps/plugin-opener")
 type TauriEventType = typeof import("@tauri-apps/api/event")
 type TauriUpdatePluginType = typeof import("@tauri-apps/plugin-updater")
 type TauriProcessPluginType = typeof import("@tauri-apps/plugin-process")
+type TauriCliPluginType = typeof import("@tauri-apps/plugin-cli")
 
 // Vite 환경 변수를 사용하여 Tauri 앱 환경인지 확인
 const IS_TAURI_APP = import.meta.env.VITE_TAURI === "true"
@@ -164,6 +165,21 @@ export const getProcessPlugin = (): Promise<TauriProcessPluginType> => {
   }
   return import("@tauri-apps/plugin-process").catch((error) => {
     console.error("Failed to load @tauri-apps/plugin-process:", error)
+    throw error
+  })
+}
+
+/**
+ * @tauri-apps/plugin-cli 모듈을 가져옵니다.
+ */
+export const getCliPlugin = (): Promise<TauriCliPluginType> => {
+  if (!IS_TAURI_APP) {
+    return Promise.reject(
+      new Error("Tauri CLI Plugin is not available in this environment."),
+    )
+  }
+  return import("@tauri-apps/plugin-cli").catch((error) => {
+    console.error("Failed to load @tauri-apps/plugin-cli:", error)
     throw error
   })
 }
