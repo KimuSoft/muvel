@@ -110,10 +110,10 @@ export class GeminiAnalysisRepository {
         result = await this.model.generateContent(episodeContent)
       } catch (e) {
         // 429 에러가 발생하면 대체 모델로 전환
-        if (e.response?.status === 429) {
+        if (e.status === 429 || e.response?.status === 429) {
           console.warn("Switching to alternative model due to 429 error.")
           result = await this.alternativeModel.generateContent(episodeContent)
-        } else if (e.response?.status === 500) {
+        } else if (e.status === 500 || e.response?.status === 500) {
           // 500 에러가 발생하면 대체 모델로 전환
           console.warn("Switching to alternative model due to 500 error.")
           result = await this.alternativeModel.generateContent(episodeContent)
