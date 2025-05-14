@@ -19,7 +19,6 @@ export class BlockSyncRepository {
   ) {}
 
   public async syncDeltaBlocks(episodeId: string, deltaBlocks: DeltaBlock[]) {
-    console.time("pushDeltaBlocks")
     const episode = await this.episodesRepository.findOneOrFail({
       where: { id: episodeId },
     })
@@ -90,7 +89,6 @@ export class BlockSyncRepository {
           episode,
         })),
     )
-    console.log(createdBlocks)
 
     await this.blocksRepository.save(createdBlocks)
 
@@ -98,7 +96,6 @@ export class BlockSyncRepository {
       { id: episodeId },
       { isSnapshotted: false },
     )
-    console.timeEnd("pushDeltaBlocks")
 
     // 변경사항 meilisearch 저장
     void this.reindexBlocks(

@@ -83,9 +83,7 @@ const resolveEpisodeContext = async (
 
     // episodeId만 주어진 경우, getEpisodeData를 호출하여 novel 정보를 가져옵니다.
     // getEpisodeData는 novel 필드를 포함한 객체를 반환해야 합니다.
-    console.time("getEpisodeData")
     const episodeData = await getEpisodeById(input)
-    console.timeEnd("getEpisodeData")
     if (!episodeData.novel) {
       throw new Error(
         `Episode (ID: ${input}) data does not contain novel context.`,
