@@ -91,16 +91,7 @@ const MainTemplate: React.FC<{
       <Header logo={false} />
       <Center w={"100%"} minH={"100vh"} px={3}>
         <Center flexDir={"column"} w={"100%"} maxW={"4xl"} gap={3} my={100}>
-          <Tooltip
-            content={`Muvel v${import.meta.env.VITE_APP_VERSION}`}
-            positioning={{
-              placement: "top",
-            }}
-            openDelay={100}
-            showArrow
-          >
-            <Logo w={{ base: 250, md: 300 }} cursor={"pointer"} slogan />
-          </Tooltip>
+          <Logo w={{ base: 250, md: 300 }} cursor={"pointer"} slogan />
           {/*<HStack w={"100%"} maxW={"2xl"} mt={5}>*/}
           {/*<InputGroup flex={1} endElement={<BiSearch size={20} />}>*/}
           {/*  <Input*/}
