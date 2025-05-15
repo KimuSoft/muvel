@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef, useMemo } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import { HStack, IconButton, Spacer, Text, VStack } from "@chakra-ui/react"
 import confetti from "canvas-confetti"
 import {
@@ -13,7 +13,6 @@ import { GoNumber } from "react-icons/go"
 import {
   countTextLength,
   CountUnit,
-  type CountOptions,
 } from "~/features/novel-editor/utils/countTextLength"
 import ProgressBar from "~/components/atoms/ProgressBar"
 import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap"
@@ -28,6 +27,7 @@ export const CHAR_COUNT_WIDGET_ID = "charCount"
 export const defaultCharCountOptions: CharCountWidgetOptions = {
   unit: CountUnit.Char,
   excludeSpaces: true,
+  excludePunctuations: true,
   excludeSpecialChars: false,
   targetGoal: 3000,
   showConfetti: true,
@@ -57,15 +57,6 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
   const [percentage, setPercentage] = useState<number>(0)
   const goalReachedRef = useRef<boolean>(false)
   const throttleTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-  const countOptions = useMemo(
-    (): CountOptions => ({
-      unit: options.unit,
-      excludeSpaces: options.excludeSpaces,
-      excludeSpecialChars: options.excludeSpecialChars,
-    }),
-    [options.unit, options.excludeSpaces, options.excludeSpecialChars],
-  )
 
   const triggerConfetti = useCallback(() => {
     const duration = 5 * 1000
@@ -97,7 +88,7 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
     if (!view) return
 
     const content = view.state.doc.textContent
-    const len = countTextLength(content, countOptions)
+    const len = countTextLength(content, options)
     setCurrentLength(len)
 
     const goal = options.targetGoal
@@ -116,18 +107,12 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
     if (!view.state.selection.empty) {
       const { from, to } = view.state.selection
       const selectedText = view.state.doc.textBetween(from, to)
-      const selLen = countTextLength(selectedText, countOptions)
+      const selLen = countTextLength(selectedText, options)
       setSelectedLength(selLen)
     } else {
       setSelectedLength(0)
     }
-  }, [
-    view,
-    countOptions,
-    options.targetGoal,
-    options.showConfetti,
-    triggerConfetti,
-  ])
+  }, [view, options, triggerConfetti])
 
   const throttledUpdateDisplayCounts = useCallback(() => {
     if (!throttleTimeoutRef.current) {

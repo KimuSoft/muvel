@@ -31,18 +31,9 @@ const MobileBar = () => {
     [CountUnit.KB]: "KB",
   }
 
-  const [options] = useWidgetOption<CharCountWidgetOptions>(
+  const [countOptions] = useWidgetOption<CharCountWidgetOptions>(
     CHAR_COUNT_WIDGET_ID,
     defaultCharCountOptions,
-  )
-
-  const countOptions = useMemo(
-    (): CountOptions => ({
-      unit: options.unit, // MobileBar will always count characters
-      excludeSpaces: options.excludeSpaces,
-      excludeSpecialChars: options.excludeSpecialChars,
-    }),
-    [options.excludeSpaces, options.excludeSpecialChars],
   )
 
   const throttleTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -169,7 +160,7 @@ const MobileBar = () => {
       >
         <Text fontSize={"sm"}>
           {contentLength.toLocaleString()}
-          {unitSuffix[options.unit]}
+          {unitSuffix[countOptions.unit]}
         </Text>
         <Spacer />
         <Button

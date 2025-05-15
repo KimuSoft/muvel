@@ -30,6 +30,7 @@ import { RiLetterSpacing2 } from "react-icons/ri"
 import { BsAlphabet } from "react-icons/bs"
 import { PiParagraphFill } from "react-icons/pi"
 import { IoDocumentTextOutline } from "react-icons/io5"
+import { defaultCharCountOptions } from "~/features/novel-editor/widgets/components/CharCountWidget"
 
 // --- 타입 및 Enum 정의 ---
 export enum CountUnit {
@@ -42,6 +43,7 @@ export enum CountUnit {
 export interface CharCountWidgetOptions {
   unit: CountUnit
   excludeSpaces: boolean
+  excludePunctuations: boolean
   excludeSpecialChars: boolean
   targetGoal: number
   showConfetti: boolean
@@ -49,36 +51,32 @@ export interface CharCountWidgetOptions {
 
 const WIDGET_ID = "charCount"
 
-const defaultCharCountOptions: CharCountWidgetOptions = {
-  unit: CountUnit.Char,
-  excludeSpaces: true,
-  excludeSpecialChars: false,
-  targetGoal: 3000,
-  showConfetti: true,
-}
-
-const presets = {
+const presets: Record<string, Partial<CharCountWidgetOptions>> = {
   novelpia: {
     unit: CountUnit.Char,
     excludeSpaces: true,
-    excludeSpecialChars: true,
+    excludePunctuations: true,
+    excludeSpecialChars: false,
     targetGoal: 3000,
   },
   munpia: {
     unit: CountUnit.Char,
     excludeSpaces: false,
+    excludePunctuations: false,
     excludeSpecialChars: false,
     targetGoal: 5000,
   },
   kakaopage: {
     unit: CountUnit.Char,
     excludeSpaces: false,
+    excludePunctuations: false,
     excludeSpecialChars: false,
     targetGoal: 5500,
   },
   joara: {
     unit: CountUnit.KB,
     excludeSpaces: false,
+    excludePunctuations: false,
     excludeSpecialChars: false,
     targetGoal: 14,
   },
@@ -139,10 +137,7 @@ export const CharCountSettingsDialog: React.FC<PropsWithChildren> = ({
     (presetName: keyof typeof presets) => {
       const presetValues = presets[presetName]
       setOptions((draft) => {
-        draft.unit = presetValues.unit
-        draft.excludeSpaces = presetValues.excludeSpaces
-        draft.excludeSpecialChars = presetValues.excludeSpecialChars
-        draft.targetGoal = presetValues.targetGoal
+        Object.assign(draft, presetValues)
       })
     },
     [setOptions],
@@ -297,6 +292,22 @@ export const CharCountSettingsDialog: React.FC<PropsWithChildren> = ({
                     <Checkbox.HiddenInput />
                     <Checkbox.Control />
                     <Checkbox.Label>공백 제외하기</Checkbox.Label>
+                  </Checkbox.Root>
+
+                  <Checkbox.Root
+                    size="md"
+                    checked={options.excludePunctuations}
+                    onCheckedChange={(details) =>
+                      handleOptionChange(
+                        "excludePunctuations",
+                        !!details.checked,
+                      )
+                    }
+                    disabled={!isCheckboxEnabled}
+                  >
+                    <Checkbox.HiddenInput />
+                    <Checkbox.Control />
+                    <Checkbox.Label>문장부호 제외하기</Checkbox.Label>
                   </Checkbox.Root>
 
                   <Checkbox.Root
