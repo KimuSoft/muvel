@@ -114,7 +114,7 @@ export function useEpisodeSync({
         if (saveLogicRef.current) {
           saveLogicRef.current()
         }
-      }, 1500),
+      }, 500),
     [],
   )
 
