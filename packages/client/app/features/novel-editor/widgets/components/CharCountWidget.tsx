@@ -1,27 +1,27 @@
 import React, { useEffect, useState, useCallback, useRef, useMemo } from "react"
 import { HStack, IconButton, Spacer, Text, VStack } from "@chakra-ui/react"
-import confetti from "canvas-confetti" // Confetti 라이브러리
+import confetti from "canvas-confetti"
 import {
   WidgetBase,
   WidgetBody,
   WidgetHeader,
   WidgetTitle,
-} from "~/features/novel-editor/widgets/components/WidgetBase" // 경로 수정 필요
-import { useEditorContext } from "~/features/novel-editor/context/EditorContext" // 경로 수정 필요
+} from "~/features/novel-editor/widgets/components/WidgetBase"
+import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
 import { IoSettings } from "react-icons/io5"
 import { GoNumber } from "react-icons/go"
 import {
   countTextLength,
   CountUnit,
   type CountOptions,
-} from "~/features/novel-editor/utils/countTextLength" // 경로 수정 필요
-import ProgressBar from "~/components/atoms/ProgressBar" // 경로 수정 필요
-import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap" // 경로 수정 필요
+} from "~/features/novel-editor/utils/countTextLength"
+import ProgressBar from "~/components/atoms/ProgressBar"
+import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap"
 import {
   CharCountSettingsDialog,
   type CharCountWidgetOptions,
-} from "~/features/novel-editor/components/dialogs/CharCountSettingDialog" // 경로 수정 필요
-import { useWidgetOption } from "~/features/novel-editor/widgets/context/WidgetContext" // 경로 수정 필요
+} from "~/features/novel-editor/components/dialogs/CharCountSettingDialog"
+import { useWidgetOption } from "~/features/novel-editor/widgets/context/WidgetContext"
 
 // 위젯 ID
 export const CHAR_COUNT_WIDGET_ID = "charCount"
@@ -110,7 +110,7 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
     const currentPercentage = goal > 0 ? (len / goal) * 100 : 0
     setPercentage(currentPercentage)
 
-    // --- 수정: 폭죽 로직 ---
+    // --- 폭죽 로직 ---
     // 1. 현재 상태가 100% 이상이고, 이전 상태가 100% 미만이었으며, 폭죽 옵션이 켜져 있을 때만 실행
     if (
       currentPercentage >= 100 &&
@@ -134,10 +134,8 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
     }
   }, [updateLengthAndState])
 
-  // --- 수정: 초기 로드 시 상태 설정 ---
   useEffect(() => {
     if (view) {
-      // 초기 로드 시 한 번만 길이와 퍼센티지 계산 및 goalReachedRef 설정
       const initialContent = view.state.doc.textContent
       const initialLen = countTextLength(initialContent, countOptions)
       setCurrentLength(initialLen)
@@ -149,24 +147,19 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
       // 초기 상태가 이미 100% 이상이면 goalReachedRef를 true로 설정 (폭죽은 터뜨리지 않음)
       goalReachedRef.current = initialPercentage >= 100
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view]) // view가 처음 설정될 때만 실행 (countOptions, options.targetGoal은 초기값 사용 가정)
+  }, [view])
   // ---------------------------------
 
   // 에디터 내용 변경 시 길이 계산 (스로틀링 적용)
   useEffect(() => {
-    if (view) {
-      // 초기 로드 이후의 변경 사항에 대해서만 스로틀링된 업데이트 실행
-      // (초기 로드 useEffect 이후 실행됨)
-      throttledUpdate()
-    }
+    if (view) throttledUpdate()
+
     return () => {
       if (throttleTimeoutRef.current) {
         clearTimeout(throttleTimeoutRef.current)
         throttleTimeoutRef.current = null
       }
     }
-    // 수정: view?.state.doc 대신 view와 throttledUpdate에 의존
   }, [view?.state.doc, throttledUpdate])
 
   return (

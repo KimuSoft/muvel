@@ -150,7 +150,7 @@ export const widgets: WidgetButtonProps[] = [
   {
     id: "timer",
     name: "타이머 위젯",
-    description: "5분만 더 잘게요...",
+    description: "아 진짜 딱 5분만 더 쉴 거야",
     icon: <MdTimer size={50} />,
   },
   // {
