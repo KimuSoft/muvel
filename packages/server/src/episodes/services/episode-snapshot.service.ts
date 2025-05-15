@@ -34,9 +34,11 @@ export class EpisodeSnapshotService {
     snapshot.episodeId = episode.id
     if (reason) snapshot.reason = reason
 
-    snapshot.blocks = episode.blocks.map((block) => ({
-      ...block,
-    }))
+    snapshot.blocks = episode.blocks
+      .map((block) => ({
+        ...block,
+      }))
+      .sort((a, b) => a.order - b.order)
 
     if (save) {
       await this.episodeRepository.update(
@@ -50,12 +52,13 @@ export class EpisodeSnapshotService {
   }
 
   async findSnapshotsByEpisodeId(episodeId: string) {
-    const episode = await this.episodeRepository.findOne({
+    const episode = await this.episodeRepository.findOneOrFail({
       where: { id: episodeId },
       relations: ["snapshots"],
     })
-    if (!episode) {
-      throw new NotFoundException(`Episode with id ${episodeId} not found`)
+
+    for (const snapshot of episode.snapshots) {
+      snapshot.blocks.sort((a, b) => a.order - b.order)
     }
 
     return episode.snapshots
@@ -84,6 +87,7 @@ export class EpisodeSnapshotService {
       newSnapshots.push(snapshot)
 
       // 글자 수 캐싱
+      // TODO: 이런 곳에서 처리하지 마세요;;;
       const contentLength = episode.blocks.reduce(
         (acc, block) => acc + block.text.replace(/\s/g, "").length,
         0,
