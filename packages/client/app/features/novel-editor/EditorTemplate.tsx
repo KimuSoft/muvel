@@ -184,6 +184,8 @@ const EditorTemplate: React.FC<{
             fontSize={"sm"}
             color={option.color || undefined}
             opacity={0.5}
+            w={"100%"}
+            textAlign={"center"}
           >
             {episode.description}
           </Text>
