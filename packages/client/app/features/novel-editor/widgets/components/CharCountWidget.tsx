@@ -23,10 +23,8 @@ import {
 } from "~/features/novel-editor/components/dialogs/CharCountSettingDialog"
 import { useWidgetOption } from "~/features/novel-editor/widgets/context/WidgetContext"
 
-// 위젯 ID
 export const CHAR_COUNT_WIDGET_ID = "charCount"
 
-// 기본 옵션 정의
 export const defaultCharCountOptions: CharCountWidgetOptions = {
   unit: CountUnit.Char,
   excludeSpaces: true,
@@ -35,7 +33,6 @@ export const defaultCharCountOptions: CharCountWidgetOptions = {
   showConfetti: true,
 }
 
-// 단위별 접미사
 const unitSuffix: Record<CountUnit, string> = {
   [CountUnit.Char]: "자",
   [CountUnit.Word]: "단어",
@@ -43,8 +40,7 @@ const unitSuffix: Record<CountUnit, string> = {
   [CountUnit.KB]: "KB",
 }
 
-// 스로틀링 지연 시간
-const THROTTLE_DELAY = 500
+const THROTTLE_DELAY = 250
 
 export const CharCountWidget: React.FC<WidgetBaseProps> = ({
   dragAttributes,
@@ -57,11 +53,11 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
   )
 
   const [currentLength, setCurrentLength] = useState<number>(0)
+  const [selectedLength, setSelectedLength] = useState<number>(0)
   const [percentage, setPercentage] = useState<number>(0)
-  const goalReachedRef = useRef<boolean>(false) // 목표 달성 상태 추적
+  const goalReachedRef = useRef<boolean>(false)
   const throttleTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // 계산 옵션 객체
   const countOptions = useMemo(
     (): CountOptions => ({
       unit: options.unit,
@@ -71,8 +67,7 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
     [options.unit, options.excludeSpaces, options.excludeSpecialChars],
   )
 
-  // 폭죽 터뜨리기 함수
-  const triggerConfetti = () => {
+  const triggerConfetti = useCallback(() => {
     const duration = 5 * 1000
     const animationEnd = Date.now() + duration
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1050 }
@@ -96,10 +91,9 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
         }),
       )
     }, 250)
-  }
+  }, [])
 
-  // 현재 길이 및 상태 업데이트 함수
-  const updateLengthAndState = useCallback(() => {
+  const updateDisplayCounts = useCallback(() => {
     if (!view) return
 
     const content = view.state.doc.textContent
@@ -110,57 +104,58 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
     const currentPercentage = goal > 0 ? (len / goal) * 100 : 0
     setPercentage(currentPercentage)
 
-    // --- 폭죽 로직 ---
-    // 1. 현재 상태가 100% 이상이고, 이전 상태가 100% 미만이었으며, 폭죽 옵션이 켜져 있을 때만 실행
     if (
       currentPercentage >= 100 &&
       !goalReachedRef.current &&
       options.showConfetti
     ) {
-      triggerConfetti() // 폭죽 실행
+      triggerConfetti()
     }
-    // 2. 현재 퍼센티지를 기준으로 goalReachedRef 업데이트 (폭죽 실행 여부와 관계없이)
     goalReachedRef.current = currentPercentage >= 100
-    // ---------------------
-  }, [view, countOptions, options.targetGoal, options.showConfetti]) // 의존성 배열 확인
 
-  // 스로틀링된 계산 함수 실행
-  const throttledUpdate = useCallback(() => {
+    if (!view.state.selection.empty) {
+      const { from, to } = view.state.selection
+      const selectedText = view.state.doc.textBetween(from, to)
+      const selLen = countTextLength(selectedText, countOptions)
+      setSelectedLength(selLen)
+    } else {
+      setSelectedLength(0)
+    }
+  }, [
+    view,
+    countOptions,
+    options.targetGoal,
+    options.showConfetti,
+    triggerConfetti,
+  ])
+
+  const throttledUpdateDisplayCounts = useCallback(() => {
     if (!throttleTimeoutRef.current) {
-      updateLengthAndState() // 즉시 실행
+      updateDisplayCounts()
       throttleTimeoutRef.current = setTimeout(() => {
         throttleTimeoutRef.current = null
       }, THROTTLE_DELAY)
     }
-  }, [updateLengthAndState])
+  }, [updateDisplayCounts])
 
   useEffect(() => {
     if (view) {
-      const initialContent = view.state.doc.textContent
-      const initialLen = countTextLength(initialContent, countOptions)
-      setCurrentLength(initialLen)
-
-      const goal = options.targetGoal
-      const initialPercentage = goal > 0 ? (initialLen / goal) * 100 : 0
-      setPercentage(initialPercentage)
-
-      // 초기 상태가 이미 100% 이상이면 goalReachedRef를 true로 설정 (폭죽은 터뜨리지 않음)
-      goalReachedRef.current = initialPercentage >= 100
+      updateDisplayCounts()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view])
-  // ---------------------------------
 
-  // 에디터 내용 변경 시 길이 계산 (스로틀링 적용)
   useEffect(() => {
-    if (view) throttledUpdate()
-
+    if (view) {
+      throttledUpdateDisplayCounts()
+    }
     return () => {
       if (throttleTimeoutRef.current) {
         clearTimeout(throttleTimeoutRef.current)
         throttleTimeoutRef.current = null
       }
     }
-  }, [view?.state.doc, throttledUpdate])
+  }, [view?.state.doc, view?.state.selection, throttledUpdateDisplayCounts])
 
   return (
     <WidgetBase>
@@ -175,21 +170,27 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
             size="xs"
             variant={"ghost"}
           >
-            <IoSettings size={9} />
+            <IoSettings />
           </IconButton>
         </CharCountSettingsDialog>
       </WidgetHeader>
       <WidgetBody pt={2} pb={3}>
-        <HStack w="100%" mb={1}>
-          <VStack align="baseline" gap={0}>
-            <Text fontSize="sm">
-              {currentLength.toLocaleString()}
-              {unitSuffix[options.unit]} / {options.targetGoal.toLocaleString()}
+        <HStack w="100%" mb={1} alignItems="baseline">
+          <VStack align="baseline" gap={0} flexShrink={0}>
+            <Text fontSize="sm" whiteSpace="nowrap">
+              {currentLength.toLocaleString()} /{" "}
+              {options.targetGoal.toLocaleString()}
               {unitSuffix[options.unit]}
+              {selectedLength > 0 && (
+                <Text as="span" fontSize="sm" color="purple.500" ml={1.5}>
+                  ({selectedLength.toLocaleString()}
+                  {unitSuffix[options.unit]} 선택)
+                </Text>
+              )}
             </Text>
           </VStack>
           <Spacer />
-          <Text fontSize={"lg"} fontWeight={"bold"}>
+          <Text fontSize={"lg"} fontWeight={"bold"} flexShrink={0}>
             {Math.floor(percentage)}%
           </Text>
         </HStack>
