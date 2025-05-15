@@ -1,19 +1,12 @@
 import {
   CloseButton,
-  DrawerBackdrop,
-  DrawerBody,
-  DrawerCloseTrigger,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerPositioner,
-  DrawerRoot,
-  DrawerTrigger,
+  Drawer,
   Heading,
   HStack,
   IconButton,
   type MenuSelectionDetails,
   Separator,
+  Skeleton,
   Spacer,
   Stack,
 } from "@chakra-ui/react"
@@ -21,11 +14,12 @@ import { TbPlus } from "react-icons/tb"
 import SortableEpisodeList, {
   type SortDirection,
 } from "~/components/organisms/SortableEpisodeList"
-import React, { type PropsWithChildren, useEffect } from "react"
-import type {
-  BasePermission,
-  EpisodeType,
-  GetNovelResponseDto,
+import React, { type PropsWithChildren } from "react"
+import {
+  type BasePermission,
+  type EpisodeType,
+  type GetNovelResponseDto,
+  initialNovel,
 } from "muvel-api-types"
 import type { ReorderedEpisode } from "~/utils/reorderEpisode"
 import { FaList } from "react-icons/fa6"
@@ -45,6 +39,7 @@ const EpisodeListDrawer: React.FC<
     novelId: string
     episodeId: string
     permissions: BasePermission
+    isLocal?: boolean
   } & PropsWithChildren
 > = ({ novelId, episodeId, permissions, children }) => {
   const [novel, setNovel] = React.useState<
@@ -59,15 +54,10 @@ const EpisodeListDrawer: React.FC<
 
   const fetchNovel = async () => {
     setIsLoading(true)
-    // TODO: novelId로 조회하면 로컬 최적화가 좋지 않음
     const novel = await getNovel(novelId)
     setNovel(novel)
     setIsLoading(false)
   }
-
-  useEffect(() => {
-    void fetchNovel()
-  }, [])
 
   const handleReorderEpisode = async (episodes: ReorderedEpisode[]) => {
     await updateNovelEpisodes(
@@ -79,35 +69,35 @@ const EpisodeListDrawer: React.FC<
     await fetchNovel()
   }
 
-  if (!novel) return null
-
   const handleCreateEpisode = async (detail: MenuSelectionDetails) => {
-    const episode = await createNovelEpisode(novel.id, {
+    const episode = await createNovelEpisode(novelId, {
       episodeType: parseInt(detail.value) as EpisodeType,
     })
     navigate(`/episodes/${episode.id}`)
   }
 
   return (
-    <DrawerRoot
+    <Drawer.Root
       placement={"start"}
       size={"md"}
       onOpenChange={(open) => {
         if (open.open) void fetchNovel()
       }}
     >
-      <DrawerTrigger asChild>{children}</DrawerTrigger>
-      <DrawerBackdrop />
-      <DrawerPositioner>
-        <DrawerContent>
-          <DrawerCloseTrigger asChild>
+      <Drawer.Trigger asChild>{children}</Drawer.Trigger>
+      <Drawer.Backdrop />
+      <Drawer.Positioner>
+        <Drawer.Content>
+          <Drawer.CloseTrigger asChild>
             <CloseButton position="absolute" top="4" right="4" />
-          </DrawerCloseTrigger>
-          <DrawerHeader></DrawerHeader>
+          </Drawer.CloseTrigger>
+          <Drawer.Header></Drawer.Header>
 
-          <DrawerBody>
+          <Drawer.Body>
             <Stack gap={3}>
-              <NovelItem novel={novel} />
+              <Skeleton loading={!novel}>
+                <NovelItem novel={novel || initialNovel} />
+              </Skeleton>
               <Separator my={3} />
               <HStack px={1}>
                 <FaList />
@@ -127,7 +117,7 @@ const EpisodeListDrawer: React.FC<
                     onValueChange={setSortDirection}
                   />
                 </HStack>
-                {novel.permissions.edit ? (
+                {novel?.permissions.edit ? (
                   <CreateEpisodeMenu onSelect={handleCreateEpisode}>
                     <IconButton variant={"ghost"} gap={3}>
                       <TbPlus />
@@ -138,22 +128,22 @@ const EpisodeListDrawer: React.FC<
               <SortableEpisodeList
                 loading={isLoading}
                 sortDirection={sortDirection}
-                disableSort={!novel.permissions.edit}
+                disableSort={!novel?.permissions.edit}
                 variant={episodeListLayout}
                 episodes={novel?.episodes || []}
                 onEpisodesChange={handleReorderEpisode}
               />
             </Stack>
-          </DrawerBody>
+          </Drawer.Body>
 
-          <DrawerFooter justifyContent="space-between">
-            {permissions.delete && (
+          <Drawer.Footer justifyContent="space-between">
+            {novel && permissions.delete && (
               <DeleteEpisodeDialog novel={novel} episodeId={episodeId} />
             )}
-          </DrawerFooter>
-        </DrawerContent>
-      </DrawerPositioner>
-    </DrawerRoot>
+          </Drawer.Footer>
+        </Drawer.Content>
+      </Drawer.Positioner>
+    </Drawer.Root>
   )
 }
 
