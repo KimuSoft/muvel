@@ -14,6 +14,7 @@ import { UpdateEpisodeDto } from "../dto/update-episode.dto"
 import { PatchBlocksDto } from "../../blocks/dto/patch-blocks.dto"
 import { EpisodeRepository } from "../repositories/episode.repository"
 import { BlockSyncRepository } from "../repositories/block-sync.repository"
+import { BlockRepository } from "../../blocks/block.repository"
 
 @Injectable()
 export class EpisodesService {
@@ -22,6 +23,7 @@ export class EpisodesService {
     private readonly novelsRepository: Repository<NovelEntity>,
     private readonly episodesRepository: EpisodeRepository,
     private readonly blockSyncRepository: BlockSyncRepository,
+    private readonly blockRepository: BlockRepository,
   ) {}
 
   async findEpisodeById(id: string, permissions: BasePermission) {
@@ -89,20 +91,9 @@ export class EpisodesService {
   }
 
   async findBlocksByEpisodeId(episodeId: string, permissions: BasePermission) {
-    const episode = await this.episodesRepository.findOneOrFail({
-      where: { id: episodeId },
-      relations: ["blocks"],
-      order: { blocks: { order: "ASC" } },
+    return this.blockRepository.findBlocksByEpisodeId(episodeId, {
+      hideComments: !permissions.edit,
     })
-
-    // edit 권한이 없다면 주석 블록을 없앰
-    if (!permissions.edit) {
-      episode.blocks = episode.blocks.filter(
-        (block) => block.blockType !== BlockType.Comment,
-      )
-    }
-
-    return episode.blocks
   }
 
   // @deprecated
