@@ -169,30 +169,12 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
     // 수정: view?.state.doc 대신 view와 throttledUpdate에 의존
   }, [view?.state.doc, throttledUpdate])
 
-  // 위젯 제목 생성
-  const widgetTitleText = useMemo(() => {
-    let title = `글자 수 세기 (${unitSuffix[options.unit]})`
-    const exclusions = []
-    if (
-      (options.unit === CountUnit.Char || options.unit === CountUnit.KB) &&
-      options.excludeSpaces
-    )
-      exclusions.push("공백 제외")
-    if (
-      (options.unit === CountUnit.Char || options.unit === CountUnit.KB) &&
-      options.excludeSpecialChars
-    )
-      exclusions.push("특문 제외")
-    if (exclusions.length > 0) title += ` (${exclusions.join(", ")})`
-    return title
-  }, [options.unit, options.excludeSpaces, options.excludeSpecialChars])
-
   return (
     <WidgetBase>
       <WidgetHeader>
         <HStack flex="1" cursor="grab" {...dragAttributes} {...dragListeners}>
           <GoNumber />
-          <WidgetTitle>{widgetTitleText}</WidgetTitle>
+          <WidgetTitle>글자 수 세기</WidgetTitle>
         </HStack>
         <CharCountSettingsDialog>
           <IconButton
