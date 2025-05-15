@@ -75,7 +75,7 @@ const AiAnalysisWarningDialog: React.FC<
                     value={user?.point || 0}
                     min={0}
                     max={1000}
-                    colorSchema={"purple"}
+                    colorPalette={"purple"}
                   />
                 </Stack>
                 <Separator />
