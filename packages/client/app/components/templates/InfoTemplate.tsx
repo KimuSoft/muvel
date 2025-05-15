@@ -433,7 +433,7 @@ const InfoTemplate: React.FC<{
         </Text>
       </VStack>
 
-      <Footer />
+      <Footer hideInfo />
     </VStack>
   )
 }
