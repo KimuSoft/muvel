@@ -108,10 +108,8 @@ const CommentDrawer: React.FC<{
   const fetchAnalyses = async () => {
     setIsLoading(true)
     const ai = await getAiAnalysis(episode.id)
-    console.log("페팅중!")
 
     const avg = await getAvgAiAnalysis()
-    console.log("avg", avg)
     setAvgAnalysis(avg)
 
     // ai 결과를 최신순으로 정렬 ai.createdAt: string
@@ -145,7 +143,6 @@ const CommentDrawer: React.FC<{
   }, [analyses])
 
   const allComments = useMemo(() => {
-    console.log(analyses)
     return analyses
       .map((analysis) =>
         analysis.comments.map((c) => ({
