@@ -6,6 +6,7 @@ import { UserEntity } from "../users/user.entity"
 import { NovelEntity } from "../novels/novel.entity"
 import { EpisodeEntity } from "../episodes/entities/episode.entity"
 import { BlockEntity } from "../blocks/block.entity"
+import { AiAnalysisEntity } from "../episodes/entities/ai-analysis.entity"
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { BlockEntity } from "../blocks/block.entity"
       NovelEntity,
       EpisodeEntity,
       BlockEntity,
+      AiAnalysisEntity,
     ]),
   ],
   providers: [StatisticsService],

@@ -177,7 +177,10 @@ export class EpisodeAnalysisService {
 
     await this.episodeRepository.update(
       { id: episodeId },
-      { description: analysisResult.summary },
+      {
+        description: analysisResult.summary,
+        aiRating: analysisResult.overallRating,
+      },
     )
 
     try {

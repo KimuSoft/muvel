@@ -6,6 +6,7 @@ export interface Episode {
   description: string
   authorComment?: string
   contentLength: number
+  aiRating?: number
   novelId: string
   order: number
   episodeType: EpisodeType

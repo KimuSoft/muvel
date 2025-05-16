@@ -30,6 +30,9 @@ export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
   @Column({ default: "" })
   authorComment: string
 
+  @Column({ type: "float", nullable: true })
+  aiRating?: number // 종합 평점 (0.0 ~ 5.0)
+
   // 에피소드 정보에 의존하는 특정 위젯을 위한 데이터
   @Column({ type: "jsonb", default: {} })
   widgetData: Record<string, Record<string, any>>
