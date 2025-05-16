@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -8,6 +9,7 @@ import {
 import { EpisodeEntity } from "../episodes/entities/episode.entity"
 import { Block, BlockAttrs, BlockType, PMNodeJSON } from "muvel-api-types"
 
+@Index("IDX_block_episode_order", ["episodeId", "order"])
 @Entity("block")
 export class BlockEntity implements Omit<Block, "updatedAt"> {
   @PrimaryGeneratedColumn("uuid")
@@ -32,6 +34,9 @@ export class BlockEntity implements Omit<Block, "updatedAt"> {
     onDelete: "CASCADE",
   })
   episode: EpisodeEntity
+
+  @Column({ nullable: true })
+  episodeId: string
 
   @UpdateDateColumn()
   updatedAt: Date
