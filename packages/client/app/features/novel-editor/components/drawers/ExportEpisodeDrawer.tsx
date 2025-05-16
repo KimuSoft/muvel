@@ -106,12 +106,12 @@ export const ExportEpisodeDrawer: React.FC<{
   }, [processedContent, episode.title]) // episodeTitle도 의존성에 추가
 
   return (
-    <DrawerRootProvider value={dialog} lazyMount>
+    <DrawerRootProvider value={dialog} lazyMount size={"sm"}>
       {children && <DrawerTrigger asChild>{children}</DrawerTrigger>}
 
       <DrawerBackdrop />
       <DrawerPositioner>
-        <DrawerContent maxW="xl">
+        <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>회차 내보내기</DrawerTitle>
             <DrawerCloseTrigger asChild>
@@ -130,7 +130,8 @@ export const ExportEpisodeDrawer: React.FC<{
                   value={processedContent}
                   readOnly
                   minH="200px"
-                  h="40vh"
+                  p={0}
+                  border={"none"}
                   fontSize="sm"
                   fontFamily="monospace"
                   whiteSpace="pre-wrap"
@@ -145,7 +146,7 @@ export const ExportEpisodeDrawer: React.FC<{
               {/* 내보내기 옵션 영역 */}
               <Stack gap={4} borderRadius="md">
                 <Text fontWeight="medium" fontSize="md" mb={3}>
-                  내보내기 옵션
+                  내보내기 상세 옵션
                 </Text>
 
                 {/* 문단 사이 추가 줄바꿈 옵션 */}

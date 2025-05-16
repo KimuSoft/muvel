@@ -43,10 +43,12 @@ export function useBlocksSync({
     SyncState.Synced,
   )
   const { isOffline } = usePlatform()
+  const [isMount, setIsMount] = useState(false)
 
   // 초기화 프로세스
   const init = async () => {
     setIsLoadingBlocks(true)
+    setIsMount(true)
 
     // 값 초기화
     setBlocks(null)
@@ -102,7 +104,10 @@ export function useBlocksSync({
       return
     }
 
-    if (isOffline) return
+    // 오프라인이거나 로컬인데 이미 마운트된 경우는 무시
+    if (isOffline || (episode.novel.share === ShareType.Local && isMount)) {
+      return
+    }
 
     void init()
   }, [episode.id, isOffline])
