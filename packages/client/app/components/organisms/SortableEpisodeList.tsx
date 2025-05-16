@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react"
+import React, { useCallback, useMemo } from "react"
 import {
   DndContext,
   type DragEndEvent,
@@ -16,7 +16,8 @@ import { type StackProps, VStack } from "@chakra-ui/react"
 import type { Episode } from "muvel-api-types"
 import SortableEpisodeItem from "../molecules/SortableEpisodeItem" // 경로 확인 필요
 import { type ReorderedEpisode, reorderEpisode } from "~/utils/reorderEpisode"
-import type { EpisodeItemProps } from "~/components/molecules/EpisodeItem" // 경로 확인 필요
+import type { EpisodeItemProps } from "~/components/molecules/EpisodeItem"
+import EpisodeGrid from "~/components/organisms/EpisodeGrid" // 경로 확인 필요
 
 /** ------------------------------------------------------------------
  *  Types
@@ -29,7 +30,8 @@ type SortableEpisodeListProps = StackProps & {
   disableSort?: boolean
   onEpisodesChange?: (diffEpisodes: ReorderedEpisode[]) => void
   sortDirection: SortDirection
-} & Pick<EpisodeItemProps, "variant">
+  variant: EpisodeItemProps["variant"] | "grid"
+}
 
 /** ------------------------------------------------------------------
  *  Helpers
@@ -98,6 +100,10 @@ const SortableEpisodeList: React.FC<SortableEpisodeListProps> = ({
     },
     [displayedEpisodes, sortDirection, onEpisodesChange],
   )
+
+  if (variant === "grid") {
+    return <EpisodeGrid episodes={displayedEpisodes} loading={loading} />
+  }
 
   /** ------------------------------------------------------------------
    * Render

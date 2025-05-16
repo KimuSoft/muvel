@@ -65,7 +65,7 @@ const SideData: React.FC<{ episode: Episode } & StackProps> = ({
   )
 }
 
-export type EpisodeItemVariant = "detail" | "simple" | "shallow"
+export type EpisodeItemVariant = "detail" | "simple" | "shallow" | "grid"
 
 export type EpisodeItemProps = StackProps & {
   episode: Episode

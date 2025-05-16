@@ -108,7 +108,7 @@ const EpisodeListDrawer: React.FC<
 
                 <HStack gap={1}>
                   <EpisodeListLayoutToggleButton
-                    variants={["shallow", "simple"]}
+                    variants={["shallow", "simple", "grid"]}
                     onValueChange={setEpisodeListLayout}
                     value={episodeListLayout}
                   />

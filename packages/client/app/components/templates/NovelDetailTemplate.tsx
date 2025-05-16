@@ -262,7 +262,7 @@ const NovelDetailTemplate: React.FC<{
 
           <HStack gap={1}>
             <EpisodeListLayoutToggleButton
-              variants={["detail", "simple"]}
+              variants={["detail", "simple", "grid"]}
               onValueChange={setEpisodeListLayout}
               value={episodeListLayout}
             />
