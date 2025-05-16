@@ -155,7 +155,11 @@ const ModifyNovelModal: React.FC<{
                                 onUploaded={(url) => {
                                   void form.setFieldValue("thumbnail", url)
                                 }}
-                                storageNovelId={novel.id}
+                                storageNovelId={
+                                  novel.share === ShareType.Local
+                                    ? novel.id
+                                    : undefined
+                                }
                               />
                             </HStack>
                           </Field.Root>

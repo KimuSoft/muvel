@@ -27,7 +27,7 @@ const SideData: React.FC<{ episode: Episode } & StackProps> = ({
 
   return (
     <HStack columnGap={4} flexShrink={0} rowGap={1} {...props}>
-      {episode.aiRating !== null ? (
+      {episode.aiRating !== null && episode.aiRating !== undefined ? (
         <HStack gap={1}>
           <TbStar
             color={"var(--chakra-colors-purple-400)"}
