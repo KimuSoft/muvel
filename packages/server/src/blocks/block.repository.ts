@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common"
-import { DataSource, Repository } from "typeorm"
+import { DataSource, Not, Repository } from "typeorm"
 import { BlockEntity } from "./block.entity"
+import { BlockType } from "muvel-api-types"
 
 @Injectable()
 export class BlockRepository extends Repository<BlockEntity> {
@@ -8,9 +9,17 @@ export class BlockRepository extends Repository<BlockEntity> {
     super(BlockEntity, dataSource.createEntityManager())
   }
 
-  async getBlocksByEpisodeId(episodeId: string): Promise<BlockEntity[]> {
+  async findBlocksByEpisodeId(
+    episodeId: string,
+    options: {
+      hideComments?: boolean
+    } = { hideComments: false },
+  ): Promise<BlockEntity[]> {
     return this.find({
-      where: { episode: { id: episodeId } },
+      where: {
+        episode: { id: episodeId },
+        ...(options.hideComments ? { blockType: Not(BlockType.Comment) } : {}),
+      },
       order: { order: "ASC" },
     })
   }

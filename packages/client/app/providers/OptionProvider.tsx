@@ -1,17 +1,10 @@
 import React, { useCallback, useState } from "react"
 import { type Draft, produce } from "immer"
 import { OptionContext, SetOptionContext } from "~/context/OptionContext"
+import { muvelDesktopPreset } from "~/features/novel-editor/style/stylePreset"
 
 export const defaultOption: EditorOption = {
-  lineHeight: 1.8,
-  fontSize: 18,
-  indent: 0,
-  fontWeight: 400,
-  fontFamily: '"Pretendard Variable"',
-  color: null,
-  blockGap: 7,
-  backgroundColor: null,
-  editorMaxWidth: 840,
+  ...muvelDesktopPreset,
   typewriter: true,
   typewriterStrict: true,
 }

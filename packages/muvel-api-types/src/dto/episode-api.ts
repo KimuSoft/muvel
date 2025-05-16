@@ -10,7 +10,10 @@ export type CreateEpisodeBodyDto = Partial<
 >
 
 export type UpdateEpisodeBodyDto = Partial<
-  Omit<Episode, "id" | "novelId" | "contentLength" | "createdAt" | "updatedAt">
+  Omit<
+    Episode,
+    "id" | "novelId" | "contentLength" | "createdAt" | "updatedAt" | "aiRating"
+  >
 >
 
 // 블록 변경 타입 (deprecated 예정, 아래 DeltaBlock 사용)

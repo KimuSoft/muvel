@@ -1,6 +1,6 @@
 {
   "name": "muvel",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -22,13 +22,5 @@
     "build:t": "pnpm build:tauri",
     "build:tauri:prod": "pnpm build:tauri"
   },
-  "packageManager": "pnpm@10.10.0",
-  "dependencies": {
-    "@chakra-ui/charts": "^3.17.0",
-    "howler": "^2.2.4",
-    "recharts": "^2.15.3"
-  },
-  "devDependencies": {
-    "@types/howler": "^2.2.12"
-  }
+  "packageManager": "pnpm@10.10.0"
 }

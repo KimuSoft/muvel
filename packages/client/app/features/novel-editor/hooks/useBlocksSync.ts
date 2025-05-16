@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   type Block,
   type GetEpisodeResponseDto,
+  ShareType,
   SnapshotReason,
 } from "muvel-api-types"
 import { chunk, debounce } from "lodash-es"
@@ -36,30 +37,49 @@ export function useBlocksSync({
   canEdit,
 }: UseBlocksSyncProps): UseBlocksSyncReturn {
   const [initialBlocks, setBlocks] = useState<Block[] | null>(null)
-  const [isLoadingBlocks, setIsLoadingBlocks] = useState<boolean>(true)
+  const [isLoadingBlocks, setIsLoadingBlocks] = useState<boolean>(false)
   const originalBlocksRef = useRef<Block[] | null>(null)
   const [blockSyncState, setBlockSyncState] = useState<SyncState>(
     SyncState.Synced,
   )
   const { isOffline } = usePlatform()
 
+  // 초기화 프로세스
   const init = async () => {
-    // 백업된 데이터가 있는지 확인
-    const backupDelta = await findDeltaBlockBackup(episode.id)
+    setIsLoadingBlocks(true)
 
-    if (backupDelta && backupDelta.length) {
-      await saveCloudSnapshot(episode.id, SnapshotReason.Merge)
-      await syncDeltaBlocks(episode, backupDelta)
-      toaster.success({
-        title: "블록 동기화 완료",
-        description:
-          "오프라인 작업 또는 오류로 브라우저에 백업된 블록 데이터가 자동 동기화되었습니다. 만약을 대비해 동기화 이전 상태가 버전으로 백업되었습니다.",
-      })
-    }
+    // 값 초기화
+    setBlocks(null)
+    originalBlocksRef.current = null
+    setBlockSyncState(SyncState.Syncing)
 
     try {
+      // 로컬 소설이 아닐 경우
+      if (episode.novel.share !== ShareType.Local) {
+        // 백업된 데이터가 있는지 확인
+        console.info("Checking for backup data...")
+        const backupDelta = await findDeltaBlockBackup(episode.id)
+
+        // 백업된 데이터가 있는 경우
+        if (backupDelta && backupDelta.length) {
+          console.info("Backup data found, syncing...")
+
+          console.info("Making snapshot...")
+          await saveCloudSnapshot(episode.id, SnapshotReason.Merge)
+          console.info("Syncing backup data...")
+          await syncDeltaBlocks(episode, backupDelta)
+          toaster.success({
+            title: "블록 동기화 완료",
+            description:
+              "오프라인 작업 또는 오류로 브라우저에 백업된 블록 데이터가 자동 동기화되었습니다. 만약을 대비해 동기화 이전 상태가 버전으로 백업되었습니다.",
+          })
+        }
+      }
+
       // 초기 블록 데이터 가져오기
+      console.info("Fetching initial blocks...")
       const fetchedBlocks = await getEpisodeBlocks(episode)
+      console.info("Completed fetching initial blocks")
 
       setBlocks(fetchedBlocks)
       originalBlocksRef.current = fetchedBlocks
@@ -70,30 +90,22 @@ export function useBlocksSync({
         title: "블록 로딩 실패",
         description: "초기 블록 데이터를 가져오는 데 실패했습니다.",
       })
-      setBlocks([])
-      originalBlocksRef.current = []
       setBlockSyncState(SyncState.Error)
+    } finally {
+      setIsLoadingBlocks(false)
     }
   }
 
   useEffect(() => {
-    // episodeId가 없을 경우 초기화 및 로딩 중단
-    if (!episode.id) {
-      setIsLoadingBlocks(false)
-      setBlocks([])
-      originalBlocksRef.current = []
-      setBlockSyncState(SyncState.Error)
+    if (isLoadingBlocks) {
+      console.info("Skipping block sync because loading is in progress.")
       return
     }
 
-    let isMounted = true
-    setIsLoadingBlocks(true)
-    setBlocks(null)
-    originalBlocksRef.current = null
-    setBlockSyncState(SyncState.Syncing)
+    if (isOffline) return
 
     void init()
-  }, [episode.id])
+  }, [episode.id, isOffline])
 
   const actualSaveBlocks = useCallback(
     async (doc: PMNode) => {
@@ -106,16 +118,19 @@ export function useBlocksSync({
       const newBlocks = docToBlocks(doc)
       const changes = getDeltaBlock(originalBlocksRef.current, newBlocks)
 
-      if (!navigator.onLine) {
-        console.warn("Offline mode detected. Saving changes to IndexedDB.")
+      // 오프라인이고 로컬 소설이 아닐 경우
+      if (!navigator.onLine && episode.novel.share !== ShareType.Local) {
+        console.info("Offline mode detected. Saving changes to IndexedDB.")
         await saveDeltaBlockBackup(episode.id, changes)
         setBlockSyncState(SyncState.Waiting)
         return
       }
 
+      // 변경 사항이 없을 경우
       if (!changes.length) {
-        if (blockSyncState === SyncState.Waiting)
+        if (blockSyncState === SyncState.Waiting) {
           setBlockSyncState(SyncState.Synced)
+        }
         return
       }
 
@@ -174,11 +189,6 @@ export function useBlocksSync({
     },
     [canEdit, initialBlocks, debouncedSave, blockSyncState],
   )
-
-  useEffect(() => {
-    if (isOffline) return
-    void init()
-  }, [isOffline])
 
   return {
     initialBlocks,

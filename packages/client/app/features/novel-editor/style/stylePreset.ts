@@ -2,6 +2,24 @@ import type { EditorOption } from "~/providers/OptionProvider"
 
 type EditorOptionPreset = Partial<EditorOption>
 
+export type EditorStyleOption = Omit<
+  EditorOption,
+  "typewriter" | "typewriterStrict"
+>
+
+// 기본 옵션
+export const muvelDesktopPreset: EditorStyleOption = {
+  lineHeight: 1.8,
+  fontSize: 18,
+  indent: 0,
+  fontWeight: 400,
+  fontFamily: '"Pretendard Variable"',
+  color: null,
+  blockGap: 7,
+  backgroundColor: null,
+  editorMaxWidth: 600,
+}
+
 export const muvelMobilePreset: EditorOptionPreset = {
   lineHeight: 1.8,
   fontSize: 18,

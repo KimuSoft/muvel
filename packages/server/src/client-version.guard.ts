@@ -16,8 +16,6 @@ export class ClientVersionGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>()
     const clientVersion = request.headers["x-client-version"]
 
-    console.log(clientVersion)
-
     // 헤더가 없으면 검사 생략 (통과)
     if (!clientVersion) {
       return true

@@ -19,7 +19,12 @@ import {
   FaEllipsis,
   FaVolumeHigh,
 } from "react-icons/fa6"
-import { MdFindReplace, MdOutlineTimer } from "react-icons/md"
+import {
+  MdFindReplace,
+  MdMyLocation,
+  MdOutlineTimer,
+  MdTimer,
+} from "react-icons/md"
 import { IoSpeedometerOutline } from "react-icons/io5"
 import { BiNotepad } from "react-icons/bi"
 import { SymbolReplaceWidget } from "~/features/novel-editor/widgets/components/SymbolReplaceWidget"
@@ -29,6 +34,8 @@ import { EpisodeReferenceWidget } from "~/features/novel-editor/widgets/componen
 import { FormattingWidget } from "~/features/novel-editor/widgets/components/FormattingWidget"
 import { SoundEffectWidget } from "~/features/novel-editor/widgets/components/SoundEffectWidget"
 import { RemoteWidget } from "~/features/novel-editor/widgets/components/RemoteWidget"
+import { TimerWidget } from "~/features/novel-editor/widgets/components/TimerWidget"
+import { SelectionPositionWidget } from "~/features/novel-editor/widgets/components/SelectionPositionWidget"
 
 export interface WidgetBaseProps {
   dragAttributes?: DraggableAttributes
@@ -50,6 +57,8 @@ export const widgetMap = {
   format: FormattingWidget,
   soundEffect: SoundEffectWidget,
   remote: RemoteWidget,
+  timer: TimerWidget,
+  selectionPosition: SelectionPositionWidget,
 }
 
 export interface WidgetButtonProps {
@@ -144,6 +153,18 @@ export const widgets: WidgetButtonProps[] = [
     description:
       "타닥 탁 타닥... 타자기 소리는 언제 들어도 기분이 좋지 않나요?",
     icon: <FaVolumeHigh size={50} />,
+  },
+  {
+    id: "timer",
+    name: "타이머 위젯",
+    description: "아 진짜 딱 5분만 더 쉴 거야",
+    icon: <MdTimer size={50} />,
+  },
+  {
+    id: "selectionPosition",
+    name: "선택 위치",
+    description: "소설 내 현재 커서 위치를 확인할 수 있는 위젯입니다.",
+    icon: <MdMyLocation size={50} />,
   },
   // {
   //   id: "remote",

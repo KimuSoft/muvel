@@ -9,10 +9,17 @@ export function blocksToDoc(blocks: Block[], schema: Schema): PMNode {
       throw new Error(`Unknown blockType: ${block.blockType}`)
     }
 
-    return nodeType.create(
-      block.attr ? { ...block.attr, id: block.id } : { id: block.id },
-      block.content.map((nodeJson) => schema.nodeFromJSON(nodeJson)),
-    )
+    try {
+      return nodeType.create(
+        block.attr ? { ...block.attr, id: block.id } : { id: block.id },
+        block.content.map((nodeJson) => schema.nodeFromJSON(nodeJson)),
+      )
+    } catch (e) {
+      console.log(block)
+      console.error(e)
+      console.warn("Convert blank to fill")
+      return schema.nodes[BlockType.Describe].createAndFill()!
+    }
   })
 
   return schema.nodes.doc.create(null, children)

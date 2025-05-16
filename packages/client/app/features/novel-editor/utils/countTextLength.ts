@@ -1,3 +1,5 @@
+import type { CharCountWidgetOptions } from "~/features/novel-editor/components/dialogs/CharCountSettingDialog"
+
 /**
  * 텍스트 길이 계산 단위 Enum
  */
@@ -11,11 +13,10 @@ export enum CountUnit {
 /**
  * 텍스트 길이 계산 옵션 인터페이스
  */
-export interface CountOptions {
-  unit: CountUnit // 계산 단위
-  excludeSpaces: boolean // 공백 제외 여부 (true: 제외) - Char, KB 단위에만 적용
-  excludeSpecialChars: boolean // 특수문자 제외 여부 (true: 제외) - Char, KB 단위에만 적용
-}
+export type CountOptions = Omit<
+  CharCountWidgetOptions,
+  "showConfetti" | "targetGoal"
+>
 
 /**
  * 문자열의 UTF-8 바이트 수를 계산합니다.
@@ -65,6 +66,14 @@ export const countTextLength = (
       // u 플래그: 유니코드 속성 사용
       // g 플래그: 전역 검색
       filteredContent = filteredContent.replace(/[^\p{L}\p{N}\s]/gu, "")
+    }
+
+    // 3. 문장부호 제외 옵션 적용
+    console.log("excludePunctuations", options.excludePunctuations)
+    if (options.excludePunctuations) {
+      // 문장부호를 제외한 모든 문자 제거
+      // \p{P}: 모든 문장부호
+      filteredContent = filteredContent.replace(/\p{P}/gu, "")
     }
 
     // 3. 단위별 계산

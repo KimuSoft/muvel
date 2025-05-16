@@ -2,6 +2,7 @@ import { IconButton, type IconButtonProps } from "@chakra-ui/react"
 import { TbList, TbListDetails } from "react-icons/tb"
 import React, { useMemo } from "react"
 import type { EpisodeItemVariant } from "~/components/molecules/EpisodeItem"
+import { BsFillGrid3X3GapFill } from "react-icons/bs"
 
 const EpisodeListLayoutToggleButton: React.FC<
   IconButtonProps & {
@@ -18,6 +19,8 @@ const EpisodeListLayoutToggleButton: React.FC<
         return <TbList />
       case "shallow":
         return <TbListDetails />
+      case "grid":
+        return <BsFillGrid3X3GapFill />
       default:
         return <TbList />
     }

@@ -88,7 +88,7 @@ export class EpisodeAnalysisService {
     }
 
     // 2. 해당 에피소드의 블록들을 order 순서로 가져오기
-    let blocks = await this.blockRepository.getBlocksByEpisodeId(episodeId)
+    let blocks = await this.blockRepository.findBlocksByEpisodeId(episodeId)
 
     blocks = blocks.filter((block) => block.blockType !== BlockType.Comment)
 
@@ -177,7 +177,10 @@ export class EpisodeAnalysisService {
 
     await this.episodeRepository.update(
       { id: episodeId },
-      { description: analysisResult.summary },
+      {
+        description: analysisResult.summary,
+        aiRating: analysisResult.overallRating,
+      },
     )
 
     try {

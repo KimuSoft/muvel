@@ -4,14 +4,14 @@ import {
   Box,
   HStack,
   Skeleton,
-  Spacer,
   type StackProps,
   Text,
   VStack,
 } from "@chakra-ui/react"
-import { TbBrandZapier, TbRefresh, TbTypography } from "react-icons/tb"
+import { TbBrandZapier, TbRefresh, TbStar, TbTypography } from "react-icons/tb"
 import { useNavigate } from "react-router"
 import { Tooltip } from "~/components/ui/tooltip"
+import { getTimeAgoKo } from "~/utils/getTimeAgoKo"
 
 const SideData: React.FC<{ episode: Episode } & StackProps> = ({
   episode,
@@ -26,7 +26,19 @@ const SideData: React.FC<{ episode: Episode } & StackProps> = ({
   }, [episode.createdAt])
 
   return (
-    <HStack gap={4} flexShrink={0} {...props}>
+    <HStack columnGap={4} flexShrink={0} rowGap={1} {...props}>
+      {episode.aiRating !== null && episode.aiRating !== undefined ? (
+        <HStack gap={1}>
+          <TbStar
+            color={"var(--chakra-colors-purple-400)"}
+            size={12}
+            style={{ flexShrink: 0 }}
+          />
+          <Text flexShrink={0} fontSize={"xs"} color={"gray.500"}>
+            {episode.aiRating?.toFixed(1)}
+          </Text>
+        </HStack>
+      ) : null}
       <HStack gap={1}>
         <TbTypography
           color={"var(--chakra-colors-purple-400)"}
@@ -44,20 +56,15 @@ const SideData: React.FC<{ episode: Episode } & StackProps> = ({
         <HStack gap={1}>
           <TbBrandZapier color={"var(--chakra-colors-purple-400)"} size={12} />
           <Text fontSize={"xs"} color={"gray.500"}>
-            {createdAt.getFullYear()}.{createdAt.getMonth() + 1}.
-            {createdAt.getDate()}
+            {getTimeAgoKo(createdAt)}
           </Text>
         </HStack>
       </Tooltip>
-      <Tooltip
-        content={createdAt.toLocaleString() + "에 수정"}
-        openDelay={1000}
-      >
+      <Tooltip content={createdAt.toLocaleString() + "에 수정"}>
         <HStack gap={1}>
           <TbRefresh color={"var(--chakra-colors-purple-400)"} size={12} />
           <Text fontSize={"xs"} color={"gray.500"}>
-            {updatedAt.getFullYear()}.{updatedAt.getMonth() + 1}.
-            {updatedAt.getDate()}
+            {getTimeAgoKo(updatedAt)}
           </Text>
         </HStack>
       </Tooltip>
@@ -65,7 +72,7 @@ const SideData: React.FC<{ episode: Episode } & StackProps> = ({
   )
 }
 
-export type EpisodeItemVariant = "detail" | "simple" | "shallow"
+export type EpisodeItemVariant = "detail" | "simple" | "shallow" | "grid"
 
 export type EpisodeItemProps = StackProps & {
   episode: Episode
@@ -168,7 +175,13 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
           >
             {prefix}
           </Text>
-          <VStack gap={1} py={1.5} alignItems={"baseline"}>
+          <VStack
+            gap={1}
+            py={1.5}
+            flex={1}
+            alignItems={"baseline"}
+            overflow={"hidden"}
+          >
             <HStack w={"100%"} overflow={"hidden"}>
               <Text
                 display={
@@ -184,15 +197,11 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
               <Text truncate>{episode.title || "제목 없음"}</Text>
             </HStack>
             {variant !== "simple" && (
-              <Text
-                fontSize={"xs"}
-                color={"gray.500"}
-                w={"400px"}
-                maxW={"100%"}
-                truncate
-              >
-                {episode.description}
-              </Text>
+              <Tooltip content={episode.description}>
+                <Text fontSize={"xs"} color={"gray.500"} maxW={"100%"} truncate>
+                  {episode.description}
+                </Text>
+              </Tooltip>
             )}
             <Box
               display={
@@ -206,7 +215,6 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
               <SideData episode={episode} />
             </Box>
           </VStack>
-          <Spacer />
           <Box
             display={
               variant !== "detail" ? "none" : { base: "none", md: "flex" }

@@ -2,7 +2,7 @@ import React from "react"
 import { HStack, Link, Text } from "@chakra-ui/react"
 import BlockLink from "~/components/atoms/BlockLink"
 
-const Footer: React.FC = () => {
+const Footer: React.FC<{ hideInfo?: boolean }> = ({ hideInfo = false }) => {
   return (
     <HStack
       mt={8}
@@ -36,6 +36,16 @@ const Footer: React.FC = () => {
           이용약관
         </Link>
       </BlockLink>
+      {!hideInfo && (
+        <>
+          <Text display={{ base: "none", md: "inline" }}>·</Text>
+          <BlockLink to={"/info"}>
+            <Link as={"div"} color={"gray.400"}>
+              소개
+            </Link>
+          </BlockLink>
+        </>
+      )}
     </HStack>
   )
 }

@@ -12,23 +12,27 @@ const TauriEventProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const navigate = useNavigate()
 
   const checkForUpdates = async () => {
-    const { check } = await getUpdaterPlugin()
-    const { relaunch } = await getProcessPlugin()
+    try {
+      const { check } = await getUpdaterPlugin()
+      const { relaunch } = await getProcessPlugin()
 
-    const update = await check()
+      const update = await check()
 
-    if (update) {
-      toaster.info({
-        title: "새로운 뮤블 업데이트가 있어요!",
-        description: "새로운 버전을 바로 설치할 수 있어요!",
-        action: {
-          label: "업데이트",
-          onClick: async () => {
-            await update.downloadAndInstall()
-            await relaunch()
+      if (update) {
+        toaster.info({
+          title: "새로운 뮤블 업데이트가 있어요!",
+          description: "새로운 버전을 바로 설치할 수 있어요!",
+          action: {
+            label: "업데이트",
+            onClick: async () => {
+              await update.downloadAndInstall()
+              await relaunch()
+            },
           },
-        },
-      })
+        })
+      }
+    } catch (e) {
+      console.warn("Auto Update Issue", e)
     }
   }
 

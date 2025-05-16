@@ -96,7 +96,7 @@ const NovelDetailTemplate: React.FC<{
             w={"100%"}
             h={"100%"}
             inset={0}
-            backgroundImage={`url(${getKimuageUrl(novel.thumbnail)})`}
+            backgroundImage={`url(${getKimuageUrl(novel.thumbnail, true, 300)})`}
             backgroundSize="cover"
             backgroundPosition="center"
             transform={"scale(1.2)"}
@@ -140,11 +140,7 @@ const NovelDetailTemplate: React.FC<{
                 h={{ base: "180px", md: "390px" }}
                 borderRadius="md"
                 bgColor={{ base: "gray.100", _dark: "gray.700" }}
-                src={
-                  novel.thumbnail
-                    ? `${novel.thumbnail}/thumbnail?width=260`
-                    : "/cover.png"
-                }
+                src={getKimuageUrl(novel.thumbnail, true, 300)}
                 backgroundRepeat={"no-repeat"}
                 backgroundSize={"cover"}
                 backgroundPosition={"center"}
@@ -262,7 +258,7 @@ const NovelDetailTemplate: React.FC<{
 
           <HStack gap={1}>
             <EpisodeListLayoutToggleButton
-              variants={["detail", "simple"]}
+              variants={["detail", "simple", "grid"]}
               onValueChange={setEpisodeListLayout}
               value={episodeListLayout}
             />
