@@ -1,7 +1,8 @@
 import React, { forwardRef, useMemo } from "react"
 import { type Episode, EpisodeType } from "muvel-api-types"
-import { Button, type ButtonProps, Skeleton } from "@chakra-ui/react"
+import { Box, Button, type ButtonProps, Skeleton } from "@chakra-ui/react"
 import { useNavigate } from "react-router"
+import { Tooltip } from "~/components/ui/tooltip"
 
 export type EpisodeItemProps = ButtonProps & {
   episode: Episode
@@ -26,18 +27,20 @@ const EpisodeGridItem = forwardRef<HTMLButtonElement, EpisodeItemProps>(
 
     return (
       <Skeleton w={"60px"} loading={!!loading}>
-        <Button
-          size={"sm"}
-          w={"60px"}
-          variant={"ghost"}
-          userSelect={"none"}
-          gap={5}
-          onClick={() => navigate(`/episodes/${episode.id}`)}
-          ref={ref}
-          {...props}
-        >
-          {episodeCountText}{" "}
-        </Button>
+        <Tooltip content={episode.title}>
+          <Button
+            size={"sm"}
+            w={"60px"}
+            variant={"ghost"}
+            userSelect={"none"}
+            gap={5}
+            onClick={() => navigate(`/episodes/${episode.id}`)}
+            ref={ref}
+            {...props}
+          >
+            {episodeCountText}{" "}
+          </Button>
+        </Tooltip>
       </Skeleton>
     )
   },
