@@ -11,6 +11,7 @@ import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
 import { IoSettings } from "react-icons/io5"
 import { GoNumber } from "react-icons/go"
 import {
+  type CountOptions,
   countTextLength,
   CountUnit,
 } from "~/features/novel-editor/utils/countTextLength"
@@ -88,6 +89,7 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
     if (!view) return
 
     const content = view.state.doc.textContent
+    // countTextLength는 options 객체에서 필요한 필드(unit, excludeSpaces, excludeSpecialChars)만 사용합니다.
     const len = countTextLength(content, options)
     setCurrentLength(len)
 
@@ -107,7 +109,7 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
     if (!view.state.selection.empty) {
       const { from, to } = view.state.selection
       const selectedText = view.state.doc.textBetween(from, to)
-      const selLen = countTextLength(selectedText, options)
+      const selLen = countTextLength(selectedText, options as CountOptions)
       setSelectedLength(selLen)
     } else {
       setSelectedLength(0)
@@ -125,10 +127,28 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
 
   useEffect(() => {
     if (view) {
-      updateDisplayCounts()
+      const content = view.state.doc.textContent
+      const len = countTextLength(content, options as CountOptions)
+      setCurrentLength(len)
+
+      const goal = options.targetGoal
+      const currentPercentage = goal > 0 ? (len / goal) * 100 : 0
+      setPercentage(currentPercentage)
+
+      goalReachedRef.current = currentPercentage >= 100
+
+      if (!view.state.selection.empty) {
+        const { from, to } = view.state.selection
+        const selectedText = view.state.doc.textBetween(from, to)
+        const selLen = countTextLength(selectedText, options as CountOptions)
+        setSelectedLength(selLen)
+      } else {
+        setSelectedLength(0)
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view])
+    // options 객체 전체를 의존성으로 넣거나, 필요한 특정 필드(options.unit, options.excludeSpaces 등)를 넣습니다.
+    // 여기서는 options 객체가 변경될 때마다 초기 계산을 다시 하도록 합니다.
+  }, [view, options])
 
   useEffect(() => {
     if (view) {
