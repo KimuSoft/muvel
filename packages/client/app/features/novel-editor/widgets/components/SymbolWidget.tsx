@@ -4,7 +4,7 @@ import {
   WidgetHeader,
   WidgetTitle,
   WidgetBody,
-} from "~/features/novel-editor/widgets/components/WidgetBase"
+} from "~/features/novel-editor/widgets/containers/WidgetBase"
 import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
 import { Button, HStack } from "@chakra-ui/react"
 import { RiCharacterRecognitionFill } from "react-icons/ri"

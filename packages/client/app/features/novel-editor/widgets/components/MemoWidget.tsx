@@ -7,7 +7,7 @@ import {
   WidgetBody,
   WidgetHeader,
   WidgetTitle,
-} from "~/features/novel-editor/widgets/components/WidgetBase"
+} from "~/features/novel-editor/widgets/containers/WidgetBase"
 import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap"
 import { useSpecificWidgetSettings } from "~/hooks/useAppOptions"
 

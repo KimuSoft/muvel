@@ -19,7 +19,7 @@ import {
   WidgetBody,
   WidgetHeader,
   WidgetTitle,
-} from "~/features/novel-editor/widgets/components/WidgetBase"
+} from "~/features/novel-editor/widgets/containers/WidgetBase"
 import { getNovel } from "~/services/novelService"
 import { getEpisodeBlocks } from "~/services/episodeService"
 import { useEditorStyleOptions } from "~/hooks/useAppOptions"

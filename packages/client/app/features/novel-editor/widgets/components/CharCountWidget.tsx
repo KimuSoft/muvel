@@ -1,17 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { HStack, IconButton, Spacer, Text, VStack } from "@chakra-ui/react"
 import confetti from "canvas-confetti"
+import { debounce } from "lodash-es"
 import {
   WidgetBase,
   WidgetBody,
   WidgetHeader,
   WidgetTitle,
-} from "~/features/novel-editor/widgets/components/WidgetBase"
+} from "~/features/novel-editor/widgets/containers/WidgetBase"
 import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
 import { IoSettings } from "react-icons/io5"
 import { GoNumber } from "react-icons/go"
 import {
-  type CountOptions,
   countTextLength,
   CountUnit,
 } from "~/features/novel-editor/utils/countTextLength"
@@ -41,24 +41,28 @@ const unitSuffix: Record<CountUnit, string> = {
   [CountUnit.KB]: "KB",
 }
 
-const THROTTLE_DELAY = 250
+const DEBOUNCE_DELAY = 300 // 디바운스 지연 시간 증가 (필요시 조절)
 
 export const CharCountWidget: React.FC<WidgetBaseProps> = ({
   dragAttributes,
   dragListeners,
 }) => {
   const { view } = useEditorContext()
-  const [options, _setOptions] =
+  const [options, _setOptions, _resetOptions] =
     useSpecificWidgetSettings<CharCountWidgetOptions>(
       CHAR_COUNT_WIDGET_ID,
       defaultCharCountOptions,
     )
 
+  useEffect(() => {
+    console.log("CharCountWidget mounted")
+  }, [])
+
   const [currentLength, setCurrentLength] = useState<number>(0)
   const [selectedLength, setSelectedLength] = useState<number>(0)
   const [percentage, setPercentage] = useState<number>(0)
   const goalReachedRef = useRef<boolean>(false)
-  const throttleTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const initialLoadRef = useRef<boolean>(true) // 초기 로드 여부 추적
 
   const triggerConfetti = useCallback(() => {
     const duration = 5 * 1000
@@ -86,82 +90,98 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
     }, 250)
   }, [])
 
-  const updateDisplayCounts = useCallback(() => {
+  const calculateCounts = useCallback(() => {
     if (!view) return
 
     const content = view.state.doc.textContent
-    // countTextLength는 options 객체에서 필요한 필드(unit, excludeSpaces, excludeSpecialChars)만 사용합니다.
+
     const len = countTextLength(content, options)
     setCurrentLength(len)
 
     const goal = options.targetGoal
-    const currentPercentage = goal > 0 ? (len / goal) * 100 : 0
+    // targetGoal이 0이거나 음수일 경우, percentage는 0 또는 100 (len > 0 일때)으로 처리하여 폭죽 오작동 방지
+    const currentPercentage = goal > 0 ? (len / goal) * 100 : len > 0 ? 100 : 0
     setPercentage(currentPercentage)
 
+    const prevGoalReached = goalReachedRef.current
+    goalReachedRef.current = currentPercentage >= 100 && goal > 0 // 목표가 0 초과일 때만 목표 달성으로 간주
+
+    // 초기 로드가 아니고, 이전에는 목표 미달성이었고, 현재 목표 달성했으며, 폭죽 옵션이 켜져 있을 때만 실행
     if (
-      currentPercentage >= 100 &&
-      !goalReachedRef.current &&
-      options.showConfetti
+      !initialLoadRef.current &&
+      !prevGoalReached &&
+      goalReachedRef.current &&
+      options.showConfetti &&
+      goal > 0
     ) {
       triggerConfetti()
     }
-    goalReachedRef.current = currentPercentage >= 100
+  }, [
+    view,
+    options.unit,
+    options.excludeSpaces,
+    options.excludePunctuations,
+    options.excludeSpecialChars,
+    options.targetGoal,
+    options.showConfetti,
+    triggerConfetti,
+  ])
+
+  const debouncedCalculateCounts = useMemo(
+    () =>
+      debounce(calculateCounts, DEBOUNCE_DELAY, {
+        leading: false,
+      }),
+    [calculateCounts],
+  )
+
+  // view 객체가 준비되거나, 문서 내용/선택이 변경될 때
+  useEffect(() => {
+    if (view) {
+      if (initialLoadRef.current) {
+        calculateCounts() // 초기 로드 시에는 즉시 계산
+        initialLoadRef.current = false
+      } else {
+        debouncedCalculateCounts()
+      }
+    }
+    return () => {
+      debouncedCalculateCounts.cancel()
+    }
+    // 의존성 배열을 더 안정적인 값으로 변경
+    // doc.toJSON()과 selection.toJSON()은 객체의 깊은 비교를 위해 JSON 문자열로 변환
+  }, [view?.state?.doc, debouncedCalculateCounts, calculateCounts])
+
+  useEffect(() => {
+    if (!view) return
 
     if (!view.state.selection.empty) {
       const { from, to } = view.state.selection
       const selectedText = view.state.doc.textBetween(from, to)
-      const selLen = countTextLength(selectedText, options as CountOptions)
+      const selLen = countTextLength(selectedText, options)
       setSelectedLength(selLen)
     } else {
       setSelectedLength(0)
     }
-  }, [view, options, triggerConfetti])
+  }, [view?.state?.selection, options])
 
-  const throttledUpdateDisplayCounts = useCallback(() => {
-    if (!throttleTimeoutRef.current) {
-      updateDisplayCounts()
-      throttleTimeoutRef.current = setTimeout(() => {
-        throttleTimeoutRef.current = null
-      }, THROTTLE_DELAY)
-    }
-  }, [updateDisplayCounts])
-
+  // 위젯의 옵션이 변경되었을 때 즉시 글자 수 다시 계산
   useEffect(() => {
+    console.log("CharCountWidget options changed")
     if (view) {
-      const content = view.state.doc.textContent
-      const len = countTextLength(content, options as CountOptions)
-      setCurrentLength(len)
-
-      const goal = options.targetGoal
-      const currentPercentage = goal > 0 ? (len / goal) * 100 : 0
-      setPercentage(currentPercentage)
-
-      goalReachedRef.current = currentPercentage >= 100
-
-      if (!view.state.selection.empty) {
-        const { from, to } = view.state.selection
-        const selectedText = view.state.doc.textBetween(from, to)
-        const selLen = countTextLength(selectedText, options as CountOptions)
-        setSelectedLength(selLen)
-      } else {
-        setSelectedLength(0)
-      }
+      calculateCounts()
+      // 옵션 변경 시 initialLoadRef는 이미 false일 것이므로, calculateCounts 내부의 폭죽 로직이 올바르게 작동
     }
-    // options 객체 전체를 의존성으로 넣거나, 필요한 특정 필드(options.unit, options.excludeSpaces 등)를 넣습니다.
-    // 여기서는 options 객체가 변경될 때마다 초기 계산을 다시 하도록 합니다.
-  }, [view, options])
-
-  useEffect(() => {
-    if (view) {
-      throttledUpdateDisplayCounts()
-    }
-    return () => {
-      if (throttleTimeoutRef.current) {
-        clearTimeout(throttleTimeoutRef.current)
-        throttleTimeoutRef.current = null
-      }
-    }
-  }, [view?.state.doc, view?.state.selection, throttledUpdateDisplayCounts])
+  }, [
+    view, // view가 있어야 계산 가능
+    options.unit,
+    options.excludeSpaces,
+    options.excludePunctuations,
+    options.excludeSpecialChars,
+    options.targetGoal,
+    options.showConfetti,
+    calculateCounts, // calculateCounts 함수 자체가 의존성에 포함되어야 함
+  ])
 
   return (
     <WidgetBase>
@@ -200,7 +220,9 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
             {Math.floor(percentage)}%
           </Text>
         </HStack>
-        <ProgressBar value={Math.min(1, percentage / 100)} />
+        <ProgressBar
+          value={options.targetGoal > 0 ? Math.min(1, percentage / 100) : 0}
+        />
       </WidgetBody>
     </WidgetBase>
   )

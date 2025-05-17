@@ -4,7 +4,7 @@ import {
   WidgetBody,
   WidgetHeader,
   WidgetTitle,
-} from "~/features/novel-editor/widgets/components/WidgetBase"
+} from "~/features/novel-editor/widgets/containers/WidgetBase"
 import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap"
 import { Button, Group, HStack } from "@chakra-ui/react"
 import { MdSettingsRemote } from "react-icons/md"

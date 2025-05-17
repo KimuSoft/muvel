@@ -53,7 +53,7 @@ const MobileBar = () => {
 
   // Effect to listen for editor content changes and update length
   useEffect(() => {
-    if (view) {
+    if (view && isKeyboardVisible) {
       // Initial calculation and subsequent updates on document change
       throttledUpdateLength()
     }

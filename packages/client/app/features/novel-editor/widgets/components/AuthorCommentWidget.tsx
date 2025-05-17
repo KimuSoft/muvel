@@ -15,7 +15,7 @@ import {
   WidgetBody,
   WidgetHeader,
   WidgetTitle,
-} from "~/features/novel-editor/widgets/components/WidgetBase" // 경로 수정 필요
+} from "~/features/novel-editor/widgets/containers/WidgetBase" // 경로 수정 필요
 
 // Debounce delay 제거됨
 

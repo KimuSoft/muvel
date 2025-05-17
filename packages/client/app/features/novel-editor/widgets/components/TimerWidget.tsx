@@ -15,7 +15,12 @@ import {
 import { FaStopwatch, FaVolumeMute, FaVolumeUp } from "react-icons/fa"
 import { Howl } from "howler"
 
-import { WidgetBase, WidgetBody, WidgetHeader, WidgetTitle } from "./WidgetBase"
+import {
+  WidgetBase,
+  WidgetBody,
+  WidgetHeader,
+  WidgetTitle,
+} from "../containers/WidgetBase"
 import type { WidgetBaseProps } from "./widgetMap"
 import { toaster } from "~/components/ui/toaster"
 import ProgressBar from "~/components/atoms/ProgressBar"

@@ -1,25 +1,26 @@
 import { useCallback, useContext } from "react"
 import { type Draft } from "immer"
+import { cloneDeep } from "lodash-es" // lodash-es에서 cloneDeep 임포트
 import { OptionContext, SetOptionContext } from "~/providers/AppOptionProvider"
 import type {
-  AppExportOptions,
+  AppOptions,
   EditorStyleOptions,
+  AppExportOptions,
   ViewOptions,
+  WidgetSettings,
   WidgetInstanceId,
   WidgetLayout,
-  WidgetSettings,
 } from "~/types/options"
-import type { WidgetId } from "~/features/novel-editor/widgets/components/widgetMap"
 import {
-  defaultAppExportOptions,
   defaultEditorStyleOptions,
+  defaultAppExportOptions,
   defaultViewOptions,
   defaultWidgetSettings,
 } from "~/types/defaultOptions"
+import type { WidgetId } from "~/features/novel-editor/widgets/components/widgetMap"
 
 export const useAppOptionsContext = () => {
   const options = useContext(OptionContext)
-  // SetOptionContext의 updater 타입이 (draft: Draft<AppOptions>) => void | AppOptions 임을 가정
   const setOptions = useContext(SetOptionContext)
 
   if (!options || !setOptions) {
@@ -40,10 +41,8 @@ export const useEditorStyleOptions = () => {
       setAllOptions((draftAll) => {
         const result = updater(draftAll.editorStyle)
         if (result !== undefined) {
-          // void가 아닌 새로운 객체가 반환되었는지 확인
           draftAll.editorStyle = result
         }
-        // void를 반환하면 draftAll.editorStyle의 변경사항이 적용됨 (immer 기본 동작)
       })
     },
     [setAllOptions],
@@ -105,7 +104,6 @@ export const useViewOptions = () => {
 }
 
 export const useWidgetSettingsContext = () => {
-  // 전체 위젯 설정을 다루는 컨텍스트 훅
   const [allOptions, setAllOptions] = useAppOptionsContext()
 
   const setAllWidgetSettings = useCallback(
@@ -133,7 +131,7 @@ export const useWidgetSettingsContext = () => {
 
 export const useSpecificWidgetSettings = <T extends Record<string, any>>(
   widgetInstanceId: WidgetInstanceId,
-  defaultOptions?: T, // 이 위젯 타입의 기본값
+  defaultOptions?: T,
 ) => {
   const [allWidgetSettings, setAllWidgetSettings, _resetAllWidgetSettings] =
     useWidgetSettingsContext()
@@ -141,23 +139,30 @@ export const useSpecificWidgetSettings = <T extends Record<string, any>>(
   const setSettings = useCallback(
     (updater: (draft: Draft<T>) => void | T) => {
       setAllWidgetSettings((draftAllSettings) => {
+        // 위젯 설정이 존재하지 않고 기본값이 있다면, 깊은 복사로 생성
         if (!draftAllSettings[widgetInstanceId] && defaultOptions) {
-          draftAllSettings[widgetInstanceId] = { ...defaultOptions }
+          draftAllSettings[widgetInstanceId] = cloneDeep(defaultOptions)
+        } else if (!draftAllSettings[widgetInstanceId]) {
+          // 기본값도 없으면 빈 객체로 초기화 (타입 T에 맞게)
+          draftAllSettings[widgetInstanceId] = {} as T
         }
+
         const result = updater(draftAllSettings[widgetInstanceId] as Draft<T>)
         if (result !== undefined) {
+          // updater가 새 객체를 반환하면 그대로 할당
           draftAllSettings[widgetInstanceId] = result
         }
+        // updater가 void를 반환하면 draftAllSettings[widgetInstanceId]의 변경사항이 적용됨 (immer 기본 동작)
       })
     },
     [setAllWidgetSettings, widgetInstanceId, defaultOptions],
   )
 
   const resetSettings = useCallback(() => {
-    // 이 위젯 인스턴스의 설정만 기본값(defaultOptions)으로 리셋
     setAllWidgetSettings((draftAllSettings) => {
       if (defaultOptions) {
-        draftAllSettings[widgetInstanceId] = { ...defaultOptions }
+        // 리셋 시에도 깊은 복사된 기본값 사용
+        draftAllSettings[widgetInstanceId] = cloneDeep(defaultOptions)
       } else {
         // defaultOptions가 없으면 해당 위젯 설정을 삭제할 수도 있음
         delete draftAllSettings[widgetInstanceId]
@@ -165,9 +170,13 @@ export const useSpecificWidgetSettings = <T extends Record<string, any>>(
     })
   }, [setAllWidgetSettings, widgetInstanceId, defaultOptions])
 
+  // 현재 설정을 가져올 때:
+  // 1. 기본 옵션이 있다면 깊은 복사본을 만든다. (원본 defaultOptions 객체 불변성 유지)
+  // 2. 저장된 위젯 설정이 있다면, 기본값 복사본 위에 덮어쓴다. (얕은 병합으로 충분)
+  const baseSettings = defaultOptions ? cloneDeep(defaultOptions) : ({} as T)
   const currentSettings = allWidgetSettings[widgetInstanceId]
-    ? ({ ...defaultOptions, ...allWidgetSettings[widgetInstanceId] } as T)
-    : ({ ...defaultOptions } as T)
+    ? { ...baseSettings, ...allWidgetSettings[widgetInstanceId] } // 저장된 값으로 덮어쓰기
+    : baseSettings // 저장된 값 없으면 복사된 기본값 사용
 
   return [currentSettings, setSettings, resetSettings] as const
 }
@@ -189,7 +198,6 @@ export const useWidgetLayout = () => {
   )
 
   const resetWidgetLayout = useCallback(() => {
-    // defaultViewOptions에서 widgetLayout 부분만 가져와서 리셋
     setWidgetLayout(() => defaultViewOptions.widgetLayout)
   }, [setWidgetLayout])
 
