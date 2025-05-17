@@ -21,8 +21,6 @@ import {
   Text,
   type UseDialogReturn,
 } from "@chakra-ui/react"
-import { useOption } from "~/context/OptionContext"
-import { defaultOption } from "~/providers/OptionProvider"
 import FontFamilySelect from "../FontFamilySelect"
 import OptionColorPicker from "~/features/novel-editor/components/ColorPicker"
 import {
@@ -32,21 +30,22 @@ import {
   muvelMobilePreset,
   novelpiaDesktopPreset,
   novelpiaMobilePreset,
-} from "~/features/novel-editor/style/stylePreset"
+} from "~/types/editorStylePresets"
 import { FaDesktop, FaMobile } from "react-icons/fa6"
 import { SiKakao } from "react-icons/si"
 import { useColorMode } from "~/components/ui/color-mode"
 import React, { type ReactNode } from "react"
 import { BiReset } from "react-icons/bi"
+import { useEditorStyleOptions } from "~/hooks/useAppOptions"
+import { defaultEditorStyleOptions } from "~/types/defaultOptions"
 
 const OptionDrawer: React.FC<{
   children?: ReactNode
   dialog: UseDialogReturn
 }> = ({ children, dialog }) => {
-  const [option, setOption] = useOption()
+  const [editorStyleOptions, setEditorStyleOptions, resetEditorStyleOptions] =
+    useEditorStyleOptions()
   const { setColorMode } = useColorMode()
-
-  const handleReset = () => setOption(() => defaultOption)
 
   return (
     <DrawerRootProvider value={dialog}>
@@ -71,7 +70,7 @@ const OptionDrawer: React.FC<{
                   variant={"outline"}
                   colorPalette={"purple"}
                   onClick={() =>
-                    setOption((option) => ({
+                    setEditorStyleOptions((option) => ({
                       ...option,
                       ...muvelMobilePreset,
                     }))
@@ -85,7 +84,7 @@ const OptionDrawer: React.FC<{
                   variant={"outline"}
                   colorPalette={"blue"}
                   onClick={() => {
-                    setOption((option) => ({
+                    setEditorStyleOptions((option) => ({
                       ...option,
                       ...moonpiaDesktopPreset,
                     }))
@@ -99,7 +98,7 @@ const OptionDrawer: React.FC<{
                   size={"sm"}
                   variant={"outline"}
                   onClick={() => {
-                    setOption((option) => ({
+                    setEditorStyleOptions((option) => ({
                       ...option,
                       ...novelpiaDesktopPreset,
                     }))
@@ -114,7 +113,7 @@ const OptionDrawer: React.FC<{
                   variant={"outline"}
                   onClick={() => {
                     setColorMode("light")
-                    setOption((option) => ({
+                    setEditorStyleOptions((option) => ({
                       ...option,
                       ...novelpiaMobilePreset,
                     }))
@@ -129,7 +128,7 @@ const OptionDrawer: React.FC<{
                   colorPalette={"yellow"}
                   onClick={() => {
                     setColorMode("light")
-                    setOption((option) => ({
+                    setEditorStyleOptions((option) => ({
                       ...option,
                       ...kakaopagePreset,
                     }))
@@ -144,7 +143,7 @@ const OptionDrawer: React.FC<{
                   colorPalette={"green"}
                   onClick={() => {
                     setColorMode("light")
-                    setOption((option) => ({
+                    setEditorStyleOptions((option) => ({
                       ...option,
                       ...joaraPreset,
                     }))
@@ -163,9 +162,9 @@ const OptionDrawer: React.FC<{
                 <Checkbox.Root
                   mt={5}
                   colorPalette="purple"
-                  defaultChecked={option.typewriter}
+                  checked={editorStyleOptions.typewriter}
                   onCheckedChange={(d) =>
-                    setOption((draft) => {
+                    setEditorStyleOptions((draft) => {
                       draft.typewriter = !!d.checked
                     })
                   }
@@ -179,13 +178,13 @@ const OptionDrawer: React.FC<{
                 </Text>
               </Field.Root>
               <Field.Root>
-                {option.typewriter && (
+                {editorStyleOptions.typewriter && (
                   <>
                     <Checkbox.Root
                       colorPalette="purple"
-                      defaultChecked={option.typewriterStrict}
+                      checked={editorStyleOptions.typewriterStrict}
                       onCheckedChange={(d) =>
-                        setOption((draft) => {
+                        setEditorStyleOptions((draft) => {
                           draft.typewriterStrict = !!d.checked
                         })
                       }
@@ -206,9 +205,9 @@ const OptionDrawer: React.FC<{
               <Field.Root>
                 <Field.Label>글꼴</Field.Label>
                 <FontFamilySelect
-                  value={option.fontFamily}
+                  value={editorStyleOptions.fontFamily}
                   onChange={(v) =>
-                    setOption((draft) => {
+                    setEditorStyleOptions((draft) => {
                       draft.fontFamily = v
                     })
                   }
@@ -217,15 +216,17 @@ const OptionDrawer: React.FC<{
 
               {/* 폰트 크기 */}
               <Field.Root>
-                <Field.Label>글꼴 크기 ({option.fontSize}px)</Field.Label>
+                <Field.Label>
+                  글꼴 크기 ({editorStyleOptions.fontSize}px)
+                </Field.Label>
                 <Slider.Root
                   w={"100%"}
-                  value={[option.fontSize]}
+                  value={[editorStyleOptions.fontSize]}
                   min={12}
                   max={24}
                   step={1}
                   onValueChange={({ value }) =>
-                    setOption((draft) => {
+                    setEditorStyleOptions((draft) => {
                       draft.fontSize = value[0]
                     })
                   }
@@ -240,15 +241,17 @@ const OptionDrawer: React.FC<{
               </Field.Root>
 
               <Field.Root>
-                <Field.Label>글꼴 두께 ({option.fontWeight})</Field.Label>
+                <Field.Label>
+                  글꼴 두께 ({editorStyleOptions.fontWeight})
+                </Field.Label>
                 <Slider.Root
                   w={"100%"}
-                  value={[option.fontWeight]}
+                  value={[editorStyleOptions.fontWeight]}
                   min={100}
                   max={900}
                   step={50}
                   onValueChange={({ value }) =>
-                    setOption((draft) => {
+                    setEditorStyleOptions((draft) => {
                       draft.fontWeight = value[0]
                     })
                   }
@@ -263,15 +266,17 @@ const OptionDrawer: React.FC<{
               </Field.Root>
 
               <Field.Root>
-                <Field.Label>줄 간격 ({option.lineHeight})</Field.Label>
+                <Field.Label>
+                  줄 간격 ({editorStyleOptions.lineHeight})
+                </Field.Label>
                 <Slider.Root
                   w={"100%"}
-                  value={[option.lineHeight]}
+                  value={[editorStyleOptions.lineHeight]}
                   min={1}
                   max={2.4}
                   step={0.05}
                   onValueChange={({ value }) =>
-                    setOption((draft) => {
+                    setEditorStyleOptions((draft) => {
                       draft.lineHeight = value[0]
                     })
                   }
@@ -286,15 +291,17 @@ const OptionDrawer: React.FC<{
               </Field.Root>
 
               <Field.Root>
-                <Field.Label>문단 간격 ({option.blockGap}px)</Field.Label>
+                <Field.Label>
+                  문단 간격 ({editorStyleOptions.blockGap}px)
+                </Field.Label>
                 <Slider.Root
                   w={"100%"}
-                  value={[option.blockGap]}
+                  value={[editorStyleOptions.blockGap]}
                   min={0}
                   max={20}
                   step={1}
                   onValueChange={({ value }) =>
-                    setOption((draft) => {
+                    setEditorStyleOptions((draft) => {
                       draft.blockGap = value[0]
                     })
                   }
@@ -309,15 +316,17 @@ const OptionDrawer: React.FC<{
               </Field.Root>
 
               <Field.Root>
-                <Field.Label>들여쓰기 ({option.indent}em)</Field.Label>
+                <Field.Label>
+                  들여쓰기 ({editorStyleOptions.indent}em)
+                </Field.Label>
                 <Slider.Root
                   w={"100%"}
-                  value={[option.indent]}
+                  value={[editorStyleOptions.indent]}
                   min={0}
                   max={2}
                   step={1}
                   onValueChange={({ value }) =>
-                    setOption((draft) => {
+                    setEditorStyleOptions((draft) => {
                       draft.indent = value[0]
                     })
                   }
@@ -333,16 +342,16 @@ const OptionDrawer: React.FC<{
 
               <Field.Root>
                 <Field.Label>
-                  편집창 최대 너비 ({option.editorMaxWidth}px)
+                  편집창 최대 너비 ({editorStyleOptions.editorMaxWidth}px)
                 </Field.Label>
                 <Slider.Root
                   w={"100%"}
-                  value={[option.editorMaxWidth]}
+                  value={[editorStyleOptions.editorMaxWidth]}
                   min={350}
                   max={3000}
                   step={10}
                   onValueChange={({ value }) =>
-                    setOption((draft) => {
+                    setEditorStyleOptions((draft) => {
                       draft.editorMaxWidth = value[0]
                     })
                   }
@@ -360,15 +369,15 @@ const OptionDrawer: React.FC<{
               <Field.Root>
                 <Field.Label>글자 색상</Field.Label>
 
-                {option.color && (
+                {editorStyleOptions.color && (
                   <Text color={"gray.500"} fontSize={"sm"}>
                     색상 변경 시 다크모드 및 화이트모드에 따라 글씨가 잘 보이지
                     않을 수 있습니다. 기본 설정으로 돌리려면{" "}
                     <Link
                       variant={"underline"}
                       onClick={() =>
-                        setOption((draft) => {
-                          draft.color = defaultOption.color
+                        setEditorStyleOptions((draft) => {
+                          draft.color = defaultEditorStyleOptions.color
                         })
                       }
                       colorPalette={"purple"}
@@ -379,9 +388,9 @@ const OptionDrawer: React.FC<{
                   </Text>
                 )}
                 <OptionColorPicker
-                  defaultValue={option.color}
+                  defaultValue={editorStyleOptions.color}
                   onChange={(v) =>
-                    setOption((draft) => {
+                    setEditorStyleOptions((draft) => {
                       draft.color = v
                     })
                   }
@@ -392,15 +401,16 @@ const OptionDrawer: React.FC<{
               <Field.Root>
                 <Field.Label>배경 색상</Field.Label>
 
-                {option.backgroundColor && (
+                {editorStyleOptions.backgroundColor && (
                   <Text color={"gray.500"} fontSize={"sm"}>
                     색상 변경 시 다크모드 및 화이트모드에 따라 글씨가 잘 보이지
                     않을 수 있습니다. 기본 설정으로 돌리려면{" "}
                     <Link
                       variant={"underline"}
                       onClick={() =>
-                        setOption((draft) => {
-                          draft.backgroundColor = defaultOption.backgroundColor
+                        setEditorStyleOptions((draft) => {
+                          draft.backgroundColor =
+                            defaultEditorStyleOptions.backgroundColor
                         })
                       }
                       colorPalette={"purple"}
@@ -411,9 +421,9 @@ const OptionDrawer: React.FC<{
                   </Text>
                 )}
                 <OptionColorPicker
-                  defaultValue={option.backgroundColor}
+                  defaultValue={editorStyleOptions.backgroundColor}
                   onChange={(v) =>
-                    setOption((draft) => {
+                    setEditorStyleOptions((draft) => {
                       draft.backgroundColor = v
                     })
                   }
@@ -424,7 +434,7 @@ const OptionDrawer: React.FC<{
           </DrawerBody>
 
           <DrawerFooter>
-            <Button variant="outline" onClick={handleReset}>
+            <Button variant="outline" onClick={resetEditorStyleOptions}>
               <BiReset />
               초기화
             </Button>

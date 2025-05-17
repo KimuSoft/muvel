@@ -15,7 +15,7 @@ import { useNavigate } from "react-router"
 import { FaUser } from "react-icons/fa6"
 import { Tooltip } from "~/components/ui/tooltip"
 import { TbFile, TbLink, TbLock, TbWorld } from "react-icons/tb"
-import { useUser } from "~/context/UserContext"
+import { useUser } from "~/providers/UserProvider"
 import type { LocalNovelData } from "~/services/tauri/types"
 import Kimuage from "~/components/molecules/Kimuage"
 

@@ -31,7 +31,7 @@ const EpisodeGrid: React.FC<EpisodeGridProps> = ({ episodes, loading }) => {
   }
 
   return (
-    <VStack spacing={4} align="stretch" w="100%">
+    <VStack gap={4} align="stretch" w="100%">
       {groupedEpisodes.map((groupOrChunk, index) => {
         if (Array.isArray(groupOrChunk)) {
           // 일반 에피소드 청크 (SimpleGrid로 렌더링)
@@ -67,7 +67,7 @@ const EpisodeGrid: React.FC<EpisodeGridProps> = ({ episodes, loading }) => {
       })}
       {/* 로딩 중이고 에피소드가 없을 때의 스켈레톤 (선택적) */}
       {loading && episodes.length === 0 && (
-        <SimpleGrid minChildWidth="150px" spacing={4} /* gap={4} */>
+        <SimpleGrid minChildWidth="150px" gap={4} /* gap={4} */>
           {[...Array(6)].map((_, i) => (
             <EpisodeGridItem
               key={`skeleton-${i}`}

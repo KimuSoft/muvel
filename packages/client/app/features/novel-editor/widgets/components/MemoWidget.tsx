@@ -1,15 +1,15 @@
 import React from "react"
 import { Textarea, Text, VStack } from "@chakra-ui/react"
-import { FaStickyNote } from "react-icons/fa" // 아이콘 예시 (react-icons 설치 필요)
+import { FaStickyNote } from "react-icons/fa"
 
 import {
   WidgetBase,
   WidgetBody,
   WidgetHeader,
   WidgetTitle,
-} from "~/features/novel-editor/widgets/components/WidgetBase" // 기본 위젯 컴포넌트 경로
-import { useWidgetOption } from "~/features/novel-editor/widgets/context/WidgetContext" // 리팩토링된 Context 경로
-import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap" // Props 타입 경로
+} from "~/features/novel-editor/widgets/components/WidgetBase"
+import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap"
+import { useSpecificWidgetSettings } from "~/hooks/useAppOptions"
 
 // 위젯 ID 정의 (widgetMap 등 다른 곳에서 관리될 수도 있음)
 const WIDGET_ID = "memo"
@@ -23,8 +23,7 @@ export const MemoWidget: React.FC<WidgetBaseProps> = ({
   dragAttributes,
   dragListeners,
 }) => {
-  // useWidgetOption 훅을 사용하여 메모 내용(options.content)과 업데이트 함수(setOptions)를 가져옴
-  const [options, setOptions] = useWidgetOption<MemoWidgetOptions>(
+  const [options, setOptions] = useSpecificWidgetSettings<MemoWidgetOptions>(
     WIDGET_ID,
     defaultMemoOptions,
   )

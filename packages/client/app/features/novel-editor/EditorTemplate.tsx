@@ -12,17 +12,16 @@ import {
   Center,
   VStack,
 } from "@chakra-ui/react"
-import { useOption } from "~/context/OptionContext"
 import EditorHeader from "~/features/novel-editor/components/EditorHeader"
 import MobileBar from "~/features/novel-editor/components/MobileBar"
 import { WidgetPanel } from "~/features/novel-editor/widgets/containers/WidgetPanel"
 import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
 import { TextSelection } from "prosemirror-state"
 import type { SyncState } from "~/features/novel-editor/components/SyncIndicator"
-import { useWidgetLayout } from "~/features/novel-editor/widgets/context/WidgetContext"
 import { FaBookOpen, FaStarOfLife } from "react-icons/fa6"
 import { GoMoveToEnd, GoMoveToStart } from "react-icons/go"
 import { Node as PMNode } from "prosemirror-model"
+import { useEditorStyleOptions, useWidgetLayout } from "~/hooks/useAppOptions"
 
 const EditorTemplate: React.FC<{
   initialBlocks: Block[]
@@ -30,7 +29,7 @@ const EditorTemplate: React.FC<{
   syncState: SyncState
 }> = ({ onDocChange, syncState, initialBlocks }) => {
   const { view, episode, updateEpisodeData } = useEditorContext()
-  const [option] = useOption()
+  const [editorStyle] = useEditorStyleOptions()
 
   // 제목 Input에서 Enter 키를 처리하는 핸들러
   const handleTitleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -53,11 +52,11 @@ const EditorTemplate: React.FC<{
     dispatch(tr)
   }
 
-  const { layout } = useWidgetLayout()
+  const { widgetLayout } = useWidgetLayout()
 
   const isWidgetUsing = useMemo(() => {
-    return layout.left.length || layout.right.length
-  }, [layout.left, layout.right])
+    return widgetLayout.left.length || widgetLayout.right.length
+  }, [widgetLayout.left, widgetLayout.right])
 
   const episodeCountText = useMemo(() => {
     if (episode.episodeType === EpisodeType.Episode) {
@@ -73,7 +72,7 @@ const EditorTemplate: React.FC<{
 
   return (
     <VStack
-      bgColor={option.backgroundColor || undefined}
+      bgColor={editorStyle.backgroundColor || undefined}
       minH={"100dvh"}
       transition="background-color 0.2s ease-in-out"
       position={"relative"}
@@ -93,18 +92,21 @@ const EditorTemplate: React.FC<{
         novelId={episode.novelId}
         episode={episode}
         transition="background-color 0.2s ease-in-out"
-        bgColor={option.backgroundColor || { base: "white", _dark: "black" }}
-        color={option.color || undefined}
+        bgColor={
+          editorStyle.backgroundColor || { base: "white", _dark: "black" }
+        }
         syncState={syncState}
       />
       <Box
         w={"100%"}
-        maxW={option.editorMaxWidth}
+        maxW={editorStyle.editorMaxWidth}
         userSelect={episode.permissions.edit ? undefined : "none"}
         transition="max-width 0.2s ease-in-out"
         minH={"100%"}
         my={100}
         px={2}
+        color={editorStyle.color || undefined}
+        fontFamily={editorStyle.fontFamily}
       >
         <Center>
           <Menu.Root
@@ -115,12 +117,7 @@ const EditorTemplate: React.FC<{
             }}
           >
             <Menu.Trigger asChild>
-              <Button
-                variant={"ghost"}
-                color={"gray.500"}
-                size={"md"}
-                fontFamily={option.fontFamily}
-              >
+              <Button variant={"ghost"} color={"gray.500"} size={"md"}>
                 {episodeCountText}
               </Button>
             </Menu.Trigger>
@@ -158,10 +155,10 @@ const EditorTemplate: React.FC<{
           key={episode.id + "-title"}
           fontSize={"2xl"}
           fontWeight={"bold"}
-          color={option.color || undefined}
+          color={editorStyle.color || undefined}
           border={"none"}
           textAlign={"center"}
-          fontFamily={option.fontFamily}
+          fontFamily={editorStyle.fontFamily}
           _focus={{
             border: "none",
             outline: "none",
@@ -182,7 +179,7 @@ const EditorTemplate: React.FC<{
             mt={3}
             fontWeight={300}
             fontSize={"sm"}
-            color={option.color || undefined}
+            color={editorStyle.color || undefined}
             opacity={0.5}
             w={"100%"}
             textAlign={"center"}
@@ -191,7 +188,7 @@ const EditorTemplate: React.FC<{
           </Text>
         ) : null}
         <Separator
-          borderColor={option.color || undefined}
+          borderColor={editorStyle.color || undefined}
           opacity={0.7}
           my={8}
         />

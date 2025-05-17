@@ -2,8 +2,6 @@ import React, { useEffect, useMemo } from "react"
 import type { GetEpisodeResponseDto } from "muvel-api-types"
 import EditorTemplate from "~/features/novel-editor/EditorTemplate"
 import { EditorProvider } from "~/features/novel-editor/context/EditorContext"
-import OptionProvider from "~/providers/OptionProvider"
-import { WidgetProvider } from "~/features/novel-editor/widgets/context/WidgetContext"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 import LoadingOverlay from "~/components/templates/LoadingOverlay"
 import { useEpisodeSync } from "~/features/novel-editor/hooks/useEpisodeSync"
@@ -30,6 +28,7 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (![SyncState.Synced, SyncState.Waiting].includes(combinedSyncState)) {
         event.preventDefault()
+        // 호환성 위해 설정
         event.returnValue = ""
       }
     }
@@ -42,17 +41,13 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   }
 
   return (
-    <OptionProvider>
-      <WidgetProvider>
-        <EditorProvider episode={episodeData} setEpisode={setEpisodeData}>
-          <EditorTemplate
-            initialBlocks={initialBlocks}
-            onDocChange={handleDocUpdate}
-            syncState={combinedSyncState}
-          />
-        </EditorProvider>
-      </WidgetProvider>
-    </OptionProvider>
+    <EditorProvider episode={episodeData} setEpisode={setEpisodeData}>
+      <EditorTemplate
+        initialBlocks={initialBlocks}
+        onDocChange={handleDocUpdate}
+        syncState={combinedSyncState}
+      />
+    </EditorProvider>
   )
 }
 

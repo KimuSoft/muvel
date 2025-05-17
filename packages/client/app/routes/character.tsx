@@ -1,4 +1,3 @@
-// @ts-expect-error CSR 타입 로딩됐을 경우 에러 무시
 import type { Route } from "./+types/character"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { api } from "~/utils/api"

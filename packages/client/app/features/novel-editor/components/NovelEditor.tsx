@@ -3,9 +3,9 @@ import { Box } from "@chakra-ui/react"
 import { useEditor } from "../hooks/useEditor"
 import type { Block } from "muvel-api-types"
 import "../style/editorStyles.css"
-import { useOption } from "~/context/OptionContext"
 import { toaster } from "~/components/ui/toaster"
 import { Node as PMNode } from "prosemirror-model"
+import { useEditorStyleOptions } from "~/hooks/useAppOptions"
 
 interface NovelEditorProps {
   initialBlocks: Block[]
@@ -21,7 +21,7 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
   onChange,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null!)
-  const [options] = useOption()
+  const [editorStyle] = useEditorStyleOptions()
 
   const pasteAlertFlagRef = useRef(false)
 
@@ -66,13 +66,13 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
       color={{ base: "gray.700", _dark: "gray.300" }}
       style={
         {
-          "--editor-line-height": options.lineHeight,
-          "--editor-font-family": `${options.fontFamily}, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Apple SD Gothic Neo', 'Noto Sans KR', Arial, sans-serif`,
-          "--editor-font-weight": `${options.fontWeight}`,
-          "--editor-font-size": `${options.fontSize}px`,
-          "--editor-color": options.color,
-          "--editor-indent": `${options.indent}em`,
-          "--editor-block-gap": `${options.blockGap}px`,
+          "--editor-line-height": editorStyle.lineHeight,
+          "--editor-font-family": `${editorStyle.fontFamily}, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Apple SD Gothic Neo', 'Noto Sans KR', Arial, sans-serif`,
+          "--editor-font-weight": `${editorStyle.fontWeight}`,
+          "--editor-font-size": `${editorStyle.fontSize}px`,
+          "--editor-color": editorStyle.color,
+          "--editor-indent": `${editorStyle.indent}em`,
+          "--editor-block-gap": `${editorStyle.blockGap}px`,
         } as React.CSSProperties
       }
     />

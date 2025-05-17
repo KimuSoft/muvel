@@ -1,21 +1,9 @@
 import type { Node as ProseMirrorNode } from "prosemirror-model"
+import type { AppExportOptions } from "~/types/options"
 
-// --- 타입 정의 시작 ---
-export interface ExportOptions {
-  paragraphSpacing: number // 문단 사이 추가 줄바꿈 (0-3)
-  dialogueNarrationSpacing: number // 대사/묘사 사이 추가 줄바꿈 (0-3)
-  separatorReplacement: string // 구분선 대치 문자열
-  spacingBeforeSeparator: number // 구분선 앞 추가 줄바꿈 (0-5) -> 최소 1줄 보장됨
-  spacingAfterSeparator: number // 구분선 뒤 추가 줄바꿈 (0-5) -> 최소 1줄 보장됨
-  forceLineBreakPerSentence: number // 문장 부호 뒤 강제 줄바꿈 (0-3)
-  includeComments: boolean // 주석 포함 여부
-}
-// --- 타입 정의 끝 ---
-
-// --- 헬퍼 함수: ProseMirror Doc -> Plain Text 변환 시작 ---
 export const processContentForExport = (
   doc: ProseMirrorNode | null | undefined,
-  options: ExportOptions,
+  options: AppExportOptions,
 ): string => {
   if (!doc) return ""
 

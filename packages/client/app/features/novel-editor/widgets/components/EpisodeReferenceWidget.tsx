@@ -20,9 +20,9 @@ import {
   WidgetHeader,
   WidgetTitle,
 } from "~/features/novel-editor/widgets/components/WidgetBase"
-import { useOption } from "~/context/OptionContext"
 import { getNovel } from "~/services/novelService"
 import { getEpisodeBlocks } from "~/services/episodeService"
+import { useEditorStyleOptions } from "~/hooks/useAppOptions"
 
 interface EpisodeSelectItem {
   label: string
@@ -36,7 +36,7 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
   const { episode: currentEpisode } = useEditorContext()
   const novelId = currentEpisode?.novel?.id
 
-  const [options] = useOption()
+  const [editorStyle] = useEditorStyleOptions()
   const [novelEpisodes, setNovelEpisodes] = useState<EpisodeSelectItem[]>([])
   const [selectedEpisodeId, setSelectedEpisodeId] = useState<string | null>(
     null,
@@ -233,7 +233,7 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
               border={"none"}
               p={0}
               lineHeight={1.5}
-              fontFamily={options.fontFamily}
+              fontFamily={editorStyle.fontFamily}
               whiteSpace="pre-wrap" // 줄바꿈/공백 유지
               borderColor="gray.300"
               _dark={{ borderColor: "gray.600" }}

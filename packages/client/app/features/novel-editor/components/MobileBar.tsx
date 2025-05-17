@@ -1,28 +1,22 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import { Box, Button, HStack, Spacer, Text } from "@chakra-ui/react"
 import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
 import { TextSelection } from "prosemirror-state"
-import { useWidgetOption } from "~/features/novel-editor/widgets/context/WidgetContext"
 import type { CharCountWidgetOptions } from "~/features/novel-editor/components/dialogs/CharCountSettingDialog"
 import {
   CHAR_COUNT_WIDGET_ID,
   defaultCharCountOptions,
 } from "~/features/novel-editor/widgets/components/CharCountWidget"
-import {
-  type CountOptions,
-  countTextLength,
-  CountUnit,
-} from "../utils/countTextLength"
+import { countTextLength, CountUnit } from "../utils/countTextLength"
+import { useSpecificWidgetSettings } from "~/hooks/useAppOptions"
 
 const THROTTLE_DELAY_MOBILE_BAR = 250
 
 const MobileBar = () => {
   const { view } = useEditorContext()
   const [bottomOffset, setBottomOffset] = useState(0)
-  // 키보드 표시 여부를 추적하는 상태 추가
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
   const [contentLength, setContentLength] = React.useState(0)
-  // const [openMore, setOpenMore] = React.useState(false)
 
   const unitSuffix: Record<CountUnit, string> = {
     [CountUnit.Char]: "자",
@@ -31,7 +25,7 @@ const MobileBar = () => {
     [CountUnit.KB]: "KB",
   }
 
-  const [countOptions] = useWidgetOption<CharCountWidgetOptions>(
+  const [countOptions] = useSpecificWidgetSettings<CharCountWidgetOptions>(
     CHAR_COUNT_WIDGET_ID,
     defaultCharCountOptions,
   )

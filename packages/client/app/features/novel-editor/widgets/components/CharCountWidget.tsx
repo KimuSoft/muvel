@@ -21,7 +21,7 @@ import {
   CharCountSettingsDialog,
   type CharCountWidgetOptions,
 } from "~/features/novel-editor/components/dialogs/CharCountSettingDialog"
-import { useWidgetOption } from "~/features/novel-editor/widgets/context/WidgetContext"
+import { useSpecificWidgetSettings } from "~/hooks/useAppOptions"
 
 export const CHAR_COUNT_WIDGET_ID = "charCount"
 
@@ -48,10 +48,11 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
   dragListeners,
 }) => {
   const { view } = useEditorContext()
-  const [options, _setOptions] = useWidgetOption<CharCountWidgetOptions>(
-    CHAR_COUNT_WIDGET_ID,
-    defaultCharCountOptions,
-  )
+  const [options, _setOptions] =
+    useSpecificWidgetSettings<CharCountWidgetOptions>(
+      CHAR_COUNT_WIDGET_ID,
+      defaultCharCountOptions,
+    )
 
   const [currentLength, setCurrentLength] = useState<number>(0)
   const [selectedLength, setSelectedLength] = useState<number>(0)

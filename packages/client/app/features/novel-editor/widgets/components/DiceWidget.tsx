@@ -1,18 +1,16 @@
-import React, { useState, useCallback, useMemo } from "react"
+import React, { useCallback, useState } from "react"
 import {
   Center,
   HStack,
   IconButton,
-  MenuRoot, // Chakra v3 Menu Components
-  MenuTrigger,
-  MenuPositioner,
   MenuContent,
   MenuItem,
-  // Spacer,        // Spacer 대신 HStack flex=1 사용
+  MenuPositioner,
+  MenuRoot,
+  MenuTrigger,
   Text,
   VStack,
 } from "@chakra-ui/react"
-// Icons
 import { BsDice6Fill } from "react-icons/bs"
 import { AiOutlineMinus } from "react-icons/ai"
 import {
@@ -22,19 +20,14 @@ import {
 } from "react-icons/gi"
 import { BiCoin } from "react-icons/bi"
 
-// Base Widget Components (경로는 실제 프로젝트 구조에 맞게 조정)
 import {
   WidgetBase,
   WidgetBody,
   WidgetHeader,
   WidgetTitle,
 } from "~/features/novel-editor/widgets/components/WidgetBase"
-// Context Hook (경로는 실제 프로젝트 구조에 맞게 조정)
-import { useWidgetOption } from "~/features/novel-editor/widgets/context/WidgetContext"
-// Base Props Type (경로는 실제 프로젝트 구조에 맞게 조정)
 import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap"
-
-// --- 타입 정의 시작 ---
+import { useSpecificWidgetSettings } from "~/hooks/useAppOptions"
 
 // 단일 주사위 정보 타입
 export interface DiceInfo {
@@ -48,10 +41,6 @@ export interface DiceWidgetOptions {
   dices: DiceInfo[]
 }
 
-// --- 타입 정의 끝 ---
-
-// --- 단일 주사위 컴포넌트 시작 ---
-// 이 컴포넌트는 위젯 내부에서만 사용되므로 export하지 않을 수 있음
 const Dice: React.FC<{
   onChange?(value: number): unknown
   defaultValue?: number
@@ -138,10 +127,9 @@ const defaultDiceOptions: DiceWidgetOptions = {
 
 export const DiceWidget: React.FC<WidgetBaseProps> = ({
   dragAttributes,
-  dragListeners, // dnd-kit props
+  dragListeners,
 }) => {
-  // 위젯 옵션 상태 관리
-  const [options, setOptions] = useWidgetOption<DiceWidgetOptions>(
+  const [options, setOptions] = useSpecificWidgetSettings<DiceWidgetOptions>(
     WIDGET_ID,
     defaultDiceOptions,
   )

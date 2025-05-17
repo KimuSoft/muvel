@@ -17,12 +17,12 @@ import { Howl } from "howler"
 
 import { WidgetBase, WidgetBody, WidgetHeader, WidgetTitle } from "./WidgetBase"
 import type { WidgetBaseProps } from "./widgetMap"
-import { useWidgetOption } from "../context/WidgetContext"
 import { toaster } from "~/components/ui/toaster"
 import ProgressBar from "~/components/atoms/ProgressBar"
 import { MdPause, MdPlayArrow } from "react-icons/md"
 import { IoMdRefresh } from "react-icons/io"
 import { Tooltip } from "~/components/ui/tooltip"
+import { useSpecificWidgetSettings } from "~/hooks/useAppOptions"
 
 export interface TimerWidgetOptions {
   duration: number
@@ -187,7 +187,7 @@ export const TimerWidget: React.FC<WidgetBaseProps> = ({
   dragAttributes,
   dragListeners,
 }) => {
-  const [options, setOptions] = useWidgetOption<TimerWidgetOptions>(
+  const [options, setOptions] = useSpecificWidgetSettings<TimerWidgetOptions>(
     WIDGET_ID,
     defaultTimerOptions,
   )

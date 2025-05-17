@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react"
 import { TbLogin2, TbLogout } from "react-icons/tb"
 import { Tooltip } from "~/components/ui/tooltip"
-import { useUser } from "~/context/UserContext"
+import { useUser } from "~/providers/UserProvider"
 import { FaUser } from "react-icons/fa6"
 import { SiGoogledrive } from "react-icons/si"
 import { useLogin } from "~/hooks/useLogin"

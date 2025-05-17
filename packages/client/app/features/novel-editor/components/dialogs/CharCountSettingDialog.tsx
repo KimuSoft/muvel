@@ -23,14 +23,13 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react"
-import { useWidgetOption } from "~/features/novel-editor/widgets/context/WidgetContext" // 경로 수정 필요
 import { GoNumber } from "react-icons/go"
-// --- 아이콘 임포트 ---
 import { RiLetterSpacing2 } from "react-icons/ri"
 import { BsAlphabet } from "react-icons/bs"
 import { PiParagraphFill } from "react-icons/pi"
 import { IoDocumentTextOutline } from "react-icons/io5"
 import { defaultCharCountOptions } from "~/features/novel-editor/widgets/components/CharCountWidget"
+import { useSpecificWidgetSettings } from "~/hooks/useAppOptions"
 
 // --- 타입 및 Enum 정의 ---
 export enum CountUnit {
@@ -107,10 +106,11 @@ const unitSuffix: Record<CountUnit, string> = {
 export const CharCountSettingsDialog: React.FC<PropsWithChildren> = ({
   children,
 }) => {
-  const [options, setOptions] = useWidgetOption<CharCountWidgetOptions>(
-    WIDGET_ID,
-    defaultCharCountOptions,
-  )
+  const [options, setOptions] =
+    useSpecificWidgetSettings<CharCountWidgetOptions>(
+      WIDGET_ID,
+      defaultCharCountOptions,
+    )
   const [isOpen, setIsOpen] = useState(false)
 
   const handleOptionChange = useCallback(

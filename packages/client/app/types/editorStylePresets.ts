@@ -1,14 +1,12 @@
-import type { EditorOption } from "~/providers/OptionProvider"
+import type { EditorStyleOptions } from "~/types/options"
 
-type EditorOptionPreset = Partial<EditorOption>
-
-export type EditorStyleOption = Omit<
-  EditorOption,
-  "typewriter" | "typewriterStrict"
->
+type EditorStyleOptionPreset = Partial<EditorStyleOptions>
 
 // 기본 옵션
-export const muvelDesktopPreset: EditorStyleOption = {
+export const muvelDesktopPreset: Omit<
+  EditorStyleOptions,
+  "typewriter" | "typewriterStrict"
+> = {
   lineHeight: 1.8,
   fontSize: 18,
   indent: 0,
@@ -20,7 +18,7 @@ export const muvelDesktopPreset: EditorStyleOption = {
   editorMaxWidth: 600,
 }
 
-export const muvelMobilePreset: EditorOptionPreset = {
+export const muvelMobilePreset: EditorStyleOptionPreset = {
   lineHeight: 1.8,
   fontSize: 18,
   indent: 0,
@@ -32,7 +30,7 @@ export const muvelMobilePreset: EditorOptionPreset = {
   editorMaxWidth: 460,
 }
 
-export const moonpiaDesktopPreset: EditorOptionPreset = {
+export const moonpiaDesktopPreset: EditorStyleOptionPreset = {
   lineHeight: 2,
   fontSize: 18,
   indent: 1,
@@ -44,7 +42,7 @@ export const moonpiaDesktopPreset: EditorOptionPreset = {
   editorMaxWidth: 570,
 }
 
-export const novelpiaDesktopPreset: EditorOptionPreset = {
+export const novelpiaDesktopPreset: EditorStyleOptionPreset = {
   lineHeight: 1.8,
   fontSize: 18,
   indent: 0,
@@ -56,7 +54,7 @@ export const novelpiaDesktopPreset: EditorOptionPreset = {
   editorMaxWidth: 930,
 }
 
-export const novelpiaMobilePreset: EditorOptionPreset = {
+export const novelpiaMobilePreset: EditorStyleOptionPreset = {
   lineHeight: 2,
   fontSize: 18,
   indent: 0,
@@ -68,7 +66,7 @@ export const novelpiaMobilePreset: EditorOptionPreset = {
   editorMaxWidth: 460,
 }
 
-export const kakaopagePreset: EditorOptionPreset = {
+export const kakaopagePreset: EditorStyleOptionPreset = {
   lineHeight: 2,
   fontSize: 18,
   indent: 0,
@@ -80,7 +78,7 @@ export const kakaopagePreset: EditorOptionPreset = {
   editorMaxWidth: 400,
 }
 
-export const joaraPreset: EditorOptionPreset = {
+export const joaraPreset: EditorStyleOptionPreset = {
   lineHeight: 2,
   fontSize: 16,
   indent: 0,
