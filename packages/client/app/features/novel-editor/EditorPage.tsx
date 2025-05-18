@@ -19,7 +19,12 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     initialEpisode,
   })
 
-  const { blockSyncState, initialBlocks, handleDocUpdate } = useBlocksSync({
+  const {
+    syncState: blockSyncState,
+    initialBlocks,
+    isLoadingBlocks,
+    handleDocUpdate,
+  } = useBlocksSync({
     episode: initialEpisode,
     canEdit: !!initialEpisode.permissions.edit,
   })
@@ -40,7 +45,7 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     return () => window.removeEventListener("beforeunload", handleBeforeUnload)
   }, [combinedSyncState])
 
-  if (!episodeData || !initialBlocks) {
+  if (!episodeData || !initialBlocks || isLoadingBlocks) {
     return <LoadingOverlay />
   }
 

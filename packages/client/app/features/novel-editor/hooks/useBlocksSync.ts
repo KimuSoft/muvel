@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import {
   type Block,
   type GetEpisodeResponseDto,
   ShareType,
   SnapshotReason,
 } from "muvel-api-types"
-import { chunk, debounce } from "lodash-es"
+import { chunk } from "lodash-es"
+import { useDebouncedCallback } from "use-debounce"
 import { toaster } from "~/components/ui/toaster"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 import { Node as PMNode } from "prosemirror-model"
@@ -28,7 +29,7 @@ interface UseBlocksSyncProps {
 interface UseBlocksSyncReturn {
   initialBlocks: Block[] | null
   isLoadingBlocks: boolean
-  blockSyncState: SyncState
+  syncState: SyncState
   handleDocUpdate: (doc: PMNode) => void
 }
 
@@ -39,166 +40,158 @@ export function useBlocksSync({
   const [initialBlocks, setBlocks] = useState<Block[] | null>(null)
   const [isLoadingBlocks, setIsLoadingBlocks] = useState<boolean>(false)
   const originalBlocksRef = useRef<Block[] | null>(null)
-  const [blockSyncState, setBlockSyncState] = useState<SyncState>(
-    SyncState.Synced,
-  )
+  const [syncState, setSyncState] = useState<SyncState>(SyncState.Synced)
   const { isOffline } = usePlatform()
-  const [isMount, setIsMount] = useState(false)
 
-  // 초기화 프로세스
-  const init = async () => {
+  const isInitializedForCurrentEpisodeRef = useRef(false)
+  const prevIsOfflineRef = useRef(isOffline)
+
+  const init = useCallback(async () => {
     setIsLoadingBlocks(true)
-    setIsMount(true)
-
-    // 값 초기화
     setBlocks(null)
     originalBlocksRef.current = null
-    setBlockSyncState(SyncState.Syncing)
+    setSyncState(SyncState.Syncing)
 
     try {
-      // 로컬 소설이 아닐 경우
       if (episode.novel.share !== ShareType.Local) {
-        // 백업된 데이터가 있는지 확인
-        console.info("Checking for backup data...")
         const backupDelta = await findDeltaBlockBackup(episode.id)
 
-        // 백업된 데이터가 있는 경우
-        if (backupDelta && backupDelta.length) {
-          console.info("Backup data found, syncing...")
-
-          console.info("Making snapshot...")
+        if (backupDelta && backupDelta.length > 0) {
           await saveCloudSnapshot(episode.id, SnapshotReason.Merge)
-          console.info("Syncing backup data...")
           await syncDeltaBlocks(episode, backupDelta)
           toaster.success({
             title: "블록 동기화 완료",
             description:
               "오프라인 작업 또는 오류로 브라우저에 백업된 블록 데이터가 자동 동기화되었습니다. 만약을 대비해 동기화 이전 상태가 버전으로 백업되었습니다.",
           })
+          await deleteDeltaBlockBackup(episode.id)
         }
       }
 
-      // 초기 블록 데이터 가져오기
-      console.info("Fetching initial blocks...")
       const fetchedBlocks = await getEpisodeBlocks(episode)
-      console.info("Completed fetching initial blocks")
 
       setBlocks(fetchedBlocks)
       originalBlocksRef.current = fetchedBlocks
-      setBlockSyncState(SyncState.Synced)
+      setSyncState(SyncState.Synced)
+      isInitializedForCurrentEpisodeRef.current = true
     } catch (e) {
-      console.error("Failed to fetch initial blocks:", e)
+      console.error(`[${episode.id}] Failed to initialize blocks:`, e)
       toaster.error({
         title: "블록 로딩 실패",
         description: "초기 블록 데이터를 가져오는 데 실패했습니다.",
       })
-      setBlockSyncState(SyncState.Error)
+      setSyncState(SyncState.Error)
     } finally {
       setIsLoadingBlocks(false)
     }
-  }
+  }, [episode])
+
+  useEffect(() => {
+    isInitializedForCurrentEpisodeRef.current = false
+  }, [episode.id])
 
   useEffect(() => {
     if (isLoadingBlocks) {
-      console.info("Skipping block sync because loading is in progress.")
       return
     }
 
-    // 오프라인이거나 로컬인데 이미 마운트된 경우는 무시
-    if (isOffline || (episode.novel.share === ShareType.Local && isMount)) {
-      return
-    }
+    const isOnline = !isOffline
+    const justCameOnline = prevIsOfflineRef.current && isOnline
 
-    void init()
-  }, [episode.id, isOffline])
+    if (!isInitializedForCurrentEpisodeRef.current || justCameOnline) {
+      if (isOnline || episode.novel.share === ShareType.Local) {
+        void init()
+      }
+    }
+    prevIsOfflineRef.current = isOffline
+  }, [episode.id, episode.novel.share, isOffline, isLoadingBlocks, init])
 
   const actualSaveBlocks = useCallback(
     async (doc: PMNode) => {
       if (!canEdit || originalBlocksRef.current === null) {
-        if (blockSyncState === SyncState.Waiting)
-          setBlockSyncState(SyncState.Synced)
+        if (syncState === SyncState.Waiting) {
+          setSyncState(SyncState.Synced)
+        }
         return
       }
 
       const newBlocks = docToBlocks(doc)
       const changes = getDeltaBlock(originalBlocksRef.current, newBlocks)
 
-      // 오프라인이고 로컬 소설이 아닐 경우
-      if (!navigator.onLine && episode.novel.share !== ShareType.Local) {
-        console.info("Offline mode detected. Saving changes to IndexedDB.")
-        await saveDeltaBlockBackup(episode.id, changes)
-        setBlockSyncState(SyncState.Waiting)
+      if (isOffline && episode.novel.share !== ShareType.Local) {
+        if (changes.length > 0) {
+          await saveDeltaBlockBackup(episode.id, changes)
+          toaster.info({
+            title: "오프라인 저장",
+            description:
+              "변경 사항이 브라우저에 임시 저장되었습니다. 온라인 상태가 되면 동기화됩니다.",
+          })
+        }
+        setSyncState(SyncState.Waiting)
         return
       }
 
-      // 변경 사항이 없을 경우
-      if (!changes.length) {
-        if (blockSyncState === SyncState.Waiting) {
-          setBlockSyncState(SyncState.Synced)
+      if (changes.length === 0) {
+        if (syncState === SyncState.Waiting) {
+          setSyncState(SyncState.Synced)
         }
         return
       }
 
-      setBlockSyncState(SyncState.Syncing)
+      setSyncState(SyncState.Syncing)
       try {
         for (const dChunk of chunk(changes, 30)) {
           await syncDeltaBlocks(episode, dChunk)
         }
-        // TODO: chunk 시마다 반영하면 최적화 가능
         originalBlocksRef.current = [...newBlocks]
-        await deleteDeltaBlockBackup(episode.id)
-        setBlockSyncState(SyncState.Synced)
+
+        if (episode.novel.share !== ShareType.Local) {
+          await deleteDeltaBlockBackup(episode.id)
+        }
+        setSyncState(SyncState.Synced)
       } catch (e) {
-        console.error("Failed to save block changes (via useBlocksSync):", e)
+        console.error(`[${episode.id}] Failed to save block changes:`, e)
         toaster.error({
           title: "블록 저장 실패",
-          description: "변경 사항을 저장하는 데 실패했습니다.",
+          description:
+            "변경 사항을 서버에 저장하는 데 실패했습니다. 변경 사항은 브라우저에 임시 저장됩니다.",
         })
-        setBlockSyncState(SyncState.Error)
+        setSyncState(SyncState.Error)
 
-        await saveDeltaBlockBackup(episode.id, changes)
+        if (episode.novel.share !== ShareType.Local && changes.length > 0) {
+          await saveDeltaBlockBackup(episode.id, changes)
+        }
       }
     },
-    [canEdit, episode.id, blockSyncState],
+    [canEdit, episode, syncState, isOffline],
   )
 
-  useEffect(() => {
-    // 디바운스된 함수가 항상 최신의 actualSaveBlocks를 참조하도록 ref 업데이트
-    actualSaveBlocksRef.current = actualSaveBlocks
-  }, [actualSaveBlocks])
-
-  const actualSaveBlocksRef = useRef(actualSaveBlocks)
-
-  const debouncedSave = useMemo(
-    () =>
-      debounce(
-        (doc: PMNode) => {
-          if (actualSaveBlocksRef.current) {
-            actualSaveBlocksRef.current(doc)
-          }
-        },
-        500,
-        { maxWait: 5000 },
-      ),
-    [],
-  )
+  const debouncedSaveBlocks = useDebouncedCallback(actualSaveBlocks, 500, {
+    maxWait: 2000,
+  })
 
   const handleDocUpdate = useCallback(
     (doc: PMNode) => {
       if (!canEdit || initialBlocks === null) return
 
-      if (![SyncState.Syncing, SyncState.Error].includes(blockSyncState)) {
-        setBlockSyncState(SyncState.Waiting)
+      if (syncState !== SyncState.Syncing && syncState !== SyncState.Error) {
+        setSyncState(SyncState.Waiting)
       }
-      debouncedSave(doc)
+      debouncedSaveBlocks(doc)
     },
-    [canEdit, initialBlocks, debouncedSave, blockSyncState],
+    [canEdit, initialBlocks, debouncedSaveBlocks, syncState],
   )
+
+  useEffect(() => {
+    return () => {
+      debouncedSaveBlocks.cancel()
+    }
+  }, [episode.id, debouncedSaveBlocks])
 
   return {
     initialBlocks,
     isLoadingBlocks,
-    blockSyncState,
+    syncState,
     handleDocUpdate,
   }
 }
