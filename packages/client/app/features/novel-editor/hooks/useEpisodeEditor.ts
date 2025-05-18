@@ -127,7 +127,7 @@ export const useEpisodeEditor = ({
       setView(null)
       viewRef.current = null
     }
-  }, [])
+  }, [containerRef, initialBlocks, episodeId, editable])
 
   return {
     view: viewRef.current,

@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import { HStack, IconButton, Spacer, Text, VStack } from "@chakra-ui/react"
 import confetti from "canvas-confetti"
-import { debounce } from "lodash-es"
+import { useDebouncedCallback } from "use-debounce"
 import {
   WidgetBase,
   WidgetBody,
@@ -41,7 +41,7 @@ const unitSuffix: Record<CountUnit, string> = {
   [CountUnit.KB]: "KB",
 }
 
-const DEBOUNCE_DELAY = 300 // 디바운스 지연 시간 증가 (필요시 조절)
+const DEBOUNCE_DELAY = 300
 
 export const CharCountWidget: React.FC<WidgetBaseProps> = ({
   dragAttributes,
@@ -54,15 +54,11 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
       defaultCharCountOptions,
     )
 
-  useEffect(() => {
-    console.log("CharCountWidget mounted")
-  }, [])
-
   const [currentLength, setCurrentLength] = useState<number>(0)
   const [selectedLength, setSelectedLength] = useState<number>(0)
   const [percentage, setPercentage] = useState<number>(0)
   const goalReachedRef = useRef<boolean>(false)
-  const initialLoadRef = useRef<boolean>(true) // 초기 로드 여부 추적
+  const initialLoadRef = useRef<boolean>(true)
 
   const triggerConfetti = useCallback(() => {
     const duration = 5 * 1000
@@ -94,25 +90,21 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
     if (!view) return
 
     const content = view.state.doc.textContent
-
     const len = countTextLength(content, options)
     setCurrentLength(len)
 
     const goal = options.targetGoal
-    // targetGoal이 0이거나 음수일 경우, percentage는 0 또는 100 (len > 0 일때)으로 처리하여 폭죽 오작동 방지
     const currentPercentage = goal > 0 ? (len / goal) * 100 : len > 0 ? 100 : 0
     setPercentage(currentPercentage)
 
     const prevGoalReached = goalReachedRef.current
-    goalReachedRef.current = currentPercentage >= 100 && goal > 0 // 목표가 0 초과일 때만 목표 달성으로 간주
+    goalReachedRef.current = currentPercentage >= 100 && goal > 0
 
-    // 초기 로드가 아니고, 이전에는 목표 미달성이었고, 현재 목표 달성했으며, 폭죽 옵션이 켜져 있을 때만 실행
     if (
       !initialLoadRef.current &&
       !prevGoalReached &&
       goalReachedRef.current &&
-      options.showConfetti &&
-      goal > 0
+      options.showConfetti
     ) {
       triggerConfetti()
     }
@@ -127,19 +119,20 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
     triggerConfetti,
   ])
 
-  const debouncedCalculateCounts = useMemo(
-    () =>
-      debounce(calculateCounts, DEBOUNCE_DELAY, {
-        leading: false,
-      }),
-    [calculateCounts],
+  const debouncedCalculateCounts = useDebouncedCallback(
+    calculateCounts,
+    DEBOUNCE_DELAY,
+    {
+      // DEBOUNCE_DELAY 값으로 수정 (이전 코드에서는 500, 1000이 하드코딩 되어 있었음)
+      maxWait: 1000, // maxWait는 필요에 따라 조절
+    },
   )
 
-  // view 객체가 준비되거나, 문서 내용/선택이 변경될 때
+  // Effect 1: 초기 계산 및 문서/선택 변경 시 디바운스된 계산 처리
   useEffect(() => {
     if (view) {
       if (initialLoadRef.current) {
-        calculateCounts() // 초기 로드 시에는 즉시 계산
+        calculateCounts()
         initialLoadRef.current = false
       } else {
         debouncedCalculateCounts()
@@ -148,10 +141,17 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
     return () => {
       debouncedCalculateCounts.cancel()
     }
-    // 의존성 배열을 더 안정적인 값으로 변경
-    // doc.toJSON()과 selection.toJSON()은 객체의 깊은 비교를 위해 JSON 문자열로 변환
-  }, [view?.state?.doc, debouncedCalculateCounts, calculateCounts])
+  }, [view?.state, calculateCounts, debouncedCalculateCounts])
 
+  // Effect 2: 관련 옵션 변경 시 즉시 재계산 (초기 로드 이후)
+  useEffect(() => {
+    if (view && !initialLoadRef.current) {
+      debouncedCalculateCounts.cancel()
+      calculateCounts()
+    }
+  }, [view, calculateCounts, debouncedCalculateCounts])
+
+  // Effect 3: 선택된 텍스트 길이 계산 및 업데이트
   useEffect(() => {
     if (!view) return
 
@@ -164,24 +164,6 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
       setSelectedLength(0)
     }
   }, [view?.state?.selection, options])
-
-  // 위젯의 옵션이 변경되었을 때 즉시 글자 수 다시 계산
-  useEffect(() => {
-    console.log("CharCountWidget options changed")
-    if (view) {
-      calculateCounts()
-      // 옵션 변경 시 initialLoadRef는 이미 false일 것이므로, calculateCounts 내부의 폭죽 로직이 올바르게 작동
-    }
-  }, [
-    view, // view가 있어야 계산 가능
-    options.unit,
-    options.excludeSpaces,
-    options.excludePunctuations,
-    options.excludeSpecialChars,
-    options.targetGoal,
-    options.showConfetti,
-    calculateCounts, // calculateCounts 함수 자체가 의존성에 포함되어야 함
-  ])
 
   return (
     <WidgetBase>

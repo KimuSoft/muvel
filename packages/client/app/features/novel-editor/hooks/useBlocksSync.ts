@@ -108,6 +108,10 @@ export function useBlocksSync({
 
   const actualSaveBlocks = useCallback(
     async (doc: PMNode) => {
+      if (syncState === SyncState.Syncing) {
+        return console.warn("Already syncing")
+      }
+
       if (!canEdit || originalBlocksRef.current === null) {
         if (syncState === SyncState.Waiting) {
           setSyncState(SyncState.Synced)
@@ -115,6 +119,7 @@ export function useBlocksSync({
         return
       }
 
+      setSyncState(SyncState.Syncing)
       const newBlocks = docToBlocks(doc)
       const changes = getDeltaBlock(originalBlocksRef.current, newBlocks)
 
@@ -138,9 +143,8 @@ export function useBlocksSync({
         return
       }
 
-      setSyncState(SyncState.Syncing)
       try {
-        for (const dChunk of chunk(changes, 30)) {
+        for (const dChunk of chunk(changes, 70)) {
           await syncDeltaBlocks(episode, dChunk)
         }
         originalBlocksRef.current = [...newBlocks]
