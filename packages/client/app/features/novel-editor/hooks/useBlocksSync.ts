@@ -144,8 +144,13 @@ export function useBlocksSync({
       }
 
       try {
-        for (const dChunk of chunk(changes, 70)) {
-          await syncDeltaBlocks(episode, dChunk)
+        if (episode.novel.share === ShareType.Local) {
+          // 로컬이면 청크 없이 한 번에 저장
+          await syncDeltaBlocks(episode, changes)
+        } else {
+          for (const dChunk of chunk(changes, 100)) {
+            await syncDeltaBlocks(episode, dChunk)
+          }
         }
         originalBlocksRef.current = [...newBlocks]
 
