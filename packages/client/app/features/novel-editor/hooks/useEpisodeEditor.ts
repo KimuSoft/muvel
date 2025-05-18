@@ -7,7 +7,7 @@ import { history, redo, undo } from "prosemirror-history"
 import { baseSchema } from "../schema/baseSchema"
 import { blocksToDoc } from "../utils/blockConverter"
 import { useEditorContext } from "../context/EditorContext"
-import { type Block, BlockType } from "muvel-api-types"
+import { type EpisodeBlock, EpisodeBlockType } from "muvel-api-types"
 import { createInputRules } from "~/features/novel-editor/plugins/inputRules"
 import { assignIdPlugin } from "~/features/novel-editor/plugins/assignIdPlugin"
 import { autoQuotePlugin } from "~/features/novel-editor/plugins/autoQuotePlugin"
@@ -16,21 +16,21 @@ import { highlightPlugin } from "~/features/novel-editor/plugins/highlightPlugin
 import { Fragment, Node as PMNode, Slice } from "prosemirror-model"
 import { placeholderPlugin } from "~/features/novel-editor/plugins/placeholderPlugin"
 
-interface UseEditorProps {
+interface UseEpisodeEditorProps {
   containerRef: React.RefObject<HTMLDivElement>
-  initialBlocks: Block[]
+  initialBlocks: EpisodeBlock[]
   episodeId: string
   editable?: boolean
   onChange?: (doc: PMNode) => void
 }
 
-export const useEditor = ({
+export const useEpisodeEditor = ({
   containerRef,
   initialBlocks,
   episodeId,
   editable = true,
   onChange,
-}: UseEditorProps) => {
+}: UseEpisodeEditorProps) => {
   const { setView } = useEditorContext()
   const viewRef = useRef<EditorView | null>(null)
 
@@ -44,7 +44,7 @@ export const useEditor = ({
         : [
             {
               id: crypto.randomUUID() as string,
-              blockType: BlockType.Describe,
+              blockType: EpisodeBlockType.Describe,
               content: [],
               text: "",
               order: 0,

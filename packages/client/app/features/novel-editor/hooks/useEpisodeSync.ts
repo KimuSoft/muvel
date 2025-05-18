@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import type { GetEpisodeResponseDto } from "muvel-api-types"
-import { debounce, isEqual } from "lodash-es"
+import { isEqual } from "lodash-es"
+import { useDebouncedCallback } from "use-debounce"
 import { toaster } from "~/components/ui/toaster"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 import type { EpisodeData } from "~/features/novel-editor/context/EditorContext"
-import { updateEpisodeMetadata } from "~/services/episodeService" // EpisodeData 타입 가져오기
+import { updateEpisodeMetadata } from "~/services/episodeService"
 
 type EpisodePatchData = Partial<
   Omit<EpisodeData, "id" | "permissions" | "createdAt" | "updatedAt" | "novel">
@@ -12,42 +13,19 @@ type EpisodePatchData = Partial<
 
 interface UseEpisodeSyncOptions {
   initialEpisode?: Omit<GetEpisodeResponseDto, "blocks">
-  onSyncStateChange?: (newState: SyncState) => void
 }
 
-export function useEpisodeSync({
-  initialEpisode,
-  onSyncStateChange,
-}: UseEpisodeSyncOptions) {
+export function useEpisodeSync({ initialEpisode }: UseEpisodeSyncOptions) {
   const [episodeData, setEpisodeData] = useState<EpisodeData | null>(null)
   const previousEpisodeDataRef = useRef<EpisodeData | null>(null)
-  const [episodeSyncState, setEpisodeSyncState] = useState<SyncState>(
-    SyncState.Synced,
-  )
+  const [syncState, setSyncState] = useState<SyncState>(SyncState.Synced)
 
-  const saveLogicRef = useRef<() => Promise<void>>(null)
-
-  useEffect(() => {
-    if (initialEpisode) {
-      setEpisodeData(initialEpisode)
-      previousEpisodeDataRef.current = initialEpisode
-      if (episodeSyncState !== SyncState.Synced) {
-        setEpisodeSyncState(SyncState.Synced)
-        onSyncStateChange?.(SyncState.Synced)
-      }
-    }
-  }, [initialEpisode?.id, onSyncStateChange])
-
+  // 저장 로직: episodeData, initialEpisode.id, syncState가 변경되면 재생성됩니다.
   const saveEpisodeChanges = useCallback(async () => {
-    if (
-      !episodeData ||
-      !previousEpisodeDataRef.current ||
-      !initialEpisode?.id
-    ) {
+    if (!episodeData || !initialEpisode?.id) {
       if (!initialEpisode?.id) {
         console.error("Episode ID is missing. Cannot save changes.")
-        setEpisodeSyncState(SyncState.Error)
-        onSyncStateChange?.(SyncState.Error)
+        setSyncState(SyncState.Error)
         toaster.error({
           title: "저장 실패",
           description: "에피소드 ID가 없어 저장할 수 없습니다.",
@@ -58,10 +36,18 @@ export function useEpisodeSync({
 
     const currentData = episodeData
     const previousData = previousEpisodeDataRef.current
-    const changes: EpisodePatchData = {}
 
-    // 원본 코드의 변경사항 감지 로직과 동일하게 유지
-    ;(Object.keys(currentData) as Array<keyof EpisodeData>).forEach((key) => {
+    if (!previousData) {
+      console.warn(
+        "previousEpisodeDataRef.current is null, skipping save. This might indicate an issue.",
+      )
+      setSyncState(SyncState.Synced)
+      return
+    }
+
+    const changes: EpisodePatchData = {}
+    // forEach 대신 for...of 루프 사용
+    for (const key of Object.keys(currentData) as Array<keyof EpisodeData>) {
       const nonComparableFields: Array<keyof EpisodeData> = [
         "id",
         "permissions",
@@ -69,29 +55,26 @@ export function useEpisodeSync({
         "updatedAt",
         "novel",
       ]
-      if (nonComparableFields.includes(key)) return
+      if (nonComparableFields.includes(key)) continue // forEach의 return과 유사하게 continue 사용
 
       if (!isEqual(currentData[key], previousData[key])) {
         ;(changes as any)[key] = currentData[key]
       }
-    })
+    }
 
     if (Object.keys(changes).length === 0) {
-      if (episodeSyncState === SyncState.Waiting) {
-        setEpisodeSyncState(SyncState.Synced)
-        onSyncStateChange?.(SyncState.Synced)
+      if (syncState === SyncState.Waiting) {
+        setSyncState(SyncState.Synced)
       }
       return
     }
 
-    setEpisodeSyncState(SyncState.Syncing)
-    onSyncStateChange?.(SyncState.Syncing)
+    setSyncState(SyncState.Syncing)
 
     try {
       console.log("Saving episode changes (via hook):", changes)
-      await updateEpisodeMetadata(initialEpisode, changes) // API 호출 시 ID 사용
-      setEpisodeSyncState(SyncState.Synced)
-      onSyncStateChange?.(SyncState.Synced)
+      await updateEpisodeMetadata(initialEpisode.id, changes)
+      setSyncState(SyncState.Synced)
       previousEpisodeDataRef.current = currentData
     } catch (e) {
       console.error("Failed to save episode changes (via hook):", e)
@@ -99,53 +82,63 @@ export function useEpisodeSync({
         title: "저장 실패",
         description: "에피소드 정보를 저장하는 데 실패했습니다.",
       })
-      setEpisodeSyncState(SyncState.Error)
-      onSyncStateChange?.(SyncState.Error)
+      setSyncState(SyncState.Error)
     }
-  }, [episodeData, initialEpisode?.id, episodeSyncState, onSyncStateChange])
+  }, [episodeData, initialEpisode?.id, syncState])
 
+  // 디바운스된 저장 함수: saveEpisodeChanges 콜백이 변경되면 useDebouncedCallback이 최신 버전을 사용합니다.
+  const debouncedSaveEpisode = useDebouncedCallback(saveEpisodeChanges, 500, {
+    maxWait: 2000,
+  })
+
+  // initialEpisode가 변경될 때 상태를 초기화하고, 이전 디바운스된 저장 작업을 취소합니다.
   useEffect(() => {
-    saveLogicRef.current = saveEpisodeChanges
-  }, [saveEpisodeChanges])
+    debouncedSaveEpisode.cancel()
 
-  const debouncedSaveEpisode = useMemo(
-    () =>
-      debounce(() => {
-        if (saveLogicRef.current) {
-          saveLogicRef.current()
-        }
-      }, 500),
-    [],
-  )
+    if (initialEpisode) {
+      setEpisodeData(initialEpisode)
+      previousEpisodeDataRef.current = initialEpisode
+      setSyncState(SyncState.Synced)
+    } else {
+      setEpisodeData(null)
+      previousEpisodeDataRef.current = null
+      setSyncState(SyncState.Synced)
+    }
+  }, [initialEpisode, debouncedSaveEpisode])
 
+  // 컴포넌트 언마운트 시 디바운스된 저장 작업을 취소합니다.
   useEffect(() => {
-    if (
-      episodeData &&
-      previousEpisodeDataRef.current &&
-      !isEqual(episodeData, previousEpisodeDataRef.current)
-    ) {
-      if (
-        episodeSyncState !== SyncState.Waiting &&
-        episodeSyncState !== SyncState.Syncing
-      ) {
-        setEpisodeSyncState(SyncState.Waiting)
-        onSyncStateChange?.(SyncState.Waiting)
+    return () => {
+      debouncedSaveEpisode.cancel()
+    }
+  }, [debouncedSaveEpisode])
+
+  // episodeData가 변경될 때마다 실행되어, 변경 사항이 있으면 저장 로직을 트리거합니다.
+  useEffect(() => {
+    if (!episodeData || !previousEpisodeDataRef.current) {
+      return
+    }
+
+    const hasMeaningfulChanges = !isEqual(
+      episodeData,
+      previousEpisodeDataRef.current,
+    )
+
+    if (hasMeaningfulChanges) {
+      if (syncState !== SyncState.Waiting && syncState !== SyncState.Syncing) {
+        setSyncState(SyncState.Waiting)
       }
       debouncedSaveEpisode()
-    } else if (
-      episodeData &&
-      previousEpisodeDataRef.current &&
-      isEqual(episodeData, previousEpisodeDataRef.current) &&
-      episodeSyncState === SyncState.Waiting
-    ) {
-      setEpisodeSyncState(SyncState.Synced)
-      onSyncStateChange?.(SyncState.Synced)
+    } else {
+      if (syncState === SyncState.Waiting) {
+        setSyncState(SyncState.Synced)
+      }
     }
-  }, [episodeData, debouncedSaveEpisode, episodeSyncState, onSyncStateChange])
+  }, [episodeData, debouncedSaveEpisode, syncState])
 
   return {
     episodeData,
     setEpisodeData,
-    episodeSyncState,
+    syncState,
   }
 }

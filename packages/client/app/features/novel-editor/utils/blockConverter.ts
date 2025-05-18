@@ -1,10 +1,19 @@
-import { type Block, BlockType, type PMNodeJSON } from "muvel-api-types"
-import { type Node as PMNode, Schema } from "prosemirror-model"
+import {
+  type BaseBlock,
+  type Block,
+  EpisodeBlockType,
+  type PMNodeJSON,
+  WikiBlockType,
+} from "muvel-api-types"
+import { type Node as PMNode, NodeType, Schema } from "prosemirror-model"
 
 // ✅ ProseMirror document를 생성하는 함수
-export function blocksToDoc(blocks: Block[], schema: Schema): PMNode {
+export function blocksToDoc<BType = EpisodeBlockType>(
+  blocks: BaseBlock<BType>[],
+  schema: Schema,
+): PMNode {
   const children = blocks.map((block) => {
-    const nodeType = schema.nodes[block.blockType]
+    const nodeType = schema.nodes[block.blockType] as NodeType
     if (!nodeType) {
       throw new Error(`Unknown blockType: ${block.blockType}`)
     }
@@ -18,7 +27,10 @@ export function blocksToDoc(blocks: Block[], schema: Schema): PMNode {
       console.log(block)
       console.error(e)
       console.warn("Convert blank to fill")
-      return schema.nodes[BlockType.Describe].createAndFill()!
+      return (
+        schema.nodes[EpisodeBlockType.Describe] ||
+        schema.nodes[WikiBlockType.Paragraph]
+      ).createAndFill()!
     }
   })
 
@@ -26,9 +38,11 @@ export function blocksToDoc(blocks: Block[], schema: Schema): PMNode {
 }
 
 // ✅ ProseMirror document → Block[] 변환
-export function docToBlocks(doc: PMNode): Block[] {
+export function docToBlocks<BType = EpisodeBlockType>(
+  doc: PMNode,
+): BaseBlock<BType>[] {
   return doc.content.content.map((node, idx) => {
-    const blockType = node.type.name as BlockType
+    const blockType = node.type.name as BaseBlock<BType>["blockType"]
     const attr = node.attrs ?? {}
     const content = node.content?.content.map((child) =>
       child.toJSON(),

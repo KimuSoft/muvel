@@ -11,7 +11,11 @@ import { useBlocksSync } from "~/features/novel-editor/hooks/useBlocksSync"
 const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   episode: initialEpisode,
 }) => {
-  const { episodeData, setEpisodeData, episodeSyncState } = useEpisodeSync({
+  const {
+    episodeData,
+    setEpisodeData,
+    syncState: episodeSyncState,
+  } = useEpisodeSync({
     initialEpisode,
   })
 

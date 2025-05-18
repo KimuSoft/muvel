@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react"
 import { Box } from "@chakra-ui/react"
-import { useEditor } from "../hooks/useEditor"
+import { useEpisodeEditor } from "../hooks/useEpisodeEditor"
 import type { Block } from "muvel-api-types"
 import "../style/editorStyles.css"
 import { toaster } from "~/components/ui/toaster"
@@ -45,7 +45,7 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
     }
   }, [])
 
-  useEditor({
+  useEpisodeEditor({
     containerRef,
     initialBlocks,
     episodeId,
