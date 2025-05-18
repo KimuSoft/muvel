@@ -8,7 +8,7 @@ import {
   IsString,
 } from "class-validator"
 
-export class PatchBlocksDto {
+export class PatchEpisodeBlocksDto {
   @ApiProperty()
   @IsString()
   id: string

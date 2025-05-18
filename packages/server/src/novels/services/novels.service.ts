@@ -39,7 +39,7 @@ export class NovelsService {
     // 소설 정보 불러오기
     const novel = await this.novelsRepository.findOne({
       where: { id },
-      relations: ["author", "episodes", "characters"],
+      relations: ["author", "episodes", "wikiPages"],
     })
     if (!novel) throw new NotFoundException("소설을 찾을 수 없습니다.")
 

@@ -1,6 +1,7 @@
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
@@ -50,7 +51,7 @@ export class WikiPageEntity
   @RelationId((character: WikiPageEntity) => character.novel)
   novelId: string
 
-  @OneToMany(() => WikiBlockEntity, (block) => block.episode, {
+  @OneToMany(() => WikiBlockEntity, (block) => block.wikiPage, {
     cascade: true,
   })
   blocks: WikiBlockEntity[]
@@ -62,4 +63,7 @@ export class WikiPageEntity
 
   @UpdateDateColumn()
   updatedAt: Date
+
+  @DeleteDateColumn()
+  deletedAt: Date | null
 }

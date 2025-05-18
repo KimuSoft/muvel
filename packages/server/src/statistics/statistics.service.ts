@@ -4,7 +4,7 @@ import { UserEntity } from "../users/user.entity"
 import { Repository } from "typeorm"
 import { NovelEntity } from "../novels/novel.entity"
 import { EpisodeEntity } from "../episodes/entities/episode.entity"
-import { BlockEntity } from "../blocks/entities/block.entity"
+import { EpisodeBlockEntity } from "../blocks/entities/episode-block.entity"
 import { AiAnalysisEntity } from "../episodes/entities/ai-analysis.entity" // AiAnalysisEntity 임포트 추가
 
 @Injectable()
@@ -18,8 +18,8 @@ export class StatisticsService {
     private readonly novelRepository: Repository<NovelEntity>,
     @InjectRepository(EpisodeEntity)
     private readonly episodeRepository: Repository<EpisodeEntity>,
-    @InjectRepository(BlockEntity)
-    private readonly blockRepository: Repository<BlockEntity>,
+    @InjectRepository(EpisodeBlockEntity)
+    private readonly blockRepository: Repository<EpisodeBlockEntity>,
     @InjectRepository(AiAnalysisEntity) // AiAnalysisEntity 리포지토리 주입
     private readonly aiAnalysisRepository: Repository<AiAnalysisEntity>,
   ) {}

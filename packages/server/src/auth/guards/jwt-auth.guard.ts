@@ -2,16 +2,14 @@
 import {
   applyDecorators,
   CanActivate,
-  createParamDecorator,
   ExecutionContext,
-  ForbiddenException,
   Injectable,
   UnauthorizedException,
   UseGuards,
 } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
 import { Request } from "express"
-import { extractTokenFromRequest } from "./jwt.util"
+import { extractTokenFromRequest } from "../jwt.util"
 import { ApiSecurity, ApiUnauthorizedResponse } from "@nestjs/swagger"
 
 @Injectable()
@@ -79,15 +77,6 @@ export const OptionalAuth = () => {
     }),
   )
 }
-
-export const AdminOnly = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest()
-    if (!request.user.admin) {
-      throw new ForbiddenException()
-    }
-  },
-)
 
 export interface UserPayload {
   id: string

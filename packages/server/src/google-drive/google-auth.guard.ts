@@ -5,7 +5,7 @@ import {
 } from "@nestjs/common"
 import { AuthGuard } from "@nestjs/passport"
 import { Request } from "express"
-import { AuthenticatedRequest } from "../auth/jwt-auth.guard"
+import { AuthenticatedRequest } from "../auth/guards/jwt-auth.guard"
 
 @Injectable()
 export class GoogleAuthGuard extends AuthGuard("google") {

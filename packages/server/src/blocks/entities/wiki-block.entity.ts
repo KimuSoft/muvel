@@ -17,7 +17,7 @@ export class WikiBlockEntity
   @ManyToOne(() => WikiPageEntity, (wikiPage) => wikiPage.blocks, {
     onDelete: "CASCADE",
   })
-  episode: WikiPageEntity
+  wikiPage: WikiPageEntity
 
   @Column({ nullable: true })
   wikiPageId: string

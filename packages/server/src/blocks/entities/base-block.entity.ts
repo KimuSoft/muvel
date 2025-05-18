@@ -1,7 +1,7 @@
 import { Column, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import { BaseBlock, BlockAttrs, PMNodeJSON } from "muvel-api-types"
 
-export abstract class BaseBlockEntity<BType extends string>
+export abstract class BaseBlockEntity<BType>
   implements Omit<BaseBlock<BType>, "updatedAt">
 {
   @PrimaryGeneratedColumn("uuid")

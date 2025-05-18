@@ -5,7 +5,7 @@ import { TypeOrmModule } from "@nestjs/typeorm"
 import { UserEntity } from "../users/user.entity"
 import { NovelEntity } from "../novels/novel.entity"
 import { EpisodeEntity } from "../episodes/entities/episode.entity"
-import { BlockEntity } from "../blocks/entities/block.entity"
+import { EpisodeBlockEntity } from "../blocks/entities/episode-block.entity"
 import { AiAnalysisEntity } from "../episodes/entities/ai-analysis.entity"
 
 @Module({
@@ -14,7 +14,7 @@ import { AiAnalysisEntity } from "../episodes/entities/ai-analysis.entity"
       UserEntity,
       NovelEntity,
       EpisodeEntity,
-      BlockEntity,
+      EpisodeBlockEntity,
       AiAnalysisEntity,
     ]),
   ],

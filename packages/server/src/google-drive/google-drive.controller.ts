@@ -5,7 +5,7 @@ import {
   GoogleAuthenticatedRequest,
   GoogleAuthGuard,
 } from "./google-auth.guard"
-import { RequireAuth } from "../auth/jwt-auth.guard" // 👈 import custom guard
+import { RequireAuth } from "../auth/guards/jwt-auth.guard" // 👈 import custom guard
 
 @Controller("google-drive")
 export class GoogleDriveController {

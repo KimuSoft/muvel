@@ -6,41 +6,39 @@ import { NovelsController } from "./novels.controller"
 import { UserEntity } from "../users/user.entity"
 import { SearchRepository } from "../search/search.repository"
 import { EpisodeEntity } from "../episodes/entities/episode.entity"
-import { BlockEntity } from "../blocks/entities/block.entity"
+import { EpisodeBlockEntity } from "../blocks/entities/episode-block.entity"
 import { AiAnalysisEntity } from "../episodes/entities/ai-analysis.entity"
 import { GeminiAnalysisRepository } from "../episodes/repositories/gemini-analysis.repository"
 import { EpisodeRepository } from "../episodes/repositories/episode.repository"
 import { EpisodesService } from "../episodes/services/episodes.service"
-import { BlockRepository } from "../blocks/block.repository"
+import { EpisodeBlockRepository } from "../blocks/repositories/episode-block.repository"
 import { UsersService } from "../users/users.service"
 import { NovelPermissionService } from "./services/novel-permission.service"
-import { BlockSyncRepository } from "../episodes/repositories/block-sync.repository"
+import { EpisodeBlockSyncRepository } from "../blocks/repositories/episode-block-sync.repository"
+import { WikiPagesModule } from "../wiki-pages/wiki-pages.module"
+import { EpisodesModule } from "../episodes/episodes.module"
+import { SearchModule } from "../search/search.module"
 
-@Global()
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       UserEntity,
       NovelEntity,
       EpisodeEntity,
-      BlockEntity,
+      EpisodeBlockEntity,
       AiAnalysisEntity,
     ]),
+    WikiPagesModule,
+    EpisodesModule,
+    SearchModule,
   ],
   providers: [
     // services
     NovelsService,
     NovelPermissionService,
-    EpisodesService,
     UsersService,
-
-    // repositories
-    BlockRepository,
-    SearchRepository,
-    GeminiAnalysisRepository,
-    EpisodeRepository,
-    BlockSyncRepository,
   ],
   controllers: [NovelsController],
+  exports: [NovelsService],
 })
 export class NovelsModule {}

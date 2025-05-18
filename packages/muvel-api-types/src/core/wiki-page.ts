@@ -1,6 +1,3 @@
-import { WikiBlockType } from "../enums"
-import { Block } from "./block"
-
 export interface WikiPage {
   id: string
   title: string

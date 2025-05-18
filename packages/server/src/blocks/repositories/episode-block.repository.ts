@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common"
 import { DataSource, Not, Repository } from "typeorm"
-import { BlockEntity } from "./entities/block.entity"
-import { BlockType } from "muvel-api-types"
+import { EpisodeBlockEntity } from "../entities/episode-block.entity"
+import { EpisodeBlockType } from "muvel-api-types"
 
 @Injectable()
-export class BlockRepository extends Repository<BlockEntity> {
+export class EpisodeBlockRepository extends Repository<EpisodeBlockEntity> {
   constructor(private readonly dataSource: DataSource) {
-    super(BlockEntity, dataSource.createEntityManager())
+    super(EpisodeBlockEntity, dataSource.createEntityManager())
   }
 
   async findBlocksByEpisodeId(
@@ -14,11 +14,13 @@ export class BlockRepository extends Repository<BlockEntity> {
     options: {
       hideComments?: boolean
     } = { hideComments: false },
-  ): Promise<BlockEntity[]> {
+  ): Promise<EpisodeBlockEntity[]> {
     return this.find({
       where: {
         episode: { id: episodeId },
-        ...(options.hideComments ? { blockType: Not(BlockType.Comment) } : {}),
+        ...(options.hideComments
+          ? { blockType: Not(EpisodeBlockType.Comment) }
+          : {}),
       },
       order: { order: "ASC" },
     })

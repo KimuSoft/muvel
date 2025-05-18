@@ -4,17 +4,13 @@ import { Repository } from "typeorm"
 import { PatchEpisodesDto } from "../../novels/dto/patch-episodes.dto"
 import { CreateEpisodeDto } from "../dto/create-episode.dto"
 import { NovelEntity } from "../../novels/novel.entity"
-import {
-  BasePermission,
-  BlockType,
-  DeltaBlock,
-  EpisodeType,
-} from "muvel-api-types"
+import { BasePermission, DeltaBlock, EpisodeType } from "muvel-api-types"
 import { UpdateEpisodeDto } from "../dto/update-episode.dto"
-import { PatchBlocksDto } from "../../blocks/dto/patch-blocks.dto"
+import { PatchEpisodeBlocksDto } from "../dto/patch-episode-blocks.dto"
 import { EpisodeRepository } from "../repositories/episode.repository"
-import { BlockSyncRepository } from "../repositories/block-sync.repository"
-import { BlockRepository } from "../../blocks/block.repository"
+import { EpisodeBlockRepository } from "../../blocks/repositories/episode-block.repository"
+import { EpisodeBlockSyncRepository } from "../../blocks/repositories/episode-block-sync.repository"
+import { EpisodeDeltaBlockDto } from "../../blocks/dto/episode-delta-block.dto"
 
 @Injectable()
 export class EpisodesService {
@@ -22,8 +18,8 @@ export class EpisodesService {
     @InjectRepository(NovelEntity)
     private readonly novelsRepository: Repository<NovelEntity>,
     private readonly episodesRepository: EpisodeRepository,
-    private readonly blockSyncRepository: BlockSyncRepository,
-    private readonly blockRepository: BlockRepository,
+    private readonly episodeBlockSyncRepository: EpisodeBlockSyncRepository,
+    private readonly blockRepository: EpisodeBlockRepository,
   ) {}
 
   async findEpisodeById(id: string, permissions: BasePermission) {
@@ -96,12 +92,13 @@ export class EpisodesService {
     })
   }
 
-  // @deprecated
-  async updateBlocks(episodeId: string, blockDiffs: PatchBlocksDto[]) {
-    return this.blockSyncRepository.upsertBlocks(episodeId, blockDiffs)
-  }
-
-  public async episodeBlocksSync(episodeId: string, deltaBlocks: DeltaBlock[]) {
-    return this.blockSyncRepository.syncDeltaBlocks(episodeId, deltaBlocks)
+  public async episodeBlocksSync(
+    episodeId: string,
+    deltaBlocks: EpisodeDeltaBlockDto[],
+  ) {
+    return this.episodeBlockSyncRepository.syncDeltaBlocks(
+      episodeId,
+      deltaBlocks,
+    )
   }
 }

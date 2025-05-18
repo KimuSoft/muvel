@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from "@nestjs/common"
 import { BasePermissionGuard, PermissionResult } from "./base-permission.guard"
 import { Reflector } from "@nestjs/core"
-import { OptionalAuthenticatedRequest } from "../auth/jwt-auth.guard"
+import { OptionalAuthenticatedRequest } from "../auth/guards/jwt-auth.guard"
 import { BasePermission } from "muvel-api-types"
 import { isUuid } from "../utils/isUuid"
 import { WikiPageEntity } from "../wiki-pages/wiki-page.entity"

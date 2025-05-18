@@ -2,8 +2,8 @@ import { Controller, Get, Request, Res, UseGuards } from "@nestjs/common"
 import { AuthService } from "./auth.service"
 import { Response } from "express"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
-import { AuthenticatedRequest } from "./jwt-auth.guard"
-import { KimustoryAuthGuard } from "./kimustory-auth.guard"
+import { AuthenticatedRequest } from "./guards/jwt-auth.guard"
+import { KimustoryAuthGuard } from "./guards/kimustory-auth.guard"
 
 @Controller("auth")
 @ApiTags("Auth")

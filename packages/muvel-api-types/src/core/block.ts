@@ -1,7 +1,7 @@
-import { BlockType, WikiBlockType } from "../enums"
+import { EpisodeBlockType, MuvelBlockType, WikiBlockType } from "../enums"
 import { BlockAttrs, PMNodeJSON } from "../editor"
 
-export interface BaseBlock<BType extends string> {
+export interface BaseBlock<BType = MuvelBlockType> {
   id: string
   text: string
   content: PMNodeJSON[]
@@ -11,8 +11,8 @@ export interface BaseBlock<BType extends string> {
   updatedAt?: string
 }
 
-// 명확성 때문에 EpisodeBlock 사용을 권장함
-export type Block = BaseBlock<BlockType>
-
-export type EpisodeBlock = Block
+export type EpisodeBlock = BaseBlock<EpisodeBlockType>
 export type WikiBlock = BaseBlock<WikiBlockType>
+
+// @deprecated 명확성 때문에 EpisodeBlock 사용을 권장함
+export type Block = EpisodeBlock

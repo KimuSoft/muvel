@@ -11,8 +11,8 @@ import {
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
 import { EpisodeRepository } from "../repositories/episode.repository"
-import { BlockRepository } from "../../blocks/block.repository"
-import { AiAnalysisScore, BlockType, EpisodeType } from "muvel-api-types"
+import { EpisodeBlockRepository } from "../../blocks/repositories/episode-block.repository"
+import { AiAnalysisScore, EpisodeBlockType, EpisodeType } from "muvel-api-types"
 import { CreateAiAnalysisRequestBodyDto } from "../dto/create-ai-analysis-request-body.dto"
 import { UserEntity } from "../../users/user.entity"
 
@@ -23,7 +23,7 @@ export class EpisodeAnalysisService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly episodeRepository: EpisodeRepository,
-    private readonly blockRepository: BlockRepository,
+    private readonly blockRepository: EpisodeBlockRepository,
     private readonly geminiAnalysisRepository: GeminiAnalysisRepository,
   ) {}
 
@@ -90,7 +90,9 @@ export class EpisodeAnalysisService {
     // 2. 해당 에피소드의 블록들을 order 순서로 가져오기
     let blocks = await this.blockRepository.findBlocksByEpisodeId(episodeId)
 
-    blocks = blocks.filter((block) => block.blockType !== BlockType.Comment)
+    blocks = blocks.filter(
+      (block) => block.blockType !== EpisodeBlockType.Comment,
+    )
 
     if (!blocks || blocks.length === 0) {
       // 블록이 없어도 분석할 내용이 없으므로 에러 또는 특정 처리 필요

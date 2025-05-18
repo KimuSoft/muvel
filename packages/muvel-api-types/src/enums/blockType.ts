@@ -1,4 +1,4 @@
-export enum BlockType {
+export enum EpisodeBlockType {
   Describe = "describe",
   Quote = "quote",
   Comment = "comment",
@@ -18,14 +18,13 @@ export enum WikiBlockType {
   Callout = "callout",
 }
 
-export enum LegacyBlockType {
-  Describe,
-  DoubleQuote,
-  SingleQuote,
-  SingleScythe,
-  DoubleScythe,
-  SingleGuillemet,
-  DoubleGuillemet,
-  Comment,
-  Divider,
+// @deprecated 호환성 유지 용도
+export enum BlockType {
+  Describe = "describe",
+  Quote = "quote",
+  Comment = "comment",
+  Divider = "divider",
+  Image = "image",
 }
+
+export type MuvelBlockType = EpisodeBlockType | WikiBlockType
