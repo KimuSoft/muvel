@@ -12,22 +12,99 @@ import {
   SelectRoot,
   SelectTrigger,
   SelectValueText,
+  Tag,
+  Text,
 } from "@chakra-ui/react"
 import { useMemo } from "react"
-import { FaClipboard } from "react-icons/fa"
 import { ExportFormat } from "~/types/exportFormat"
+import { FaCopy } from "react-icons/fa6"
+import {
+  TbAlphabetKorean,
+  TbHtml,
+  TbJson,
+  TbMarkdown,
+  TbTxt,
+} from "react-icons/tb"
+import { BsFileEarmarkRichtext, BsFilePdf } from "react-icons/bs"
+import { SiLibreoffice } from "react-icons/si"
+import { PiMicrosoftWordLogo } from "react-icons/pi"
+import { IoMdBook } from "react-icons/io"
+import { RiQuillPenFill } from "react-icons/ri"
 
 const formats = [
   {
     label: "클립보드에 복사하기",
     value: ExportFormat.Clipboard,
-    icon: <FaClipboard />,
+    icon: <FaCopy />,
   },
-  { label: "HTML", value: ExportFormat.Html, icon: <FaClipboard /> },
   {
-    label: "KoPubWorld 바탕체",
+    label: "텍스트 파일",
     value: ExportFormat.PlainText,
-    icon: <FaClipboard />,
+    icon: <TbTxt />,
+    ext: ".txt",
+  },
+  {
+    label: "마크다운 문서",
+    value: ExportFormat.Markdown,
+    icon: <TbMarkdown />,
+    ext: ".md",
+    platforms: ["Obsidian"],
+  },
+  {
+    label: "MS Word 문서",
+    value: ExportFormat.MSWord,
+    icon: <PiMicrosoftWordLogo />,
+    ext: ".docx",
+  },
+  {
+    label: "한글과컴퓨터 문서",
+    value: ExportFormat.Hangul,
+    icon: <TbAlphabetKorean />,
+    ext: ".hwpx",
+  },
+  {
+    label: "PDF 문서",
+    value: ExportFormat.PDF,
+    icon: <BsFilePdf />,
+    ext: ".pdf",
+  },
+  {
+    label: "HTML",
+    value: ExportFormat.Html,
+    icon: <TbHtml />,
+    ext: ".html",
+  },
+  {
+    label: "Rich Text",
+    value: ExportFormat.RichText,
+    icon: <BsFileEarmarkRichtext />,
+    ext: ".rtf",
+    platforms: ["Scrivener"],
+  },
+  {
+    label: "오픈 문서 포맷",
+    value: ExportFormat.LibreOffice,
+    icon: <SiLibreoffice />,
+    ext: ".odt",
+    platforms: ["LibreOffice", "OpenOffice"],
+  },
+  {
+    label: "표준 전자책 문서",
+    value: ExportFormat.Epub,
+    icon: <IoMdBook />,
+    ext: ".epub",
+  },
+  {
+    label: "JSON",
+    value: ExportFormat.Json,
+    icon: <TbJson />,
+    ext: ".json",
+  },
+  {
+    label: "뮤블 에피소드 포맷",
+    value: ExportFormat.Mvle,
+    icon: <RiQuillPenFill />,
+    ext: ".mvle",
   },
 ]
 
@@ -65,9 +142,21 @@ const ExportFormatSelect = ({
         <SelectContent>
           {formatCollection.items.map((item) => (
             <SelectItem key={item.value} item={item}>
-              <HStack>
+              <HStack flex={1}>
                 {item.icon}
-                {item.label}
+                <Text minW={"110px"}>{item.label}</Text>
+                {item.ext && (
+                  <Tag.Root size={"sm"}>
+                    <Tag.Label> {item.ext}</Tag.Label>
+                  </Tag.Root>
+                )}
+                <HStack gap={1}>
+                  {item.platforms?.map((p) => (
+                    <Tag.Root size={"sm"} colorPalette={"purple"}>
+                      <Tag.Label> {p}</Tag.Label>
+                    </Tag.Root>
+                  ))}
+                </HStack>
               </HStack>
               <SelectItemIndicator />
             </SelectItem>
