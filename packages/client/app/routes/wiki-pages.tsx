@@ -1,22 +1,21 @@
-import type { Route } from "./+types/character"
+import type { Route } from "./+types/wiki-pages"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { api } from "~/utils/api"
 
 export function meta({ data }: Route.MetaArgs) {
-  if (!data?.character) {
+  if (!data?.wikiPage) {
     return [
       { title: "Muvel" },
-      { name: "description", content: "존재하지 않는 캐릭터예요." },
+      { name: "description", content: "존재하지 않는 페이지예요." },
     ]
   }
 
   return [
-    { title: `${data.character.name} (${data.character.novel.title}) - Muvel` },
+    { title: `${data.wikiPage.title} (${data.wikiPage.novel.title}) - Muvel` },
     {
       name: "description",
       content:
-        data.character.description.slice(0, 100) ||
-        "새로운 소설을 감상해보세요!",
+        data.wikiPage.summary.slice(0, 100) || "새로운 소설을 감상해보세요!",
     },
   ]
 }
@@ -29,16 +28,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     throw new Response("Not Found", { status: 404 })
   }
 
-  const { data: character } = await api.get<any>(`/characters/${id}`, {
+  const { data: wikiPage } = await api.get<any>(`/characters/${id}`, {
     headers: { cookie },
     withCredentials: true,
   })
 
-  return { character }
+  return { wikiPage }
 }
 
 export default function Main() {
-  const { character } = useLoaderData<typeof loader>()
+  const { wikiPage } = useLoaderData<typeof loader>()
 
-  return character
+  return wikiPage
 }

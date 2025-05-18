@@ -1,34 +1,34 @@
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 import { Repository } from "typeorm"
-import { CharacterEntity } from "../character.entity"
 import { BasePermission, ShareType } from "muvel-api-types"
+import { WikiPageEntity } from "../wiki-page.entity"
 
 @Injectable()
-export class CharacterPermissionService {
+export class WikiPagePermissionService {
   constructor(
-    @InjectRepository(CharacterEntity)
-    private readonly characterRepository: Repository<CharacterEntity>,
+    @InjectRepository(WikiPageEntity)
+    private readonly wikiPageRepository: Repository<WikiPageEntity>,
   ) {}
 
   async getPermission(
-    characterOrId: CharacterEntity | string,
+    wikiPageOrId: WikiPageEntity | string,
     userId?: string,
   ): Promise<
-    CharacterEntity & {
+    WikiPageEntity & {
       permissions: BasePermission
     }
   > {
     const character =
-      typeof characterOrId === "string"
-        ? await this.characterRepository.findOne({
-            where: { id: characterOrId },
+      typeof wikiPageOrId === "string"
+        ? await this.wikiPageRepository.findOne({
+            where: { id: wikiPageOrId },
             relations: ["novel", "novel.author"],
           })
-        : characterOrId
+        : wikiPageOrId
 
     if (!character) {
-      throw new NotFoundException(`Episode with id ${characterOrId} not found`)
+      throw new NotFoundException(`Wiki Page with id ${wikiPageOrId} not found`)
     }
 
     const isAuthor = character.novel.author.id === userId

@@ -7,7 +7,7 @@ import {
   RelationId,
 } from "typeorm"
 import { EpisodeEntity } from "./episode.entity"
-import { BlockEntity } from "../../blocks/block.entity"
+import { BlockEntity } from "../../blocks/entities/block.entity"
 import { SnapshotReason } from "muvel-api-types"
 
 @Entity("episode_snapshot")

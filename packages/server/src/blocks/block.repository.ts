@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common"
 import { DataSource, Not, Repository } from "typeorm"
-import { BlockEntity } from "./block.entity"
+import { BlockEntity } from "./entities/block.entity"
 import { BlockType } from "muvel-api-types"
 
 @Injectable()

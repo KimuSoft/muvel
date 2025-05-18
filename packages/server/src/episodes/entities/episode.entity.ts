@@ -8,7 +8,7 @@ import {
   RelationId,
   UpdateDateColumn,
 } from "typeorm"
-import { BlockEntity } from "../../blocks/block.entity"
+import { BlockEntity } from "../../blocks/entities/block.entity"
 import { NovelEntity } from "../../novels/novel.entity"
 import { Episode, EpisodeType } from "muvel-api-types"
 import { EpisodeSnapshotEntity } from "./episode-snapshot.entity"

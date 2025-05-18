@@ -1,8 +1,10 @@
 import React from "react"
-import { type Character } from "muvel-api-types"
+import { type WikiPage } from "muvel-api-types"
 import { Avatar, Float, Tag, Text, VStack } from "@chakra-ui/react"
 
-const CharacterItem: React.FC<{ character: Character }> = ({ character }) => {
+const CharacterItem: React.FC<{ characterWikiPage: WikiPage }> = ({
+  characterWikiPage,
+}) => {
   return (
     <VStack>
       <Avatar.Root>
@@ -12,7 +14,7 @@ const CharacterItem: React.FC<{ character: Character }> = ({ character }) => {
           </Tag.Root>
         </Float>
       </Avatar.Root>
-      <Text truncate>{character.name}</Text>
+      <Text truncate>{characterWikiPage.title}</Text>
     </VStack>
   )
 }

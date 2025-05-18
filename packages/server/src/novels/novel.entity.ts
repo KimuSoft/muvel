@@ -12,7 +12,7 @@ import {
 import { EpisodeEntity } from "../episodes/entities/episode.entity"
 import { UserEntity } from "../users/user.entity"
 import { Novel, ShareType } from "muvel-api-types"
-import { CharacterEntity } from "../characters/character.entity"
+import { WikiPageEntity } from "../wiki-pages/wiki-page.entity"
 
 @Entity("novel")
 export class NovelEntity implements Omit<Novel, "createdAt" | "updatedAt"> {
@@ -47,10 +47,10 @@ export class NovelEntity implements Omit<Novel, "createdAt" | "updatedAt"> {
   })
   episodes: EpisodeEntity[]
 
-  @OneToMany(() => CharacterEntity, (character) => character.novel, {
+  @OneToMany(() => WikiPageEntity, (wikiPage) => wikiPage.novel, {
     cascade: true,
   })
-  characters: CharacterEntity[]
+  wikiPages: WikiPageEntity[]
 
   @ManyToOne(() => UserEntity, (user) => user.novels, {
     onDelete: "CASCADE",

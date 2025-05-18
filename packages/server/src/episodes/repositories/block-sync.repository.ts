@@ -7,7 +7,7 @@ import { SearchRepository } from "../../search/search.repository"
 import { DeltaBlock, DeltaBlockAction, Episode } from "muvel-api-types"
 import { In } from "typeorm"
 import { EpisodeEntity } from "../entities/episode.entity"
-import { BlockEntity } from "../../blocks/block.entity"
+import { BlockEntity } from "../../blocks/entities/block.entity"
 
 @Injectable()
 export class BlockSyncRepository {

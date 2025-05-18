@@ -1,21 +1,18 @@
-import { BlockType } from "../enums"
+import { BlockType, WikiBlockType } from "../enums"
 import { BlockAttrs, PMNodeJSON } from "../editor"
 
-export interface Block {
+export interface BaseBlock<BType extends string> {
   id: string
   text: string
   content: PMNodeJSON[]
-  blockType: BlockType
+  blockType: BType
   attr: BlockAttrs | null
   order: number
   updatedAt?: string
 }
 
-export const sampleBlock: Block = {
-  id: "1",
-  text: "테스트용 블록입니다.",
-  content: [],
-  attr: null,
-  blockType: BlockType.Describe,
-  order: 0,
-}
+// 명확성 때문에 EpisodeBlock 사용을 권장함
+export type Block = BaseBlock<BlockType>
+
+export type EpisodeBlock = Block
+export type WikiBlock = BaseBlock<WikiBlockType>
