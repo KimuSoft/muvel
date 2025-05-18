@@ -52,6 +52,7 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   return (
     <EditorProvider episode={episodeData} setEpisode={setEpisodeData}>
       <EditorTemplate
+        key={initialEpisode.id + "-title"}
         initialBlocks={initialBlocks}
         onDocChange={handleDocUpdate}
         syncState={combinedSyncState}

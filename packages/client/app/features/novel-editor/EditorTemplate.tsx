@@ -152,7 +152,6 @@ const EditorTemplate: React.FC<{
           </Menu.Root>
         </Center>
         <Input
-          key={episode.id + "-title"}
           fontSize={"2xl"}
           fontWeight={"bold"}
           color={editorStyle.color || undefined}
