@@ -6,7 +6,6 @@ import {
   Button,
   Center,
   ClientOnly,
-  Input,
   Separator,
   Text,
   VStack,
@@ -14,41 +13,18 @@ import {
 import EditorHeader from "~/features/novel-editor/components/EditorHeader"
 import MobileBar from "~/features/novel-editor/components/MobileBar"
 import { WidgetPanel } from "~/features/novel-editor/widgets/containers/WidgetPanel"
-import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
-import { TextSelection } from "prosemirror-state"
-import type { SyncState } from "~/features/novel-editor/components/SyncIndicator"
-import { Node as PMNode } from "prosemirror-model"
 import { useEditorStyleOptions, useWidgetLayout } from "~/hooks/useAppOptions"
 import EpisodeTypeMenu from "~/features/novel-editor/components/menus/EpisodeTypeMenu"
+import { usePlatform } from "~/hooks/usePlatform"
+import { useEpisodeContext } from "~/features/novel-editor/context/EpisodeContext"
+import EpisodeTitleInput from "~/features/novel-editor/components/EpisodeTitleInput"
 
 const EditorTemplate: React.FC<{
   initialBlocks: Block[]
-  onDocChange: (doc: PMNode) => void
-  syncState: SyncState
-}> = ({ onDocChange, syncState, initialBlocks }) => {
-  const { view, episode, updateEpisodeData } = useEditorContext()
+}> = ({ initialBlocks }) => {
+  const { episode, updateEpisodeData } = useEpisodeContext()
   const [editorStyle] = useEditorStyleOptions()
-
-  // 제목 Input에서 Enter 키를 처리하는 핸들러
-  const handleTitleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!view || event.key !== "Enter") return
-    // 기본 Enter 동작 (예: 폼 제출) 방지
-    event.preventDefault()
-
-    // 1. ProseMirror 에디터 뷰에 포커스 설정
-    view.focus()
-
-    // 2. 에디터 문서의 시작 부분으로 커서 이동
-    const { state, dispatch } = view
-    // 문서 시작 부분으로 선택 영역 설정 (pos 1은 보통 첫 문단 시작)
-    const startPosition = 1 // 0은 <doc> 바로 다음, 1은 보통 <p> 내부 시작
-    const safePosition = Math.min(startPosition, state.doc.content.size) // 유효 범위 확인
-
-    const selection = TextSelection.create(state.doc, safePosition)
-    // 트랜잭션을 생성하여 선택 영역을 설정하고 해당 위치로 스크롤
-    const tr = state.tr.setSelection(selection).scrollIntoView()
-    dispatch(tr)
-  }
+  const { isMobile } = usePlatform()
 
   const { widgetLayout } = useWidgetLayout()
 
@@ -72,6 +48,8 @@ const EditorTemplate: React.FC<{
     <VStack
       bgColor={editorStyle.backgroundColor || undefined}
       minH={"100dvh"}
+      h={isMobile ? "100dvh" : undefined}
+      overflowY={isMobile ? "scroll" : undefined}
       transition="background-color 0.2s ease-in-out"
       position={"relative"}
       px={2}
@@ -93,7 +71,6 @@ const EditorTemplate: React.FC<{
         bgColor={
           editorStyle.backgroundColor || { base: "white", _dark: "black" }
         }
-        syncState={syncState}
       />
       <Box
         w={"100%"}
@@ -120,26 +97,15 @@ const EditorTemplate: React.FC<{
             </Button>
           </EpisodeTypeMenu>
         </Center>
-        <Input
-          fontSize={"2xl"}
-          fontWeight={"bold"}
+        <EpisodeTitleInput
           color={editorStyle.color || undefined}
-          border={"none"}
-          textAlign={"center"}
           fontFamily={editorStyle.fontFamily}
-          _focus={{
-            border: "none",
-            outline: "none",
-          }}
-          px={4}
-          placeholder={"제목을 입력해 주세요"}
           defaultValue={episode.title}
-          onChange={(e) => {
+          onValueChange={(title) => {
             updateEpisodeData((ep) => {
-              ep.title = e.target.value
+              ep.title = title
             })
           }}
-          onKeyDown={handleTitleKeyDown}
           readOnly={!episode.permissions.edit}
         />
         {episode.description ? (
@@ -167,11 +133,10 @@ const EditorTemplate: React.FC<{
             initialBlocks={initialBlocks}
             episodeId={episode.id}
             editable={episode.permissions.edit}
-            onChange={onDocChange}
           />
         </ClientOnly>
       </Box>
-      <MobileBar />
+      {isMobile && <MobileBar />}
     </VStack>
   )
 }

@@ -169,9 +169,8 @@ export function useInternalBlocksSyncLogic<
 
   const actualSaveBlocks = useCallback(
     async (doc: PMNode) => {
-      if (syncState === SyncState.Syncing) {
-        return
-      }
+      if (syncState === SyncState.Syncing) return
+
       if (!canEdit || originalBlocksRef.current === null) {
         if (syncState === SyncState.Waiting) {
           setSyncState(SyncState.Synced)
@@ -180,7 +179,8 @@ export function useInternalBlocksSyncLogic<
       }
 
       setSyncState(SyncState.Syncing)
-      const newBlocks = docToBlocks<BlockType>(doc) // 제네릭 BlockType 사용
+      const newBlocks = docToBlocks<BlockType>(doc)
+
       const changes = getDeltaBlock<BlockType>(
         originalBlocksRef.current,
         newBlocks,
@@ -245,12 +245,16 @@ export function useInternalBlocksSyncLogic<
   const handleDocUpdate = useCallback(
     (doc: PMNode) => {
       if (!canEdit || initialBlocks === null) return
-      if (syncState !== SyncState.Syncing && syncState !== SyncState.Error) {
-        setSyncState(SyncState.Waiting)
-      }
+
+      setSyncState((s) =>
+        syncState !== SyncState.Syncing && syncState !== SyncState.Error
+          ? SyncState.Waiting
+          : s,
+      )
+
       debouncedSaveBlocks(doc)
     },
-    [canEdit, initialBlocks, debouncedSaveBlocks, syncState],
+    [canEdit, initialBlocks, debouncedSaveBlocks],
   )
 
   useEffect(() => {

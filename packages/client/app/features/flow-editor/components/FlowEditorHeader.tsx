@@ -37,7 +37,7 @@ const FlowEditorHeader: React.FC<{
           <FaList />
         </IconButton>
       </EpisodeListDrawer>
-      <SyncIndicator state={syncState} />
+      <SyncIndicator />
       <Spacer />
       <Input
         defaultValue={episode.title}

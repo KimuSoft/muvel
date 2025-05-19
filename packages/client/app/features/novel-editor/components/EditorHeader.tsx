@@ -25,18 +25,17 @@ import SnapshotDrawer from "~/features/novel-editor/components/drawers/SnapshotD
 import { MdOutlineWidgets } from "react-icons/md"
 import MobileActionMenu from "~/features/novel-editor/components/menus/MobileActionMenu"
 import { PiGear } from "react-icons/pi"
-import type { EpisodeData } from "~/features/novel-editor/context/EditorContext"
 import { usePlatform } from "~/hooks/usePlatform"
 import { IoCloudOffline } from "react-icons/io5"
 import { ShareType } from "muvel-api-types"
+import type { EpisodeData } from "~/features/novel-editor/context/EpisodeContext"
 
 const EditorHeader: React.FC<
   StackProps & {
     novelId: string
     episode: EpisodeData
-    syncState: SyncState
   }
-> = ({ novelId, episode, syncState, ...props }) => {
+> = ({ novelId, episode, ...props }) => {
   const { isOffline } = usePlatform()
 
   const navigate = useNavigate()
@@ -90,7 +89,7 @@ const EditorHeader: React.FC<
             <TbList />
           </IconButton>
         </EpisodeListDrawer>
-        <SyncIndicator state={syncState} />
+        <SyncIndicator />
         {isOffline && !isLocal && (
           <Tooltip
             content={

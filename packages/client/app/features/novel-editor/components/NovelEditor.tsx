@@ -4,24 +4,23 @@ import { useEpisodeEditor } from "../hooks/useEpisodeEditor"
 import type { Block } from "muvel-api-types"
 import "../style/editorStyles.css"
 import { toaster } from "~/components/ui/toaster"
-import { Node as PMNode } from "prosemirror-model"
 import { useEditorStyleOptions } from "~/hooks/useAppOptions"
+import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
 
 interface NovelEditorProps {
   initialBlocks: Block[]
   episodeId: string
   editable?: boolean
-  onChange?: (doc: PMNode) => void
 }
 
 const NovelEditor: React.FC<NovelEditorProps> = ({
   initialBlocks,
   episodeId,
   editable = true,
-  onChange,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null!)
   const [editorStyle] = useEditorStyleOptions()
+  const { onDocUpdate, setEditorState } = useEditorContext()
 
   const pasteAlertFlagRef = useRef(false)
 
@@ -50,7 +49,8 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
     initialBlocks,
     episodeId,
     editable,
-    onChange,
+    onDocUpdate,
+    onStateChange: setEditorState,
   })
 
   return (

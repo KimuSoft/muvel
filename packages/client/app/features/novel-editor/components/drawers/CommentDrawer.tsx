@@ -39,9 +39,9 @@ import {
 } from "react-icons/tb"
 import AiAnalysisWarningDialog from "~/features/novel-editor/components/dialogs/AiAnalysisWarningDialog"
 import { toaster } from "~/components/ui/toaster"
-import type { EpisodeData } from "~/features/novel-editor/context/EditorContext"
 import AiAnalysisChart from "~/features/novel-editor/components/AiAnalysisChart"
 import { getTimeAgoKo } from "~/utils/getTimeAgoKo"
+import type { EpisodeData } from "~/features/novel-editor/context/EpisodeContext"
 
 const MAX_AI_PROFILE = 8
 

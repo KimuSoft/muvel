@@ -23,6 +23,7 @@ import {
 import { getNovel } from "~/services/novelService"
 import { getEpisodeBlocks } from "~/services/episodeService"
 import { useEditorStyleOptions } from "~/hooks/useAppOptions"
+import { useEpisodeContext } from "~/features/novel-editor/context/EpisodeContext"
 
 interface EpisodeSelectItem {
   label: string
@@ -33,7 +34,7 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
   dragAttributes,
   dragListeners,
 }) => {
-  const { episode: currentEpisode } = useEditorContext()
+  const { episode: currentEpisode } = useEpisodeContext()
   const novelId = currentEpisode?.novel?.id
 
   const [editorStyle] = useEditorStyleOptions()

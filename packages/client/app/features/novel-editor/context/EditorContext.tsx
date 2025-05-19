@@ -8,7 +8,10 @@ import React, {
 import type { GetEpisodeResponseDto } from "muvel-api-types" // 경로 수정 필요
 import type { EditorView } from "prosemirror-view"
 import { type Draft, produce } from "immer"
-import { highlightPluginKey } from "~/features/novel-editor/plugins/highlightPlugin" // Immer produce 및 Draft 타입 임포트
+import { highlightPluginKey } from "~/features/novel-editor/plugins/highlightPlugin"
+import type { SyncState } from "~/features/novel-editor/components/SyncIndicator"
+import type { EditorState, Transaction } from "prosemirror-state" // Immer produce 및 Draft 타입 임포트
+import { Node as PMNode } from "prosemirror-model"
 
 // Match 타입 정의
 interface Match {
@@ -16,16 +19,22 @@ interface Match {
   to: number
 }
 
-export type EpisodeData = Omit<GetEpisodeResponseDto, "blocks">
+// EditorProvider Props 타입 정의
+interface EditorProviderProps {
+  children: React.ReactNode
+  onDocUpdate: (doc: PMNode) => void
+}
 
 interface EditorContextValue {
+  // Prosemirror 관련
   view: EditorView | null
   setView: (view: EditorView | null) => void
+  editorState: EditorState | null
+  setEditorState: (state: EditorState | null) => void
+  onDocUpdate: (doc: PMNode) => void // 문서 업데이트 핸들러
+
+  // Prosemirror 유틸
   setHighlightDecorations: (matches: Match[], currentIndex: number) => void
-  episode: EpisodeData
-  updateEpisodeData: (
-    updater: (draft: Draft<GetEpisodeResponseDto>) => void,
-  ) => void // Immer 업데이트 함수
 }
 
 const EditorContext = createContext<EditorContextValue | null>(null)
@@ -38,19 +47,12 @@ export const useEditorContext = () => {
   return ctx
 }
 
-// EditorProvider Props 타입 정의
-interface EditorProviderProps {
-  children: React.ReactNode
-  episode: EpisodeData
-  setEpisode: React.Dispatch<React.SetStateAction<EpisodeData | null>> // 외부(EditorPage)에서 setEpisode 함수 받기
-}
-
 export const EditorProvider: React.FC<EditorProviderProps> = ({
   children,
-  episode,
-  setEpisode,
+  onDocUpdate,
 }) => {
   const [view, setView] = useState<EditorView | null>(null)
+  const [editorState, setEditorState] = useState<EditorState | null>(null)
 
   // 데코레이션 업데이트 함수 (메타 트랜잭션)
   const setHighlightDecorations = useCallback(
@@ -67,32 +69,21 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({
     [view],
   )
 
-  // Immer를 사용하여 외부 setEpisode 함수를 호출하는 업데이트 함수
-  const updateEpisodeData = useCallback(
-    (updater: (draft: Draft<GetEpisodeResponseDto>) => void) => {
-      setEpisode((currentEpisode) => {
-        if (currentEpisode === null) {
-          console.warn(
-            "Cannot update episode data because current episode is null.",
-          )
-          return null // 또는 currentEpisode 반환
-        }
-        // produce를 사용하여 불변성 유지하며 업데이트
-        return produce(currentEpisode, updater)
-      })
-    },
-    [setEpisode],
-  ) // 외부에서 받은 setEpisode 함수에 의존
-
   const contextValue = useMemo(
     () => ({
       view,
       setView,
+      editorState,
+      setEditorState,
+      onDocUpdate,
       setHighlightDecorations,
-      episode,
-      updateEpisodeData,
     }),
-    [view, setHighlightDecorations, episode, updateEpisodeData],
+    [
+      view,
+      editorState,
+      onDocUpdate,
+      setHighlightDecorations,
+    ],
   )
 
   return (

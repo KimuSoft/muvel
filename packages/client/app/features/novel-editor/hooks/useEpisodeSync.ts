@@ -4,8 +4,8 @@ import { isEqual } from "lodash-es"
 import { useDebouncedCallback } from "use-debounce"
 import { toaster } from "~/components/ui/toaster"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
-import type { EpisodeData } from "~/features/novel-editor/context/EditorContext"
 import { updateEpisodeMetadata } from "~/services/episodeService"
+import type { EpisodeData } from "~/features/novel-editor/context/EpisodeContext"
 
 type EpisodePatchData = Partial<
   Omit<EpisodeData, "id" | "permissions" | "createdAt" | "updatedAt" | "novel">

@@ -7,6 +7,7 @@ import LoadingOverlay from "~/components/templates/LoadingOverlay"
 import { useEpisodeSync } from "~/features/novel-editor/hooks/useEpisodeSync"
 import { combineSyncStates } from "~/utils/combineSyncStates"
 import { useEpisodeBlocksSync } from "~/features/novel-editor/hooks/useEpisodeBlocksSync"
+import { EpisodeProvider } from "~/features/novel-editor/context/EpisodeContext"
 
 const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   episode: initialEpisode,
@@ -50,13 +51,17 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   }
 
   return (
-    <EditorProvider episode={episodeData} setEpisode={setEpisodeData}>
-      <EditorTemplate
-        key={initialEpisode.id + "-title"}
-        initialBlocks={initialBlocks}
-        onDocChange={handleDocUpdate}
+    <EditorProvider onDocUpdate={handleDocUpdate}>
+      <EpisodeProvider
+        episode={episodeData}
+        setEpisode={setEpisodeData}
         syncState={combinedSyncState}
-      />
+      >
+        <EditorTemplate
+          key={initialEpisode.id + "-title"}
+          initialBlocks={initialBlocks}
+        />
+      </EpisodeProvider>
     </EditorProvider>
   )
 }

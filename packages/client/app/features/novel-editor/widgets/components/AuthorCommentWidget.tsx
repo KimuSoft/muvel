@@ -1,21 +1,14 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react"
-import {
-  Textarea,
-  VStack,
-  Text,
-  HStack, // HStack 임포트
-  Icon, // Icon 임포트
-  Spacer, // Spacer 임포트
-} from "@chakra-ui/react"
+import React, { useMemo } from "react"
+import { HStack, Icon, Text, Textarea, VStack } from "@chakra-ui/react"
 import { LuMessageSquareQuote } from "react-icons/lu" // 위젯 아이콘 예시
-import { useEditorContext } from "~/features/novel-editor/context/EditorContext" // 경로 수정 필요
 import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap" // 경로 수정 필요
 import {
   WidgetBase,
   WidgetBody,
   WidgetHeader,
   WidgetTitle,
-} from "~/features/novel-editor/widgets/containers/WidgetBase" // 경로 수정 필요
+} from "~/features/novel-editor/widgets/containers/WidgetBase"
+import { useEpisodeContext } from "~/features/novel-editor/context/EpisodeContext" // 경로 수정 필요
 
 // Debounce delay 제거됨
 
@@ -26,7 +19,7 @@ export const AuthorCommentWidget: React.FC<WidgetBaseProps> = ({
   dragAttributes,
   dragListeners,
 }) => {
-  const { episode, updateEpisodeData } = useEditorContext()
+  const { episode, updateEpisodeData } = useEpisodeContext()
 
   const handleCommentChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>,

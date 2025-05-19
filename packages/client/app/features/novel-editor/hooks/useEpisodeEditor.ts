@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react"
-import { EditorState } from "prosemirror-state"
+import { EditorState, type Transaction } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
 import { keymap } from "prosemirror-keymap"
 import { baseKeymap, toggleMark } from "prosemirror-commands"
@@ -21,7 +21,8 @@ interface UseEpisodeEditorProps {
   initialBlocks: EpisodeBlock[]
   episodeId: string
   editable?: boolean
-  onChange?: (doc: PMNode) => void
+  onDocUpdate?: (doc: PMNode) => void
+  onStateChange?: (state: EditorState) => void
 }
 
 export const useEpisodeEditor = ({
@@ -29,7 +30,8 @@ export const useEpisodeEditor = ({
   initialBlocks,
   episodeId,
   editable = true,
-  onChange,
+  onDocUpdate,
+  onStateChange,
 }: UseEpisodeEditorProps) => {
   const { setView } = useEditorContext()
   const viewRef = useRef<EditorView | null>(null)
@@ -87,7 +89,10 @@ export const useEpisodeEditor = ({
         const newState = view.state.apply(tr)
         view.updateState(newState)
 
-        onChange?.(newState.doc)
+        onStateChange?.(newState)
+        if (tr.docChanged) {
+          onDocUpdate?.(newState.doc)
+        }
       },
       handleDOMEvents: {
         keydown(view, event) {
