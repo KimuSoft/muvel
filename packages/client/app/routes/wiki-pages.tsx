@@ -1,6 +1,7 @@
 import type { Route } from "./+types/wiki-pages"
 import { type LoaderFunctionArgs, useLoaderData } from "react-router"
 import { api } from "~/utils/api"
+import WikiPagePage from "~/features/wiki-editor/WikiPagePage"
 
 export function meta({ data }: Route.MetaArgs) {
   if (!data?.wikiPage) {
@@ -39,5 +40,5 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export default function Main() {
   const { wikiPage } = useLoaderData<typeof loader>()
 
-  return wikiPage
+  return <WikiPagePage initialWikiPage={wikiPage} />
 }
