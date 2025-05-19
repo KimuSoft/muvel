@@ -110,7 +110,7 @@ const EditorTemplate: React.FC<{
         />
         {episode.description ? (
           <Text
-            mt={3}
+            mt={1}
             fontWeight={300}
             fontSize={"sm"}
             color={editorStyle.color || undefined}

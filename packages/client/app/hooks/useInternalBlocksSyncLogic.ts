@@ -184,7 +184,7 @@ export function useInternalBlocksSyncLogic<
       const changes = getDeltaBlock<BlockType>(
         originalBlocksRef.current,
         newBlocks,
-      ) // 제네릭 BlockType 사용
+      )
 
       const { id: docId, novel } = documentContext
       const shareType = novel.share
