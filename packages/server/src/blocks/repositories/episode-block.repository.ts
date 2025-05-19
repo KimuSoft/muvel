@@ -13,9 +13,13 @@ export class EpisodeBlockRepository extends Repository<EpisodeBlockEntity> {
     episodeId: string,
     options: {
       hideComments?: boolean
+      simplify?: boolean
     } = { hideComments: false },
   ): Promise<EpisodeBlockEntity[]> {
     return this.find({
+      ...(options.simplify
+        ? { select: ["id", "content", "attr", "blockType", "order"] }
+        : {}),
       where: {
         episode: { id: episodeId },
         ...(options.hideComments

@@ -27,20 +27,6 @@ export const createInputRules = (schema: Schema) => {
     textReplaceRule(/\.{3}/, "…"),
   ]
 
-  // 큰따옴표 → quote (double)
-  // rules.push(
-  //   textblockTypeInputRule(/^"$/, schema.nodes[BlockType.Quote], {
-  //     quoteStyle: "double",
-  //   }),
-  // )
-
-  // 작은따옴표 → quote (single)
-  // rules.push(
-  //   textblockTypeInputRule(/^'$/, schema.nodes[BlockType.Quote], {
-  //     quoteStyle: "single",
-  //   }),
-  // )
-
   // ----- 또는 *** → divider
   rules.push(
     new Rule(/^(----|——)-$|^\*{3,}$/, (state, match, start, end) => {
@@ -83,5 +69,5 @@ export const createInputRules = (schema: Schema) => {
     }),
   )
 
-  return inputRules({ rules }) // ✅ Plugin 생성 후 반환
+  return inputRules({ rules })
 }

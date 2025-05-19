@@ -8,12 +8,15 @@ import {
   type DeltaBlock,
   type Episode,
   type EpisodeSnapshot,
+  type GetEpisodeBlocksResponse,
   type GetEpisodeResponseDto,
   SnapshotReason,
 } from "muvel-api-types"
 
 export const getCloudEpisodeBlocks = async (episodeId: string) => {
-  const { data } = await api.get<Block[]>(`episodes/${episodeId}/blocks`)
+  const { data } = await api.get<GetEpisodeBlocksResponse>(
+    `episodes/${episodeId}/blocks`,
+  )
   return data
 }
 

@@ -1,5 +1,5 @@
 import React, { useMemo } from "react"
-import { Box, type BoxProps } from "@chakra-ui/react"
+import { Box, type BoxProps, Center } from "@chakra-ui/react"
 import { Tooltip } from "~/components/ui/tooltip"
 
 export enum SyncState {
@@ -30,16 +30,18 @@ const SyncIndicator: React.FC<BoxProps & { state: SyncState }> = ({
   }, [state])
 
   return (
-    <Tooltip content={label} openDelay={0}>
-      <Box
-        w={2}
-        h={2}
-        rounded={"full"}
-        bgColor={color}
-        cursor={"pointer"}
-        transition={"background-color 0.2s ease-in-out"}
-        {...props}
-      />
+    <Tooltip content={label} openDelay={100}>
+      <Center w={10} h={10}>
+        <Box
+          w={"7px"}
+          h={"7px"}
+          rounded={"full"}
+          bgColor={color}
+          cursor={"pointer"}
+          transition={"background-color 0.2s ease-in-out"}
+          {...props}
+        />
+      </Center>
     </Tooltip>
   )
 }

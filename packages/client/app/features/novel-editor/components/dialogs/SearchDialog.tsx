@@ -1,26 +1,34 @@
-import React, { type ReactNode, useEffect, useState } from "react"
+import React, {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
 import {
+  Box,
   Center,
   Dialog,
   DrawerTrigger,
-  Highlight,
-  HStack,
-  Icon,
   Input,
   InputGroup,
   Kbd,
   Portal,
-  Spacer,
+  Spinner,
   Text,
   type UseDialogReturn,
   VStack,
 } from "@chakra-ui/react"
 import { api } from "~/utils/api"
-import { useNavigate } from "react-router"
 import { MdMessage } from "react-icons/md"
-import { TbSearch } from "react-icons/tb"
-import { Tooltip } from "~/components/ui/tooltip"
-import type { NovelSearchResult } from "muvel-api-types"
+import { TbMessage, TbSearch } from "react-icons/tb"
+import {
+  NovelSearchItemType,
+  type NovelSearchResult,
+  type SearchInNovelResponse,
+} from "muvel-api-types"
+import SearchInNovelItem from "~/features/novel-editor/components/SearchInNovelItem"
+import { useDebounce, useDebouncedCallback } from "use-debounce"
 
 const SearchDialog: React.FC<{
   novelId: string
@@ -31,23 +39,33 @@ const SearchDialog: React.FC<{
   const [query, setQuery] = useState<string>("")
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const fetch = async () => {
+  const fetch = useCallback(async () => {
     setIsLoading(true)
-    const { data } = await api.get(`novels/${novelId}/search`, {
-      params: { q: query },
-    })
-    setHitItems(data)
+    const { data } = await api.get<SearchInNovelResponse>(
+      `novels/${novelId}/search`,
+      {
+        params: { q: query },
+      },
+    )
+    setHitItems(data.hits)
     setIsLoading(false)
-  }
+  }, [query])
+
+  const debouncedFetch = useDebouncedCallback(fetch, 500)
 
   useEffect(() => {
-    if (query === "") return setHitItems([])
+    if (query === "") {
+      debouncedFetch.cancel()
+      setIsLoading(false)
+      return setHitItems([])
+    }
 
-    const timeout = setTimeout(async () => {
-      fetch().then()
-    }, 100)
+    setIsLoading(true)
+    debouncedFetch()
 
-    return () => clearTimeout(timeout)
+    return () => {
+      debouncedFetch.cancel()
+    }
   }, [query])
 
   // 키보드 단축키로 모달 열기
@@ -62,6 +80,83 @@ const SearchDialog: React.FC<{
     document.addEventListener("keydown", handleKeyDown)
     return () => document.removeEventListener("keydown", handleKeyDown)
   }, [])
+
+  const hitList = useMemo(() => {
+    const hitList_: ReactNode[] = []
+
+    for (const hit of hitItems) {
+      switch (hit.itemType) {
+        case NovelSearchItemType.Episode: {
+          hitList_.push(
+            <SearchInNovelItem
+              key={hit.id}
+              title={`${hit.order}편: ${hit.title}`}
+              highlight={query}
+              icon={<TbMessage />}
+              link={`/episodes/${hit.id}`}
+              description={hit.description}
+            />,
+          )
+          break
+        }
+
+        case NovelSearchItemType.EpisodeBlock: {
+          hitList_.push(
+            <SearchInNovelItem
+              key={hit.id}
+              title={hit.content}
+              highlight={query}
+              icon={<TbMessage />}
+              link={`/episodes/${hit.episodeId}`}
+              description={`${hit.episodeNumber}편: ${hit.episodeName}`}
+              subDescription={`${hit.episodeNumber}편 ${(hit.order + 1).toLocaleString()}번째 줄`}
+            />,
+          )
+          break
+        }
+
+        case NovelSearchItemType.WikiPage: {
+          hitList_.push(
+            <SearchInNovelItem
+              key={hit.id}
+              title={hit.title}
+              highlight={query}
+              icon={<MdMessage />}
+              link={`/wiki-pages/${hit.id}`}
+              description={hit.summary}
+            />,
+          )
+          break
+        }
+
+        case NovelSearchItemType.WikiBlock: {
+          hitList_.push(
+            <SearchInNovelItem
+              key={hit.id}
+              title={hit.content}
+              highlight={query}
+              icon={<MdMessage />}
+              link={`/wiki-pages/${hit.wikiPageId}`}
+              description={hit.wikiPageName}
+              subDescription={`${hit.wikiPageName} ${hit.order + 1}번째 줄`}
+            />,
+          )
+          break
+        }
+
+        default: {
+          hitList_.push(
+            <Box>
+              <Text>알 수 없는 타입입니다.</Text>
+            </Box>,
+          )
+          break
+        }
+      }
+    }
+
+    return hitList_
+  }, [hitItems])
 
   return (
     <Dialog.RootProvider value={dialog}>
@@ -81,15 +176,19 @@ const SearchDialog: React.FC<{
             </Dialog.Header>
 
             <Dialog.Body>
-              {hitItems?.length ? (
-                <VStack h="430px" overflowY="auto">
-                  {hitItems.map((item) => (
-                    <SearchHitItem
-                      key={item.id}
-                      item={item}
-                      highlight={query}
-                    />
-                  ))}
+              {isLoading ? (
+                <Center h="400px">
+                  <Spinner />
+                </Center>
+              ) : hitList?.length ? (
+                <VStack
+                  w={"100%"}
+                  h="430px"
+                  overflowY="auto"
+                  overflowX={"hidden"}
+                  gap={1}
+                >
+                  {hitList}
                 </VStack>
               ) : !query ? (
                 <Center h="400px">
@@ -114,67 +213,6 @@ const SearchDialog: React.FC<{
         </Dialog.Positioner>
       </Portal>
     </Dialog.RootProvider>
-  )
-}
-
-const SearchHitItem: React.FC<{
-  item: NovelSearchResult
-  highlight?: string
-}> = ({ item, highlight = "" }) => {
-  const navigate = useNavigate()
-
-  const onClick = () => {
-    navigate(`/episodes/${item.episodeId}`)
-  }
-
-  return (
-    <HStack
-      onClick={onClick}
-      pl={5}
-      pr={5}
-      pt={3}
-      pb={3}
-      borderRadius={5}
-      cursor="pointer"
-      w="100%"
-      bgColor={{ base: "gray.200", _dark: "gray.800" }}
-      _hover={{
-        backgroundColor: { base: "gray.200", _dark: "gray.600" },
-      }}
-      transition="background-color 0.1s ease"
-      gap={5}
-    >
-      <Icon flexShrink={0} color="gray.500">
-        <MdMessage size={25} />
-      </Icon>
-      <VStack align="baseline" gap={1}>
-        <Tooltip content={item.content} openDelay={1000}>
-          <Text>
-            <Highlight
-              query={highlight}
-              styles={{
-                // color: { base: "purple.600", _dark: "purple.300" },
-                backgroundColor: { base: "purple.100", _dark: "purple.500" },
-                fontWeight: 800,
-              }}
-            >
-              {item.content?.length > 70
-                ? item.content.slice(0, 70) + " ..."
-                : item.content}
-            </Highlight>
-          </Text>
-        </Tooltip>
-        <HStack w="100%">
-          <Text color="gray.500" fontSize="sm">
-            {item.episodeName}
-          </Text>
-          <Spacer />
-          <Text color="gray.500" fontSize="sm">
-            {item.episodeNumber}편의 {item.index + 1}번째 문단
-          </Text>
-        </HStack>
-      </VStack>
-    </HStack>
   )
 }
 

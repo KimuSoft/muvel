@@ -86,6 +86,7 @@ export const useEpisodeEditor = ({
       dispatchTransaction(tr) {
         const newState = view.state.apply(tr)
         view.updateState(newState)
+
         onChange?.(newState.doc)
       },
       handleDOMEvents: {

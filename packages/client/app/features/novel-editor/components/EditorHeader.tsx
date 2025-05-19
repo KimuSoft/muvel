@@ -67,6 +67,7 @@ const EditorHeader: React.FC<
       <HStack gap={0}>
         <Tooltip content={"소설 페이지로 돌아가기"} openDelay={200}>
           <IconButton
+            opacity={0.7}
             variant="ghost"
             aria-label="소설 페이지로 돌아가기"
             onClick={() => {
@@ -81,11 +82,15 @@ const EditorHeader: React.FC<
           episodeId={episode.id}
           permissions={episode.permissions}
         >
-          <IconButton aria-label="에피소드 목록 보기" variant="ghost">
+          <IconButton
+            opacity={0.7}
+            aria-label="에피소드 목록 보기"
+            variant="ghost"
+          >
             <TbList />
           </IconButton>
         </EpisodeListDrawer>
-        <SyncIndicator ml={5} state={syncState} />
+        <SyncIndicator state={syncState} />
         {isOffline && !isLocal && (
           <Tooltip
             content={
@@ -114,7 +119,7 @@ const EditorHeader: React.FC<
       <EditorSettingDrawer dialog={settingDialog} />
       <SearchDialog novelId={novelId} dialog={searchDialog} />
 
-      <HStack gap={1} display={{ base: "none", md: "flex " }}>
+      <HStack gap={1} display={{ base: "none", md: "flex " }} opacity={0.7}>
         {episode.permissions.edit && (
           <>
             {/* 소설 검색하기 */}

@@ -13,7 +13,7 @@ export const muvelDesktopPreset: Omit<
   fontWeight: 400,
   fontFamily: '"Pretendard Variable"',
   color: null,
-  blockGap: 7,
+  blockGap: 2,
   backgroundColor: null,
   editorMaxWidth: 600,
 }

@@ -1,8 +1,6 @@
 import { EditorState, Plugin, TextSelection } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
 
-// --- Helper functions (isPrecededByWhitespaceOrStart, isFollowedByWhitespaceOrEnd) ---
-// ... (이전 코드와 동일) ...
 function isPrecededByWhitespaceOrStart(
   state: EditorState,
   pos: number,

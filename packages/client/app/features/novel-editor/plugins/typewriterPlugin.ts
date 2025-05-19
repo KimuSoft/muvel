@@ -13,12 +13,11 @@ export const typewriterPlugin = new Plugin({
     return {
       update(view: EditorView, prevState) {
         const { state } = view
-        const { selection, doc } = state // selection을 변수로 추출
+        const { selection, doc } = state
 
         // 1. selection이 바뀐 경우만 처리
         if (selection.eq(prevState.selection)) return
 
-        // 2. ***추가된 조건***: selection이 비어있는 경우(커서 상태)에만 스크롤 실행
         // selection.empty가 false이면 (즉, 여러 문자가 선택된 경우) 여기서 중단
         if (!selection.empty) return
 

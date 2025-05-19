@@ -170,7 +170,10 @@ export abstract class BaseBlockSyncRepository<
         return {
           id: b.id,
           content: b.content as PMNodeJSON[] | undefined,
-          text: b.content?.map((c) => c.text || "").join("\n"),
+          text: b.content
+            ?.map((c) => c.text || "")
+            .join("\n")
+            .trim(),
           attr: b.attr as BlockAttrs | null | undefined,
           blockType: b.blockType!, // 생성 시 필수라고 가정
           order: b.order!, // 생성 시 필수라고 가정
@@ -221,9 +224,9 @@ export abstract class BaseBlockSyncRepository<
     parentContext: TParentContext,
   ): Promise<void> {
     if (createdOrUpdatedBlocks.length > 0) {
-      const searchDocs = createdOrUpdatedBlocks.map((block) =>
-        this.mapBlockToSearchDocument(block, parentContext),
-      )
+      const searchDocs = createdOrUpdatedBlocks
+        .filter((b) => !!b.text.trim())
+        .map((block) => this.mapBlockToSearchDocument(block, parentContext))
       try {
         await this.searchRepository.indexDocuments(searchDocs)
         this.logger.log(

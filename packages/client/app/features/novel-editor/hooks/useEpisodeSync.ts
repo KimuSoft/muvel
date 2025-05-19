@@ -87,9 +87,7 @@ export function useEpisodeSync({ initialEpisode }: UseEpisodeSyncOptions) {
   }, [episodeData, initialEpisode?.id, syncState])
 
   // 디바운스된 저장 함수: saveEpisodeChanges 콜백이 변경되면 useDebouncedCallback이 최신 버전을 사용합니다.
-  const debouncedSaveEpisode = useDebouncedCallback(saveEpisodeChanges, 500, {
-    maxWait: 2000,
-  })
+  const debouncedSaveEpisode = useDebouncedCallback(saveEpisodeChanges, 1000)
 
   // initialEpisode가 변경될 때 상태를 초기화하고, 이전 디바운스된 저장 작업을 취소합니다.
   useEffect(() => {

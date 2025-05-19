@@ -59,6 +59,15 @@ export interface NovelSearchWikiBlockItem extends NovelSearchBaseBlockItem {
   wikiPageName: string
 }
 
+export interface SearchInNovelResponse {
+  hits: NovelSearchResult[]
+  query: string
+  processingTimeMs: number
+  limit: number
+  offset: number
+  estimatedTotalHits: number
+}
+
 export type NovelSearchResult =
   | NovelSearchEpisodeItem
   | NovelSearchEpisodeBlockItem

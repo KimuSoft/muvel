@@ -97,7 +97,9 @@ export const EpisodeReferenceWidget: React.FC<WidgetBaseProps> = ({
     try {
       // TODO: EditorContext에서 share와 novelId를 내려주는 방식으로 최적화해야 함
       const blocks = await getEpisodeBlocks(episodeId)
-      const content = blocks.map((block) => block.text || "").join("\n\n")
+      const content = blocks
+        .map((block) => block.content.map((item) => item.text).join() || "")
+        .join("\n\n")
       setSelectedEpisodeContent(content)
     } catch (err) {
       console.error("Failed to fetch episode content:", err)

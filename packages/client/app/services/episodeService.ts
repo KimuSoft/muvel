@@ -9,6 +9,7 @@ import {
   type GetEpisodeResponseDto,
   ShareType as ApiShareType,
   type UpdateEpisodeBodyDto,
+  type GetEpisodeBlocksResponse,
 } from "muvel-api-types"
 
 // 클라우드 API 호출 함수 임포트
@@ -221,7 +222,7 @@ export const deleteEpisode = async (
  */
 export const getEpisodeBlocks = async (
   episodeInput: EpisodeInput,
-): Promise<ApiBlock[]> => {
+): Promise<GetEpisodeBlocksResponse> => {
   const { episodeId, novelId, novelShareType } =
     await resolveEpisodeContext(episodeInput)
 

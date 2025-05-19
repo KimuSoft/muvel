@@ -4,9 +4,8 @@ import { Repository } from "typeorm"
 import { PatchEpisodesDto } from "../../novels/dto/patch-episodes.dto"
 import { CreateEpisodeDto } from "../dto/create-episode.dto"
 import { NovelEntity } from "../../novels/novel.entity"
-import { BasePermission, DeltaBlock, EpisodeType } from "muvel-api-types"
+import { BasePermission, EpisodeType } from "muvel-api-types"
 import { UpdateEpisodeDto } from "../dto/update-episode.dto"
-import { PatchEpisodeBlocksDto } from "../dto/patch-episode-blocks.dto"
 import { EpisodeRepository } from "../repositories/episode.repository"
 import { EpisodeBlockRepository } from "../../blocks/repositories/episode-block.repository"
 import { EpisodeBlockSyncRepository } from "../../blocks/repositories/episode-block-sync.repository"
@@ -89,6 +88,7 @@ export class EpisodesService {
   async findBlocksByEpisodeId(episodeId: string, permissions: BasePermission) {
     return this.blockRepository.findBlocksByEpisodeId(episodeId, {
       hideComments: !permissions.edit,
+      simplify: true,
     })
   }
 

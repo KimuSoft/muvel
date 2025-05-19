@@ -6,7 +6,7 @@ import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 import LoadingOverlay from "~/components/templates/LoadingOverlay"
 import { useEpisodeSync } from "~/features/novel-editor/hooks/useEpisodeSync"
 import { combineSyncStates } from "~/utils/combineSyncStates"
-import { useBlocksSync } from "~/features/novel-editor/hooks/useBlocksSync"
+import { useEpisodeBlocksSync } from "~/features/novel-editor/hooks/useEpisodeBlocksSync"
 
 const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   episode: initialEpisode,
@@ -24,8 +24,8 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     initialBlocks,
     isLoadingBlocks,
     handleDocUpdate,
-  } = useBlocksSync({
-    episode: initialEpisode,
+  } = useEpisodeBlocksSync({
+    episodeContext: initialEpisode,
     canEdit: !!initialEpisode.permissions.edit,
   })
 

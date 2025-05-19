@@ -16,7 +16,7 @@ export const defaultEditorStyleOptions: EditorStyleOptions = {
 }
 
 export const defaultAppExportOptions: AppExportOptions = {
-  paragraphSpacing: 1,
+  paragraphSpacing: 0,
   dialogueNarrationSpacing: 0,
   separatorReplacement: "***",
   spacingBeforeSeparator: 2,

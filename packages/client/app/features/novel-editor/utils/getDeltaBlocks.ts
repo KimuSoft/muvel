@@ -1,10 +1,10 @@
 import { isEqual, keyBy } from "lodash-es"
-import type { BaseBlock, Block, DeltaBlock } from "muvel-api-types"
+import type { BaseBlock, PartialBlock, DeltaBlock } from "muvel-api-types"
 import { DeltaBlockAction, EpisodeBlockType } from "muvel-api-types"
 
 export const getDeltaBlock = <BType = EpisodeBlockType>(
-  previous: BaseBlock<BType>[],
-  current: BaseBlock<BType>[],
+  previous: PartialBlock<BType>[],
+  current: PartialBlock<BType>[],
 ): DeltaBlock<BType>[] => {
   const prevMap = keyBy(previous, "id")
   const currMap = keyBy(current, "id")
