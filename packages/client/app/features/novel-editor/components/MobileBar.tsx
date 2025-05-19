@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { Box, Button, HStack, Spacer, Text } from "@chakra-ui/react"
 import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
 import { TextSelection } from "prosemirror-state"
@@ -7,8 +7,9 @@ import {
   CHAR_COUNT_WIDGET_ID,
   defaultCharCountOptions,
 } from "~/features/novel-editor/widgets/components/CharCountWidget"
-import { countTextLength, CountUnit } from "../utils/countTextLength"
+import { countTextLength, CountUnit } from "../utils/countTextLength" // 경로 utils/countTextLength로 가정
 import { useSpecificWidgetSettings } from "~/hooks/useAppOptions"
+import { useDebouncedCallback } from "use-debounce" // use-debounce 임포트
 
 const THROTTLE_DELAY_MOBILE_BAR = 250
 
@@ -16,7 +17,7 @@ const MobileBar = () => {
   const { view } = useEditorContext()
   const [bottomOffset, setBottomOffset] = useState(0)
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
-  const [contentLength, setContentLength] = React.useState(0)
+  const [contentLength, setContentLength] = useState(0) // React.useState 대신 useState 사용
 
   const unitSuffix: Record<CountUnit, string> = {
     [CountUnit.Char]: "자",
@@ -30,45 +31,34 @@ const MobileBar = () => {
     defaultCharCountOptions,
   )
 
-  const throttleTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-
   // Function to calculate and update content length
   const updateLength = useCallback(() => {
     if (!view) return
     const content = view.state.doc.textContent
     const len = countTextLength(content, countOptions)
     setContentLength(len)
-  }, [view, countOptions]) // countOptions is memoized
+  }, [view, countOptions])
 
-  // Throttled version of updateLength, executes immediately then cools down
-  const throttledUpdateLength = useCallback(() => {
-    if (!throttleTimeoutRef.current) {
-      updateLength() // Execute immediately
-      throttleTimeoutRef.current = setTimeout(() => {
-        throttleTimeoutRef.current = null // Clear ref to allow next execution
-      }, THROTTLE_DELAY_MOBILE_BAR)
-    }
-    // If timeout is active, subsequent calls are ignored until it clears
-  }, [updateLength]) // Depends on updateLength
+  // useDebouncedCallback 사용
+  const debouncedUpdateLength = useDebouncedCallback(
+    updateLength,
+    THROTTLE_DELAY_MOBILE_BAR,
+    // 필요한 경우 여기에 옵션 추가: { maxWait: 1000, leading: true } 등
+  )
 
   // Effect to listen for editor content changes and update length
   useEffect(() => {
     if (view && isKeyboardVisible) {
-      // Initial calculation and subsequent updates on document change
-      throttledUpdateLength()
+      // ProseMirror의 state가 변경될 때마다 debouncedUpdateLength 호출
+      // view.state.doc이 변경될 때마다 이 useEffect가 다시 실행됨
+      debouncedUpdateLength()
     }
 
-    // Cleanup timeout on component unmount or if dependencies change
+    // 컴포넌트 언마운트 시 또는 의존성 변경으로 effect가 재실행되기 전에 debounce 취소
     return () => {
-      if (throttleTimeoutRef.current) {
-        clearTimeout(throttleTimeoutRef.current)
-        throttleTimeoutRef.current = null
-      }
+      debouncedUpdateLength.cancel()
     }
-    // view.state.doc is a new object on each transaction, triggering the effect.
-    // throttledUpdateLength is a stable useCallback.
-  }, [view, view?.state.doc, throttledUpdateLength])
-  // --- End Content Length Logic ---
+  }, [view, view?.state.doc, isKeyboardVisible, debouncedUpdateLength]) // isKeyboardVisible 의존성 추가
 
   // insertSymbol 및 insertSymbolPair 함수는 동일하게 유지
   const insertSymbol = (symbol: string) => {
@@ -90,58 +80,48 @@ const MobileBar = () => {
   }
 
   useEffect(() => {
-    // visualViewport 지원 여부 확인
     const visualViewport = window.visualViewport
     if (!visualViewport) return
 
     const updateState = () => {
       const { height, offsetTop } = visualViewport
-      // window.innerHeight 대신 visualViewport.height 사용
       const viewportHeight = height
       const windowHeight = window.innerHeight
-
-      // 키보드 또는 기타 UI 요소로 인해 가려진 영역의 높이 계산
       const offset = windowHeight - viewportHeight - offsetTop
       setBottomOffset(offset > 0 ? offset : 0)
-
-      // offset이 특정 임계값 (예: 100px)보다 크면 키보드가 활성화된 것으로 간주
-      // 이 값은 필요에 따라 조절할 수 있습니다.
-      const keyboardVisible = offset > 100
+      const keyboardVisible = offset > 100 // 임계값
       setIsKeyboardVisible(keyboardVisible)
     }
 
-    // 초기 상태 설정
     updateState()
-
-    // 이벤트 리스너 등록
     visualViewport.addEventListener("resize", updateState)
-    visualViewport.addEventListener("scroll", updateState) // 스크롤 시 offsetTop이 변경될 수 있음
+    visualViewport.addEventListener("scroll", updateState)
 
-    // 클린업 함수
     return () => {
       visualViewport.removeEventListener("resize", updateState)
       visualViewport.removeEventListener("scroll", updateState)
     }
-  }, []) // 마운트 시 한 번만 실행
+  }, [])
 
   return (
     <Box
       display={{ base: "block", md: "none" }}
       position="fixed"
       w={"100vw"}
-      h={"100dvh"}
+      // h={"100dvh"} // 이 부분은 MobileBar 자체의 높이가 아니라, MobileBar가 화면 하단에 고정되는 방식을 결정합니다.
+      // MobileBar의 실제 높이는 내부 HStack에 의해 결정됩니다.
+      // 100dvh로 설정하면 MobileBar가 전체 화면을 덮는 투명 레이어가 될 수 있으므로 주의가 필요합니다.
+      // 의도한 바가 키보드 높이에 따라 MobileBar의 bottom 위치를 조정하는 것이라면 현재 로직이 맞습니다.
       left={0}
-      bottom={bottomOffset}
-      // 클릭 무시
-      pointerEvents={"none"}
+      bottom={bottomOffset} // 키보드 높이에 따라 bottom 위치 조정
+      pointerEvents={"none"} // 전체 Box는 클릭 이벤트를 무시
       zIndex={10}
     >
       <HStack
-        position={"absolute"}
+        position={"absolute"} // 부모 Box 내에서 절대 위치
         w={"100%"}
         left={0}
-        // bottom 오프셋은 키보드 높이에 맞게 계속 조절
-        bottom={0}
+        bottom={0} // 부모 Box의 하단에 정확히 붙도록 설정
         borderTopWidth={1}
         borderColor={{ base: "gray.200", _dark: "gray.700" }}
         p={1}
@@ -149,8 +129,7 @@ const MobileBar = () => {
         color={"gray.500"}
         gap={2}
         bgColor={{ base: "white", _dark: "black" }}
-        // 보이지 않을 때 상호작용 막기 (선택 사항)
-        pointerEvents={"auto"}
+        pointerEvents={"auto"} // HStack 내부 요소들은 클릭 가능하도록 설정
       >
         <Text fontSize={"sm"}>
           {contentLength.toLocaleString()}
