@@ -15,7 +15,7 @@ const THROTTLE_DELAY_MOBILE_BAR = 250
 
 const MobileBar = () => {
   const { view } = useEditorContext()
-  const [bottomOffset, setBottomOffset] = useState(0)
+  // const [bottomOffset, setBottomOffset] = useState(0)
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
   const [contentLength, setContentLength] = useState(0) // React.useState 대신 useState 사용
 
@@ -79,41 +79,41 @@ const MobileBar = () => {
     view.focus()
   }
 
-  useEffect(() => {
-    const visualViewport = window.visualViewport
-    if (!visualViewport) return
-
-    const updateState = () => {
-      const { height, offsetTop } = visualViewport
-      const viewportHeight = height
-      const windowHeight = window.innerHeight
-      const offset = windowHeight - viewportHeight - offsetTop
-      setBottomOffset(offset > 0 ? offset : 0)
-      const keyboardVisible = offset > 100 // 임계값
-      setIsKeyboardVisible(keyboardVisible)
-    }
-
-    updateState()
-    visualViewport.addEventListener("resize", updateState)
-    visualViewport.addEventListener("scroll", updateState)
-
-    return () => {
-      visualViewport.removeEventListener("resize", updateState)
-      visualViewport.removeEventListener("scroll", updateState)
-    }
-  }, [])
+  // useEffect(() => {
+  //   const visualViewport = window.visualViewport
+  //   if (!visualViewport) return
+  //
+  //   const updateState = () => {
+  //     const { height, offsetTop } = visualViewport
+  //     const viewportHeight = height
+  //     const windowHeight = window.innerHeight
+  //     const offset = windowHeight - viewportHeight - offsetTop
+  //     setBottomOffset(offset > 0 ? offset : 0)
+  //     const keyboardVisible = offset > 100 // 임계값
+  //     setIsKeyboardVisible(keyboardVisible)
+  //   }
+  //
+  //   updateState()
+  //   visualViewport.addEventListener("resize", updateState)
+  //   visualViewport.addEventListener("scroll", updateState)
+  //
+  //   return () => {
+  //     visualViewport.removeEventListener("resize", updateState)
+  //     visualViewport.removeEventListener("scroll", updateState)
+  //   }
+  // }, [])
 
   return (
     <Box
       display={{ base: "block", md: "none" }}
-      position="fixed"
+      position="absolute"
       w={"100vw"}
       // h={"100dvh"} // 이 부분은 MobileBar 자체의 높이가 아니라, MobileBar가 화면 하단에 고정되는 방식을 결정합니다.
       // MobileBar의 실제 높이는 내부 HStack에 의해 결정됩니다.
       // 100dvh로 설정하면 MobileBar가 전체 화면을 덮는 투명 레이어가 될 수 있으므로 주의가 필요합니다.
       // 의도한 바가 키보드 높이에 따라 MobileBar의 bottom 위치를 조정하는 것이라면 현재 로직이 맞습니다.
       left={0}
-      bottom={bottomOffset} // 키보드 높이에 따라 bottom 위치 조정
+      bottom={0} // 키보드 높이에 따라 bottom 위치 조정
       pointerEvents={"none"} // 전체 Box는 클릭 이벤트를 무시
       zIndex={10}
     >
