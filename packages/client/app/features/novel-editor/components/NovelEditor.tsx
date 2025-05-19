@@ -1,3 +1,4 @@
+// app/features/novel-editor/components/NovelEditor.tsx
 import React, { useEffect, useRef } from "react"
 import { Box } from "@chakra-ui/react"
 import { useEpisodeEditor } from "../hooks/useEpisodeEditor"
@@ -11,12 +12,14 @@ interface NovelEditorProps {
   initialBlocks: Block[]
   episodeId: string
   editable?: boolean
+  getScrollableContainer?: () => HTMLDivElement | null
 }
 
 const NovelEditor: React.FC<NovelEditorProps> = ({
   initialBlocks,
   episodeId,
   editable = true,
+  getScrollableContainer,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null!)
   const [editorStyle] = useEditorStyleOptions()
@@ -50,6 +53,7 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
     editable,
     onDocUpdate,
     onStateChange: setEditorState,
+    getScrollableContainer,
   })
 
   return (

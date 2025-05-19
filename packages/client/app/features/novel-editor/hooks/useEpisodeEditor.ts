@@ -1,3 +1,4 @@
+// app/features/novel-editor/hooks/useEpisodeEditor.ts
 import React, { useEffect, useRef } from "react"
 import { EditorState, type Transaction } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
@@ -23,6 +24,7 @@ interface UseEpisodeEditorProps {
   editable?: boolean
   onDocUpdate?: (doc: PMNode) => void
   onStateChange?: (state: EditorState) => void
+  getScrollableContainer?: () => HTMLDivElement | null
 }
 
 export const useEpisodeEditor = ({
@@ -32,6 +34,7 @@ export const useEpisodeEditor = ({
   editable = true,
   onDocUpdate,
   onStateChange,
+  getScrollableContainer,
 }: UseEpisodeEditorProps) => {
   const { setView } = useEditorContext()
   const viewRef = useRef<EditorView | null>(null)
@@ -64,7 +67,7 @@ export const useEpisodeEditor = ({
         assignIdPlugin,
         createInputRules(baseSchema),
         autoQuotePlugin,
-        typewriterPlugin,
+        typewriterPlugin(getScrollableContainer),
         highlightPlugin(),
         placeholderPlugin,
         keymap({
@@ -130,7 +133,7 @@ export const useEpisodeEditor = ({
       setView(null)
       viewRef.current = null
     }
-  }, [containerRef, initialBlocks, episodeId, editable])
+  }, [containerRef, episodeId, initialBlocks, editable, getScrollableContainer])
 
   return {
     view: viewRef.current,
