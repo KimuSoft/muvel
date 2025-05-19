@@ -38,7 +38,7 @@ export const useEpisodeEditor = ({
 
   useEffect(() => {
     if (!containerRef.current) return
-    if (viewRef.current) return // ✅ 에디터 중복 생성 방지
+    if (viewRef.current) return
 
     const doc = blocksToDoc(
       initialBlocks.length
@@ -60,9 +60,7 @@ export const useEpisodeEditor = ({
       schema: baseSchema,
       doc,
       plugins: [
-        history({
-          newGroupDelay: 100,
-        }),
+        history({ newGroupDelay: 100 }),
         assignIdPlugin,
         createInputRules(baseSchema),
         autoQuotePlugin,
@@ -88,7 +86,6 @@ export const useEpisodeEditor = ({
       dispatchTransaction(tr) {
         const newState = view.state.apply(tr)
         view.updateState(newState)
-
         onStateChange?.(newState)
         if (tr.docChanged) {
           onDocUpdate?.(newState.doc)
@@ -98,7 +95,7 @@ export const useEpisodeEditor = ({
         keydown(view, event) {
           if ((event.ctrlKey || event.metaKey) && event.key === "z") {
             undo(view.state, view.dispatch)
-            return true // ✅ 직접 처리했으니 true
+            return true
           }
           return false
         },
@@ -126,7 +123,7 @@ export const useEpisodeEditor = ({
     })
 
     viewRef.current = view
-    setView(view) // ✅ 최초 한 번만 등록
+    setView(view)
 
     return () => {
       view.destroy()

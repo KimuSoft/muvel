@@ -21,7 +21,6 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
   const containerRef = useRef<HTMLDivElement>(null!)
   const [editorStyle] = useEditorStyleOptions()
   const { onDocUpdate, setEditorState } = useEditorContext()
-
   const pasteAlertFlagRef = useRef(false)
 
   useEffect(() => {
