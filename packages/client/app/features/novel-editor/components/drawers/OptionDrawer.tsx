@@ -196,7 +196,7 @@ const OptionDrawer: React.FC<{
                     <Text color={"gray.500"} fontSize={"sm"}>
                       실제 타이핑을 제외한 단순 위치 이동의 타입라이터 스크롤을
                       방지합니다.
-                    </Text>{" "}
+                    </Text>
                   </>
                 )}
               </Field.Root>
@@ -292,8 +292,12 @@ const OptionDrawer: React.FC<{
 
               <Field.Root>
                 <Field.Label>
-                  문단 간격 ({editorStyleOptions.blockGap}em)
+                  문단 간격 ({editorStyleOptions.blockGap}줄)
                 </Field.Label>
+                <Text color={"gray.500"} fontSize={"sm"}>
+                  일괄 줄바꿈 삽입을 사용하지 않을 경우 이 수치를 0으로 조정하는
+                  걸 추천합니다.
+                </Text>
                 <Slider.Root
                   w={"100%"}
                   value={[editorStyleOptions.blockGap]}
