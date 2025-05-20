@@ -50,11 +50,16 @@ export const AuthorCommentWidget: React.FC<WidgetBaseProps> = ({
         </HStack>
       </WidgetHeader>
 
-      <WidgetBody>
-        <VStack align="stretch">
+      <WidgetBody p={0}>
+        <VStack align="stretch" p={0}>
           <Textarea
             placeholder="작가의 말을 입력하세요..."
             value={currentComment}
+            border={"none"}
+            _focus={{
+              border: "none",
+              outline: "none",
+            }}
             onChange={handleCommentChange}
             minH="150px"
             size="sm"
