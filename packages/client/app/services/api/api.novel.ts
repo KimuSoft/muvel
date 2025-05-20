@@ -1,11 +1,13 @@
 import type {
   CreateEpisodeBodyDto,
   CreateNovelRequestDto,
+  CreateWikiPageRequestBody,
   Episode,
   ExportNovelResponseDto,
   GetNovelResponseDto,
   Novel,
   UpdateNovelRequestDto,
+  WikiPage,
 } from "muvel-api-types"
 import { api } from "~/utils/api"
 import type { AxiosRequestConfig, AxiosResponse } from "axios"
@@ -57,6 +59,18 @@ export const createCloudNovelEpisode = async (
     AxiosResponse<Episode>,
     CreateEpisodeBodyDto
   >(`/novels/${novelId}/episodes`, dto)
+  return data
+}
+
+export const createCloudNovelWikiPage = async (
+  novelId: string,
+  dto: CreateWikiPageRequestBody,
+) => {
+  const { data } = await api.post<
+    WikiPage,
+    AxiosResponse<WikiPage>,
+    CreateWikiPageRequestBody
+  >(`/novels/${novelId}/wiki-pages`, dto)
   return data
 }
 
