@@ -57,6 +57,7 @@ export interface AppExportOptions {
   spacingAfterSeparator: number
   forceLineBreakPerSentence: number
   includeComments: boolean
+  removeLineBreaksBetweenDialogues: boolean
   format: ExportFormat
 }
 

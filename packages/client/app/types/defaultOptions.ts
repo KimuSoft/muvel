@@ -18,13 +18,14 @@ export const defaultEditorStyleOptions: EditorStyleOptions = {
 }
 
 export const defaultAppExportOptions: AppExportOptions = {
-  paragraphSpacing: 0,
+  paragraphSpacing: 1,
   dialogueNarrationSpacing: 0,
   separatorReplacement: "***",
   spacingBeforeSeparator: 2,
   spacingAfterSeparator: 1,
   forceLineBreakPerSentence: 0,
   includeComments: false,
+  removeLineBreaksBetweenDialogues: true,
   format: ExportFormat.Clipboard,
 }
 

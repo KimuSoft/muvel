@@ -364,24 +364,43 @@ export const ExportEpisodeDrawer: React.FC<{
                     문서 내 구분선을 이 문자로 변경합니다.
                   </Text>
                 </Field.Root>
-                {/* 주석 블록 내보내기 */}
-                <Field.Root mt={5}>
+
+                <Field.Root>
                   <Checkbox.Root
+                    mt={3}
+                    colorPalette="purple"
+                    checked={exportOptions.removeLineBreaksBetweenDialogues}
+                    onCheckedChange={(d) =>
+                      setExportOptions((opt) => {
+                        opt.removeLineBreaksBetweenDialogues = !!d.checked
+                      })
+                    }
+                  >
+                    <Checkbox.HiddenInput />
+                    <Checkbox.Control />
+                    <Checkbox.Label>대사 사이 줄바꿈 제거</Checkbox.Label>
+                  </Checkbox.Root>
+
+                  <Checkbox.Root
+                    mt={2}
                     checked={exportOptions.includeComments}
                     onCheckedChange={(detail) =>
                       setExportOptions((opt) => {
                         opt.includeComments = !!detail.checked
                       })
                     }
-                    size="sm"
                     colorScheme="blue"
                   >
                     <Checkbox.HiddenInput />
                     <Checkbox.Control />
                     <Checkbox.Label>주석 블록 내보내기</Checkbox.Label>
                   </Checkbox.Root>
+                  <Text fontSize="xs" color="gray.500" mt={1}>
+                    '//'를 입력하면 작가만 볼 수 있는 주석 블록을 작성할 수
+                    있습니다. 이 옵션을 키면 해당 주석 블록이 내보내기에
+                    포함됩니다.
+                  </Text>
                 </Field.Root>
-                {/* --- 새로운 옵션 끝 --- */}
               </Stack>
             </Stack>
           </DrawerBody>
