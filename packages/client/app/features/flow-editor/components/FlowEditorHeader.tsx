@@ -30,7 +30,7 @@ const FlowEditorHeader: React.FC<{
     >
       <EpisodeListDrawer
         novelId={episode.novelId}
-        episodeId={episode.id}
+        episode={episode}
         permissions={episode.permissions}
       >
         <IconButton size={"sm"} variant={"ghost"}>

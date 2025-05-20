@@ -17,6 +17,7 @@ import SortableEpisodeList, {
 import React, { type PropsWithChildren } from "react"
 import {
   type BasePermission,
+  type Episode,
   type EpisodeType,
   type GetNovelResponseDto,
   initialNovel,
@@ -38,11 +39,11 @@ import { ImportEpisodesButton } from "~/features/novel-editor/components/ImportE
 const EpisodeListDrawer: React.FC<
   {
     novelId: string
-    episodeId: string
+    episode: Episode
     permissions: BasePermission
     isLocal?: boolean
   } & PropsWithChildren
-> = ({ novelId, episodeId, permissions, children }) => {
+> = ({ novelId, episode, permissions, children }) => {
   const [novel, setNovel] = React.useState<
     GetNovelResponseDto | GetLocalNovelDetailsResponse | null
   >(null)
@@ -136,7 +137,6 @@ const EpisodeListDrawer: React.FC<
               />
             </Stack>
           </Drawer.Body>
-
           <Drawer.Footer justifyContent="space-between">
             {novel && permissions.delete && (
               <>
@@ -144,7 +144,7 @@ const EpisodeListDrawer: React.FC<
                   novelId={novel.id}
                   onImportComplete={fetchNovel}
                 />
-                <DeleteEpisodeDialog novel={novel} episodeId={episodeId} />
+                <DeleteEpisodeDialog novel={novel} episode={episode} />
               </>
             )}
           </Drawer.Footer>

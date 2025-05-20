@@ -76,7 +76,7 @@ const EditorHeader: React.FC<
         </Tooltip>
         <EpisodeListDrawer
           novelId={novelId}
-          episodeId={episode.id}
+          episode={episode}
           permissions={episode.permissions}
         >
           <IconButton
