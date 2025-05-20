@@ -1,11 +1,12 @@
 import { muvelDesktopPreset } from "~/types/editorStylePresets"
 import type { WidgetId } from "~/features/novel-editor/widgets/components/widgetMap"
-import type {
-  AppExportOptions,
-  AppOptions,
-  EditorStyleOptions,
-  ViewOptions,
-  WidgetSettings,
+import {
+  type AppExportOptions,
+  type AppOptions,
+  type EditorStyleOptions,
+  LineBreakImportStrategy,
+  type ViewOptions,
+  type WidgetSettings,
 } from "~/types/options"
 import { ExportFormat } from "~/types/exportFormat"
 
@@ -13,6 +14,7 @@ export const defaultEditorStyleOptions: EditorStyleOptions = {
   ...muvelDesktopPreset,
   typewriter: true,
   typewriterStrict: true,
+  lineBreakImportStrategy: LineBreakImportStrategy.Semantic,
 }
 
 export const defaultAppExportOptions: AppExportOptions = {

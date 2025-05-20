@@ -5,7 +5,7 @@ type EditorStyleOptionPreset = Partial<EditorStyleOptions>
 // 기본 옵션
 export const muvelDesktopPreset: Omit<
   EditorStyleOptions,
-  "typewriter" | "typewriterStrict"
+  "typewriter" | "typewriterStrict" | "lineBreakImportStrategy"
 > = {
   lineHeight: 1.8,
   fontSize: 18,

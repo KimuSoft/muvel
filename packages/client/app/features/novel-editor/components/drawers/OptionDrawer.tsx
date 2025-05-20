@@ -38,6 +38,7 @@ import React, { type ReactNode } from "react"
 import { BiReset } from "react-icons/bi"
 import { useEditorStyleOptions } from "~/hooks/useAppOptions"
 import { defaultEditorStyleOptions } from "~/types/defaultOptions"
+import { LineBreakImportStrategySelect } from "~/features/novel-editor/components/LineBreakImportStrategySelect"
 
 const OptionDrawer: React.FC<{
   children?: ReactNode
@@ -429,6 +430,23 @@ const OptionDrawer: React.FC<{
                   onChange={(v) =>
                     setEditorStyleOptions((draft) => {
                       draft.backgroundColor = v
+                    })
+                  }
+                />
+              </Field.Root>
+
+              <Separator my={3} />
+              <Field.Root>
+                <Field.Label>텍스트 붙여넣기 시 줄바꿈 처리</Field.Label>
+                <Text color={"gray.500"} fontSize={"sm"}>
+                  아래 옵션은 서식이 없는 텍스트 붙여넣기 (Ctrl+Shift+F)에만
+                  적용됩니다.
+                </Text>
+                <LineBreakImportStrategySelect
+                  value={editorStyleOptions.lineBreakImportStrategy}
+                  onChange={(v) =>
+                    setEditorStyleOptions((draft) => {
+                      draft.lineBreakImportStrategy = v
                     })
                   }
                 />

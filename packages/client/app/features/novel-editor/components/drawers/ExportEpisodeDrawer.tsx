@@ -26,7 +26,6 @@ import {
 } from "@chakra-ui/react"
 import { LuCopy, LuDownload } from "react-icons/lu"
 import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
-import { processContentForExport } from "~/features/novel-editor/utils/processContentForExport"
 import type { Episode } from "muvel-api-types"
 import { toaster } from "~/components/ui/toaster"
 import ExportFormatSelect from "~/features/novel-editor/components/ExportFormatSelect"
@@ -37,6 +36,7 @@ import { Tooltip } from "~/components/ui/tooltip"
 import { ExportFormat } from "~/types/exportFormat"
 import { defaultAppExportOptions } from "~/types/defaultOptions"
 import { useExportSettingOptions } from "~/hooks/useAppOptions"
+import { pmNodeToText } from "~/services/io/text/pmNodeToText"
 
 // --- 내보내기 Drawer 컴포넌트 시작 ---
 export const ExportEpisodeDrawer: React.FC<{
@@ -53,7 +53,7 @@ export const ExportEpisodeDrawer: React.FC<{
   const processedContent = useMemo(() => {
     if (!dialog.open) return ""
     // 임포트한 헬퍼 함수 사용
-    return processContentForExport(view?.state.doc, exportOptions)
+    return pmNodeToText(view?.state.doc, exportOptions)
   }, [exportOptions, dialog.open])
 
   // 내보내기(클립보드 복사) 함수

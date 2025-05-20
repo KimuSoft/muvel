@@ -15,7 +15,8 @@ import { typewriterPlugin } from "~/features/novel-editor/plugins/typewriterPlug
 import { highlightPlugin } from "~/features/novel-editor/plugins/highlightPlugin"
 import { Fragment, Node as PMNode, Slice } from "prosemirror-model"
 import { placeholderPlugin } from "~/features/novel-editor/plugins/placeholderPlugin"
-import { keepLineBreaksPlugin } from "~/features/novel-editor/plugins/keepLineBreaksPlugin"
+import { getAppOptions } from "~/features/novel-editor/utils/getAppOptions"
+import { pastePlugin } from "~/features/novel-editor/plugins/pastePlugin"
 
 interface UseEpisodeEditorProps {
   containerRef: React.RefObject<HTMLDivElement>
@@ -62,7 +63,7 @@ export const useEpisodeEditor = ({
       doc,
       plugins: [
         history({ newGroupDelay: 100 }),
-        keepLineBreaksPlugin(),
+        pastePlugin(),
         assignIdPlugin,
         createInputRules(baseSchema),
         autoQuotePlugin,
@@ -111,6 +112,24 @@ export const useEpisodeEditor = ({
           return false
         },
       },
+      // PM 에디터에서 복사 시 줄바꿈 유지 용도
+      clipboardTextSerializer: (slice) => {
+        const options = getAppOptions()
+
+        return slice.content.textBetween(
+          0,
+          slice.content.size,
+          "\n".repeat((options?.exportSettings?.paragraphSpacing || 0) + 1),
+          (node) => {
+            if (node.type.name === "hard_break") {
+              return "\n"
+            }
+            // 다른 인라인 노드 중 텍스트 표현이 필요한 경우 추가
+            return node.textContent
+          },
+        )
+      },
+      // 복사 시 PM 노드의 id 속성 제거
       transformCopied(slice) {
         const transformer = (node: PMNode): PMNode => {
           if (node.type.isBlock && node.attrs.id) {
