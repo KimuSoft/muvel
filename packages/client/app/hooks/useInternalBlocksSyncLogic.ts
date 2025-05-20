@@ -213,6 +213,13 @@ export function useInternalBlocksSyncLogic<
         if (shareType === ShareType.Local) {
           await syncDeltaBlocksFn(documentContext, changes)
         } else {
+          if (changes.length > 1000) {
+            toaster.warning({
+              title: "블록 동기화 경고",
+              description:
+                "뮤블에서는 한 에피소드 당 1,000줄 이하로 작성하는 것을 권장합니다.",
+            })
+          }
           for (const deltaChunk of chunk(changes, 200)) {
             await syncDeltaBlocksFn(documentContext, deltaChunk)
           }
