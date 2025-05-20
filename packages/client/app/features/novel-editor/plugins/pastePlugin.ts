@@ -1,7 +1,7 @@
 import { Plugin } from "prosemirror-state"
 import { LineBreakImportStrategy } from "~/types/options"
 import { Fragment, Slice } from "prosemirror-model"
-import { textToPMNodeContent } from "~/services/io/text/textToPMNode"
+import { textToPMNodeContent } from "~/services/io/txt/textToPMNode"
 import { getAppOptions } from "~/features/novel-editor/utils/getAppOptions"
 
 export const pastePlugin = (/* 플러그인 옵션들 */) =>

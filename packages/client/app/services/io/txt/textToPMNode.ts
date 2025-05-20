@@ -2,7 +2,7 @@ import { Fragment, type Node as PMNode, type Schema } from "prosemirror-model"
 import { EpisodeBlockType } from "muvel-api-types" // 귀하의 프로젝트에 맞게 경로를 조정하세요.
 import { LineBreakImportStrategy } from "~/types/options" // 귀하의 프로젝트에 맞게 경로를 조정하세요.
 
-export interface PasteContentOptions {
+export interface TextToPMNodeOption {
   strategy: LineBreakImportStrategy
   // 향후 다른 옵션이 추가될 수 있습니다.
   // exampleOption?: boolean;
@@ -18,7 +18,7 @@ export interface PasteContentOptions {
  */
 export function textToPMNodeContent(
   text: string,
-  options: PasteContentOptions,
+  options: TextToPMNodeOption,
   schema: Schema,
 ): Fragment {
   const { strategy } = options

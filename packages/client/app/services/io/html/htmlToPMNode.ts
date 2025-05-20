@@ -5,9 +5,9 @@ import {
 } from "prosemirror-model"
 import { LineBreakImportStrategy } from "~/types/options"
 import {
-  type PasteContentOptions,
+  type TextToPMNodeOption,
   textToPMNodeContent,
-} from "~/services/io/text/textToPMNode"
+} from "~/services/io/txt/textToPMNode"
 
 /**
  * 주어진 HTML 문자열을 지정된 lineBreakImportStrategy에 따라 ProseMirror Fragment로 변환합니다.
@@ -21,7 +21,7 @@ import {
  */
 export function htmlToPMNodeContent(
   html: string,
-  options: PasteContentOptions,
+  options: TextToPMNodeOption,
   schema: Schema,
 ): Fragment {
   const { strategy } = options

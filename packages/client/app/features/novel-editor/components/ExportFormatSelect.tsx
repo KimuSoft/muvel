@@ -48,52 +48,51 @@ const formats = [
     value: ExportFormat.Markdown,
     icon: <TbMarkdown />,
     ext: ".md",
-    platforms: ["Obsidian"],
   },
-  {
-    label: "MS Word 문서",
-    value: ExportFormat.MSWord,
-    icon: <PiMicrosoftWordLogo />,
-    ext: ".docx",
-  },
+  // {
+  //   label: "MS Word 문서",
+  //   value: ExportFormat.MSWord,
+  //   icon: <PiMicrosoftWordLogo />,
+  //   ext: ".docx",
+  // },
   {
     label: "한글과컴퓨터 문서",
     value: ExportFormat.Hangul,
     icon: <TbAlphabetKorean />,
     ext: ".hwpx",
   },
-  {
-    label: "PDF 문서",
-    value: ExportFormat.PDF,
-    icon: <BsFilePdf />,
-    ext: ".pdf",
-  },
+  // {
+  //   label: "PDF 문서",
+  //   value: ExportFormat.PDF,
+  //   icon: <BsFilePdf />,
+  //   ext: ".pdf",
+  // },
   {
     label: "HTML",
     value: ExportFormat.Html,
     icon: <TbHtml />,
     ext: ".html",
   },
-  {
-    label: "Rich Text",
-    value: ExportFormat.RichText,
-    icon: <BsFileEarmarkRichtext />,
-    ext: ".rtf",
-    platforms: ["Scrivener"],
-  },
-  {
-    label: "오픈 문서 포맷",
-    value: ExportFormat.LibreOffice,
-    icon: <SiLibreoffice />,
-    ext: ".odt",
-    platforms: ["LibreOffice", "OpenOffice"],
-  },
-  {
-    label: "표준 전자책 문서",
-    value: ExportFormat.Epub,
-    icon: <IoMdBook />,
-    ext: ".epub",
-  },
+  // {
+  //   label: "Rich Text",
+  //   value: ExportFormat.RichText,
+  //   icon: <BsFileEarmarkRichtext />,
+  //   ext: ".rtf",
+  //   platforms: ["Scrivener"],
+  // },
+  // {
+  //   label: "오픈 문서 포맷",
+  //   value: ExportFormat.LibreOffice,
+  //   icon: <SiLibreoffice />,
+  //   ext: ".odt",
+  //   platforms: ["LibreOffice", "OpenOffice"],
+  // },
+  // {
+  //   label: "표준 전자책 문서",
+  //   value: ExportFormat.Epub,
+  //   icon: <IoMdBook />,
+  //   ext: ".epub",
+  // },
   {
     label: "JSON",
     value: ExportFormat.Json,
@@ -151,11 +150,11 @@ const ExportFormatSelect = ({
                   </Tag.Root>
                 )}
                 <HStack gap={1}>
-                  {item.platforms?.map((p) => (
-                    <Tag.Root size={"sm"} colorPalette={"purple"}>
-                      <Tag.Label> {p}</Tag.Label>
-                    </Tag.Root>
-                  ))}
+                  {/*{item.platforms?.map((p) => (*/}
+                  {/*  <Tag.Root size={"sm"} colorPalette={"purple"}>*/}
+                  {/*    <Tag.Label> {p}</Tag.Label>*/}
+                  {/*  </Tag.Root>*/}
+                  {/*))}*/}
                 </HStack>
               </HStack>
               <SelectItemIndicator />

@@ -4,7 +4,12 @@ import {
   type PMNodeJSON,
   WikiBlockType,
 } from "muvel-api-types"
-import { type Node as PMNode, NodeType, Schema } from "prosemirror-model"
+import {
+  type Fragment,
+  type Node as PMNode,
+  NodeType,
+  Schema,
+} from "prosemirror-model"
 
 // ✅ ProseMirror document를 생성하는 함수
 export function blocksToDoc<BType = EpisodeBlockType>(
@@ -36,11 +41,8 @@ export function blocksToDoc<BType = EpisodeBlockType>(
   return schema.nodes.doc.create(null, children)
 }
 
-// ✅ ProseMirror document → Block[] 변환
-export function docToBlocks<BType = EpisodeBlockType>(
-  doc: PMNode,
-): BaseBlock<BType>[] {
-  return doc.content.content.map((node, idx) => {
+export const fragmentToBlocks = <BType>(fragment: Fragment) => {
+  return fragment.content.map((node, idx) => {
     const blockType = node.type.name as BaseBlock<BType>["blockType"]
     const attr = node.attrs ?? {}
     const content = node.content?.content.map((child) =>
@@ -61,4 +63,11 @@ export function docToBlocks<BType = EpisodeBlockType>(
       order: idx,
     }
   })
+}
+
+// ✅ ProseMirror document → Block[] 변환
+export function docToBlocks<BType = EpisodeBlockType>(
+  doc: PMNode,
+): BaseBlock<BType>[] {
+  return fragmentToBlocks(doc.content)
 }

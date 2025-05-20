@@ -33,6 +33,7 @@ import { getNovel, updateNovelEpisodes } from "~/services/novelService"
 import type { GetLocalNovelDetailsResponse } from "~/services/tauri/types"
 import { createNovelEpisode } from "~/services/episodeService"
 import { useNavigate } from "react-router"
+import { ImportEpisodesButton } from "~/features/novel-editor/components/ImportEpisodesButton"
 
 const EpisodeListDrawer: React.FC<
   {
@@ -138,7 +139,13 @@ const EpisodeListDrawer: React.FC<
 
           <Drawer.Footer justifyContent="space-between">
             {novel && permissions.delete && (
-              <DeleteEpisodeDialog novel={novel} episodeId={episodeId} />
+              <>
+                <ImportEpisodesButton
+                  novelId={novel.id}
+                  onImportComplete={fetchNovel}
+                />
+                <DeleteEpisodeDialog novel={novel} episodeId={episodeId} />
+              </>
             )}
           </Drawer.Footer>
         </Drawer.Content>

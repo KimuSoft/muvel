@@ -36,7 +36,8 @@ import { Tooltip } from "~/components/ui/tooltip"
 import { ExportFormat } from "~/types/exportFormat"
 import { defaultAppExportOptions } from "~/types/defaultOptions"
 import { useExportSettingOptions } from "~/hooks/useAppOptions"
-import { pmNodeToText } from "~/services/io/text/pmNodeToText"
+import { pmNodeToText } from "~/services/io/txt/pmNodeToText"
+import { exportEpisode } from "~/services/ioService"
 
 // --- 내보내기 Drawer 컴포넌트 시작 ---
 export const ExportEpisodeDrawer: React.FC<{
@@ -421,7 +422,12 @@ export const ExportEpisodeDrawer: React.FC<{
                 클립보드에 복사
               </Button>
             ) : (
-              <Button colorScheme="blue" onClick={handleSaveAsTxt}>
+              <Button
+                colorScheme="blue"
+                onClick={() =>
+                  exportEpisode(episode, view!.state.doc, exportOptions)
+                }
+              >
                 <LuDownload style={{ marginRight: "0.5rem" }} />
                 내보내기
               </Button>
