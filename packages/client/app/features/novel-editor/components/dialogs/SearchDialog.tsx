@@ -28,7 +28,7 @@ import {
   type SearchInNovelResponse,
 } from "muvel-api-types"
 import SearchInNovelItem from "~/features/novel-editor/components/SearchInNovelItem"
-import { useDebounce, useDebouncedCallback } from "use-debounce"
+import { useDebouncedCallback } from "use-debounce"
 
 const SearchDialog: React.FC<{
   novelId: string

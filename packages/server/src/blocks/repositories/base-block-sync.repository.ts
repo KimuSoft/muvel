@@ -184,7 +184,15 @@ export abstract class BaseBlockSyncRepository<
     let createdBlocks: TBlock[] = []
     if (createdBlockDtos.length > 0) {
       const newEntities = this.blockEntityRepository.create(createdBlockDtos)
-      createdBlocks = await this.blockEntityRepository.save(newEntities)
+
+      try {
+        createdBlocks = await this.blockEntityRepository.save(newEntities)
+      } catch {
+        this.logger.warn("Failed to save new blocks. Retrying with upsert.")
+        // @ts-expect-error TypeORM save는 DeepPartial을 기대하지만, upsert는 id가 필요함
+        await this.blockEntityRepository.upsert(newEntities, ["id"])
+        createdBlocks = newEntities
+      }
       this.logger.log(
         `Created ${createdBlocks.length} blocks for parent ${parentId}.`,
       )

@@ -213,7 +213,7 @@ export function useInternalBlocksSyncLogic<
         if (shareType === ShareType.Local) {
           await syncDeltaBlocksFn(documentContext, changes)
         } else {
-          for (const deltaChunk of chunk(changes, 100)) {
+          for (const deltaChunk of chunk(changes, 200)) {
             await syncDeltaBlocksFn(documentContext, deltaChunk)
           }
         }
