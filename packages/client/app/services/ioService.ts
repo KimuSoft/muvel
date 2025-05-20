@@ -11,6 +11,7 @@ import { pmNodeToMarkdown } from "~/services/io/markdown"
 import { pmNodeToHtml } from "~/services/io/html"
 import { docToBlocks } from "~/features/novel-editor/utils/blockConverter"
 import { getDialogApi, getFsPlugin, getPathApi } from "./tauri/tauriApiProvider"
+import { textToHwpx } from "~/services/io/hwpx/hwpxToText"
 
 const MAX_BLOCKS_PER_EPISODE = 1000
 const SYNC_CHUNK_SIZE = 300
@@ -105,7 +106,7 @@ export async function exportEpisode(
   pmNode: ProseMirrorNode,
   options: AppExportOptions,
 ): Promise<void> {
-  let content: string
+  let content: string | Blob
   let mimeType: string
   let fileExtension: string
 
@@ -142,6 +143,12 @@ export async function exportEpisode(
         mimeType = "application/vnd.muvel.episode+json"
         fileExtension = "mvle"
         break
+      case ExportFormat.Hangul:
+        content = await textToHwpx(pmNodeToText(pmNode, options))
+        // content = await textToHwpx("안녕하세요.")
+        mimeType = "application/hwp+zip"
+        fileExtension = "hwpx"
+        break
       default:
         // 타입스크립트에서 이 default는 도달 불가능해야 하지만, 만약을 위해 방어 코드 추가
         const exhaustiveCheck = options.format
@@ -174,7 +181,13 @@ export async function exportEpisode(
         })
 
         if (filePath) {
-          await fs.writeTextFile(filePath, content)
+          if (typeof content === "string") {
+            await fs.writeTextFile(filePath, content)
+          } else {
+            const arrayBuffer = await content.arrayBuffer()
+            const unit8Array = new Uint8Array(arrayBuffer)
+            await fs.writeFile(filePath, unit8Array)
+          }
           console.log(`Episode "${episode.title}" exported to ${filePath}`)
         } else {
           console.log("File save dialog was cancelled by the user.")
@@ -187,7 +200,10 @@ export async function exportEpisode(
       }
     } else {
       // 웹 환경: 브라우저 다운로드 방식 사용
-      const blob = new Blob([content], { type: mimeType })
+      const blob =
+        typeof content === "string"
+          ? new Blob([content], { type: mimeType })
+          : content
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a")
 
