@@ -1,8 +1,9 @@
 import { Schema } from "prosemirror-model"
-import { BlockType } from "muvel-api-types"
+import { EpisodeBlockType } from "muvel-api-types"
 
 export const baseSchema = new Schema({
   nodes: {
+    // Inline elements
     doc: {
       content: "block+",
     },
@@ -11,7 +12,16 @@ export const baseSchema = new Schema({
       group: "inline",
     },
 
-    [BlockType.Describe]: {
+    hard_break: {
+      inline: true,
+      group: "inline",
+      selectable: false,
+      parseDOM: [{ tag: "br" }],
+      toDOM: () => ["br"],
+    },
+
+    // Block elements
+    [EpisodeBlockType.Describe]: {
       group: "block",
       content: "inline*",
       attrs: {
@@ -23,7 +33,7 @@ export const baseSchema = new Schema({
       toDOM: (node) => ["p", { "data-id": node.attrs.id }, 0],
     },
 
-    [BlockType.Comment]: {
+    [EpisodeBlockType.Comment]: {
       group: "block",
       content: "inline*",
       attrs: {
@@ -40,7 +50,7 @@ export const baseSchema = new Schema({
       toDOM: (node) => ["aside", { "data-id": node.attrs.id }, 0],
     },
 
-    [BlockType.Divider]: {
+    [EpisodeBlockType.Divider]: {
       group: "block",
       attrs: {
         id: { default: null },
@@ -54,7 +64,7 @@ export const baseSchema = new Schema({
       toDOM: (node) => ["hr", { "data-id": node.attrs.id }],
     },
 
-    [BlockType.Image]: {
+    [EpisodeBlockType.Image]: {
       group: "block",
       inline: false,
       attrs: {

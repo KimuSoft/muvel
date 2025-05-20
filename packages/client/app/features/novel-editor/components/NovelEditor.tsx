@@ -71,7 +71,7 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
           "--editor-font-size": `${editorStyle.fontSize}px`,
           "--editor-color": editorStyle.color,
           "--editor-indent": `${editorStyle.indent}em`,
-          "--editor-block-gap": `${editorStyle.blockGap}px`,
+          "--editor-block-gap": `${editorStyle.blockGap}em`,
         } as React.CSSProperties
       }
     />

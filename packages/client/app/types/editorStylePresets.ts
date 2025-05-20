@@ -13,7 +13,7 @@ export const muvelDesktopPreset: Omit<
   fontWeight: 400,
   fontFamily: '"Pretendard Variable"',
   color: null,
-  blockGap: 2,
+  blockGap: 0.9,
   backgroundColor: null,
   editorMaxWidth: 600,
 }
@@ -25,7 +25,7 @@ export const muvelMobilePreset: EditorStyleOptionPreset = {
   fontWeight: 400,
   fontFamily: `"Pretendard Variable"`,
   color: null,
-  blockGap: 7,
+  blockGap: 0.9,
   backgroundColor: null,
   editorMaxWidth: 460,
 }
@@ -37,7 +37,7 @@ export const moonpiaDesktopPreset: EditorStyleOptionPreset = {
   fontWeight: 400,
   fontFamily: `바탕, 바탕체`,
   color: "#000",
-  blockGap: 15,
+  blockGap: 0.9,
   backgroundColor: "#e3efee",
   editorMaxWidth: 570,
 }
@@ -49,7 +49,7 @@ export const novelpiaDesktopPreset: EditorStyleOptionPreset = {
   fontWeight: 400,
   fontFamily: '"Noto Sans KR", "Pretendard Variable", Inter, sans-serif',
   color: null,
-  blockGap: 15,
+  blockGap: 0.9,
   backgroundColor: null,
   editorMaxWidth: 930,
 }
@@ -61,7 +61,7 @@ export const novelpiaMobilePreset: EditorStyleOptionPreset = {
   fontWeight: 400,
   fontFamily: '"Noto Sans KR", "Pretendard Variable", Inter, sans-serif',
   color: null,
-  blockGap: 15,
+  blockGap: 0.9,
   backgroundColor: null,
   editorMaxWidth: 460,
 }
@@ -73,7 +73,7 @@ export const kakaopagePreset: EditorStyleOptionPreset = {
   fontWeight: 100,
   fontFamily: "KoPubWorldBatang",
   color: null,
-  blockGap: 15,
+  blockGap: 0.9,
   backgroundColor: null,
   editorMaxWidth: 400,
 }
@@ -85,7 +85,7 @@ export const joaraPreset: EditorStyleOptionPreset = {
   fontWeight: 400,
   fontFamily: `"Pretendard Variable"`,
   color: "#343434",
-  blockGap: 15,
+  blockGap: 0.9,
   backgroundColor: "#c3dda8",
   editorMaxWidth: 930,
 }

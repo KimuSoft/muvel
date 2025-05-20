@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react"
-import { EditorState, type Transaction } from "prosemirror-state"
+import { EditorState } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
 import { keymap } from "prosemirror-keymap"
 import { baseKeymap, toggleMark } from "prosemirror-commands"
@@ -15,6 +15,7 @@ import { typewriterPlugin } from "~/features/novel-editor/plugins/typewriterPlug
 import { highlightPlugin } from "~/features/novel-editor/plugins/highlightPlugin"
 import { Fragment, Node as PMNode, Slice } from "prosemirror-model"
 import { placeholderPlugin } from "~/features/novel-editor/plugins/placeholderPlugin"
+import { keepLineBreaksPlugin } from "~/features/novel-editor/plugins/keepLineBreaksPlugin"
 
 interface UseEpisodeEditorProps {
   containerRef: React.RefObject<HTMLDivElement>
@@ -61,6 +62,7 @@ export const useEpisodeEditor = ({
       doc,
       plugins: [
         history({ newGroupDelay: 100 }),
+        keepLineBreaksPlugin(),
         assignIdPlugin,
         createInputRules(baseSchema),
         autoQuotePlugin,
@@ -75,6 +77,15 @@ export const useEpisodeEditor = ({
           "Mod-i": toggleMark(baseSchema.marks.em), // Italic
           "Mod-u": toggleMark(baseSchema.marks.underline), // Underline (스키마에 있다면)
           "Mod-`": toggleMark(baseSchema.marks.code), // Inline code
+          "Shift-Enter": (state, dispatch) => {
+            const br = state.schema.nodes["hard_break"]
+            if (!br) return false
+
+            dispatch?.(
+              state.tr.replaceSelectionWith(br.create()).scrollIntoView(),
+            )
+            return true
+          },
           ...baseKeymap,
         }),
       ],

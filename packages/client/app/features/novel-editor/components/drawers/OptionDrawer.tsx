@@ -292,14 +292,14 @@ const OptionDrawer: React.FC<{
 
               <Field.Root>
                 <Field.Label>
-                  문단 간격 ({editorStyleOptions.blockGap}px)
+                  문단 간격 ({editorStyleOptions.blockGap}em)
                 </Field.Label>
                 <Slider.Root
                   w={"100%"}
                   value={[editorStyleOptions.blockGap]}
                   min={0}
-                  max={20}
-                  step={1}
+                  max={3}
+                  step={0.1}
                   onValueChange={({ value }) =>
                     setEditorStyleOptions((draft) => {
                       draft.blockGap = value[0]
