@@ -10,9 +10,11 @@ import { pmNodeToText } from "~/services/io/txt/pmNodeToText"
 import { pmNodeToMarkdown } from "~/services/io/markdown"
 import { pmNodeToHtml } from "~/services/io/html"
 import { docToBlocks } from "~/features/novel-editor/utils/blockConverter"
+import { getDialogApi, getFsPlugin, getPathApi } from "./tauri/tauriApiProvider"
 
 const MAX_BLOCKS_PER_EPISODE = 1000
 const SYNC_CHUNK_SIZE = 300
+const IS_TAURI_APP = import.meta.env.VITE_TAURI === "true"
 
 export async function importEpisodes(
   novelId: string,
@@ -147,22 +149,60 @@ export async function exportEpisode(
         throw new Error(`Unsupported export format: ${options.format}`)
     }
 
-    const blob = new Blob([content], { type: mimeType })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
+    const suggestedFileName = `${fileNameBase}.${fileExtension}`
 
-    a.href = url
-    a.download = `${fileNameBase}.${fileExtension}`
+    if (IS_TAURI_APP) {
+      // Tauri 환경: 파일 저장 대화상자 사용
+      try {
+        const dialog = await getDialogApi()
+        const fs = await getFsPlugin()
+        const path = await getPathApi() // @tauri-apps/api/path
 
-    document.body.appendChild(a)
-    a.click()
+        const defaultSavePath = await path.join(
+          await path.appDataDir(),
+          suggestedFileName,
+        ) // appDataDir() 또는 documentDir() 등 사용
 
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+        const filePath = await dialog.save({
+          defaultPath: defaultSavePath,
+          filters: [
+            {
+              name: options.format.toUpperCase(),
+              extensions: [fileExtension],
+            },
+          ],
+        })
 
-    console.log(
-      `Episode "${episode.title}" exported as ${fileNameBase}.${fileExtension}`,
-    )
+        if (filePath) {
+          await fs.writeTextFile(filePath, content)
+          console.log(`Episode "${episode.title}" exported to ${filePath}`)
+        } else {
+          console.log("File save dialog was cancelled by the user.")
+        }
+      } catch (tauriError) {
+        console.error("Tauri API error during export:", tauriError)
+        throw new Error(
+          "Failed to export using Tauri APIs. Check console for details.",
+        )
+      }
+    } else {
+      // 웹 환경: 브라우저 다운로드 방식 사용
+      const blob = new Blob([content], { type: mimeType })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+
+      a.href = url
+      a.download = suggestedFileName
+
+      document.body.appendChild(a)
+      a.click()
+
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      console.log(
+        `Episode "${episode.title}" download initiated as ${suggestedFileName}`,
+      )
+    }
   } catch (error) {
     console.error(
       `Failed to export episode "${episode.title}" as ${options.format}:`,

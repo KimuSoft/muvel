@@ -2601,7 +2601,7 @@ dependencies = [
 
 [[package]]
 name = "muvel"
-version = "2.3.3"
+version = "2.4.0"
 dependencies = [
  "chrono",
  "font-kit",
@@ -2615,6 +2615,7 @@ dependencies = [
  "tauri-plugin-cli",
  "tauri-plugin-deep-link",
  "tauri-plugin-dialog",
+ "tauri-plugin-fs",
  "tauri-plugin-log",
  "tauri-plugin-opener",
  "tauri-plugin-updater",
