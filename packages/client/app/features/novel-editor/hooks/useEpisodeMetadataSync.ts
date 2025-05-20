@@ -15,7 +15,9 @@ interface UseEpisodeSyncOptions {
   initialEpisode?: Omit<GetEpisodeResponseDto, "blocks">
 }
 
-export function useEpisodeSync({ initialEpisode }: UseEpisodeSyncOptions) {
+export function useEpisodeMetadataSync({
+  initialEpisode,
+}: UseEpisodeSyncOptions) {
   const [episodeData, setEpisodeData] = useState<EpisodeData | null>(null)
   const previousEpisodeDataRef = useRef<EpisodeData | null>(null)
   const [syncState, setSyncState] = useState<SyncState>(SyncState.Synced)

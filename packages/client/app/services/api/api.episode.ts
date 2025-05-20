@@ -11,17 +11,18 @@ import {
   type GetEpisodeBlocksResponse,
   type GetEpisodeResponseDto,
   SnapshotReason,
+  type UpdateEpisodeBodyDto,
 } from "muvel-api-types"
+
+export const getCloudEpisodeById = async (episodeId: string) => {
+  const { data } = await api.get<GetEpisodeResponseDto>(`episodes/${episodeId}`)
+  return data
+}
 
 export const getCloudEpisodeBlocks = async (episodeId: string) => {
   const { data } = await api.get<GetEpisodeBlocksResponse>(
     `episodes/${episodeId}/blocks`,
   )
-  return data
-}
-
-export const getCloudEpisodeById = async (episodeId: string) => {
-  const { data } = await api.get<GetEpisodeResponseDto>(`episodes/${episodeId}`)
   return data
 }
 
@@ -34,7 +35,7 @@ export const deleteCloudEpisode = async (episodeId: string) => {
 
 export const updateCloudEpisode = async (
   episodeId: string,
-  patch: Partial<Episode>,
+  patch: Partial<UpdateEpisodeBodyDto>,
 ) => {
   const { data } = await api.patch<Episode>(`episodes/${episodeId}`, patch)
   return data
