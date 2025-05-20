@@ -1,4 +1,3 @@
-import type { GetEpisodeResponseDto } from "muvel-api-types"
 import React, { useCallback, useEffect, useRef } from "react"
 import { Box, HStack, IconButton } from "@chakra-ui/react"
 import "@xyflow/react/dist/style.css"

@@ -1,6 +1,5 @@
 import React from "react"
 import { Button, CloseButton, Dialog, Portal } from "@chakra-ui/react"
-import { api } from "~/utils/api"
 import { useNavigate } from "react-router"
 import type { GetNovelResponseDto } from "muvel-api-types"
 import { TbTrash } from "react-icons/tb"

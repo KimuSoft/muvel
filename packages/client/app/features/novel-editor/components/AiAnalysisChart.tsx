@@ -10,7 +10,8 @@ import {
 } from "recharts"
 import React from "react"
 import type { AiAnalysis } from "muvel-api-types"
-import type { getAvgAiAnalysisResponse } from "~/services/api/api.episode"
+
+import type { getAvgAiAnalysisResponse } from "~/services/api/api.episode-analysis"
 
 const AiAnalysisChart: React.FC<{
   scores: AiAnalysis["scores"]

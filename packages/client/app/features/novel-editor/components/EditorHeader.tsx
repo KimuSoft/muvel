@@ -15,9 +15,7 @@ import { Tooltip } from "~/components/ui/tooltip"
 import EpisodeListDrawer from "~/features/novel-editor/components/drawers/EpisodeListDrawer"
 import WidgetDrawer from "~/features/novel-editor/components/drawers/WidgetDrawer"
 import SearchDialog from "~/features/novel-editor/components/dialogs/SearchDialog"
-import SyncIndicator, {
-  SyncState,
-} from "~/features/novel-editor/components/SyncIndicator"
+import SyncIndicator from "~/features/novel-editor/components/SyncIndicator"
 import CommentDrawer from "~/features/novel-editor/components/drawers/CommentDrawer"
 import { TbChevronLeft, TbList, TbMessage } from "react-icons/tb"
 import { ExportEpisodeDrawer } from "~/features/novel-editor/components/drawers/ExportEpisodeDrawer"

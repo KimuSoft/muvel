@@ -5,12 +5,9 @@ import React, {
   useMemo,
   useState,
 } from "react"
-import type { GetEpisodeResponseDto } from "muvel-api-types" // 경로 수정 필요
 import type { EditorView } from "prosemirror-view"
-import { type Draft, produce } from "immer"
 import { highlightPluginKey } from "~/features/novel-editor/plugins/highlightPlugin"
-import type { SyncState } from "~/features/novel-editor/components/SyncIndicator"
-import type { EditorState, Transaction } from "prosemirror-state" // Immer produce 및 Draft 타입 임포트
+import type { EditorState } from "prosemirror-state" // Immer produce 및 Draft 타입 임포트
 import { Node as PMNode } from "prosemirror-model"
 
 // Match 타입 정의
@@ -78,12 +75,7 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({
       onDocUpdate,
       setHighlightDecorations,
     }),
-    [
-      view,
-      editorState,
-      onDocUpdate,
-      setHighlightDecorations,
-    ],
+    [view, editorState, onDocUpdate, setHighlightDecorations],
   )
 
   return (

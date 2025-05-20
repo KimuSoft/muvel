@@ -1,6 +1,6 @@
 import React, { forwardRef, useMemo } from "react"
 import { type Episode, EpisodeType } from "muvel-api-types"
-import { Box, Button, type ButtonProps, Skeleton } from "@chakra-ui/react"
+import { Button, type ButtonProps, Skeleton } from "@chakra-ui/react"
 import { useNavigate } from "react-router"
 import { Tooltip } from "~/components/ui/tooltip"
 

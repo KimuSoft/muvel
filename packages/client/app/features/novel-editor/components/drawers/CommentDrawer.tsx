@@ -26,12 +26,6 @@ import {
 import React, { useEffect, useMemo } from "react"
 import type { AiAnalysis, CreateAiAnalysisRequestBody } from "muvel-api-types"
 import {
-  createAiAnalysis,
-  getAiAnalysis,
-  getAvgAiAnalysis,
-  type getAvgAiAnalysisResponse,
-} from "~/services/api/api.episode"
-import {
   TbAnalyze,
   TbMessage,
   TbRefresh,
@@ -42,6 +36,12 @@ import { toaster } from "~/components/ui/toaster"
 import AiAnalysisChart from "~/features/novel-editor/components/AiAnalysisChart"
 import { getTimeAgoKo } from "~/utils/getTimeAgoKo"
 import type { EpisodeData } from "~/features/novel-editor/context/EpisodeContext"
+import {
+  createAiAnalysis,
+  getAiAnalysis,
+  getAvgAiAnalysis,
+  type getAvgAiAnalysisResponse,
+} from "~/services/api/api.episode-analysis"
 
 const MAX_AI_PROFILE = 8
 

@@ -9,10 +9,10 @@ import {
   getEpisodeBlocks,
   syncDeltaBlocks as syncEpisodeDeltaBlocksService,
 } from "~/services/episodeService"
-import { saveCloudSnapshot } from "~/services/api/api.episode"
 import { Node as PMNode } from "prosemirror-model"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 import { useInternalBlocksSyncLogic } from "~/hooks/useInternalBlocksSyncLogic"
+import { saveCloudSnapshot } from "~/services/api/api.episode-snapshot"
 
 // useEpisodeBlocksSync 훅의 Props 타입 정의
 interface UseEpisodeBlocksSyncProps {

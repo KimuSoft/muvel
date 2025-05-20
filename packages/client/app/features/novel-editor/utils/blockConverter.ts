@@ -1,6 +1,5 @@
 import {
   type BaseBlock,
-  type Block,
   EpisodeBlockType,
   type PMNodeJSON,
   WikiBlockType,

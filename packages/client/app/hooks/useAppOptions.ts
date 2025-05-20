@@ -3,17 +3,16 @@ import { type Draft } from "immer"
 import { cloneDeep } from "lodash-es" // lodash-es에서 cloneDeep 임포트
 import { OptionContext, SetOptionContext } from "~/providers/AppOptionProvider"
 import type {
-  AppOptions,
-  EditorStyleOptions,
   AppExportOptions,
+  EditorStyleOptions,
   ViewOptions,
-  WidgetSettings,
   WidgetInstanceId,
   WidgetLayout,
+  WidgetSettings,
 } from "~/types/options"
 import {
-  defaultEditorStyleOptions,
   defaultAppExportOptions,
+  defaultEditorStyleOptions,
   defaultViewOptions,
   defaultWidgetSettings,
 } from "~/types/defaultOptions"

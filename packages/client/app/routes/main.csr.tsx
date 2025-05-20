@@ -1,5 +1,4 @@
 import { useLoaderData } from "react-router"
-import { api } from "~/utils/api"
 import MainTemplate from "~/components/templates/MainTemplate"
 import { getMe, getMyRecentNovels } from "~/services/api/api.user"
 import { getMyLocalNovels } from "~/services/tauri/novelStorage"

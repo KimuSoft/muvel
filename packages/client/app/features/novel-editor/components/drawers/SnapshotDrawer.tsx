@@ -18,11 +18,11 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import React, { useEffect } from "react"
-import { SnapshotReason, type EpisodeSnapshot } from "muvel-api-types"
-import { getCloudSnapshots } from "~/services/api/api.episode"
+import { type EpisodeSnapshot, SnapshotReason } from "muvel-api-types"
 import { TbHistory, TbSlash } from "react-icons/tb"
 import { toaster } from "~/components/ui/toaster"
 import type { EpisodeData } from "~/features/novel-editor/context/EpisodeContext"
+import { getCloudSnapshots } from "~/services/api/api.episode-snapshot"
 
 const SnapshotItem: React.FC<{
   snapshot: EpisodeSnapshot
