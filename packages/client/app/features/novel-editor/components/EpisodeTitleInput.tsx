@@ -47,6 +47,9 @@ const EpisodeTitleInput: React.FC<
       px={4}
       placeholder={"제목을 입력해 주세요"}
       onKeyDown={handleTitleKeyDown}
+      onChange={(e) => {
+        onValueChange?.(e.target.value)
+      }}
       {...props}
     />
   )
