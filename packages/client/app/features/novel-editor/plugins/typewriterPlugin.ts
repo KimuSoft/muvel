@@ -2,6 +2,7 @@ import { Plugin } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
 import { LOCAL_APP_SETTING_STORAGE_KEY } from "~/providers/AppOptionProvider"
 import type { AppOptions } from "~/types/options"
+import { getAppOptions } from "~/features/novel-editor/utils/getAppOptions"
 
 export const typewriterPlugin = new Plugin({
   view() {
@@ -22,14 +23,10 @@ export const typewriterPlugin = new Plugin({
         if (!selection.empty) return
 
         // typewriter 옵션이 false이면 아무것도 안 함`
-        const options = localStorage.getItem(LOCAL_APP_SETTING_STORAGE_KEY)
-        const parsedOptions = options
-          ? (JSON.parse(options) as AppOptions)
-          : null
+        const options = getAppOptions()
+        if (!options?.editorStyle.typewriter) return
 
-        if (!parsedOptions?.editorStyle.typewriter) return
-
-        if (parsedOptions?.editorStyle.typewriterStrict) {
+        if (options?.editorStyle.typewriterStrict) {
           // 문서 내용이 바뀌지 않았으면 (단순 커서 이동만 했다면) return
           if (doc.eq(prevState.doc)) return
         }

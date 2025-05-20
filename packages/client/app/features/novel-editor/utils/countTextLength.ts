@@ -40,9 +40,7 @@ export const countTextLength = (
   content: string,
   options: CountOptions,
 ): number => {
-  if (!content) return 0 // 내용이 없으면 0 반환
-
-  console.log("계산 수행됨")
+  if (!content) return 0
 
   const { unit, excludeSpaces, excludeSpecialChars } = options
 
