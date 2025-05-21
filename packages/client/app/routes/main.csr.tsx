@@ -13,7 +13,7 @@ export async function clientLoader() {
     user = await getMe()
     cloudNovels = user ? await getMyRecentNovels() : []
   } catch (e) {
-    console.error("Error fetching user count:", e)
+    console.warn("Error fetching user count:", e)
   }
 
   const localNovels = (await getMyLocalNovels()) || []
