@@ -8,7 +8,7 @@ import {
   WidgetBody,
   WidgetHeader,
   WidgetTitle,
-} from "~/features/novel-editor/widgets/components/WidgetBase" // 경로 수정 필요
+} from "~/features/novel-editor/widgets/containers/WidgetBase" // 경로 수정 필요
 import type { Node as ProseMirrorNode } from "prosemirror-model"
 import type { Transaction } from "prosemirror-state"
 import { FaEllipsis } from "react-icons/fa6"

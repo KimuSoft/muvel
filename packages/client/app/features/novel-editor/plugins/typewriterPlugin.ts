@@ -1,6 +1,8 @@
 import { Plugin } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
-import type { EditorOption } from "~/providers/OptionProvider"
+import { LOCAL_APP_SETTING_STORAGE_KEY } from "~/providers/AppOptionProvider"
+import type { AppOptions } from "~/types/options"
+import { getAppOptions } from "~/features/novel-editor/utils/getAppOptions"
 
 export const typewriterPlugin = new Plugin({
   view() {
@@ -12,24 +14,19 @@ export const typewriterPlugin = new Plugin({
     return {
       update(view: EditorView, prevState) {
         const { state } = view
-        const { selection, doc } = state // selection을 변수로 추출
+        const { selection, doc } = state
 
         // 1. selection이 바뀐 경우만 처리
         if (selection.eq(prevState.selection)) return
 
-        // 2. ***추가된 조건***: selection이 비어있는 경우(커서 상태)에만 스크롤 실행
         // selection.empty가 false이면 (즉, 여러 문자가 선택된 경우) 여기서 중단
         if (!selection.empty) return
 
         // typewriter 옵션이 false이면 아무것도 안 함`
-        const options = localStorage.getItem("options")
-        const parsedOptions = options
-          ? (JSON.parse(options) as EditorOption)
-          : null
+        const options = getAppOptions()
+        if (!options?.editorStyle.typewriter) return
 
-        if (!parsedOptions?.typewriter) return
-
-        if (parsedOptions?.typewriterStrict) {
+        if (options?.editorStyle.typewriterStrict) {
           // 문서 내용이 바뀌지 않았으면 (단순 커서 이동만 했다면) return
           if (doc.eq(prevState.doc)) return
         }

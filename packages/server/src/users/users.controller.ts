@@ -14,7 +14,7 @@ import {
   OptionalAuth,
   OptionalAuthenticatedRequest,
   RequireAuth,
-} from "../auth/jwt-auth.guard"
+} from "../auth/guards/jwt-auth.guard"
 import { CacheInterceptor, CacheTTL } from "@nestjs/cache-manager"
 
 @Controller("users")

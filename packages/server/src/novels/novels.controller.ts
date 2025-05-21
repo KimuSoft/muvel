@@ -17,9 +17,11 @@ import { CreateEpisodeDto } from "../episodes/dto/create-episode.dto"
 import { SearchNovelsDto } from "./dto/search-novels.dto"
 import { PatchEpisodesDto } from "./dto/patch-episodes.dto"
 import { SearchRepository } from "../search/search.repository"
-import { SearchInNovelDto } from "../search/dto/search-in-novel.dto"
 import { EpisodesService } from "../episodes/services/episodes.service"
-import { AuthenticatedRequest, RequireAuth } from "../auth/jwt-auth.guard"
+import {
+  AuthenticatedRequest,
+  RequireAuth,
+} from "../auth/guards/jwt-auth.guard"
 import { CreateNovelDto } from "./dto/create-novel.dto"
 import { RequirePermission } from "../permissions/require-permission.decorator"
 import {
@@ -28,6 +30,10 @@ import {
 } from "../permissions/novel-permission.guard"
 import { UuIdParamDto } from "../utils/UuIdParamDto"
 import { UsersService } from "../users/users.service"
+import { CreateWikiPageDto } from "../wiki-pages/dto/create-wiki-page.dto"
+import { WikiPagesService } from "../wiki-pages/services/wiki-pages.service"
+import { SearchInNovelDto } from "./dto/search-in-novel.dto"
+import { NovelSearchItemType } from "muvel-api-types"
 
 @ApiTags("Novels")
 @Controller("novels")
@@ -35,8 +41,9 @@ export class NovelsController {
   constructor(
     private readonly novelsService: NovelsService,
     private readonly episodesService: EpisodesService,
-    private readonly searchService: SearchRepository,
+    private readonly searchRepository: SearchRepository,
     private readonly usersService: UsersService,
+    private readonly wikiPagesService: WikiPagesService,
   ) {}
 
   @Get()
@@ -145,13 +152,49 @@ export class NovelsController {
   @ApiOperation({
     summary: "소설 안에서 검색하기",
     description:
-      "소설 안의 블록, 설정, 캐릭터 문서 등을 검색합니다. (powered by Meilisearch)",
+      "소설 안의 블록, 에피소드, 위키 페이지 등을 검색합니다. itemTypes 파라미터로 검색 대상을 지정할 수 있습니다. (powered by Meilisearch)",
   })
-  @RequirePermission("edit", NovelPermissionGuard)
+  @RequirePermission("read", NovelPermissionGuard)
   async searchInNovel(
-    @Param("id") id: string,
+    @Param() { id: novelId }: UuIdParamDto,
     @Query() searchInNovelDto: SearchInNovelDto,
   ) {
-    return this.searchService.searchBlocksByNovel(id, searchInNovelDto)
+    const { q, start, display, itemTypes } = searchInNovelDto
+
+    const defaultSearchTypes = [
+      NovelSearchItemType.EpisodeBlock,
+      NovelSearchItemType.WikiBlock,
+      NovelSearchItemType.Episode,
+      NovelSearchItemType.WikiPage,
+    ]
+    const targetTypes =
+      itemTypes && itemTypes.length > 0 ? itemTypes : defaultSearchTypes
+
+    return this.searchRepository.searchInNovel(
+      novelId,
+      q || "", // q가 undefined일 경우 빈 문자열로 검색 (Meilisearch는 빈 쿼리 시 모든 문서 반환)
+      {
+        start: start || 0,
+        display: display || 20,
+        q: q || "",
+        itemTypes: targetTypes,
+      }, // dto를 다시 구성하거나, SearchInNovelDto를 그대로 사용
+      targetTypes,
+    )
+  }
+
+  @Post(":id/wiki-pages")
+  @RequirePermission("edit", NovelPermissionGuard)
+  @ApiOperation({ summary: "새 위키 페이지 생성" })
+  async create(
+    @Param("id") id: string,
+    @Body() createWikiPageDto: CreateWikiPageDto,
+    @Request() req: AuthenticatedRequest,
+  ) {
+    return await this.wikiPagesService.createWikiPage(
+      id,
+      createWikiPageDto,
+      req.user.id,
+    )
   }
 }

@@ -30,7 +30,7 @@ import {
 import { Tooltip } from "~/components/ui/tooltip"
 import { useLogin } from "~/hooks/useLogin"
 import Footer from "~/components/organisms/Footer"
-import { useUser } from "~/context/UserContext"
+import { useUser } from "~/providers/UserProvider"
 import { SiAppstore, SiBuymeacoffee, SiLinux } from "react-icons/si"
 import BlockLink from "~/components/atoms/BlockLink"
 import {

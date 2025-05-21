@@ -1,4 +1,10 @@
-import { BasePermission, Block, Episode, Novel } from "../core"
+import {
+  BasePermission,
+  Block,
+  Episode,
+  Novel,
+  PartialEpisodeBlock,
+} from "../core"
 
 export type GetEpisodeResponseDto = Episode & {
   permissions: BasePermission
@@ -20,3 +26,5 @@ export type UpdateEpisodeBodyDto = Partial<
 export type BlockChange =
   | (Omit<Block, "text" | "updatedAt"> & { isDeleted?: boolean })
   | { id: string; isDeleted: boolean }
+
+export type GetEpisodeBlocksResponse = PartialEpisodeBlock[]

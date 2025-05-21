@@ -1,10 +1,23 @@
-import { type Block, BlockType, type PMNodeJSON } from "muvel-api-types"
-import { type Node as PMNode, Schema } from "prosemirror-model"
+import {
+  type BaseBlock,
+  EpisodeBlockType,
+  type PMNodeJSON,
+  WikiBlockType,
+} from "muvel-api-types"
+import {
+  type Fragment,
+  type Node as PMNode,
+  NodeType,
+  Schema,
+} from "prosemirror-model"
 
 // ✅ ProseMirror document를 생성하는 함수
-export function blocksToDoc(blocks: Block[], schema: Schema): PMNode {
+export function blocksToDoc<BType = EpisodeBlockType>(
+  blocks: BaseBlock<BType>[],
+  schema: Schema,
+): PMNode {
   const children = blocks.map((block) => {
-    const nodeType = schema.nodes[block.blockType]
+    const nodeType = schema.nodes[block.blockType] as NodeType
     if (!nodeType) {
       throw new Error(`Unknown blockType: ${block.blockType}`)
     }
@@ -18,17 +31,19 @@ export function blocksToDoc(blocks: Block[], schema: Schema): PMNode {
       console.log(block)
       console.error(e)
       console.warn("Convert blank to fill")
-      return schema.nodes[BlockType.Describe].createAndFill()!
+      return (
+        schema.nodes[EpisodeBlockType.Describe] ||
+        schema.nodes[WikiBlockType.Paragraph]
+      ).createAndFill()!
     }
   })
 
   return schema.nodes.doc.create(null, children)
 }
 
-// ✅ ProseMirror document → Block[] 변환
-export function docToBlocks(doc: PMNode): Block[] {
-  return doc.content.content.map((node, idx) => {
-    const blockType = node.type.name as BlockType
+export const fragmentToBlocks = <BType>(fragment: Fragment) => {
+  return fragment.content.map((node, idx) => {
+    const blockType = node.type.name as BaseBlock<BType>["blockType"]
     const attr = node.attrs ?? {}
     const content = node.content?.content.map((child) =>
       child.toJSON(),
@@ -48,4 +63,11 @@ export function docToBlocks(doc: PMNode): Block[] {
       order: idx,
     }
   })
+}
+
+// ✅ ProseMirror document → Block[] 변환
+export function docToBlocks<BType = EpisodeBlockType>(
+  doc: PMNode,
+): BaseBlock<BType>[] {
+  return fragmentToBlocks(doc.content)
 }

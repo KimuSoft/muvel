@@ -6,11 +6,10 @@ import { EpisodesModule } from "./episodes/episodes.module"
 import { AuthModule } from "./auth/auth.module"
 import { SearchModule } from "./search/search.module"
 import { ScheduleModule } from "@nestjs/schedule"
-import { CharactersModule } from "./characters/characters.module"
 import { WikiPagesModule } from "./wiki-pages/wiki-pages.module"
 import { GoogleDriveModule } from "./google-drive/google-drive.module"
 import { CacheModule } from "@nestjs/cache-manager"
-import { StatisticsModule } from './statistics/statistics.module';
+import { StatisticsModule } from "./statistics/statistics.module"
 
 @Module({
   imports: [
@@ -30,7 +29,6 @@ import { StatisticsModule } from './statistics/statistics.module';
     EpisodesModule,
     AuthModule,
     SearchModule,
-    CharactersModule,
     WikiPagesModule,
     GoogleDriveModule,
     StatisticsModule,

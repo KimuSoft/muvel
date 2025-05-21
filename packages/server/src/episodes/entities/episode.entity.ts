@@ -8,7 +8,7 @@ import {
   RelationId,
   UpdateDateColumn,
 } from "typeorm"
-import { BlockEntity } from "../../blocks/block.entity"
+import { EpisodeBlockEntity } from "../../blocks/entities/episode-block.entity"
 import { NovelEntity } from "../../novels/novel.entity"
 import { Episode, EpisodeType } from "muvel-api-types"
 import { EpisodeSnapshotEntity } from "./episode-snapshot.entity"
@@ -57,9 +57,6 @@ export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
   contentLength: number
 
   @Column({ default: false })
-  isSnapshotted: boolean
-
-  @Column({ default: false })
   isDriveBackup: boolean
 
   /** Relations */
@@ -72,10 +69,10 @@ export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
   @RelationId((episode: EpisodeEntity) => episode.novel)
   novelId: string
 
-  @OneToMany(() => BlockEntity, (block) => block.episode, {
+  @OneToMany(() => EpisodeBlockEntity, (block) => block.episode, {
     cascade: true,
   })
-  blocks: BlockEntity[]
+  blocks: EpisodeBlockEntity[]
 
   @OneToMany(() => EpisodeSnapshotEntity, (snapshot) => snapshot.episode, {
     cascade: true,

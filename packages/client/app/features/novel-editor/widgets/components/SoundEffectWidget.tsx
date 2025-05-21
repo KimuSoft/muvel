@@ -3,7 +3,7 @@ import {
   WidgetBase,
   WidgetHeader,
   WidgetTitle,
-} from "~/features/novel-editor/widgets/components/WidgetBase"
+} from "~/features/novel-editor/widgets/containers/WidgetBase"
 import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap"
 import { FaVolumeHigh } from "react-icons/fa6"
 import { Howl } from "howler"

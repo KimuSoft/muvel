@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common"
 import { Reflector } from "@nestjs/core"
 import { BasePermission } from "muvel-api-types"
-import { OptionalAuthenticatedRequest } from "../auth/jwt-auth.guard"
+import { OptionalAuthenticatedRequest } from "../auth/guards/jwt-auth.guard"
 
 export interface PermissionResult<T> {
   resource: T

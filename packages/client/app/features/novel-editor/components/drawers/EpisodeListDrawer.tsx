@@ -11,12 +11,11 @@ import {
   Stack,
 } from "@chakra-ui/react"
 import { TbPlus } from "react-icons/tb"
-import SortableEpisodeList, {
-  type SortDirection,
-} from "~/components/organisms/SortableEpisodeList"
+import SortableEpisodeList from "~/components/organisms/SortableEpisodeList"
 import React, { type PropsWithChildren } from "react"
 import {
   type BasePermission,
+  type Episode,
   type EpisodeType,
   type GetNovelResponseDto,
   initialNovel,
@@ -33,22 +32,20 @@ import { getNovel, updateNovelEpisodes } from "~/services/novelService"
 import type { GetLocalNovelDetailsResponse } from "~/services/tauri/types"
 import { createNovelEpisode } from "~/services/episodeService"
 import { useNavigate } from "react-router"
+import { ImportEpisodesButton } from "~/features/novel-editor/components/ImportEpisodesButton"
 
 const EpisodeListDrawer: React.FC<
   {
     novelId: string
-    episodeId: string
+    episode: Episode
     permissions: BasePermission
     isLocal?: boolean
   } & PropsWithChildren
-> = ({ novelId, episodeId, permissions, children }) => {
+> = ({ novelId, episode, permissions, children }) => {
   const [novel, setNovel] = React.useState<
     GetNovelResponseDto | GetLocalNovelDetailsResponse | null
   >(null)
   const [isLoading, setIsLoading] = React.useState(false)
-  const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc")
-  const [episodeListLayout, setEpisodeListLayout] =
-    React.useState<EpisodeItemVariant>("shallow")
 
   const navigate = useNavigate()
 
@@ -107,15 +104,8 @@ const EpisodeListDrawer: React.FC<
                 <Spacer />
 
                 <HStack gap={1}>
-                  <EpisodeListLayoutToggleButton
-                    variants={["shallow", "simple", "grid"]}
-                    onValueChange={setEpisodeListLayout}
-                    value={episodeListLayout}
-                  />
-                  <SortToggleButton
-                    value={sortDirection}
-                    onValueChange={setSortDirection}
-                  />
+                  <EpisodeListLayoutToggleButton />
+                  <SortToggleButton />
                 </HStack>
                 {novel?.permissions.edit ? (
                   <CreateEpisodeMenu onSelect={handleCreateEpisode}>
@@ -127,18 +117,21 @@ const EpisodeListDrawer: React.FC<
               </HStack>
               <SortableEpisodeList
                 loading={isLoading}
-                sortDirection={sortDirection}
                 disableSort={!novel?.permissions.edit}
-                variant={episodeListLayout}
                 episodes={novel?.episodes || []}
                 onEpisodesChange={handleReorderEpisode}
               />
             </Stack>
           </Drawer.Body>
-
           <Drawer.Footer justifyContent="space-between">
             {novel && permissions.delete && (
-              <DeleteEpisodeDialog novel={novel} episodeId={episodeId} />
+              <>
+                <ImportEpisodesButton
+                  novelId={novel.id}
+                  onImportComplete={fetchNovel}
+                />
+                <DeleteEpisodeDialog novel={novel} episode={episode} />
+              </>
             )}
           </Drawer.Footer>
         </Drawer.Content>

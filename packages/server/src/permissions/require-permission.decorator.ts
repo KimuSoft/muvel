@@ -2,7 +2,7 @@ import { applyDecorators, SetMetadata, UseGuards } from "@nestjs/common"
 import { ApiForbiddenResponse } from "@nestjs/swagger"
 import { CanActivate, Type } from "@nestjs/common"
 import { BasePermission } from "muvel-api-types"
-import { OptionalJwtAuthGuard } from "../auth/jwt-auth.guard"
+import { OptionalJwtAuthGuard } from "../auth/guards/jwt-auth.guard"
 
 export const RequirePermission = (
   permission: keyof BasePermission,

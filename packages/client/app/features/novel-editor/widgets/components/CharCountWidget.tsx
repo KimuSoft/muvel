@@ -1,17 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { HStack, IconButton, Spacer, Text, VStack } from "@chakra-ui/react"
 import confetti from "canvas-confetti"
+import { useDebouncedCallback } from "use-debounce"
 import {
   WidgetBase,
   WidgetBody,
   WidgetHeader,
   WidgetTitle,
-} from "~/features/novel-editor/widgets/components/WidgetBase"
+} from "~/features/novel-editor/widgets/containers/WidgetBase"
 import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
 import { IoSettings } from "react-icons/io5"
 import { GoNumber } from "react-icons/go"
 import {
-  type CountOptions,
   countTextLength,
   CountUnit,
 } from "~/features/novel-editor/utils/countTextLength"
@@ -21,7 +21,7 @@ import {
   CharCountSettingsDialog,
   type CharCountWidgetOptions,
 } from "~/features/novel-editor/components/dialogs/CharCountSettingDialog"
-import { useWidgetOption } from "~/features/novel-editor/widgets/context/WidgetContext"
+import { useSpecificWidgetSettings } from "~/hooks/useAppOptions"
 
 export const CHAR_COUNT_WIDGET_ID = "charCount"
 
@@ -41,23 +41,24 @@ const unitSuffix: Record<CountUnit, string> = {
   [CountUnit.KB]: "KB",
 }
 
-const THROTTLE_DELAY = 250
+const DEBOUNCE_DELAY = 300
 
 export const CharCountWidget: React.FC<WidgetBaseProps> = ({
   dragAttributes,
   dragListeners,
 }) => {
   const { view } = useEditorContext()
-  const [options, _setOptions] = useWidgetOption<CharCountWidgetOptions>(
-    CHAR_COUNT_WIDGET_ID,
-    defaultCharCountOptions,
-  )
+  const [options, _setOptions, _resetOptions] =
+    useSpecificWidgetSettings<CharCountWidgetOptions>(
+      CHAR_COUNT_WIDGET_ID,
+      defaultCharCountOptions,
+    )
 
   const [currentLength, setCurrentLength] = useState<number>(0)
   const [selectedLength, setSelectedLength] = useState<number>(0)
   const [percentage, setPercentage] = useState<number>(0)
   const goalReachedRef = useRef<boolean>(false)
-  const throttleTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const initialLoadRef = useRef<boolean>(true)
 
   const triggerConfetti = useCallback(() => {
     const duration = 5 * 1000
@@ -85,82 +86,84 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
     }, 250)
   }, [])
 
-  const updateDisplayCounts = useCallback(() => {
+  const calculateCounts = useCallback(() => {
     if (!view) return
 
     const content = view.state.doc.textContent
-    // countTextLength는 options 객체에서 필요한 필드(unit, excludeSpaces, excludeSpecialChars)만 사용합니다.
     const len = countTextLength(content, options)
     setCurrentLength(len)
 
     const goal = options.targetGoal
-    const currentPercentage = goal > 0 ? (len / goal) * 100 : 0
+    const currentPercentage = goal > 0 ? (len / goal) * 100 : len > 0 ? 100 : 0
     setPercentage(currentPercentage)
 
+    const prevGoalReached = goalReachedRef.current
+    goalReachedRef.current = currentPercentage >= 100 && goal > 0
+
     if (
-      currentPercentage >= 100 &&
-      !goalReachedRef.current &&
+      !initialLoadRef.current &&
+      !prevGoalReached &&
+      goalReachedRef.current &&
       options.showConfetti
     ) {
       triggerConfetti()
     }
-    goalReachedRef.current = currentPercentage >= 100
+  }, [
+    view,
+    options.unit,
+    options.excludeSpaces,
+    options.excludePunctuations,
+    options.excludeSpecialChars,
+    options.targetGoal,
+    options.showConfetti,
+    triggerConfetti,
+  ])
+
+  const debouncedCalculateCounts = useDebouncedCallback(
+    calculateCounts,
+    DEBOUNCE_DELAY,
+    {
+      // DEBOUNCE_DELAY 값으로 수정 (이전 코드에서는 500, 1000이 하드코딩 되어 있었음)
+      maxWait: 1000, // maxWait는 필요에 따라 조절
+    },
+  )
+
+  // Effect 1: 초기 계산 및 문서/선택 변경 시 디바운스된 계산 처리
+  useEffect(() => {
+    if (view) {
+      if (initialLoadRef.current) {
+        calculateCounts()
+        initialLoadRef.current = false
+      } else {
+        debouncedCalculateCounts()
+      }
+    }
+    return () => {
+      debouncedCalculateCounts.cancel()
+    }
+  }, [view?.state, calculateCounts, debouncedCalculateCounts])
+
+  // Effect 2: 관련 옵션 변경 시 즉시 재계산 (초기 로드 이후)
+  useEffect(() => {
+    if (view && !initialLoadRef.current) {
+      debouncedCalculateCounts.cancel()
+      calculateCounts()
+    }
+  }, [view, calculateCounts, debouncedCalculateCounts])
+
+  // Effect 3: 선택된 텍스트 길이 계산 및 업데이트
+  useEffect(() => {
+    if (!view) return
 
     if (!view.state.selection.empty) {
       const { from, to } = view.state.selection
       const selectedText = view.state.doc.textBetween(from, to)
-      const selLen = countTextLength(selectedText, options as CountOptions)
+      const selLen = countTextLength(selectedText, options)
       setSelectedLength(selLen)
     } else {
       setSelectedLength(0)
     }
-  }, [view, options, triggerConfetti])
-
-  const throttledUpdateDisplayCounts = useCallback(() => {
-    if (!throttleTimeoutRef.current) {
-      updateDisplayCounts()
-      throttleTimeoutRef.current = setTimeout(() => {
-        throttleTimeoutRef.current = null
-      }, THROTTLE_DELAY)
-    }
-  }, [updateDisplayCounts])
-
-  useEffect(() => {
-    if (view) {
-      const content = view.state.doc.textContent
-      const len = countTextLength(content, options as CountOptions)
-      setCurrentLength(len)
-
-      const goal = options.targetGoal
-      const currentPercentage = goal > 0 ? (len / goal) * 100 : 0
-      setPercentage(currentPercentage)
-
-      goalReachedRef.current = currentPercentage >= 100
-
-      if (!view.state.selection.empty) {
-        const { from, to } = view.state.selection
-        const selectedText = view.state.doc.textBetween(from, to)
-        const selLen = countTextLength(selectedText, options as CountOptions)
-        setSelectedLength(selLen)
-      } else {
-        setSelectedLength(0)
-      }
-    }
-    // options 객체 전체를 의존성으로 넣거나, 필요한 특정 필드(options.unit, options.excludeSpaces 등)를 넣습니다.
-    // 여기서는 options 객체가 변경될 때마다 초기 계산을 다시 하도록 합니다.
-  }, [view, options])
-
-  useEffect(() => {
-    if (view) {
-      throttledUpdateDisplayCounts()
-    }
-    return () => {
-      if (throttleTimeoutRef.current) {
-        clearTimeout(throttleTimeoutRef.current)
-        throttleTimeoutRef.current = null
-      }
-    }
-  }, [view?.state.doc, view?.state.selection, throttledUpdateDisplayCounts])
+  }, [view?.state?.selection, options])
 
   return (
     <WidgetBase>
@@ -199,7 +202,9 @@ export const CharCountWidget: React.FC<WidgetBaseProps> = ({
             {Math.floor(percentage)}%
           </Text>
         </HStack>
-        <ProgressBar value={Math.min(1, percentage / 100)} />
+        <ProgressBar
+          value={options.targetGoal > 0 ? Math.min(1, percentage / 100) : 0}
+        />
       </WidgetBody>
     </WidgetBase>
   )

@@ -41,7 +41,7 @@ export class UpdateEpisodeDto implements UpdateEpisodeBodyDto {
     enum: EpisodeType,
   })
   @IsOptional()
-  @IsEnum(ShareType)
+  @IsEnum(EpisodeType)
   episodeType?: EpisodeType
 
   @ApiProperty({

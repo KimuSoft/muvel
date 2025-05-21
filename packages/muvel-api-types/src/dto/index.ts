@@ -1,3 +1,5 @@
 export * from "./novel-api"
 export * from "./episode-api"
 export * from "./block-api"
+export * from "./search-api"
+export * from "./wiki-api"

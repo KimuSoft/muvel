@@ -17,6 +17,7 @@ import {
   FaBookBookmark,
   FaDiceSix,
   FaEllipsis,
+  FaFire,
   FaVolumeHigh,
 } from "react-icons/fa6"
 import {
@@ -36,6 +37,10 @@ import { SoundEffectWidget } from "~/features/novel-editor/widgets/components/So
 import { RemoteWidget } from "~/features/novel-editor/widgets/components/RemoteWidget"
 import { TimerWidget } from "~/features/novel-editor/widgets/components/TimerWidget"
 import { SelectionPositionWidget } from "~/features/novel-editor/widgets/components/SelectionPositionWidget"
+import {
+  FOCUS_TIMER_WIDGET_ID,
+  FocusTimerWidget,
+} from "~/features/novel-editor/widgets/components/FocusTimerWidget"
 
 export interface WidgetBaseProps {
   dragAttributes?: DraggableAttributes
@@ -59,6 +64,7 @@ export const widgetMap = {
   remote: RemoteWidget,
   timer: TimerWidget,
   selectionPosition: SelectionPositionWidget,
+  focusTimer: FocusTimerWidget,
 }
 
 export interface WidgetButtonProps {
@@ -165,6 +171,12 @@ export const widgets: WidgetButtonProps[] = [
     name: "선택 위치",
     description: "소설 내 현재 커서 위치를 확인할 수 있는 위젯입니다.",
     icon: <MdMyLocation size={50} />,
+  },
+  {
+    id: FOCUS_TIMER_WIDGET_ID,
+    name: "집중도 측정기",
+    description: "순수 집필 시간과 총 시간을 측정하여 집중도를 표시합니다.",
+    icon: <FaFire size={50} />,
   },
   // {
   //   id: "remote",

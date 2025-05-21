@@ -1,5 +1,4 @@
 import { useLoaderData } from "react-router"
-import { api } from "~/utils/api"
 import MainTemplate from "~/components/templates/MainTemplate"
 import { getMe, getMyRecentNovels } from "~/services/api/api.user"
 import { getMyLocalNovels } from "~/services/tauri/novelStorage"
@@ -14,7 +13,7 @@ export async function clientLoader() {
     user = await getMe()
     cloudNovels = user ? await getMyRecentNovels() : []
   } catch (e) {
-    console.error("Error fetching user count:", e)
+    console.warn("Error fetching user count:", e)
   }
 
   const localNovels = (await getMyLocalNovels()) || []

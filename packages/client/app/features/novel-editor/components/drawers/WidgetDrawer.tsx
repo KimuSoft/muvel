@@ -18,7 +18,6 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import React from "react"
-import { useWidgetLayout } from "~/features/novel-editor/widgets/context/WidgetContext"
 import {
   type WidgetButtonProps,
   type WidgetId,
@@ -26,6 +25,7 @@ import {
 } from "~/features/novel-editor/widgets/components/widgetMap"
 import { Tooltip } from "~/components/ui/tooltip"
 import { MdOutlineWidgets } from "react-icons/md"
+import { useWidgetLayout } from "~/hooks/useAppOptions"
 
 const WidgetButton: React.FC<
   StackProps & WidgetButtonProps & { isActive: boolean }
@@ -55,10 +55,10 @@ const WidgetDrawer: React.FC<{
   children?: React.ReactNode
   dialog: UseDialogReturn
 }> = ({ children, dialog }) => {
-  const { layout, toggleWidget } = useWidgetLayout()
+  const { widgetLayout, toggleWidget } = useWidgetLayout()
 
   const isActive = (id: WidgetId) => {
-    return layout.left.includes(id) || layout.right.includes(id)
+    return widgetLayout.left.includes(id) || widgetLayout.right.includes(id)
   }
 
   return (

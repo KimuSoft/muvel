@@ -1,6 +1,6 @@
 {
   "name": "tauri-app",
-  "version": "2.3.3",
+  "version": "2.4.0",
   "scripts": {
     "tauri": "tauri",
     "dev": "tauri dev",
@@ -14,6 +14,7 @@
     "@tauri-apps/api": "^2.5.0",
     "@tauri-apps/plugin-cli": "~2.2.0",
     "@tauri-apps/plugin-deep-link": "~2.2.1",
+    "@tauri-apps/plugin-fs": "~2.3.0",
     "@tauri-apps/plugin-opener": "~2.2.6",
     "@tauri-apps/plugin-updater": "~2.7.1"
   }

@@ -19,7 +19,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { Field as FormikField, type FieldProps, Form, Formik } from "formik"
-import { useUser } from "~/context/UserContext"
+import { useUser } from "~/providers/UserProvider"
 import { useNavigate } from "react-router"
 import { type Novel, ShareType } from "muvel-api-types"
 import ShareSelect from "~/components/molecules/ShareSelect"

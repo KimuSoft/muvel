@@ -30,14 +30,14 @@ const FlowEditorHeader: React.FC<{
     >
       <EpisodeListDrawer
         novelId={episode.novelId}
-        episodeId={episode.id}
+        episode={episode}
         permissions={episode.permissions}
       >
         <IconButton size={"sm"} variant={"ghost"}>
           <FaList />
         </IconButton>
       </EpisodeListDrawer>
-      <SyncIndicator state={syncState} />
+      <SyncIndicator />
       <Spacer />
       <Input
         defaultValue={episode.title}

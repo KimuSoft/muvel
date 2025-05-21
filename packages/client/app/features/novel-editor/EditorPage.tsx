@@ -2,23 +2,31 @@ import React, { useEffect, useMemo } from "react"
 import type { GetEpisodeResponseDto } from "muvel-api-types"
 import EditorTemplate from "~/features/novel-editor/EditorTemplate"
 import { EditorProvider } from "~/features/novel-editor/context/EditorContext"
-import OptionProvider from "~/providers/OptionProvider"
-import { WidgetProvider } from "~/features/novel-editor/widgets/context/WidgetContext"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 import LoadingOverlay from "~/components/templates/LoadingOverlay"
-import { useEpisodeSync } from "~/features/novel-editor/hooks/useEpisodeSync"
+import { useEpisodeMetadataSync } from "~/features/novel-editor/hooks/useEpisodeMetadataSync"
 import { combineSyncStates } from "~/utils/combineSyncStates"
-import { useBlocksSync } from "~/features/novel-editor/hooks/useBlocksSync"
+import { useEpisodeBlocksSync } from "~/features/novel-editor/hooks/useEpisodeBlocksSync"
+import { EpisodeProvider } from "~/features/novel-editor/context/EpisodeContext"
 
 const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   episode: initialEpisode,
 }) => {
-  const { episodeData, setEpisodeData, episodeSyncState } = useEpisodeSync({
+  const {
+    episodeData,
+    setEpisodeData,
+    syncState: episodeSyncState,
+  } = useEpisodeMetadataSync({
     initialEpisode,
   })
 
-  const { blockSyncState, initialBlocks, handleDocUpdate } = useBlocksSync({
-    episode: initialEpisode,
+  const {
+    syncState: blockSyncState,
+    initialBlocks,
+    isLoadingBlocks,
+    handleDocUpdate,
+  } = useEpisodeBlocksSync({
+    episodeContext: initialEpisode,
     canEdit: !!initialEpisode.permissions.edit,
   })
 
@@ -30,6 +38,7 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (![SyncState.Synced, SyncState.Waiting].includes(combinedSyncState)) {
         event.preventDefault()
+        // 호환성 위해 설정
         event.returnValue = ""
       }
     }
@@ -37,22 +46,23 @@ const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     return () => window.removeEventListener("beforeunload", handleBeforeUnload)
   }, [combinedSyncState])
 
-  if (!episodeData || !initialBlocks) {
+  if (!episodeData || !initialBlocks || isLoadingBlocks) {
     return <LoadingOverlay />
   }
 
   return (
-    <OptionProvider>
-      <WidgetProvider>
-        <EditorProvider episode={episodeData} setEpisode={setEpisodeData}>
-          <EditorTemplate
-            initialBlocks={initialBlocks}
-            onDocChange={handleDocUpdate}
-            syncState={combinedSyncState}
-          />
-        </EditorProvider>
-      </WidgetProvider>
-    </OptionProvider>
+    <EditorProvider onDocUpdate={handleDocUpdate}>
+      <EpisodeProvider
+        episode={episodeData}
+        setEpisode={setEpisodeData}
+        syncState={combinedSyncState}
+      >
+        <EditorTemplate
+          key={initialEpisode.id + "-title"}
+          initialBlocks={initialBlocks}
+        />
+      </EpisodeProvider>
+    </EditorProvider>
   )
 }
 

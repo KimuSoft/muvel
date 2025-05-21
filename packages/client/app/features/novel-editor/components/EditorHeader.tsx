@@ -15,9 +15,7 @@ import { Tooltip } from "~/components/ui/tooltip"
 import EpisodeListDrawer from "~/features/novel-editor/components/drawers/EpisodeListDrawer"
 import WidgetDrawer from "~/features/novel-editor/components/drawers/WidgetDrawer"
 import SearchDialog from "~/features/novel-editor/components/dialogs/SearchDialog"
-import SyncIndicator, {
-  SyncState,
-} from "~/features/novel-editor/components/SyncIndicator"
+import SyncIndicator from "~/features/novel-editor/components/SyncIndicator"
 import CommentDrawer from "~/features/novel-editor/components/drawers/CommentDrawer"
 import { TbChevronLeft, TbList, TbMessage } from "react-icons/tb"
 import { ExportEpisodeDrawer } from "~/features/novel-editor/components/drawers/ExportEpisodeDrawer"
@@ -25,18 +23,17 @@ import SnapshotDrawer from "~/features/novel-editor/components/drawers/SnapshotD
 import { MdOutlineWidgets } from "react-icons/md"
 import MobileActionMenu from "~/features/novel-editor/components/menus/MobileActionMenu"
 import { PiGear } from "react-icons/pi"
-import type { EpisodeData } from "~/features/novel-editor/context/EditorContext"
 import { usePlatform } from "~/hooks/usePlatform"
 import { IoCloudOffline } from "react-icons/io5"
 import { ShareType } from "muvel-api-types"
+import type { EpisodeData } from "~/features/novel-editor/context/EpisodeContext"
 
 const EditorHeader: React.FC<
   StackProps & {
     novelId: string
     episode: EpisodeData
-    syncState: SyncState
   }
-> = ({ novelId, episode, syncState, ...props }) => {
+> = ({ novelId, episode, ...props }) => {
   const { isOffline } = usePlatform()
 
   const navigate = useNavigate()
@@ -67,6 +64,7 @@ const EditorHeader: React.FC<
       <HStack gap={0}>
         <Tooltip content={"소설 페이지로 돌아가기"} openDelay={200}>
           <IconButton
+            opacity={0.7}
             variant="ghost"
             aria-label="소설 페이지로 돌아가기"
             onClick={() => {
@@ -78,14 +76,18 @@ const EditorHeader: React.FC<
         </Tooltip>
         <EpisodeListDrawer
           novelId={novelId}
-          episodeId={episode.id}
+          episode={episode}
           permissions={episode.permissions}
         >
-          <IconButton aria-label="에피소드 목록 보기" variant="ghost">
+          <IconButton
+            opacity={0.7}
+            aria-label="에피소드 목록 보기"
+            variant="ghost"
+          >
             <TbList />
           </IconButton>
         </EpisodeListDrawer>
-        <SyncIndicator ml={5} state={syncState} />
+        <SyncIndicator />
         {isOffline && !isLocal && (
           <Tooltip
             content={
@@ -114,7 +116,7 @@ const EditorHeader: React.FC<
       <EditorSettingDrawer dialog={settingDialog} />
       <SearchDialog novelId={novelId} dialog={searchDialog} />
 
-      <HStack gap={1} display={{ base: "none", md: "flex " }}>
+      <HStack gap={1} display={{ base: "none", md: "flex " }} opacity={0.7}>
         {episode.permissions.edit && (
           <>
             {/* 소설 검색하기 */}

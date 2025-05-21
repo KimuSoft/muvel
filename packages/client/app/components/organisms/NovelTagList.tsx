@@ -78,19 +78,17 @@ const NovelTagList: React.FC<{
               <Icon as={TbPlus} />
             </Tag.Root>
           </PopoverTrigger>
-          <PopoverContent p={4}>
-            <Field.Root>
-              <Field.Label display="flex" alignItems="center" gap={2} mb={1}>
-                <TbTag />새 태그 추가하기
-              </Field.Label>
-              <Input
-                size="sm"
-                id="tags"
-                ref={inputRef}
-                onKeyDown={handleAddTag}
-                placeholder="Enter 키로 추가"
-              />
-            </Field.Root>
+          <PopoverContent p={0} overflow={"hidden"} w={"200px"}>
+            <Input
+              size="sm"
+              id="tags"
+              ref={inputRef}
+              onKeyDown={handleAddTag}
+              border={"none"}
+              borderRadius={0}
+              _focus={{ border: "none" }}
+              placeholder="새 태그 입력 후 엔터..."
+            />
           </PopoverContent>
         </PopoverRoot>
       )}

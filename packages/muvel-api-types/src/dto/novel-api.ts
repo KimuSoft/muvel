@@ -1,8 +1,9 @@
-import { BasePermission, Block, Episode, Novel } from "../core"
+import { BasePermission, Block, Episode, Novel, WikiPage } from "../core"
 
 export type GetNovelResponseDto = Novel & {
   permissions: BasePermission
   episodes: Episode[]
+  wikiPages: WikiPage[]
 }
 
 export type CreateNovelRequestDto = Partial<Pick<Novel, "title" | "share">>

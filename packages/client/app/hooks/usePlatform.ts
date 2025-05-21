@@ -26,8 +26,10 @@ export const usePlatform = () => {
 
   const [isOnline, setIsOnline] = useState(isClient ? navigator.onLine : true)
 
-  const isAndroid = useMemo(() => checkAndroidWebView(), [])
-  const isIOS = useMemo(() => checkIOSWebView(), [])
+  const isMobile = useMemo(
+    () => /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent),
+    [navigator],
+  )
 
   useEffect(() => {
     if (!isClient) return
@@ -51,8 +53,6 @@ export const usePlatform = () => {
     isWeb,
     isOnline,
     isOffline: !isOnline,
-    isAndroid,
-    isIOS,
-    isMobile: isAndroid || isIOS,
+    isMobile,
   }
 }

@@ -1,24 +1,30 @@
 import { IconButton, type IconButtonProps } from "@chakra-ui/react"
-import { TbSortAscending, TbSortDescending } from "react-icons/tb"
 import React from "react"
+import { useViewOptions } from "~/hooks/useAppOptions"
+import { Tooltip } from "~/components/ui/tooltip"
+import { TbSortAscending, TbSortDescending } from "react-icons/tb"
 
-export type SortType = "asc" | "desc"
+const SortToggleButton: React.FC<IconButtonProps> = (props) => {
+  const [{ episodeListSortDirection: direction }, setOptions] = useViewOptions()
 
-const SortToggleButton: React.FC<
-  IconButtonProps & {
-    value: SortType
-    onValueChange: (value: SortType) => void
-  }
-> = ({ value, onValueChange, ...props }) => {
   return (
-    <IconButton
-      variant={"ghost"}
-      gap={3}
-      onClick={() => onValueChange(value === "asc" ? "desc" : "asc")}
-      {...props}
+    <Tooltip
+      content={`${direction === "asc" ? "내림차순" : "오름차순"} 정렬로 바꾸기`}
+      openDelay={200}
     >
-      {value === "asc" ? <TbSortAscending /> : <TbSortDescending />}
-    </IconButton>
+      <IconButton
+        variant={"ghost"}
+        gap={3}
+        onClick={() =>
+          setOptions((o) => {
+            o.episodeListSortDirection = direction === "asc" ? "desc" : "asc"
+          })
+        }
+        {...props}
+      >
+        {direction === "asc" ? <TbSortAscending /> : <TbSortDescending />}
+      </IconButton>
+    </Tooltip>
   )
 }
 

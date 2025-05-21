@@ -7,7 +7,7 @@ import {
   WidgetBody,
   WidgetHeader,
   WidgetTitle,
-} from "~/features/novel-editor/widgets/components/WidgetBase" // 기본 위젯 컴포넌트 경로
+} from "~/features/novel-editor/widgets/containers/WidgetBase" // 기본 위젯 컴포넌트 경로
 import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap"
 import { toaster } from "~/components/ui/toaster"
 

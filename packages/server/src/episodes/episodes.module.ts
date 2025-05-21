@@ -1,40 +1,40 @@
-import { Module } from "@nestjs/common"
+import { forwardRef, Module } from "@nestjs/common"
 import { TypeOrmModule } from "@nestjs/typeorm"
 import { EpisodeEntity } from "./entities/episode.entity"
 import { EpisodesService } from "./services/episodes.service"
 import { EpisodesController } from "./episodes.controller"
-import { SearchRepository } from "../search/search.repository"
 import { NovelEntity } from "../novels/novel.entity"
-import { BlockEntity } from "../blocks/block.entity"
+import { EpisodeBlockEntity } from "../blocks/entities/episode-block.entity"
 import { UserEntity } from "../users/user.entity"
 import { AiAnalysisEntity } from "./entities/ai-analysis.entity"
 import { GeminiAnalysisRepository } from "./repositories/gemini-analysis.repository"
 import { EpisodeSnapshotEntity } from "./entities/episode-snapshot.entity"
 import { EpisodeSnapshotService } from "./services/episode-snapshot.service"
 import { EpisodeRepository } from "./repositories/episode.repository"
-import { BlockRepository } from "../blocks/block.repository"
+import { EpisodeBlockRepository } from "../blocks/repositories/episode-block.repository"
 import { EpisodeAnalysisService } from "./services/episode-analysis.service"
 import { EpisodePermissionService } from "./services/episode-permission.service"
-import { BlockSyncRepository } from "./repositories/block-sync.repository"
+import { EpisodeBlockSyncRepository } from "../blocks/repositories/episode-block-sync.repository"
+import { SearchModule } from "../search/search.module"
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       NovelEntity,
       EpisodeEntity,
-      BlockEntity,
+      EpisodeBlockEntity,
       UserEntity,
       AiAnalysisEntity,
       EpisodeSnapshotEntity,
     ]),
+    forwardRef(() => SearchModule),
   ],
   providers: [
     // repositories
-    SearchRepository,
     EpisodeRepository,
-    BlockRepository,
+    EpisodeBlockRepository,
     GeminiAnalysisRepository,
-    BlockSyncRepository,
+    EpisodeBlockSyncRepository,
 
     // services
     EpisodesService,
@@ -43,5 +43,12 @@ import { BlockSyncRepository } from "./repositories/block-sync.repository"
     EpisodePermissionService,
   ],
   controllers: [EpisodesController],
+  exports: [
+    EpisodesService,
+    EpisodeRepository,
+    GeminiAnalysisRepository,
+    EpisodeBlockRepository,
+    EpisodeBlockSyncRepository,
+  ],
 })
 export class EpisodesModule {}

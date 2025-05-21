@@ -11,7 +11,6 @@ import { useNavigate } from "react-router"
 import { TbTrash } from "react-icons/tb"
 import React from "react"
 import { toaster } from "~/components/ui/toaster"
-import { api } from "~/utils/api"
 import { deleteNovel } from "~/services/novelService"
 
 type DeleteNovelDialogProps = {

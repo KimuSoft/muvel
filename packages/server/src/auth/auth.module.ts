@@ -5,7 +5,7 @@ import { PassportModule } from "@nestjs/passport"
 import { JwtModule } from "@nestjs/jwt"
 import { JwtStrategy } from "./strategies/jwt.strategy"
 import { KimustoryStrategy } from "./strategies/kimustory.strategy"
-import { JwtAuthGuard } from "./jwt-auth.guard"
+import { JwtAuthGuard } from "./guards/jwt-auth.guard"
 import { TypeOrmModule } from "@nestjs/typeorm"
 import { UserEntity } from "../users/user.entity"
 

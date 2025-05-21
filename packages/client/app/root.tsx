@@ -13,7 +13,7 @@ import {
 
 import type { Route } from "./+types/root"
 import { Provider } from "./components/ui/provider"
-import { UserProvider } from "~/context/UserContext"
+import { UserProvider } from "~/providers/UserProvider"
 import { getUserFromRequest } from "~/utils/session.server"
 import { Toaster } from "~/components/ui/toaster"
 import LoadingOverlay from "~/components/templates/LoadingOverlay"
@@ -23,6 +23,7 @@ import { IoWarning } from "react-icons/io5"
 import { isAxiosError } from "axios"
 import ErrorTemplate from "~/components/templates/ErrorTemplate"
 import TauriEventProvider from "./providers/TauriEventProvider"
+import AppOptionProvider from "~/providers/AppOptionProvider"
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -73,12 +74,14 @@ export default function App() {
 
   return (
     <Provider>
-      <UserProvider user={user || null}>
-        {isLoading && <LoadingOverlay />}
-        <Toaster />
-        <Outlet />
-        <TauriEventProvider />
-      </UserProvider>
+      <AppOptionProvider>
+        <UserProvider user={user || null}>
+          {isLoading && <LoadingOverlay />}
+          <Toaster />
+          <Outlet />
+          <TauriEventProvider />
+        </UserProvider>
+      </AppOptionProvider>
     </Provider>
   )
 }

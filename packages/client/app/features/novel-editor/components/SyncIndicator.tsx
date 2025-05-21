@@ -1,6 +1,7 @@
 import React, { useMemo } from "react"
-import { Box, type BoxProps } from "@chakra-ui/react"
+import { Box, type BoxProps, Center } from "@chakra-ui/react"
 import { Tooltip } from "~/components/ui/tooltip"
+import { useEpisodeContext } from "~/features/novel-editor/context/EpisodeContext"
 
 export enum SyncState {
   Waiting = "waiting",
@@ -9,12 +10,11 @@ export enum SyncState {
   Error = "error",
 }
 
-const SyncIndicator: React.FC<BoxProps & { state: SyncState }> = ({
-  state,
-  ...props
-}) => {
+const SyncIndicator: React.FC<BoxProps> = (props) => {
+  const { syncState } = useEpisodeContext()
+
   const { color, label } = useMemo(() => {
-    switch (state) {
+    switch (syncState) {
       case SyncState.Waiting:
         return {
           color: "gray.300",
@@ -27,19 +27,21 @@ const SyncIndicator: React.FC<BoxProps & { state: SyncState }> = ({
       case SyncState.Error:
         return { color: "red.500", label: "동기화에 오류가 발생했어요..." }
     }
-  }, [state])
+  }, [syncState])
 
   return (
-    <Tooltip content={label} openDelay={0}>
-      <Box
-        w={2}
-        h={2}
-        rounded={"full"}
-        bgColor={color}
-        cursor={"pointer"}
-        transition={"background-color 0.2s ease-in-out"}
-        {...props}
-      />
+    <Tooltip content={label} openDelay={100}>
+      <Center w={10} h={10}>
+        <Box
+          w={"7px"}
+          h={"7px"}
+          rounded={"full"}
+          bgColor={color}
+          cursor={"pointer"}
+          transition={"background-color 0.2s ease-in-out"}
+          {...props}
+        />
+      </Center>
     </Tooltip>
   )
 }

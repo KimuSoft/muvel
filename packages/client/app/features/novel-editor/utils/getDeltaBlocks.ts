@@ -1,11 +1,11 @@
 import { isEqual, keyBy } from "lodash-es"
-import type { Block, DeltaBlock } from "muvel-api-types"
-import { DeltaBlockAction } from "muvel-api-types"
+import type { BaseBlock, PartialBlock, DeltaBlock } from "muvel-api-types"
+import { DeltaBlockAction, EpisodeBlockType } from "muvel-api-types"
 
-export const getDeltaBlock = (
-  previous: Block[],
-  current: Block[],
-): DeltaBlock[] => {
+export const getDeltaBlock = <BType = EpisodeBlockType>(
+  previous: PartialBlock<BType>[],
+  current: PartialBlock<BType>[],
+): DeltaBlock<BType>[] => {
   const prevMap = keyBy(previous, "id")
   const currMap = keyBy(current, "id")
 
@@ -14,7 +14,7 @@ export const getDeltaBlock = (
     previousBlockOriginalOrders.set(block.id, index)
   })
 
-  const deltas: DeltaBlock[] = []
+  const deltas: DeltaBlock<BType>[] = []
   const now = new Date()
 
   for (let i = 0; i < current.length; i++) {
@@ -37,7 +37,9 @@ export const getDeltaBlock = (
     }
 
     // 기존 블록 → 업데이트
-    const changedFields: Partial<Omit<Block, "updatedAt" | "id" | "text">> = {}
+    const changedFields: Partial<
+      Omit<BaseBlock<BType>, "updatedAt" | "id" | "text">
+    > = {}
     let hasChanged = false
 
     if (!isEqual(currentBlock.content, prevBlock.content)) {

@@ -17,7 +17,7 @@ const CreateEpisodeMenu: React.FC<MenuRootProps> = ({ children, ...props }) => {
         <MenuContent>
           <MenuItem value={EpisodeType.Episode.toString()}>에피소드</MenuItem>
           <MenuItem value={EpisodeType.EpisodeGroup.toString()}>
-            에피소드 그룹
+            에피소드 그룹 (플롯 페이지)
           </MenuItem>
         </MenuContent>
       </MenuPositioner>

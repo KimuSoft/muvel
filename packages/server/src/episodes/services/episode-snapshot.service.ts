@@ -41,10 +41,6 @@ export class EpisodeSnapshotService {
       .sort((a, b) => a.order - b.order)
 
     if (save) {
-      await this.episodeRepository.update(
-        { id: episode.id },
-        { isSnapshotted: true },
-      )
       return this.episodeSnapshotRepository.save(snapshot)
     } else {
       return snapshot
@@ -62,47 +58,5 @@ export class EpisodeSnapshotService {
     }
 
     return episode.snapshots
-  }
-
-  @Cron("*/10 * * * *") // 10분마다 실행
-  async createSnapshotSchedule() {
-    this.logger.log("Creating episode snapshots...")
-
-    const episodes = await this.episodeRepository.find({
-      where: { isSnapshotted: false },
-      relations: ["blocks"],
-    })
-
-    const newSnapshots: EpisodeSnapshotEntity[] = []
-
-    for (const episode of episodes) {
-      // 블록이 없는 에피소드는 스냅샷을 만들지 않음
-      if (!episode.blocks.length) continue
-
-      // 블록이 있는 에피소드에 대해서만 스냅샷 생성
-      const snapshot = await this.createSnapshot(episode, {
-        reason: SnapshotReason.Autosave,
-        save: false,
-      })
-      newSnapshots.push(snapshot)
-
-      // 글자 수 캐싱
-      // TODO: 이런 곳에서 처리하지 마세요;;;
-      const contentLength = episode.blocks.reduce(
-        (acc, block) => acc + block.text.replace(/\s/g, "").length,
-        0,
-      )
-
-      await this.episodeRepository.update({ id: episode.id }, { contentLength })
-    }
-
-    // Bulk insert snapshots
-    await this.episodeSnapshotRepository.save(newSnapshots)
-    await this.episodeRepository.update(
-      { id: In(episodes.map((episode) => episode.id)) },
-      { isSnapshotted: true },
-    )
-
-    this.logger.log(`Created ${newSnapshots.length} episode snapshots.`)
   }
 }

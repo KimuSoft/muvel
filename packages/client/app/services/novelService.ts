@@ -2,15 +2,21 @@
 
 import {
   type CreateNovelRequestDto,
+  type CreateWikiPageRequestBody,
+  type ExportNovelResponseDto,
   type GetNovelResponseDto,
   type Novel as ApiNovel,
+  ShareType,
   ShareType as ApiShareType,
   type UpdateNovelRequestDto,
+  type WikiPage,
 } from "muvel-api-types"
 // 개별 함수 임포트 및 별칭 사용으로 변경
 import {
   createCloudNovel,
+  createCloudNovelWikiPage,
   deleteCloudNovel,
+  exportCloudNovel,
   getCloudNovel,
   updateCloudNovel,
   updateCloudNovelEpisodes,
@@ -27,12 +33,8 @@ import {
 import {
   deleteLocalNovel as removeTauriNovelDataAndFromIndex,
   getLocalNovelEntry as getTauriLocalNovelEntry,
-  registerNovelFromPath as registerTauriNovelFromPath,
 } from "./tauri/indexStorage"
-import {
-  openFileDialog as openTauriFileDialog,
-  openFolderDialog as openTauriFolderDialog,
-} from "./tauri/fileDialog"
+import { openFolderDialog as openTauriFolderDialog } from "./tauri/fileDialog"
 
 import type {
   CreateLocalNovelOptions,
@@ -44,6 +46,8 @@ import { getUserCloudNovels } from "~/services/api/api.user"
 import { checkIsMobileView } from "~/hooks/usePlatform"
 import { isAxiosError } from "axios"
 import { toaster } from "~/components/ui/toaster"
+import * as localWikiStorage from "~/services/tauri/wikiPageStorage"
+import { type LocalWikiPageData } from "~/services/tauri/wikiPageStorage"
 
 const IS_TAURI_APP = import.meta.env.VITE_TAURI === "true"
 
@@ -55,6 +59,22 @@ export interface NovelIdentifierContext {
 export type NovelInput = string | NovelIdentifierContext
 
 const isMobile = checkIsMobileView()
+
+// Helper function to get share type and id from NovelInput
+const resolveNovelContext = async (
+  input: NovelInput,
+): Promise<{ id: string; share: ApiShareType }> => {
+  if (typeof input === "string") {
+    const novel = await getNovel(input) // ID만 있으면 getNovel을 통해 share 타입 확인
+    return { id: novel.id, share: novel.share }
+  }
+  // NovelIdentifierContext 객체에 share가 있으면 사용, 없으면 getNovel 호출
+  if (input.share) {
+    return { id: input.id, share: input.share }
+  }
+  const novel = await getNovel(input.id)
+  return { id: novel.id, share: novel.share }
+}
 
 /**
  * 새로운 소설을 생성합니다.
@@ -122,22 +142,6 @@ export const getNovel = async (
   }
 }
 
-// Helper function to get share type and id from NovelInput
-const resolveNovelContext = async (
-  input: NovelInput,
-): Promise<{ id: string; share: ApiShareType }> => {
-  if (typeof input === "string") {
-    const novel = await getNovel(input) // ID만 있으면 getNovel을 통해 share 타입 확인
-    return { id: novel.id, share: novel.share }
-  }
-  // NovelIdentifierContext 객체에 share가 있으면 사용, 없으면 getNovel 호출
-  if (input.share) {
-    return { id: input.id, share: input.share }
-  }
-  const novel = await getNovel(input.id)
-  return { id: novel.id, share: novel.share }
-}
-
 /**
  * 소설 정보를 업데이트합니다.
  * novelInput은 소설 ID 문자열 또는 ID와 share 타입을 포함하는 객체입니다.
@@ -180,7 +184,6 @@ export const deleteNovel = async (novelInput: NovelInput): Promise<void> => {
 /**
  * 사용자의 모든 소설 목록을 가져옵니다 (로컬 + 클라우드 조합).
  */
-// TODO: myId같은 인자 없애기 (`users/me/novels`로 대체)
 export const getMyNovels = async (
   myId?: string,
 ): Promise<(ApiNovel | LocalNovelData)[]> => {
@@ -235,36 +238,6 @@ export const getMyNovels = async (
 }
 
 /**
- * 사용자가 직접 연 로컬 소설 파일(.muvl)을 앱에 등록(인덱싱)하고 해당 소설 정보를 반환합니다.
- */
-export const openAndRegisterLocalNovel = async (): Promise<
-  ApiNovel | LocalNovelData | null
-> => {
-  if (!IS_TAURI_APP) {
-    throw new Error("로컬 소설 열기는 Tauri 앱 환경에서만 가능합니다.")
-  }
-
-  const filePath = await openTauriFileDialog(
-    "열고 싶은 소설 파일(.muvl)을 선택하세요",
-    ["muvl"],
-    "Muvel 소설 파일",
-  )
-
-  if (!filePath) {
-    return null
-  }
-
-  const novelId = await registerTauriNovelFromPath(filePath)
-  if (!novelId) {
-    throw new Error(
-      `파일(${filePath})에서 소설 정보를 등록하거나 ID를 가져올 수 없습니다.`,
-    )
-  }
-
-  return getNovel(novelId)
-}
-
-/**
  * 특정 소설에 속한 여러 에피소드들의 정보를 일괄 업데이트합니다. (주로 순서 변경 등)
  * @param novelInput 업데이트할 에피소드들이 속한 소설의 ID 또는 컨텍스트
  * @param episodeDiffs 변경할 에피소드 정보 배열. 각 객체는 id와 변경할 필드를 포함합니다.
@@ -274,7 +247,6 @@ export const updateNovelEpisodes = async (
   novelInput: NovelInput,
   episodeDiffs: ({ id: string } & Partial<LocalEpisodeData>)[],
 ): Promise<Omit<LocalEpisodeData, "blocks">[]> => {
-  // 반환 타입은 클라우드 API와 맞추거나, 로컬의 경우 void 또는 성공 여부
   const { id: novelId, share: shareTypeToUse } =
     await resolveNovelContext(novelInput)
 
@@ -289,4 +261,32 @@ export const updateNovelEpisodes = async (
   } else {
     return updateCloudNovelEpisodes(novelId, episodeDiffs)
   }
+}
+
+export const exportNovel = async (
+  novelInput: NovelInput,
+): Promise<ExportNovelResponseDto> => {
+  const { id: novelId, share: shareTypeToUse } =
+    await resolveNovelContext(novelInput)
+
+  if (IS_TAURI_APP && shareTypeToUse === ShareType.Local) {
+    // TODO: 로컬 소설 내보내기 기능 구현 필요 (예: tauri/ioService.ts)
+    // 현재는 미구현으로 에러 처리
+    throw new Error("로컬 소설 내보내기 기능은 아직 구현되지 않았습니다.")
+  }
+  // 클라우드 소설 내보내기
+  return exportCloudNovel(novelId)
+}
+
+export const createNovelWikiPage = async (
+  novelInput: NovelInput,
+  options: CreateWikiPageRequestBody,
+): Promise<WikiPage | LocalWikiPageData> => {
+  const { id: novelId, share: shareTypeToUse } =
+    await resolveNovelContext(novelInput)
+
+  if (IS_TAURI_APP && shareTypeToUse === ShareType.Local) {
+    return localWikiStorage.createLocalWikiPage(options)
+  }
+  return createCloudNovelWikiPage(novelId, options)
 }

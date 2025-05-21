@@ -14,7 +14,6 @@ import {
 import { EpisodesService } from "./services/episodes.service"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
 import { UpdateEpisodeDto } from "./dto/update-episode.dto"
-import { PatchBlocksDto } from "../blocks/dto/patch-blocks.dto"
 import { EpisodeIdParamDto } from "./dto/episode-id-param.dto"
 import { EpisodeAnalysisService } from "./services/episode-analysis.service"
 import { RequirePermission } from "../permissions/require-permission.decorator"
@@ -26,7 +25,7 @@ import { CreateAiAnalysisRequestBodyDto } from "./dto/create-ai-analysis-request
 import { CreateEpisodeSnapshotDto } from "./dto/create-episode-snapshot.dto"
 import { EpisodeSnapshotService } from "./services/episode-snapshot.service"
 import { CacheInterceptor, CacheTTL } from "@nestjs/cache-manager"
-import { SyncBlockDto } from "../blocks/dto/sync-block.dto"
+import { SyncEpisodeBlocksDto } from "./dto/sync-episode-blocks.dto"
 
 @Controller("episodes")
 @ApiTags("Episodes")
@@ -100,19 +99,6 @@ export class EpisodesController {
     )
   }
 
-  @Patch(":id/blocks")
-  @ApiOperation({
-    summary: "에피소드 내 블록 변경사항 적용하기",
-    description: "에피소드의 블록을 수정합니다.",
-  })
-  @RequirePermission("edit", EpisodePermissionGuard)
-  async patchBlocks(
-    @Param() { id }: EpisodeIdParamDto,
-    @Body() blockDiffs: PatchBlocksDto[],
-  ) {
-    return this.episodesService.updateBlocks(id, blockDiffs)
-  }
-
   @Patch(":id/blocks/sync")
   @ApiOperation({
     summary: "에피소드 내 블록 변경사항 적용하기 (Sync)",
@@ -121,7 +107,7 @@ export class EpisodesController {
   @RequirePermission("edit", EpisodePermissionGuard)
   async syncBlocks(
     @Param() { id }: EpisodeIdParamDto,
-    @Body() { deltaBlocks }: SyncBlockDto,
+    @Body() { deltaBlocks }: SyncEpisodeBlocksDto,
   ) {
     return await this.episodesService.episodeBlocksSync(id, deltaBlocks)
   }

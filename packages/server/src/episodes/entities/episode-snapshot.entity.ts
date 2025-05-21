@@ -7,7 +7,7 @@ import {
   RelationId,
 } from "typeorm"
 import { EpisodeEntity } from "./episode.entity"
-import { BlockEntity } from "../../blocks/block.entity"
+import { EpisodeBlockEntity } from "../../blocks/entities/episode-block.entity"
 import { SnapshotReason } from "muvel-api-types"
 
 @Entity("episode_snapshot")
@@ -22,7 +22,7 @@ export class EpisodeSnapshotEntity {
   episodeId: string
 
   @Column({ type: "jsonb" })
-  blocks: BlockEntity[]
+  blocks: EpisodeBlockEntity[]
 
   @Column({
     type: "enum",

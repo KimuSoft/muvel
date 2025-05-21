@@ -5,7 +5,7 @@ const SsrRoutes = [
   route("my-novels", "routes/my-novels.tsx"),
   route("novels/:id", "routes/novel.tsx"),
   route("episodes/:id", "routes/episode.tsx"),
-  route("characters/:id", "routes/character.tsx"),
+  route("wiki-pages/:id", "routes/wiki-pages.tsx"),
   route("privacy-policy", "routes/privacy-policy.tsx"),
   route("terms-of-use", "routes/terms-of-use.tsx"),
   route("info", "routes/info.tsx"),

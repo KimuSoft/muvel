@@ -20,26 +20,12 @@ export const createInputRules = (schema: Schema) => {
     textReplaceRule(/->$/, "→"),
     textReplaceRule(/<-$/, "←"),
     textReplaceRule(/--$/, "—"),
-    textReplaceRule(/<</, "«"),
-    textReplaceRule(/>>/, "»"),
+    textReplaceRule(/<<$/, "«"),
+    textReplaceRule(/>>$/, "»"),
     textReplaceRule(/=>$/, "⇒"),
     textReplaceRule(/<=$/, "⇐"),
     textReplaceRule(/\.{3}/, "…"),
   ]
-
-  // 큰따옴표 → quote (double)
-  // rules.push(
-  //   textblockTypeInputRule(/^"$/, schema.nodes[BlockType.Quote], {
-  //     quoteStyle: "double",
-  //   }),
-  // )
-
-  // 작은따옴표 → quote (single)
-  // rules.push(
-  //   textblockTypeInputRule(/^'$/, schema.nodes[BlockType.Quote], {
-  //     quoteStyle: "single",
-  //   }),
-  // )
 
   // ----- 또는 *** → divider
   rules.push(
@@ -83,5 +69,5 @@ export const createInputRules = (schema: Schema) => {
     }),
   )
 
-  return inputRules({ rules }) // ✅ Plugin 생성 후 반환
+  return inputRules({ rules })
 }

@@ -18,7 +18,7 @@ import {
   WidgetBody,
   WidgetHeader,
   WidgetTitle,
-} from "~/features/novel-editor/widgets/components/WidgetBase" // 경로 수정 필요
+} from "~/features/novel-editor/widgets/containers/WidgetBase" // 경로 수정 필요
 import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap" // 경로 수정 필요
 import { useEditorContext } from "~/features/novel-editor/context/EditorContext" // 경로 수정 필요
 import { toaster } from "~/components/ui/toaster" // 경로 수정 필요

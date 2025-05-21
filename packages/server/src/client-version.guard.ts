@@ -10,7 +10,7 @@ import * as semver from "semver"
 
 @Injectable()
 export class ClientVersionGuard implements CanActivate {
-  private readonly MIN_CLIENT_VERSION = "2.3.0"
+  private readonly MIN_CLIENT_VERSION = "2.3.2"
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request>()

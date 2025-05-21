@@ -9,6 +9,7 @@ type TauriEventType = typeof import("@tauri-apps/api/event")
 type TauriUpdatePluginType = typeof import("@tauri-apps/plugin-updater")
 type TauriProcessPluginType = typeof import("@tauri-apps/plugin-process")
 type TauriCliPluginType = typeof import("@tauri-apps/plugin-cli")
+type TauriFsPluginType = typeof import("@tauri-apps/plugin-fs")
 
 // Vite 환경 변수를 사용하여 Tauri 앱 환경인지 확인
 const IS_TAURI_APP = import.meta.env.VITE_TAURI === "true"
@@ -180,6 +181,23 @@ export const getCliPlugin = (): Promise<TauriCliPluginType> => {
   }
   return import("@tauri-apps/plugin-cli").catch((error) => {
     console.error("Failed to load @tauri-apps/plugin-cli:", error)
+    throw error
+  })
+}
+
+/**
+ * @tauri-apps/plugin-fs 모듈을 가져옵니다.
+ */
+export const getFsPlugin = (): Promise<TauriFsPluginType> => {
+  if (!IS_TAURI_APP) {
+    return Promise.reject(
+      new Error(
+        "Tauri File System Plugin is not available in this environment.",
+      ),
+    )
+  }
+  return import("@tauri-apps/plugin-fs").catch((error) => {
+    console.error("Failed to load @tauri-apps/plugin-fs:", error)
     throw error
   })
 }

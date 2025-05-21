@@ -3,11 +3,10 @@ import {
   WidgetBase,
   WidgetHeader,
   WidgetTitle,
-  WidgetBody,
-} from "~/features/novel-editor/widgets/components/WidgetBase"
+} from "~/features/novel-editor/widgets/containers/WidgetBase"
 import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
-import { Button, HStack, Spacer } from "@chakra-ui/react"
-import { RiBold, RiItalic, RiUnderline, RiStrikethrough } from "react-icons/ri"
+import { Button, HStack } from "@chakra-ui/react"
+import { RiBold, RiItalic, RiStrikethrough, RiUnderline } from "react-icons/ri"
 import { Tooltip } from "~/components/ui/tooltip"
 import { toggleMark } from "prosemirror-commands"
 import type { WidgetBaseProps } from "~/features/novel-editor/widgets/components/widgetMap"

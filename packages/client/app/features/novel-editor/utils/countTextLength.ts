@@ -40,9 +40,7 @@ export const countTextLength = (
   content: string,
   options: CountOptions,
 ): number => {
-  if (!content) {
-    return 0 // 내용이 없으면 0 반환
-  }
+  if (!content) return 0
 
   const { unit, excludeSpaces, excludeSpecialChars } = options
 
@@ -69,7 +67,6 @@ export const countTextLength = (
     }
 
     // 3. 문장부호 제외 옵션 적용
-    console.log("excludePunctuations", options.excludePunctuations)
     if (options.excludePunctuations) {
       // 문장부호를 제외한 모든 문자 제거
       // \p{P}: 모든 문장부호
