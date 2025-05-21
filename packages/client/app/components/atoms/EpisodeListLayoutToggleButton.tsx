@@ -36,7 +36,7 @@ const EpisodeListLayoutToggleButton: React.FC<IconButtonProps> = (props) => {
     <Menu.Root>
       <Menu.Trigger>
         <Tooltip content={"에피소드 목록 레이아웃"} openDelay={300}>
-          <IconButton variant={"ghost"} {...props}>
+          <IconButton variant={"ghost"} as={"div"} {...props}>
             {icon}
           </IconButton>
         </Tooltip>
