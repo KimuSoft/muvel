@@ -1,7 +1,7 @@
-import React, { forwardRef, useMemo } from "react"
-import { type Episode, EpisodeType } from "muvel-api-types"
+import React, { forwardRef, useCallback } from "react"
 import {
   Box,
+  Center,
   HStack,
   Skeleton,
   type StackProps,
@@ -10,60 +10,46 @@ import {
 } from "@chakra-ui/react"
 import { TbBrandZapier, TbRefresh, TbStar, TbTypography } from "react-icons/tb"
 import { useNavigate } from "react-router"
+import { type Episode, EpisodeType } from "muvel-api-types"
 import { Tooltip } from "~/components/ui/tooltip"
 import { getTimeAgoKo } from "~/utils/getTimeAgoKo"
 
-const SideData: React.FC<{ episode: Episode } & StackProps> = ({
-  episode,
-  ...props
-}) => {
-  const updatedAt = useMemo(() => {
-    return new Date(episode.updatedAt)
-  }, [episode.updatedAt])
+export type EpisodeItemVariant = "detail" | "simple"
+const CQ_BP = "48rem" // ↔ 테마 containerSizes.md 토큰으로 추출 가능!
 
-  const createdAt = useMemo(() => {
-    return new Date(episode.createdAt)
-  }, [episode.createdAt])
+/* ---------- Side/meta 표시 ---------- */
+const SideData = ({ episode, ...p }: { episode: Episode } & StackProps) => {
+  const createdAt = new Date(episode.createdAt)
+  const updatedAt = new Date(episode.updatedAt)
 
   return (
-    <HStack columnGap={4} flexShrink={0} rowGap={1} {...props}>
-      {episode.aiRating !== null && episode.aiRating !== undefined ? (
+    <HStack columnGap={4} rowGap={1} flexShrink={0} {...p}>
+      {episode.aiRating != null && (
         <HStack gap={1}>
-          <TbStar
-            color={"var(--chakra-colors-purple-400)"}
-            size={12}
-            style={{ flexShrink: 0 }}
-          />
-          <Text flexShrink={0} fontSize={"xs"} color={"gray.500"}>
-            {episode.aiRating?.toFixed(1)}
+          <TbStar color="var(--chakra-colors-purple-400)" size={12} />
+          <Text fontSize="xs" color="gray.500">
+            {episode.aiRating.toFixed(1)}
           </Text>
         </HStack>
-      ) : null}
+      )}
       <HStack gap={1}>
-        <TbTypography
-          color={"var(--chakra-colors-purple-400)"}
-          size={12}
-          style={{ flexShrink: 0 }}
-        />
-        <Text flexShrink={0} fontSize={"xs"} color={"gray.500"}>
+        <TbTypography color="var(--chakra-colors-purple-400)" size={12} />
+        <Text fontSize="xs" color="gray.500">
           {episode.contentLength.toLocaleString()}자
         </Text>
       </HStack>
-      <Tooltip
-        content={createdAt.toLocaleString() + "에 생성"}
-        openDelay={1000}
-      >
+      <Tooltip content={`${createdAt.toLocaleString()}에 생성`} openDelay={600}>
         <HStack gap={1}>
-          <TbBrandZapier color={"var(--chakra-colors-purple-400)"} size={12} />
-          <Text fontSize={"xs"} color={"gray.500"}>
+          <TbBrandZapier color="var(--chakra-colors-purple-400)" size={12} />
+          <Text fontSize="xs" color="gray.500">
             {getTimeAgoKo(createdAt)}
           </Text>
         </HStack>
       </Tooltip>
-      <Tooltip content={createdAt.toLocaleString() + "에 수정"}>
+      <Tooltip content={`${updatedAt.toLocaleString()}에 수정`}>
         <HStack gap={1}>
-          <TbRefresh color={"var(--chakra-colors-purple-400)"} size={12} />
-          <Text fontSize={"xs"} color={"gray.500"}>
+          <TbRefresh color="var(--chakra-colors-purple-400)" size={12} />
+          <Text fontSize="xs" color="gray.500">
             {getTimeAgoKo(updatedAt)}
           </Text>
         </HStack>
@@ -72,71 +58,81 @@ const SideData: React.FC<{ episode: Episode } & StackProps> = ({
   )
 }
 
-export type EpisodeItemVariant = "detail" | "simple" | "shallow" | "grid"
+/* ---------- Large prefix (detail 전용) ---------- */
+const LargePrefix = ({ episode }: { episode: Episode }) => {
+  const prefix = {
+    [EpisodeType.Episode]: episode.order.toString().padStart(3, "0"),
+    [EpisodeType.Prologue]: "PRO",
+    [EpisodeType.Epilogue]: "EPIL",
+    [EpisodeType.Special]: "SPE",
+    [EpisodeType.EpisodeGroup]: undefined,
+    [EpisodeType.Memo]: undefined,
+  }[episode.episodeType]
 
-export type EpisodeItemProps = StackProps & {
+  if (!prefix) return null
+
+  return (
+    <Center mr={1} flexShrink={0} w="68px" minH={"53px"} h={"100%"}>
+      <Text fontSize="36px" fontWeight={200} color="purple.500">
+        {prefix}
+      </Text>
+    </Center>
+  )
+}
+
+/* ---------- Small count (simple + 좁은 detail) ---------- */
+const SmallCount = ({ episode }: { episode: Episode }) => {
+  const label = {
+    [EpisodeType.Episode]: `${Math.round(Number(episode.order))}편`,
+    [EpisodeType.Prologue]: "프롤로그",
+    [EpisodeType.Epilogue]: "에필로그",
+    [EpisodeType.Special]: "특별편",
+    [EpisodeType.EpisodeGroup]: "",
+    [EpisodeType.Memo]: "메모",
+  }[episode.episodeType]
+
+  return (
+    <Text ml={2} color="purple.500" fontWeight={600} flexShrink={0} minW="32px">
+      {label}
+    </Text>
+  )
+}
+
+/* ---------- 메인 항목 ---------- */
+export interface EpisodeItemProps extends StackProps {
   episode: Episode
-  index: number
   loading?: boolean
   variant?: EpisodeItemVariant
 }
 
 const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
-  ({ episode, index, loading, variant = "simple", ...props }, ref) => {
+  ({ episode, loading, variant = "simple", ...rest }, ref) => {
     const navigate = useNavigate()
+    const go = useCallback(
+      () => navigate(`/episodes/${episode.id}`),
+      [navigate, episode.id],
+    )
 
-    const prefix = useMemo(() => {
-      switch (episode.episodeType) {
-        case EpisodeType.EpisodeGroup:
-          return
-        case EpisodeType.Episode:
-          // TODO: 임시, 이후 편수를 따로 추가해야 함
-          return `${episode.order.toString().padStart(3, "0")}`
-        case EpisodeType.Prologue:
-          return "PRO"
-        case EpisodeType.Epilogue:
-          return "EPIL"
-        case EpisodeType.Special:
-          return "SPE"
-      }
-    }, [episode.episodeType, index])
-
-    const episodeCountText = useMemo(() => {
-      if (episode.episodeType === EpisodeType.Episode) {
-        return `${Math.round(parseFloat(episode.order.toString()))}편`
-      } else if (episode.episodeType === EpisodeType.Prologue) {
-        return "프롤로그"
-      } else if (episode.episodeType === EpisodeType.Epilogue) {
-        return "에필로그"
-      } else if (episode.episodeType === EpisodeType.Special) {
-        return "특별편"
-      }
-    }, [episode.episodeType, episode.order])
-
-    const clickHandler = () => {
-      navigate(`/episodes/${episode.id}`)
-    }
+    // 그룹 에피소드는 라벨만
     if (episode.episodeType === EpisodeType.EpisodeGroup)
       return (
-        <Box w={"100%"} ref={ref} {...props}>
+        <Box ref={ref} w="100%" {...rest}>
           <Skeleton loading={!!loading}>
             <Box
               px={3}
               py={1}
-              borderRadius={5}
-              borderWidth={1}
-              borderColor={"purple.500"}
-              userSelect={"none"}
-              mt={index ? 4 : 0}
+              mt={0}
               mb={2}
-              cursor={"pointer"}
-              transition={"background-color 0.2s"}
-              onClick={clickHandler}
-              _hover={{
-                backgroundColor: { base: "gray.100", _dark: "gray.700" },
-              }}
+              borderWidth={1}
+              borderColor="purple.500"
+              borderRadius={5}
+              cursor="pointer"
+              userSelect="none"
+              transition="background-color 0.2s"
+              _hover={{ bg: { base: "gray.100", _dark: "gray.700" } }}
+              onClick={go}
             >
-              <Text fontSize={"sm"} color={"purple.500"}>
+              <Text fontSize="sm" color="purple.500">
                 {episode.title}
               </Text>
             </Box>
@@ -145,80 +141,67 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
       )
 
     return (
-      <Skeleton w={"100%"} loading={!!loading}>
+      <Skeleton loading={!!loading} w="100%">
         <HStack
-          userSelect={"none"}
-          w={"100%"}
-          gap={5}
-          cursor={"pointer"}
-          onClick={clickHandler}
-          overflow={"hidden"}
-          transition={"border-color 0.2s"}
-          border={"1px solid transparent"}
-          _hover={{
-            borderColor: { base: "purple.300", _dark: "purple.500" },
-          }}
-          align={"stretch"}
           ref={ref}
-          {...props}
+          gap={3}
+          w="100%"
+          align="stretch"
+          overflow="hidden"
+          cursor="pointer"
+          userSelect="none"
+          border="1px solid transparent"
+          transition="border-color 0.2s"
+          _hover={{ borderColor: { base: "purple.300", _dark: "purple.500" } }}
+          containerType="inline-size" /* CQ 컨텍스트 생성 */
+          onClick={go}
+          {...rest}
         >
-          <Box flexShrink={0} w={"4px"} backgroundColor={"purple.500"} />
-          <Text
-            flexShrink={0}
-            color={"purple.500"}
-            w={"68px"}
-            fontWeight={200}
-            fontSize={"36px"}
-            display={
-              variant !== "detail" ? "none" : { base: "none", md: "block" }
-            }
-          >
-            {prefix}
-          </Text>
+          {/* 좌측 보라색 바 */}
+          <Box w="4px" bg="purple.500" flexShrink={0} />
+
+          {/* prefix or 작은 count */}
+          {variant === "detail" && <LargePrefix episode={episode} />}
+
+          {/* 제목 + 설명 + 메타 */}
           <VStack
-            gap={1}
-            py={1.5}
             flex={1}
-            alignItems={"baseline"}
-            overflow={"hidden"}
+            alignItems="baseline"
+            py={1.5}
+            overflow="hidden"
+            gap={1}
           >
-            <HStack w={"100%"} overflow={"hidden"}>
-              <Text
-                display={
-                  variant !== "detail" ? "block" : { base: "block", md: "none" }
-                }
-                color={"purple.500"}
-                fontWeight={600}
-                flexShrink={0}
-                minW={"32px"}
-              >
-                {episodeCountText}
-              </Text>
+            <HStack w="100%" overflow="hidden">
+              {variant === "simple" && <SmallCount episode={episode} />}
               <Text truncate>{episode.title || "제목 없음"}</Text>
             </HStack>
-            {variant !== "simple" && (
+
+            {variant === "detail" && (
               <Tooltip content={episode.description}>
-                <Text fontSize={"xs"} color={"gray.500"} maxW={"100%"} truncate>
+                <Text fontSize="xs" color="gray.500" maxW="100%" truncate>
                   {episode.description}
                 </Text>
               </Tooltip>
             )}
-            <Box
-              display={
-                variant === "shallow"
-                  ? "flex"
-                  : variant === "detail"
-                    ? { base: "flex", md: "none" }
-                    : "none"
-              }
-            >
-              <SideData episode={episode} />
-            </Box>
+
+            {/* 좁은 화면 detail, 혹은 simple */}
+            {variant === "detail" && (
+              <Box
+                css={{
+                  [`@container (min-width: ${CQ_BP})`]: { display: "none" },
+                }}
+              >
+                <SideData episode={episode} />
+              </Box>
+            )}
           </VStack>
+
+          {/* 넓은 detail 전용 메타 */}
           <Box
-            display={
-              variant !== "detail" ? "none" : { base: "none", md: "flex" }
-            }
+            css={{
+              display: "none",
+              [`@container (min-width: ${CQ_BP})`]: { display: "flex" },
+            }}
           >
             <SideData episode={episode} mr={3} />
           </Box>

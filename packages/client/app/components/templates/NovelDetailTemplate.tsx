@@ -31,7 +31,6 @@ import type { ReorderedEpisode } from "~/utils/reorderEpisode"
 import { toaster } from "~/components/ui/toaster"
 import SortToggleButton from "~/components/atoms/SortToggleButton"
 import EpisodeListLayoutToggleButton from "~/components/atoms/EpisodeListLayoutToggleButton"
-import type { EpisodeItemVariant } from "~/components/molecules/EpisodeItem"
 import type { GetLocalNovelDetailsResponse } from "~/services/tauri/types"
 import { updateNovel, updateNovelEpisodes } from "~/services/novelService"
 import { createNovelEpisode } from "~/services/episodeService"
@@ -45,8 +44,6 @@ const NovelDetailTemplate: React.FC<{
   const navigate = useNavigate()
   const [isEpisodesLoading, setIsEpisodesLoading] = React.useState(false)
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc")
-  const [episodeListLayout, setEpisodeListLayout] =
-    React.useState<EpisodeItemVariant>("detail")
 
   const handleCreateEpisode = async (detail: MenuSelectionDetails) => {
     const episode = await createNovelEpisode(novel.id, {
@@ -257,15 +254,8 @@ const NovelDetailTemplate: React.FC<{
           <Spacer />
 
           <HStack gap={1}>
-            <EpisodeListLayoutToggleButton
-              variants={["detail", "simple", "grid"]}
-              onValueChange={setEpisodeListLayout}
-              value={episodeListLayout}
-            />
-            <SortToggleButton
-              value={sortDirection}
-              onValueChange={setSortDirection}
-            />
+            <EpisodeListLayoutToggleButton />
+            <SortToggleButton />
           </HStack>
           {novel.permissions.edit ? (
             <CreateEpisodeMenu onSelect={handleCreateEpisode}>
@@ -286,7 +276,6 @@ const NovelDetailTemplate: React.FC<{
           sortDirection={sortDirection}
           loading={isEpisodesLoading}
           episodes={novel.episodes}
-          variant={episodeListLayout}
           onEpisodesChange={handleReorderEpisode}
         />
       </Container>

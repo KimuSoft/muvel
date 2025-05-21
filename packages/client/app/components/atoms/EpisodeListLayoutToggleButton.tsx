@@ -1,43 +1,65 @@
-import { IconButton, type IconButtonProps } from "@chakra-ui/react"
-import { TbList, TbListDetails } from "react-icons/tb"
+import { IconButton, type IconButtonProps, Menu } from "@chakra-ui/react"
 import React, { useMemo } from "react"
-import type { EpisodeItemVariant } from "~/components/molecules/EpisodeItem"
-import { BsFillGrid3X3GapFill } from "react-icons/bs"
+import { useViewOptions } from "~/hooks/useAppOptions"
+import { TbList, TbListDetails } from "react-icons/tb"
+import { EpisodeListLayout } from "~/types/options"
+import { LuGrid2X2 } from "react-icons/lu"
+import { Tooltip } from "~/components/ui/tooltip"
 
-const EpisodeListLayoutToggleButton: React.FC<
-  IconButtonProps & {
-    variants: EpisodeItemVariant[]
-    value: EpisodeItemVariant
-    onValueChange: (value: EpisodeItemVariant) => void
-  }
-> = ({ variants, value, onValueChange, ...props }) => {
+const layoutVariants = [
+  {
+    value: EpisodeListLayout.Detail,
+    label: "자세히 보기",
+    icon: <TbListDetails />,
+  },
+  {
+    value: EpisodeListLayout.Simple,
+    label: "간단히 보기",
+    icon: <TbList />,
+  },
+  {
+    value: EpisodeListLayout.Grid,
+    label: "그리드 뷰",
+    icon: <LuGrid2X2 />,
+  },
+]
+
+const EpisodeListLayoutToggleButton: React.FC<IconButtonProps> = (props) => {
+  const [{ episodeListLayout }, setOptions] = useViewOptions()
+
   const icon = useMemo(() => {
-    switch (value) {
-      case "detail":
-        return <TbListDetails />
-      case "simple":
-        return <TbList />
-      case "shallow":
-        return <TbListDetails />
-      case "grid":
-        return <BsFillGrid3X3GapFill />
-      default:
-        return <TbList />
-    }
-  }, [value])
+    const variant = layoutVariants.find((v) => v.value === episodeListLayout)
+    return variant ? variant.icon : <TbListDetails />
+  }, [episodeListLayout])
 
   return (
-    <IconButton
-      variant={"ghost"}
-      gap={3}
-      onClick={() => {
-        const nextIndex = (variants.indexOf(value) + 1) % variants.length
-        onValueChange(variants[nextIndex])
-      }}
-      {...props}
-    >
-      {icon}
-    </IconButton>
+    <Menu.Root>
+      <Menu.Trigger>
+        <Tooltip content={"에피소드 목록 레이아웃"} openDelay={300}>
+          <IconButton variant={"ghost"} {...props}>
+            {icon}
+          </IconButton>
+        </Tooltip>
+      </Menu.Trigger>
+      <Menu.Positioner>
+        <Menu.Content>
+          {layoutVariants.map((variant) => (
+            <Menu.Item
+              key={variant.value}
+              value={variant.value}
+              onClick={() => {
+                setOptions((o) => {
+                  o.episodeListLayout = variant.value
+                })
+              }}
+            >
+              {variant.icon}
+              {variant.label}
+            </Menu.Item>
+          ))}
+        </Menu.Content>
+      </Menu.Positioner>
+    </Menu.Root>
   )
 }
 
