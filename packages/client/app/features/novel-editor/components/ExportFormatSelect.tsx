@@ -25,10 +25,6 @@ import {
   TbMarkdown,
   TbTxt,
 } from "react-icons/tb"
-import { BsFileEarmarkRichtext, BsFilePdf } from "react-icons/bs"
-import { SiLibreoffice } from "react-icons/si"
-import { PiMicrosoftWordLogo } from "react-icons/pi"
-import { IoMdBook } from "react-icons/io"
 import { RiQuillPenFill } from "react-icons/ri"
 
 const formats = [
@@ -55,12 +51,12 @@ const formats = [
   //   icon: <PiMicrosoftWordLogo />,
   //   ext: ".docx",
   // },
-  {
-    label: "한글과컴퓨터 문서",
-    value: ExportFormat.Hangul,
-    icon: <TbAlphabetKorean />,
-    ext: ".hwpx",
-  },
+  // {
+  //   label: "한글과컴퓨터 문서",
+  //   value: ExportFormat.Hangul,
+  //   icon: <TbAlphabetKorean />,
+  //   ext: ".hwpx",
+  // },
   // {
   //   label: "PDF 문서",
   //   value: ExportFormat.PDF,
