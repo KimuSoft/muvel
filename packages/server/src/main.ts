@@ -56,6 +56,7 @@ async function bootstrap() {
       "https://test.kimustory.net",
       "https://muvel.kimustory.net",
       "http://tauri.localhost",
+      "https://muvel.app",
       "tauri://localhost",
       null,
       undefined,
