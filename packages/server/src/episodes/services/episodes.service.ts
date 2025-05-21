@@ -96,9 +96,11 @@ export class EpisodesService {
     episodeId: string,
     deltaBlocks: EpisodeDeltaBlockDto[],
   ) {
-    return this.episodeBlockSyncRepository.syncDeltaBlocks(
+    await this.episodeBlockSyncRepository.syncDeltaBlocks(
       episodeId,
       deltaBlocks,
     )
+
+    void this.episodesRepository.updateContentLength(episodeId)
   }
 }

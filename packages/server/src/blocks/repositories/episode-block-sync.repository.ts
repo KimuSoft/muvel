@@ -80,24 +80,8 @@ export class EpisodeBlockSyncRepository extends BaseBlockSyncRepository<
     return new EpisodeParentContextAdapter(episode)
   }
 
-  protected async postSyncParentUpdate(
-    parentContext: EpisodeParentContextAdapter,
-  ): Promise<void> {
-    try {
-      await this.episodeRepo.update(
-        { id: parentContext.id },
-        { isSnapshotted: false },
-      )
-      this.logger.log(
-        `Successfully updated isSnapshotted flag for episode ${parentContext.id}.`,
-      )
-    } catch (error) {
-      this.logger.error(
-        `Failed to update isSnapshotted flag for episode ${parentContext.id}:`,
-        error,
-      )
-    }
-  }
+  protected async postSyncParentUpdate() // parentContext: EpisodeParentContextAdapter,
+  : Promise<void> {}
 
   /**
    * EpisodeBlockEntity 객체와 해당 에피소드의 컨텍스트 정보를 받아,

@@ -3,16 +3,19 @@ import {
   type DeltaBlock,
   type EpisodeBlockType,
   type GetEpisodeResponseDto,
-  type SnapshotReason,
+  SnapshotReason,
 } from "muvel-api-types"
 import {
+  type EpisodeContext,
   getEpisodeBlocks,
   syncDeltaBlocks as syncEpisodeDeltaBlocksService,
 } from "~/services/episodeService"
 import { Node as PMNode } from "prosemirror-model"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 import { useInternalBlocksSyncLogic } from "~/hooks/useInternalBlocksSyncLogic"
-import { saveCloudSnapshot } from "~/services/api/api.episode-snapshot"
+import { useDebouncedCallback } from "use-debounce"
+import { saveEpisodeSnapshot } from "~/services/episodeSnapshotService"
+import { useEffect } from "react"
 
 // useEpisodeBlocksSync 훅의 Props 타입 정의
 interface UseEpisodeBlocksSyncProps {
@@ -36,14 +39,7 @@ export function useEpisodeBlocksSync({
   episodeContext,
   canEdit,
 }: UseEpisodeBlocksSyncProps): UseEpisodeBlocksSyncReturn {
-  const handleBeforeBackupMergeForEpisode = async (
-    documentId: string,
-    reason: SnapshotReason,
-  ): Promise<void> => {
-    await saveCloudSnapshot(documentId, reason)
-  }
-
-  const internalSyncResult = useInternalBlocksSyncLogic<
+  const { handleDocUpdate, ...internalSyncResult } = useInternalBlocksSyncLogic<
     GetEpisodeResponseDto,
     EpisodeBlockType
   >({
@@ -55,11 +51,35 @@ export function useEpisodeBlocksSync({
         context,
         deltas as DeltaBlock<EpisodeBlockType>[],
       ),
-    onBeforeBackupMerge: handleBeforeBackupMergeForEpisode,
+    onBeforeBackupMerge: async () => {
+      await saveEpisodeSnapshot(episodeContext, SnapshotReason.Merge)
+    },
   })
+
+  const debouncedAutoSave = useDebouncedCallback(
+    async (episodeContext: EpisodeContext) => {
+      await saveEpisodeSnapshot(episodeContext, SnapshotReason.Autosave)
+      console.log(episodeContext.id + ": 스냅샷 저장 완료")
+    },
+    1000 * 60 * 10,
+    { maxWait: 1000 * 60 * 10 },
+  )
+
+  useEffect(() => {
+    console.log(episodeContext.id + "로그")
+    return () => {
+      debouncedAutoSave.flush()
+    }
+  }, [episodeContext.id])
+
+  const handleDocUpdate_ = (doc: PMNode) => {
+    debouncedAutoSave(episodeContext)
+    handleDocUpdate(doc)
+  }
 
   return {
     ...internalSyncResult,
+    handleDocUpdate: handleDocUpdate_,
     initialBlocks: internalSyncResult.initialBlocks as
       | BaseBlock<EpisodeBlockType>[]
       | null,

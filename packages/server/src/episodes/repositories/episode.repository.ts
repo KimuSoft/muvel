@@ -49,4 +49,18 @@ export class EpisodeRepository extends Repository<EpisodeEntity> {
 
     return this.save(episode)
   }
+
+  public async updateContentLength(episodeId: string) {
+    return await this.dataSource
+      .createQueryBuilder()
+      .update("episode")
+      .set({
+        contentLength: () =>
+          `(SELECT COALESCE(SUM(LENGTH(REPLACE(b.text, ' ', ''))), 0)
+        FROM block b
+        WHERE b."episodeId" = episode.id)`,
+      })
+      .where("id = :id", { id: episodeId })
+      .execute()
+  }
 }

@@ -57,9 +57,6 @@ export class EpisodeEntity implements Omit<Episode, "createdAt" | "updatedAt"> {
   contentLength: number
 
   @Column({ default: false })
-  isSnapshotted: boolean
-
-  @Column({ default: false })
   isDriveBackup: boolean
 
   /** Relations */
