@@ -61,7 +61,7 @@ interface ResolvedEpisodeContext {
  * EpisodeInput을 받아 episodeId, novelId, novelShareType을 반환합니다.
  * input이 문자열(episodeId)이면, getEpisodeData를 호출하여 novel 컨텍스트를 얻습니다.
  */
-const resolveEpisodeContext = async (
+export const resolveEpisodeContext = async (
   input: EpisodeInput,
 ): Promise<ResolvedEpisodeContext> => {
   if (typeof input === "string") {

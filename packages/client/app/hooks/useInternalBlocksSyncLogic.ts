@@ -4,7 +4,6 @@ import {
   type MuvelBlockType,
   type PartialBlock,
   ShareType,
-  SnapshotReason,
 } from "muvel-api-types"
 import { chunk } from "lodash-es"
 import { useDebouncedCallback } from "use-debounce"
@@ -48,10 +47,7 @@ interface UseInternalBlocksSyncLogicProps<
    * IndexedDB에 저장된 백업 데이터를 병합하기 직전에 호출되는 선택적 콜백 함수.
    * 예를 들어, 에피소드의 경우 이 시점에서 스냅샷을 생성할 수 있습니다.
    */
-  onBeforeBackupMerge?: (
-    documentId: string,
-    reason: SnapshotReason,
-  ) => Promise<void>
+  onBeforeBackupMerge?: (documentId: string) => Promise<void>
 }
 
 // useInternalBlocksSyncLogic 훅의 반환 타입 정의
@@ -103,7 +99,7 @@ export function useInternalBlocksSyncLogic<
         const backupDelta = await findDeltaBlockBackup(docId)
         if (backupDelta && backupDelta.length > 0) {
           if (onBeforeBackupMerge) {
-            await onBeforeBackupMerge(docId, SnapshotReason.Merge)
+            await onBeforeBackupMerge(docId)
           } else {
             console.warn(
               `[${docId}] onBeforeBackupMerge is not provided. Skipping pre-merge operations.`,
