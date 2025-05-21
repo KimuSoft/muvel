@@ -23,11 +23,24 @@ export const WidgetZone = ({
       }
       transition={"background-color 0.2s"}
       h={"100%"}
-      px={2}
       {...props}
     >
       <SortableContext items={widgetIds} strategy={verticalListSortingStrategy}>
-        <VStack w={"100%"} h={"100%"} flexDir={"column-reverse"} gap={2}>
+        <VStack
+          w={"100%"}
+          h={"100%"}
+          flexDir={"column-reverse"}
+          gap={2}
+          p={2}
+          overflowY={"scroll"}
+          // 스크롤 숨기기
+          css={{
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+            scrollbarWidth: "none", // Firefox
+          }}
+        >
           {children}
         </VStack>
       </SortableContext>

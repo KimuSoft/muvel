@@ -130,7 +130,7 @@ export const WidgetPanel = () => {
         maxW={"300px"}
         left={3}
         bottom={3}
-        p={3}
+        h={"calc(100vh - 4rem)"}
       >
         {widgetLayout.left.map((id) => (
           <SortableWidget id={id} key={id} />
@@ -143,13 +143,13 @@ export const WidgetPanel = () => {
         display={{ base: "none", md: "flex" }}
         position={"fixed"}
         w={{
-          base: `calc(100vw - ${editorStyleOptions.editorMaxWidth}px)`,
+          base: `calc(95vw - ${editorStyleOptions.editorMaxWidth}px)`,
           xl: `calc(50vw - (${editorStyleOptions.editorMaxWidth}px / 2))`,
         }}
         maxW={"350px"}
         right={3}
         bottom={3}
-        p={3}
+        h={"calc(100vh - 4rem)"}
       >
         {widgetLayout.right.map((id) => (
           <SortableWidget id={id} key={id} />
