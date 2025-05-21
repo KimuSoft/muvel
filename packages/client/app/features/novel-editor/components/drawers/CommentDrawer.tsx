@@ -43,7 +43,7 @@ import {
   type getAvgAiAnalysisResponse,
 } from "~/services/api/api.episode-analysis"
 
-const MAX_AI_PROFILE = 8
+const MAX_AI_PROFILE = 30
 
 const CommentItem: React.FC<{
   username: string
