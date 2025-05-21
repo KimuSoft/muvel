@@ -1,4 +1,3 @@
-import type { EpisodeItemVariant } from "~/components/molecules/EpisodeItem"
 import type { ExportFormat } from "~/types/exportFormat"
 import type { WidgetId } from "~/features/novel-editor/widgets/components/widgetMap"
 
@@ -61,9 +60,16 @@ export interface AppExportOptions {
   format: ExportFormat
 }
 
+export enum EpisodeListLayout {
+  Detail = "detail",
+  Simple = "simple",
+  Grid = "grid",
+}
+
 export interface ViewOptions {
   widgetLayout: WidgetLayout
-  episodeListVariant: EpisodeItemVariant
+  episodeListLayout: EpisodeListLayout
+  episodeListSortDirection: "asc" | "desc"
 }
 
 export type WidgetInstanceId = string

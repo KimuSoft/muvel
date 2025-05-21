@@ -16,21 +16,17 @@ import { type StackProps, VStack } from "@chakra-ui/react"
 import type { Episode } from "muvel-api-types"
 import SortableEpisodeItem from "../molecules/SortableEpisodeItem" // 경로 확인 필요
 import { type ReorderedEpisode, reorderEpisode } from "~/utils/reorderEpisode"
-import type { EpisodeItemProps } from "~/components/molecules/EpisodeItem"
-import EpisodeGrid from "~/components/organisms/EpisodeGrid" // 경로 확인 필요
+import EpisodeGrid from "~/components/organisms/EpisodeGrid"
+import { useViewOptions } from "~/hooks/useAppOptions" // 경로 확인 필요
 
 /** ------------------------------------------------------------------
  *  Types
  * ------------------------------------------------------------------*/
-export type SortDirection = "asc" | "desc"
-
 type SortableEpisodeListProps = StackProps & {
   episodes: Episode[]
   loading?: boolean
   disableSort?: boolean
   onEpisodesChange?: (diffEpisodes: ReorderedEpisode[]) => void
-  sortDirection: SortDirection
-  variant: EpisodeItemProps["variant"] | "grid"
 }
 
 /** ------------------------------------------------------------------
@@ -45,13 +41,14 @@ const toCanonicalAsc = (eps: Episode[]) => [...eps].sort(ascSort)
  * ------------------------------------------------------------------*/
 const SortableEpisodeList: React.FC<SortableEpisodeListProps> = ({
   episodes,
-  variant,
   loading,
   onEpisodesChange,
   disableSort,
-  sortDirection,
   ...props
 }) => {
+  const [
+    { episodeListLayout: variant, episodeListSortDirection: sortDirection },
+  ] = useViewOptions()
   /** ------------------------------------------------------------------
    * Sensors
    * ------------------------------------------------------------------*/
@@ -109,12 +106,7 @@ const SortableEpisodeList: React.FC<SortableEpisodeListProps> = ({
    * Render
    * ------------------------------------------------------------------*/
   return (
-    <VStack
-      alignItems={"stretch"}
-      w={"100%"}
-      gap={variant === "simple" ? 0 : 2}
-      {...props}
-    >
+    <VStack alignItems={"stretch"} w={"100%"} gap={1} {...props}>
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
         <SortableContext
           disabled={loading || disableSort}
@@ -122,11 +114,11 @@ const SortableEpisodeList: React.FC<SortableEpisodeListProps> = ({
           items={displayedEpisodes}
           strategy={rectSortingStrategy}
         >
-          {displayedEpisodes.map((episode, idx) => (
+          {displayedEpisodes.map((episode) => (
             <SortableEpisodeItem
               key={episode.id}
               episode={episode}
-              index={idx}
+              // index={idx}
               variant={variant}
               loading={loading}
             />

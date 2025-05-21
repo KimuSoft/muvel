@@ -55,7 +55,6 @@ const EpisodeGrid: React.FC<EpisodeGridProps> = ({ episodes, loading }) => {
             <EpisodeItem
               key={groupOrChunk.id}
               episode={groupOrChunk}
-              index={index} // EpisodeItem의 mt 계산에 사용될 수 있음
               loading={loading}
               variant="detail" // 또는 그룹에 맞는 다른 variant
               // EpisodeItem은 width="100%"를 이미 가지고 있을 수 있음

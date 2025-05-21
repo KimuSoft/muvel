@@ -4,6 +4,7 @@ import {
   type AppExportOptions,
   type AppOptions,
   type EditorStyleOptions,
+  EpisodeListLayout,
   LineBreakImportStrategy,
   type ViewOptions,
   type WidgetSettings,
@@ -31,7 +32,8 @@ export const defaultAppExportOptions: AppExportOptions = {
 
 export const defaultViewOptions: ViewOptions = {
   widgetLayout: { left: [], right: ["charCount" as WidgetId] },
-  episodeListVariant: "detail",
+  episodeListLayout: EpisodeListLayout.Detail,
+  episodeListSortDirection: "asc",
 }
 
 export const defaultWidgetSettings: WidgetSettings = {}
