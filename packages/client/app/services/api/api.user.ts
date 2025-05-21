@@ -18,7 +18,7 @@ export const getMe = async (config?: AxiosRequestConfig<any>) => {
     if (!isAxiosError(e)) throw e
     if (e.response?.status === 401) return null
     console.error("Error fetching user data:", e)
-    throw e
+    return null
   }
 }
 
