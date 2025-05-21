@@ -66,7 +66,7 @@ jobs:
           ANDROID_HOME: ${{ env.ANDROID_SDK_ROOT }}
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
           NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
-        run: pnpm --filter tauri-app tauri android build --target aarch64 --target armv7 --aab
+        run: pnpm --filter tauri-app tauri android build --target aarch64 --target armv7
 
       - name: Upload Android artifact
         uses: actions/upload-artifact@v4
@@ -103,8 +103,8 @@ jobs:
           token: ${{ secrets.PUBLIC_REPO_TOKEN }}
           repository: KimuSoft/muvel-public
           files: |
-            artifacts/tauri-app-android/*.apk
-            artifacts/tauri-app-android/*.aab
+            artifacts/tauri-app-android/apk/universal/release/*.apk
+            artifacts/tauri-app-android/bundle/universalRelease/*.aab
           tag_name: v${{ steps.package_version.outputs.PACKAGE_VERSION }}
           name: "v${{ steps.package_version.outputs.PACKAGE_VERSION }}"
           body: |
