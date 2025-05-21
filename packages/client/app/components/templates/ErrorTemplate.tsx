@@ -64,7 +64,7 @@ const ErrorTemplate: React.FC<{
               colorPalette={"purple"}
               onClick={async () => {
                 const { openUrl } = await getOpenerPlugin()
-                await openUrl("https://muvel.kimustory.net/info")
+                await openUrl("https://muvel.app/info")
               }}
             >
               <TbDownload />
