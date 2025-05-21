@@ -73,7 +73,7 @@ jobs:
         with:
           name: tauri-app-android
           path: |
-            packages/tauri-app/src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release.
+            packages/tauri-app/src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk
             packages/tauri-app/src-tauri/gen/android/app/build/outputs/bundle/universalRelease/app-universal-release.aab
 
   # ─────────────────────────────── Release job ──────────────────────────
