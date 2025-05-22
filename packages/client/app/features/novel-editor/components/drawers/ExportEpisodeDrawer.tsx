@@ -38,6 +38,7 @@ import { defaultAppExportOptions } from "~/types/defaultOptions"
 import { useExportSettingOptions } from "~/hooks/useAppOptions"
 import { pmNodeToText } from "~/services/io/txt/pmNodeToText"
 import { exportEpisode } from "~/services/ioService"
+import { FaInfoCircle } from "react-icons/fa"
 
 // --- 내보내기 Drawer 컴포넌트 시작 ---
 export const ExportEpisodeDrawer: React.FC<{
@@ -72,28 +73,6 @@ export const ExportEpisodeDrawer: React.FC<{
     }
   }, [processedContent])
 
-  const handleSaveAsTxt = useCallback(() => {
-    if (!processedContent) return
-
-    // 1. Blob 생성
-    const blob = new Blob([processedContent], {
-      type: "text/plain;charset=utf-8",
-    })
-
-    // 2. 다운로드 링크 생성
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = url
-    // 파일명 설정 (제목 + .txt), 유효하지 않은 문자 제거/대체 필요할 수 있음
-    link.download = `${episode.title.replace(/[\\/:*?"<>|]/g, "_")}.txt`
-
-    // 3. 링크 클릭 및 URL 해제
-    document.body.appendChild(link) // 링크를 DOM에 추가해야 Firefox 등에서 작동
-    link.click()
-    document.body.removeChild(link) // 추가했던 링크 제거
-    URL.revokeObjectURL(url) // 메모리 해제
-  }, [processedContent, episode.title]) // episodeTitle도 의존성에 추가
-
   return (
     <DrawerRootProvider value={dialog} lazyMount size={"sm"}>
       {children && <DrawerTrigger asChild>{children}</DrawerTrigger>}
@@ -119,20 +98,35 @@ export const ExportEpisodeDrawer: React.FC<{
 
               {/* 내보내기 옵션 영역 */}
               <Stack gap={4} borderRadius="md">
-                <HStack>
-                  <IoDocumentOutline />
-                  <Text fontWeight="medium" fontSize="md">
-                    내보내기 포맷
-                  </Text>
-                </HStack>
-                <ExportFormatSelect
-                  value={exportOptions.format}
-                  onChange={(value) =>
-                    setExportOptions((opt) => {
-                      opt.format = value
-                    })
-                  }
-                />
+                <Field.Root>
+                  <HStack mb={2}>
+                    <IoDocumentOutline />
+                    <Text fontWeight="medium" fontSize="md">
+                      내보내기 포맷
+                    </Text>
+                  </HStack>
+                  <ExportFormatSelect
+                    value={exportOptions.format}
+                    onChange={(value) =>
+                      setExportOptions((opt) => {
+                        opt.format = value
+                      })
+                    }
+                  />
+                  {[
+                    ExportFormat.Clipboard,
+                    ExportFormat.PlainText,
+                    ExportFormat.Hangul,
+                  ].includes(exportOptions.format) && (
+                    <HStack color={"purple.500"}>
+                      <FaInfoCircle />
+                      <Field.HelperText>
+                        이 포맷은 서식(볼드, 기울임, 이탤릭 등) 내보내기를
+                        지원하지 않아요.
+                      </Field.HelperText>
+                    </HStack>
+                  )}
+                </Field.Root>
                 <HStack mt={5}>
                   <MdSubdirectoryArrowRight />
                   <Text fontWeight="medium" fontSize="md">

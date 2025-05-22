@@ -51,12 +51,12 @@ const formats = [
   //   icon: <PiMicrosoftWordLogo />,
   //   ext: ".docx",
   // },
-  // {
-  //   label: "한글과컴퓨터 문서",
-  //   value: ExportFormat.Hangul,
-  //   icon: <TbAlphabetKorean />,
-  //   ext: ".hwpx",
-  // },
+  {
+    label: "한글과컴퓨터 문서",
+    value: ExportFormat.Hangul,
+    icon: <TbAlphabetKorean />,
+    ext: ".hwpx",
+  },
   // {
   //   label: "PDF 문서",
   //   value: ExportFormat.PDF,

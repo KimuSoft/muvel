@@ -10,7 +10,8 @@ import {
   CONTENTS_CONTENT_HPF,
   CONTENTS_SECTION0_XML,
   P_TAG_2,
-} from "./constants" // 이 파일은 사용자가 제공하며, 여기서는 작성하지 않습니다.
+} from "./constants"
+import { generateSection0Xml } from "~/services/io/hwpx/generateSection0Xml" // 이 파일은 사용자가 제공하며, 여기서는 작성하지 않습니다.
 
 // PrvImage.png에 사용될 1x1 투명 PNG 이미지 (base64)
 const PRV_IMAGE_BASE64 =
@@ -64,13 +65,14 @@ export async function textToHwpx(text: string): Promise<Blob> {
     contentsFolder.file("content.hpf", CONTENTS_CONTENT_HPF)
 
     // section0.xml 내용에서 {MUVEL_TEXT}를 주어진 텍스트로 교체
-    const section0Content = CONTENTS_SECTION0_XML.replace(
-      "{CONTENT}",
-      text
-        .split("\n")
-        .map((line) => P_TAG_2.replace("{CONTENT}", line.trim()))
-        .join(),
-    )
+    // const section0Content = CONTENTS_SECTION0_XML.replace(
+    //   "{CONTENT}",
+    //   text
+    //     .split("\n")
+    //     .map((line) => P_TAG_2.replace("{CONTENT}", line.trim()))
+    //     .join(),
+    // )
+    const section0Content = generateSection0Xml(text)
     console.log(section0Content)
     contentsFolder.file("section0.xml", section0Content)
   }

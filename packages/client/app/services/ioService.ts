@@ -11,7 +11,7 @@ import { pmNodeToMarkdown } from "~/services/io/markdown"
 import { pmNodeToHtml } from "~/services/io/html"
 import { docToBlocks } from "~/features/novel-editor/utils/blockConverter"
 import { getDialogApi, getFsPlugin, getPathApi } from "./tauri/tauriApiProvider"
-import { textToHwpx } from "~/services/io/hwpx/hwpxToText"
+import { textToHwpx } from "~/services/io/hwpx/textToHwpx"
 
 const MAX_BLOCKS_PER_EPISODE = 1000
 const SYNC_CHUNK_SIZE = 300
