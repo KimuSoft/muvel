@@ -22,7 +22,7 @@ import {
 import { getNovel } from "~/services/novelService"
 import { getEpisodeBlocks } from "~/services/episodeService"
 import { useEditorStyleOptions } from "~/hooks/useAppOptions"
-import { useEpisodeContext } from "~/features/novel-editor/context/EpisodeContext"
+import { useEpisodeContext } from "~/providers/EpisodeProvider"
 
 interface EpisodeSelectItem {
   label: string

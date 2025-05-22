@@ -21,7 +21,7 @@ import React, { useEffect } from "react"
 import { type EpisodeSnapshot, SnapshotReason } from "muvel-api-types"
 import { TbHistory, TbSlash } from "react-icons/tb"
 import { toaster } from "~/components/ui/toaster"
-import type { EpisodeData } from "~/features/novel-editor/context/EpisodeContext"
+import type { EpisodeData } from "~/providers/EpisodeProvider"
 import { getCloudSnapshots } from "~/services/api/api.episode-snapshot"
 
 const SnapshotItem: React.FC<{

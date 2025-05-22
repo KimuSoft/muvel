@@ -1,37 +1,17 @@
 import type { GetEpisodeResponseDto } from "muvel-api-types"
 import FlowEditorTemplate from "~/features/flow-editor/FlowEditorTemplate"
 import React, { useEffect } from "react"
-import { debounce } from "lodash-es"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
-import { updateEpisodeMetadata } from "~/services/episodeService"
+import { EpisodeProvider } from "~/providers/EpisodeProvider"
+import { useEpisodeMetadataSync } from "~/features/novel-editor/hooks/useEpisodeMetadataSync"
+import LoadingOverlay from "~/components/templates/LoadingOverlay"
 
 const FlowEditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   episode,
 }) => {
-  const [syncState, setSyncState] = React.useState(SyncState.Synced)
-
-  // TODO: useEpisodeSync 훅으로 리팩토링
-  const debouncedUpdateTitle = debounce(async (title: string) => {
-    setSyncState(SyncState.Syncing)
-    await updateEpisodeMetadata(episode, { title })
-    setSyncState(SyncState.Synced)
-  }, 1000)
-
-  const debouncedUpdateFlow = debounce(async (doc: any) => {
-    setSyncState(SyncState.Syncing)
-    await updateEpisodeMetadata(episode, { flowDoc: doc })
-    setSyncState(SyncState.Synced)
-  }, 5000)
-
-  const titleChangeHandler = (title: string) => {
-    setSyncState(SyncState.Waiting)
-    void debouncedUpdateTitle(title)
-  }
-
-  const flowChangeHandler = (doc: any) => {
-    setSyncState(SyncState.Waiting)
-    void debouncedUpdateFlow(doc)
-  }
+  const { syncState, episodeData, setEpisodeData } = useEpisodeMetadataSync({
+    initialEpisode: episode,
+  })
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -48,13 +28,18 @@ const FlowEditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
     }
   }, [syncState])
 
+  if (!episodeData) {
+    return <LoadingOverlay />
+  }
+
   return (
-    <FlowEditorTemplate
-      episode={episode}
-      onTitleChange={titleChangeHandler}
-      onFlowChange={flowChangeHandler}
+    <EpisodeProvider
+      episode={episodeData}
+      setEpisode={setEpisodeData}
       syncState={syncState}
-    />
+    >
+      <FlowEditorTemplate />
+    </EpisodeProvider>
   )
 }
 

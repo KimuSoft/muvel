@@ -35,7 +35,7 @@ import AiAnalysisWarningDialog from "~/features/novel-editor/components/dialogs/
 import { toaster } from "~/components/ui/toaster"
 import AiAnalysisChart from "~/features/novel-editor/components/AiAnalysisChart"
 import { getTimeAgoKo } from "~/utils/getTimeAgoKo"
-import type { EpisodeData } from "~/features/novel-editor/context/EpisodeContext"
+import type { EpisodeData } from "~/providers/EpisodeProvider"
 import {
   createAiAnalysis,
   getAiAnalysis,

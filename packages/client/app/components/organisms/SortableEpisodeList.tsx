@@ -114,11 +114,11 @@ const SortableEpisodeList: React.FC<SortableEpisodeListProps> = ({
           items={displayedEpisodes}
           strategy={rectSortingStrategy}
         >
-          {displayedEpisodes.map((episode) => (
+          {displayedEpisodes.map((episode, idx) => (
             <SortableEpisodeItem
               key={episode.id}
               episode={episode}
-              // index={idx}
+              isFirst={!idx}
               variant={variant}
               loading={loading}
             />

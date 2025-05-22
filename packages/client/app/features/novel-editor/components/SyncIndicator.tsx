@@ -1,7 +1,7 @@
 import React, { useMemo } from "react"
 import { Box, type BoxProps, Center } from "@chakra-ui/react"
 import { Tooltip } from "~/components/ui/tooltip"
-import { useEpisodeContext } from "~/features/novel-editor/context/EpisodeContext"
+import { useEpisodeContext } from "~/providers/EpisodeProvider"
 
 export enum SyncState {
   Waiting = "waiting",

@@ -7,7 +7,7 @@ import LoadingOverlay from "~/components/templates/LoadingOverlay"
 import { useEpisodeMetadataSync } from "~/features/novel-editor/hooks/useEpisodeMetadataSync"
 import { combineSyncStates } from "~/utils/combineSyncStates"
 import { useEpisodeBlocksSync } from "~/features/novel-editor/hooks/useEpisodeBlocksSync"
-import { EpisodeProvider } from "~/features/novel-editor/context/EpisodeContext"
+import { EpisodeProvider } from "~/providers/EpisodeProvider"
 
 const EditorPage: React.FC<{ episode: GetEpisodeResponseDto }> = ({
   episode: initialEpisode,
