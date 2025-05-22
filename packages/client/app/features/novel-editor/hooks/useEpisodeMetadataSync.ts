@@ -5,7 +5,7 @@ import { useDebouncedCallback } from "use-debounce"
 import { toaster } from "~/components/ui/toaster"
 import { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 import { updateEpisodeMetadata } from "~/services/episodeService"
-import type { EpisodeData } from "~/features/novel-editor/context/EpisodeContext"
+import type { EpisodeData } from "~/providers/EpisodeProvider"
 
 type EpisodePatchData = Partial<
   Omit<EpisodeData, "id" | "permissions" | "createdAt" | "updatedAt" | "novel">

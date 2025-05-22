@@ -7,12 +7,11 @@ import { ColorModeButton } from "~/components/ui/color-mode"
 import SyncIndicator, {
   type SyncState,
 } from "~/features/novel-editor/components/SyncIndicator"
+import { useEpisodeContext } from "~/providers/EpisodeProvider"
 
-const FlowEditorHeader: React.FC<{
-  episode: GetEpisodeResponseDto
-  syncState: SyncState
-  onTitleChange(title: string): void
-}> = ({ episode, syncState, onTitleChange }) => {
+const FlowEditorHeader: React.FC = () => {
+  const { episode, updateEpisodeData } = useEpisodeContext()
+
   return (
     <HStack
       position={"fixed"}
@@ -42,7 +41,11 @@ const FlowEditorHeader: React.FC<{
       <Input
         defaultValue={episode.title}
         placeholder={"제목을 입력하세요"}
-        onChange={(e) => onTitleChange(e.target.value)}
+        onChange={(e) =>
+          updateEpisodeData((draft) => {
+            draft.title = e.target.value
+          })
+        }
       />
       <Spacer />
       <ColorModeButton size={"sm"} />

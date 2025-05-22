@@ -20,31 +20,31 @@ import { Tooltip } from "~/components/ui/tooltip"
 import MemoNode, {
   type MemoNodeType,
 } from "~/features/flow-editor/nodes/MemoNode"
+import { useEpisodeContext } from "~/providers/EpisodeProvider"
 
 const nodeTypes = {
   memoNode: MemoNode, // 'canvasNode' 라는 타입 이름으로 CanvasNode 컴포넌트 사용
 }
 
-const FlowEditor: React.FC<{
-  doc?: { nodes: Node[]; edges: Edge[] }
-  onChange(doc: { nodes: Node[]; edges: Edge[] }): void
-}> = ({
-  doc = {
-    nodes: [],
-    edges: [],
-  },
-  onChange,
-}) => {
+const FlowEditor: React.FC = () => {
+  const { episode, updateEpisodeData } = useEpisodeContext()
+
   const reactFlowWrapper = useRef<HTMLDivElement>(null) // Ref 추가
   const { screenToFlowPosition } = useReactFlow()
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node>(doc?.nodes || [])
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(doc?.edges || [])
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>(
+    episode.flowDoc?.nodes || [],
+  )
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(
+    episode.flowDoc?.edges || [],
+  )
 
   const onConnect: OnConnect = (params) =>
     setEdges((eds) => addEdge(params, eds))
 
   useEffect(() => {
-    if (onChange) onChange({ nodes, edges })
+    updateEpisodeData((draft) => {
+      draft.flowDoc = { nodes, edges }
+    })
   }, [nodes, edges])
 
   const onConnectEnd: OnConnectEnd = useCallback(
