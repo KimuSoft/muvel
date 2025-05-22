@@ -6,6 +6,7 @@ import {
   Skeleton,
   type StackProps,
   Text,
+  type TextProps,
   VStack,
 } from "@chakra-ui/react"
 import { TbBrandZapier, TbRefresh, TbStar, TbTypography } from "react-icons/tb"
@@ -72,7 +73,14 @@ const LargePrefix = ({ episode }: { episode: Episode }) => {
   if (!prefix) return null
 
   return (
-    <Center mr={1} flexShrink={0} w="68px" minH={"53px"} h={"100%"}>
+    <Center
+      mr={1}
+      flexShrink={0}
+      w="68px"
+      minH={"53px"}
+      display="none"
+      css={{ [`@container (min-width: ${CQ_BP})`]: { display: "flex" } }}
+    >
       <Text fontSize="36px" fontWeight={200} color="purple.500">
         {prefix}
       </Text>
@@ -81,7 +89,10 @@ const LargePrefix = ({ episode }: { episode: Episode }) => {
 }
 
 /* ---------- Small count (simple + 좁은 detail) ---------- */
-const SmallCount = ({ episode }: { episode: Episode }) => {
+const SmallCount = ({
+  episode,
+  ...props
+}: TextProps & { episode: Episode }) => {
   const label = {
     [EpisodeType.Episode]: `${Math.round(Number(episode.order))}편`,
     [EpisodeType.Prologue]: "프롤로그",
@@ -92,7 +103,13 @@ const SmallCount = ({ episode }: { episode: Episode }) => {
   }[episode.episodeType]
 
   return (
-    <Text ml={2} color="purple.500" fontWeight={600} flexShrink={0} minW="32px">
+    <Text
+      color="purple.500"
+      fontWeight={600}
+      flexShrink={0}
+      minW="32px"
+      {...props}
+    >
       {label}
     </Text>
   )
@@ -103,10 +120,11 @@ export interface EpisodeItemProps extends StackProps {
   episode: Episode
   loading?: boolean
   variant?: EpisodeItemVariant
+  isFirst?: boolean
 }
 
 const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
-  ({ episode, loading, variant = "simple", ...rest }, ref) => {
+  ({ episode, loading, variant = "simple", isFirst, ...rest }, ref) => {
     const navigate = useNavigate()
     const go = useCallback(
       () => navigate(`/episodes/${episode.id}`),
@@ -121,7 +139,7 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
             <Box
               px={3}
               py={1}
-              mt={0}
+              mt={isFirst ? 0 : 4}
               mb={2}
               borderWidth={1}
               borderColor="purple.500"
@@ -158,7 +176,17 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
           {...rest}
         >
           {/* 좌측 보라색 바 */}
-          <Box w="4px" bg="purple.500" flexShrink={0} />
+          <Box
+            w="4px"
+            bg="purple.500"
+            flexShrink={0}
+            mr={1.5}
+            css={
+              variant === "detail"
+                ? { [`@container (min-width: ${CQ_BP})`]: { marginRight: 1 } }
+                : undefined
+            }
+          />
 
           {/* prefix or 작은 count */}
           {variant === "detail" && <LargePrefix episode={episode} />}
@@ -173,6 +201,15 @@ const EpisodeItem = forwardRef<HTMLDivElement, EpisodeItemProps>(
           >
             <HStack w="100%" overflow="hidden">
               {variant === "simple" && <SmallCount episode={episode} />}
+              {variant === "detail" && (
+                <SmallCount
+                  episode={episode}
+                  css={{
+                    [`@container (min-width: ${CQ_BP})`]: { display: "none" },
+                  }}
+                />
+              )}
+
               <Text truncate>{episode.title || "제목 없음"}</Text>
             </HStack>
 

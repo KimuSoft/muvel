@@ -21,6 +21,8 @@ import MemoNode, {
   type MemoNodeType,
 } from "~/features/flow-editor/nodes/MemoNode"
 import { useEpisodeContext } from "~/providers/EpisodeProvider"
+import { cloneDeep } from "lodash-es"
+import { useDebouncedCallback } from "use-debounce"
 
 const nodeTypes = {
   memoNode: MemoNode, // 'canvasNode' 라는 타입 이름으로 CanvasNode 컴포넌트 사용
@@ -41,10 +43,18 @@ const FlowEditor: React.FC = () => {
   const onConnect: OnConnect = (params) =>
     setEdges((eds) => addEdge(params, eds))
 
+  const debouncedUpdateEpisode = useDebouncedCallback(
+    (n: Node[], e: Edge[]) => {
+      updateEpisodeData((draft) => {
+        console.log("UPDATE!")
+        draft.flowDoc = { nodes: cloneDeep(n), edges: cloneDeep(e) }
+      })
+    },
+    1000,
+  )
+
   useEffect(() => {
-    updateEpisodeData((draft) => {
-      draft.flowDoc = { nodes, edges }
-    })
+    debouncedUpdateEpisode(nodes, edges)
   }, [nodes, edges])
 
   const onConnectEnd: OnConnectEnd = useCallback(
