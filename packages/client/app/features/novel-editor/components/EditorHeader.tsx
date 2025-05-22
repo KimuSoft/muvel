@@ -26,7 +26,7 @@ import { PiGear } from "react-icons/pi"
 import { usePlatform } from "~/hooks/usePlatform"
 import { IoCloudOffline } from "react-icons/io5"
 import { ShareType } from "muvel-api-types"
-import type { EpisodeData } from "~/features/novel-editor/context/EpisodeContext"
+import type { EpisodeData } from "~/providers/EpisodeProvider"
 
 const EditorHeader: React.FC<
   StackProps & {

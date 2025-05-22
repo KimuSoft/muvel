@@ -8,7 +8,7 @@ import {
   WidgetHeader,
   WidgetTitle,
 } from "~/features/novel-editor/widgets/containers/WidgetBase"
-import { useEpisodeContext } from "~/features/novel-editor/context/EpisodeContext" // 경로 수정 필요
+import { useEpisodeContext } from "~/providers/EpisodeProvider" // 경로 수정 필요
 
 // Debounce delay 제거됨
 

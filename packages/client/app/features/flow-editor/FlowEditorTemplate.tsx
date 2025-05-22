@@ -1,27 +1,15 @@
-import type { GetEpisodeResponseDto } from "muvel-api-types"
 import React from "react"
 import FlowEditorHeader from "~/features/flow-editor/components/FlowEditorHeader"
 import "@xyflow/react/dist/style.css"
 import FlowEditor from "~/features/flow-editor/components/FlowEditor"
 import { ReactFlowProvider } from "@xyflow/react"
-import type { SyncState } from "~/features/novel-editor/components/SyncIndicator"
 
-const FlowEditorTemplate: React.FC<{
-  episode: GetEpisodeResponseDto
-  syncState: SyncState
-
-  onTitleChange(title: string): void
-  onFlowChange(doc: any): void
-}> = ({ episode, onTitleChange, syncState, onFlowChange }) => {
+const FlowEditorTemplate: React.FC = () => {
   return (
     <>
-      <FlowEditorHeader
-        syncState={syncState}
-        episode={episode}
-        onTitleChange={onTitleChange}
-      />
+      <FlowEditorHeader />
       <ReactFlowProvider>
-        <FlowEditor doc={episode.flowDoc} onChange={onFlowChange} />
+        <FlowEditor />
       </ReactFlowProvider>
     </>
   )

@@ -16,7 +16,7 @@ import { WidgetPanel } from "~/features/novel-editor/widgets/containers/WidgetPa
 import { useEditorStyleOptions, useWidgetLayout } from "~/hooks/useAppOptions"
 import EpisodeTypeMenu from "~/features/novel-editor/components/menus/EpisodeTypeMenu"
 import { usePlatform } from "~/hooks/usePlatform"
-import { useEpisodeContext } from "~/features/novel-editor/context/EpisodeContext"
+import { useEpisodeContext } from "~/providers/EpisodeProvider"
 import EpisodeTitleInput from "~/features/novel-editor/components/EpisodeTitleInput"
 
 const EditorTemplate: React.FC<{
