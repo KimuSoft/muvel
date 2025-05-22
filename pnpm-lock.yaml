@@ -88,6 +88,9 @@ importers:
       isbot:
         specifier: ^5
         version: 5.1.28
+      jszip:
+        specifier: ^3.10.1
+        version: 3.10.1
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
