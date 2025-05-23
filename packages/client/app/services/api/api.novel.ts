@@ -6,6 +6,7 @@ import type {
   ExportNovelResponseDto,
   GetNovelResponseDto,
   Novel,
+  SearchInNovelResponse,
   UpdateNovelRequestDto,
   WikiPage,
 } from "muvel-api-types"
@@ -87,5 +88,16 @@ export const updateCloudNovelEpisodes = async (
 
 export const deleteCloudNovel = async (id: string) => {
   const { data } = await api.delete<Novel>(`/novels/${id}`)
+  return data
+}
+
+export const searchInCloudNovel = async (
+  id: string,
+  query: string,
+): Promise<SearchInNovelResponse> => {
+  const { data } = await api.get<SearchInNovelResponse>(
+    `/novels/${id}/search`,
+    { params: { q: query } },
+  )
   return data
 }

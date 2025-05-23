@@ -67,7 +67,7 @@ const MobileActionMenu: React.FC<{
 
       <Menu.Positioner>
         <Menu.Content>
-          <Menu.Item value="search" disabled={isLocalNovel}>
+          <Menu.Item value="search">
             <BiSearch /> 소설 검색하기
           </Menu.Item>
           <Menu.Item value="review" disabled={isLocalNovel}>

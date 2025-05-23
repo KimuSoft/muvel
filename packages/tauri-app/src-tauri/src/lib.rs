@@ -91,6 +91,8 @@ pub fn run() {
             remove_novel_project_command,
             open_novel_project_folder_command,
             save_novel_image_command,
+            // 소설 검색 관련 명령어
+            search_in_novel_command,
             // 에피소드 관련 명령어
             create_local_episode_command,
             get_local_episode_data_command,

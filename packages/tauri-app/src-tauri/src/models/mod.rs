@@ -4,5 +4,6 @@ pub mod enums;
 pub mod episode;
 pub mod index;
 pub mod novel;
+pub mod search_results;
 pub mod snapshot;
 pub mod wiki_page;

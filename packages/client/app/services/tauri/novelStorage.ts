@@ -7,6 +7,7 @@ import {
   masterPermission,
   type Novel as ApiNovel,
   type UpdateNovelRequestDto,
+  type SearchInNovelResponse,
 } from "muvel-api-types"
 import { getAllLocalNovelEntries as getAllTauriLocalNovelEntries } from "~/services/tauri/indexStorage"
 import type { EpisodeData } from "~/providers/EpisodeProvider"
@@ -14,6 +15,7 @@ import {
   CMD_CREATE_LOCAL_NOVEL,
   CMD_GET_LOCAL_NOVEL_DETAILS,
   CMD_OPEN_NOVEL_PROJECT_FOLDER,
+  CMD_SEARCH_IN_NOVEL,
   CMD_UPDATE_LOCAL_NOVEL_EPISODES_METADATA,
   CMD_UPDATE_LOCAL_NOVEL_METADATA,
 } from "~/services/tauri/constants"
@@ -143,6 +145,28 @@ export const openLocalNovelProjectFolder = async (novelId: string) => {
   } catch (error) {
     console.error(
       `Error opening local novel project folder for ${novelId}:`,
+      error,
+    )
+    throw error
+  }
+}
+
+/**
+ * 로컬 소설의 전체 내용에서 검색을 수행합니다.
+ */
+export const searchInLocalNovel = async (
+  novelId: string,
+  query: string,
+): Promise<SearchInNovelResponse> => {
+  const { invoke } = await getCoreApi()
+  try {
+    return await invoke<SearchInNovelResponse>(CMD_SEARCH_IN_NOVEL, {
+      novelId,
+      query,
+    })
+  } catch (error) {
+    console.error(
+      `Error searching local novel ${novelId} for query "${query}":`,
       error,
     )
     throw error

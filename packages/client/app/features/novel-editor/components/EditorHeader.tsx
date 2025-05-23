@@ -124,7 +124,6 @@ const EditorHeader: React.FC<
               <IconButton
                 aria-label="소설 검색하기"
                 variant="ghost"
-                disabled={isLocal}
                 onClick={() => searchDialog.setOpen(true)}
               >
                 <BiSearch />

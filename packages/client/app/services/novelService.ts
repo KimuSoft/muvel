@@ -6,6 +6,7 @@ import {
   type ExportNovelResponseDto,
   type GetNovelResponseDto,
   type Novel as ApiNovel,
+  type SearchInNovelResponse,
   ShareType,
   ShareType as ApiShareType,
   type UpdateNovelRequestDto,
@@ -18,6 +19,7 @@ import {
   deleteCloudNovel,
   exportCloudNovel,
   getCloudNovel,
+  searchInCloudNovel,
   updateCloudNovel,
   updateCloudNovelEpisodes,
 } from "./api/api.novel"
@@ -28,6 +30,7 @@ import {
   type CreateLocalNovelOptions,
   getLocalNovelDetails as getTauriLocalNovelDetails,
   getMyLocalNovels,
+  searchInLocalNovel,
   updateLocalNovelEpisodes,
   updateLocalNovelMetadata as updateTauriLocalNovelMetadata,
 } from "./tauri/novelStorage"
@@ -283,4 +286,17 @@ export const createNovelWikiPage = async (
     return localWikiStorage.createLocalWikiPage(options)
   }
   return createCloudNovelWikiPage(novelId, options)
+}
+
+export const searchInNovel = async (
+  novelInput: NovelInput,
+  keyword: string,
+): Promise<SearchInNovelResponse> => {
+  const { id: novelId, share: shareTypeToUse } =
+    await resolveNovelContext(novelInput)
+
+  if (IS_TAURI_APP && shareTypeToUse === ShareType.Local) {
+    return searchInLocalNovel(novelId, keyword)
+  }
+  return searchInCloudNovel(novelId, keyword)
 }

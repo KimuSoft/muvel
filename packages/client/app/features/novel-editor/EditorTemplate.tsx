@@ -1,4 +1,4 @@
-import { type Block, EpisodeType, SnapshotReason } from "muvel-api-types"
+import { type EpisodeBlock, EpisodeType, SnapshotReason } from "muvel-api-types"
 import React, { useEffect, useMemo, useRef } from "react"
 import NovelEditor from "~/features/novel-editor/components/NovelEditor"
 import {
@@ -22,7 +22,7 @@ import { toaster } from "~/components/ui/toaster"
 import { saveEpisodeSnapshot } from "~/services/episodeSnapshotService"
 
 const EditorTemplate: React.FC<{
-  initialBlocks: Block[]
+  initialBlocks: EpisodeBlock[]
 }> = ({ initialBlocks }) => {
   const { episode, updateEpisodeData } = useEpisodeContext()
   const [editorStyle] = useEditorStyleOptions()

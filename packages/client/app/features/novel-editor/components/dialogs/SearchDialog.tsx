@@ -19,16 +19,12 @@ import {
   type UseDialogReturn,
   VStack,
 } from "@chakra-ui/react"
-import { api } from "~/utils/api"
 import { MdMessage } from "react-icons/md"
 import { TbMessage, TbSearch } from "react-icons/tb"
-import {
-  NovelSearchItemType,
-  type NovelSearchResult,
-  type SearchInNovelResponse,
-} from "muvel-api-types"
+import { NovelSearchItemType, type NovelSearchResult } from "muvel-api-types"
 import SearchInNovelItem from "~/features/novel-editor/components/SearchInNovelItem"
 import { useDebouncedCallback } from "use-debounce"
+import { searchInNovel } from "~/services/novelService"
 
 const SearchDialog: React.FC<{
   novelId: string
@@ -41,13 +37,8 @@ const SearchDialog: React.FC<{
 
   const fetch = useCallback(async () => {
     setIsLoading(true)
-    const { data } = await api.get<SearchInNovelResponse>(
-      `novels/${novelId}/search`,
-      {
-        params: { q: query },
-      },
-    )
-    setHitItems(data.hits)
+    const result = await searchInNovel(novelId, query)
+    setHitItems(result.hits)
     setIsLoading(false)
   }, [query])
 

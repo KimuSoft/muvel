@@ -23,6 +23,9 @@ export const CMD_OPEN_NOVEL_PROJECT_FOLDER = `open_novel_project_folder_command`
 export const CMD_SAVE_NOVEL_IMAGE = `save_novel_image_command`
 export const CMD_UPDATE_LOCAL_NOVEL_EPISODES_METADATA = `update_local_novel_episodes_metadata_command`
 
+// NOVEL SEARCH
+export const CMD_SEARCH_IN_NOVEL = "search_in_novel_command"
+
 // EPISODE
 export const CMD_CREATE_LOCAL_EPISODE = `create_local_episode_command`
 export const CMD_GET_LOCAL_EPISODE_DATA = `get_local_episode_data_command`
