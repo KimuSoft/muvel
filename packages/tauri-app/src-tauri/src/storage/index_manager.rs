@@ -1,18 +1,11 @@
-// src-tauri/src/storage/index_manager.rs
-
 use std::collections::HashMap;
 use std::fs;
 use std::io::{Read, Write};
 use std::path::PathBuf;
 
-// AppHandle을 사용하기 위해 tauri 모듈 및 Manager 트레잇을 가져옵니다.
-// Manager 트레잇은 app_handle.path() 같은 메서드를 사용하기 위해 필요합니다.
+use crate::models::index::LocalNovelIndexEntry;
 use tauri::{AppHandle, Manager};
 
-// models.rs에 정의된 구조체 사용
-use crate::models::LocalNovelIndexEntry;
-
-// LocalNovelIndex 타입 별칭
 type LocalNovelIndex = HashMap<String, LocalNovelIndexEntry>;
 
 const NOVEL_INDEX_FILENAME: &str = "novel_index.json";

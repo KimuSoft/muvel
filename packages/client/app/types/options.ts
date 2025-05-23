@@ -66,10 +66,12 @@ export enum EpisodeListLayout {
   Grid = "grid",
 }
 
+export type SortDirection = "asc" | "desc"
+
 export interface ViewOptions {
   widgetLayout: WidgetLayout
   episodeListLayout: EpisodeListLayout
-  episodeListSortDirection: "asc" | "desc"
+  episodeListSortDirection: SortDirection
 }
 
 export type WidgetInstanceId = string

@@ -4,10 +4,11 @@ use std::path::PathBuf;
 use std::process::Command;
 use tauri::{command, AppHandle, Manager};
 
-use crate::models::{
-    CreateLocalNovelOptions, EpisodeMetadataUpdatePayload, LocalNovelData,
-    LocalNovelDataEpisodesSummary, LocalNovelIndexEntry, ShareType,
-    UpdateLocalNovelData as TsUpdateLocalNovelData,
+use crate::models::enums::share_type::ShareType;
+use crate::models::episode::EpisodeMetadataUpdatePayload;
+use crate::models::index::LocalNovelIndexEntry;
+use crate::models::novel::{
+    CreateLocalNovelOptions, LocalNovelDataEpisodesSummary, Novel, UpdateLocalNovelData,
 };
 use crate::storage::{index_manager, novel_io};
 use uuid::Uuid;
@@ -18,7 +19,7 @@ use uuid::Uuid;
 pub fn create_local_novel_command(
     app_handle: AppHandle,
     options: CreateLocalNovelOptions,
-) -> Result<LocalNovelData, String> {
+) -> Result<Novel, String> {
     // 1. 새 소설을 위한 UUID 생성
     let novel_id = Uuid::new_v4().to_string();
 
@@ -57,7 +58,7 @@ pub fn create_local_novel_command(
 
     // 4. 초기 LocalNovelData 객체 생성
     let current_time_iso = Utc::now().to_rfc3339(); // 현재 시간을 ISO 8601 문자열로
-    let initial_novel_data = LocalNovelData {
+    let initial_novel_data = Novel {
         id: novel_id.clone(),
         title: options.title.clone(),
         description: None,
@@ -65,7 +66,7 @@ pub fn create_local_novel_command(
         episode_count: Some(0), // 초기 에피소드 수
         thumbnail: None,
         share: ShareType::Local, // 로컬 소설이므로 ShareType::Local
-        author: None,
+        // author: None,
         created_at: current_time_iso.clone(),
         updated_at: current_time_iso.clone(), // 생성 시점에는 createdAt과 동일
         episodes: Some(Vec::new()), // 초기에는 빈 에피소드 목록 (LocalNovelDataEpisodesSummary 타입의 Vec)
@@ -98,7 +99,7 @@ pub fn create_local_novel_command(
 pub fn get_local_novel_details_command(
     app_handle: AppHandle,
     novel_id: String,
-) -> Result<LocalNovelData, String> {
+) -> Result<Novel, String> {
     // 1. 인덱스에서 novel_id에 해당하는 소설의 루트 경로를 가져옵니다.
     let novel_entry_opt = index_manager::get_novel_entry(&app_handle, &novel_id)?;
 
@@ -150,8 +151,8 @@ pub fn get_local_novel_details_command(
 pub fn update_local_novel_metadata_command(
     app_handle: AppHandle,
     novel_id: String,
-    data: TsUpdateLocalNovelData, // 프론트엔드에서 전달된 업데이트할 데이터 (Partial 형태)
-) -> Result<LocalNovelData, String> {
+    data: UpdateLocalNovelData, // 프론트엔드에서 전달된 업데이트할 데이터 (Partial 형태)
+) -> Result<Novel, String> {
     // 1. 인덱스에서 novel_id로 소설 루트 경로를 가져옵니다.
     let novel_entry_opt = index_manager::get_novel_entry(&app_handle, &novel_id)?;
 

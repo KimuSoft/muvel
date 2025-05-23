@@ -25,11 +25,10 @@ import { type Novel, ShareType } from "muvel-api-types"
 import ShareSelect from "~/components/molecules/ShareSelect"
 import { FaInfoCircle } from "react-icons/fa"
 import { createNovel } from "~/services/novelService"
-import type { LocalNovelData } from "~/services/tauri/types"
 
 const CreateNovelDialog: React.FC<{
   children?: React.ReactNode
-  onCreated?: (novel: Novel | LocalNovelData) => void
+  onCreated?: (novel: Novel) => void
   dialog?: UseDialogReturn
 }> = ({ children, onCreated, dialog }) => {
   const dialog_ = useDialog()

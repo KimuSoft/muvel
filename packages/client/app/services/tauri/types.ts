@@ -1,17 +1,3 @@
-// app/services/tauri/types.ts
-
-import type {
-  BasePermission,
-  Block as ApiBlock,
-  Block,
-  CreateNovelRequestDto,
-  Episode as ApiEpisode,
-  Episode,
-  GetEpisodeResponseDto,
-  Novel as ApiNovel,
-  ShareType as ApiShareType,
-} from "muvel-api-types"
-
 export interface LocalNovelIndexEntry {
   id: string
   title: string
@@ -19,29 +5,4 @@ export interface LocalNovelIndexEntry {
   thumbnail?: string
   lastOpened?: string
   path?: string
-}
-
-export interface LocalNovelData
-  extends Omit<ApiNovel, "share" | "author" | "episodes"> {
-  share: ApiShareType.Local
-  author: null
-  episodes: ApiEpisode[]
-  localPath?: string
-}
-
-export interface LocalEpisodeData extends Episode {}
-
-export interface GetLocalNovelDetailsResponse extends LocalNovelData {
-  permissions: BasePermission
-}
-
-export interface CreateLocalNovelOptions extends CreateNovelRequestDto {
-  // null인 경우 기본 경로에 저장
-  targetDirectoryPath: string | null
-}
-
-export type UpdateLocalEpisodeBlocksData = ApiBlock[]
-
-export interface GetLocalEpisodeResponse extends GetEpisodeResponseDto {
-  blocks: Block[]
 }

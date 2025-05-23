@@ -1,11 +1,15 @@
 import React, { forwardRef, useMemo } from "react"
-import { type Episode, EpisodeType } from "muvel-api-types"
+import {
+  type Episode,
+  EpisodeType,
+  type NovelEpisodeContext,
+} from "muvel-api-types"
 import { Button, type ButtonProps, Skeleton } from "@chakra-ui/react"
 import { useNavigate } from "react-router"
 import { Tooltip } from "~/components/ui/tooltip"
 
 export type EpisodeItemProps = ButtonProps & {
-  episode: Episode
+  episode: NovelEpisodeContext
   loading?: boolean
 }
 

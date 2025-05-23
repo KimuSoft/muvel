@@ -25,6 +25,7 @@ import {
 // 개별 함수 임포트 및 별칭 사용으로 변경
 import {
   createLocalNovel as createTauriLocalNovel,
+  type CreateLocalNovelOptions,
   getLocalNovelDetails as getTauriLocalNovelDetails,
   getMyLocalNovels,
   updateLocalNovelEpisodes,
@@ -36,18 +37,13 @@ import {
 } from "./tauri/indexStorage"
 import { openFolderDialog as openTauriFolderDialog } from "./tauri/fileDialog"
 
-import type {
-  CreateLocalNovelOptions,
-  GetLocalNovelDetailsResponse,
-  LocalEpisodeData,
-  LocalNovelData,
-} from "./tauri/types"
 import { getUserCloudNovels } from "~/services/api/api.user"
 import { checkIsMobileView } from "~/hooks/usePlatform"
 import { isAxiosError } from "axios"
 import { toaster } from "~/components/ui/toaster"
 import * as localWikiStorage from "~/services/tauri/wikiPageStorage"
 import { type LocalWikiPageData } from "~/services/tauri/wikiPageStorage"
+import type { EpisodeData } from "~/providers/EpisodeProvider"
 
 const IS_TAURI_APP = import.meta.env.VITE_TAURI === "true"
 
@@ -81,7 +77,7 @@ const resolveNovelContext = async (
  */
 export const createNovel = async (
   options: CreateNovelRequestDto,
-): Promise<ApiNovel | LocalNovelData> => {
+): Promise<ApiNovel> => {
   const { title, share } = options
 
   if (share === ApiShareType.Local) {
@@ -111,7 +107,7 @@ export const createNovel = async (
  */
 export const getNovel = async (
   novelId: string,
-): Promise<GetNovelResponseDto | GetLocalNovelDetailsResponse> => {
+): Promise<GetNovelResponseDto> => {
   if (IS_TAURI_APP) {
     const localNovelEntry = await getTauriLocalNovelEntry(novelId)
     if (localNovelEntry) {
@@ -149,7 +145,7 @@ export const getNovel = async (
 export const updateNovel = async (
   novelInput: NovelInput,
   patchData: UpdateNovelRequestDto,
-): Promise<ApiNovel | LocalNovelData> => {
+): Promise<ApiNovel> => {
   const { id: novelId, share: shareTypeToUse } =
     await resolveNovelContext(novelInput)
 
@@ -184,12 +180,10 @@ export const deleteNovel = async (novelInput: NovelInput): Promise<void> => {
 /**
  * 사용자의 모든 소설 목록을 가져옵니다 (로컬 + 클라우드 조합).
  */
-export const getMyNovels = async (
-  myId?: string,
-): Promise<(ApiNovel | LocalNovelData)[]> => {
+export const getMyNovels = async (myId?: string): Promise<ApiNovel[]> => {
   let cloudNovels: ApiNovel[] = []
-  let localNovels: LocalNovelData[] = []
-  const combinedNovels: (ApiNovel | LocalNovelData)[] = []
+  let localNovels: ApiNovel[] = []
+  const combinedNovels: ApiNovel[] = []
 
   try {
     // 오프라인이거나 로그인 안 했을 때는 클라우드 소설을 가져오지 않음
@@ -245,8 +239,8 @@ export const getMyNovels = async (
  */
 export const updateNovelEpisodes = async (
   novelInput: NovelInput,
-  episodeDiffs: ({ id: string } & Partial<LocalEpisodeData>)[],
-): Promise<Omit<LocalEpisodeData, "blocks">[]> => {
+  episodeDiffs: ({ id: string } & Partial<EpisodeData>)[],
+) => {
   const { id: novelId, share: shareTypeToUse } =
     await resolveNovelContext(novelInput)
 

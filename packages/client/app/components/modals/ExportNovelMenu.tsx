@@ -44,7 +44,7 @@ const ExportNovelMenu: React.FC<PropsWithChildren & { novelId: string }> = ({
     let txt = dedent`
     # ${data.title}
     ## 개요
-    작가: ${data.author.username}
+    작가: ${data.author?.username || "로컬 소설"}
     설명: ${data.description}
     
     ## 에피소드 리스트\n

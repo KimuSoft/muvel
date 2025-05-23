@@ -1,10 +1,4 @@
-import {
-  BasePermission,
-  Block,
-  Episode,
-  Novel,
-  PartialEpisodeBlock,
-} from "../core"
+import { BasePermission, Episode, Novel, PartialEpisodeBlock } from "../core"
 
 export type GetEpisodeResponseDto = Episode & {
   permissions: BasePermission
@@ -21,10 +15,5 @@ export type UpdateEpisodeBodyDto = Partial<
     "id" | "novelId" | "contentLength" | "createdAt" | "updatedAt" | "aiRating"
   >
 >
-
-// 블록 변경 타입 (deprecated 예정, 아래 DeltaBlock 사용)
-export type BlockChange =
-  | (Omit<Block, "text" | "updatedAt"> & { isDeleted?: boolean })
-  | { id: string; isDeleted: boolean }
 
 export type GetEpisodeBlocksResponse = PartialEpisodeBlock[]

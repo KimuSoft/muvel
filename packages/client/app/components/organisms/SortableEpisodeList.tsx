@@ -13,7 +13,7 @@ import {
   SortableContext,
 } from "@dnd-kit/sortable"
 import { type StackProps, VStack } from "@chakra-ui/react"
-import type { Episode } from "muvel-api-types"
+import type { Episode, NovelEpisodeContext } from "muvel-api-types"
 import SortableEpisodeItem from "../molecules/SortableEpisodeItem" // 경로 확인 필요
 import { type ReorderedEpisode, reorderEpisode } from "~/utils/reorderEpisode"
 import EpisodeGrid from "~/components/organisms/EpisodeGrid"
@@ -23,7 +23,7 @@ import { useViewOptions } from "~/hooks/useAppOptions" // 경로 확인 필요
  *  Types
  * ------------------------------------------------------------------*/
 type SortableEpisodeListProps = StackProps & {
-  episodes: Episode[]
+  episodes: NovelEpisodeContext[]
   loading?: boolean
   disableSort?: boolean
   onEpisodesChange?: (diffEpisodes: ReorderedEpisode[]) => void
@@ -32,9 +32,9 @@ type SortableEpisodeListProps = StackProps & {
 /** ------------------------------------------------------------------
  *  Helpers
  * ------------------------------------------------------------------*/
-const ascSort = (a: Episode, b: Episode) =>
+const ascSort = (a: NovelEpisodeContext, b: NovelEpisodeContext) =>
   parseFloat(a.order.toString()) - parseFloat(b.order.toString())
-const toCanonicalAsc = (eps: Episode[]) => [...eps].sort(ascSort)
+const toCanonicalAsc = (eps: NovelEpisodeContext[]) => [...eps].sort(ascSort)
 
 /** ------------------------------------------------------------------
  *  Component

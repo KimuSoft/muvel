@@ -1,12 +1,13 @@
 // src-tauri/src/storage/novel_io.rs
 
+use crate::models::novel::Novel;
 use std::fs;
 use std::io::{Read, Write};
-use std::path::{Path, PathBuf}; // 경로 관련 타입
+use std::path::{Path, PathBuf};
+// 경로 관련 타입
 
 // 현재 크레이트(프로젝트)의 models 모듈에서 LocalNovelData 구조체를 가져옵니다.
 // 이 구조체는 models.rs 파일에 정의되어 있어야 하며, .muvl 파일의 내용을 나타냅니다.
-use crate::models::LocalNovelData;
 
 // 소설 메타데이터 파일의 표준 이름
 pub const NOVEL_METADATA_FILENAME: &str = "novel-metadata.muvl";
@@ -33,7 +34,7 @@ fn get_metadata_file_path(novel_root_path: &Path) -> PathBuf {
 ///
 /// # Returns
 /// * `Result<LocalNovelData, String>`: 성공 시 `LocalNovelData`, 실패 시 에러 메시지.
-pub fn read_novel_metadata(novel_root_path: &Path) -> Result<LocalNovelData, String> {
+pub fn read_novel_metadata(novel_root_path: &Path) -> Result<Novel, String> {
     let metadata_path = get_metadata_file_path(novel_root_path);
 
     if !metadata_path.exists() {
@@ -67,7 +68,7 @@ pub fn read_novel_metadata(novel_root_path: &Path) -> Result<LocalNovelData, Str
 ///
 /// # Returns
 /// * `Result<(), String>`: 성공 시 빈 튜플, 실패 시 에러 메시지.
-pub fn write_novel_metadata(novel_root_path: &Path, data: &LocalNovelData) -> Result<(), String> {
+pub fn write_novel_metadata(novel_root_path: &Path, data: &Novel) -> Result<(), String> {
     let metadata_path = get_metadata_file_path(novel_root_path);
     let parent_dir = metadata_path.parent().ok_or_else(|| {
         format!(

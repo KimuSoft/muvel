@@ -11,7 +11,11 @@ import {
 } from "@chakra-ui/react"
 import { TbBrandZapier, TbRefresh, TbStar, TbTypography } from "react-icons/tb"
 import { useNavigate } from "react-router"
-import { type Episode, EpisodeType } from "muvel-api-types"
+import {
+  type Episode,
+  EpisodeType,
+  type NovelEpisodeContext,
+} from "muvel-api-types"
 import { Tooltip } from "~/components/ui/tooltip"
 import { getTimeAgoKo } from "~/utils/getTimeAgoKo"
 
@@ -19,7 +23,10 @@ export type EpisodeItemVariant = "detail" | "simple"
 const CQ_BP = "48rem" // ↔ 테마 containerSizes.md 토큰으로 추출 가능!
 
 /* ---------- Side/meta 표시 ---------- */
-const SideData = ({ episode, ...p }: { episode: Episode } & StackProps) => {
+const SideData = ({
+  episode,
+  ...p
+}: { episode: NovelEpisodeContext } & StackProps) => {
   const createdAt = new Date(episode.createdAt)
   const updatedAt = new Date(episode.updatedAt)
 
@@ -60,7 +67,7 @@ const SideData = ({ episode, ...p }: { episode: Episode } & StackProps) => {
 }
 
 /* ---------- Large prefix (detail 전용) ---------- */
-const LargePrefix = ({ episode }: { episode: Episode }) => {
+const LargePrefix = ({ episode }: { episode: NovelEpisodeContext }) => {
   const prefix = {
     [EpisodeType.Episode]: episode.order.toString().padStart(3, "0"),
     [EpisodeType.Prologue]: "PRO",
@@ -92,7 +99,7 @@ const LargePrefix = ({ episode }: { episode: Episode }) => {
 const SmallCount = ({
   episode,
   ...props
-}: TextProps & { episode: Episode }) => {
+}: TextProps & { episode: NovelEpisodeContext }) => {
   const label = {
     [EpisodeType.Episode]: `${Math.round(Number(episode.order))}편`,
     [EpisodeType.Prologue]: "프롤로그",
@@ -117,7 +124,7 @@ const SmallCount = ({
 
 /* ---------- 메인 항목 ---------- */
 export interface EpisodeItemProps extends StackProps {
-  episode: Episode
+  episode: NovelEpisodeContext
   loading?: boolean
   variant?: EpisodeItemVariant
   isFirst?: boolean

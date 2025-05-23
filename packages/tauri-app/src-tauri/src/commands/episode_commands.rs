@@ -1,27 +1,23 @@
-// src-tauri/src/app_lib/commands/episode_commands.rs
-
+use crate::models::block::{Block, DeltaBlock, DeltaBlockAction};
+use crate::models::enums::episode_type::EpisodeType;
+use crate::models::episode::{
+    CreateLocalEpisodeOptions, EpisodeParentNovelContext, LocalEpisodeData,
+    LocalEpisodeDataResponse, UpdateLocalEpisodeBlocksData, UpdateLocalEpisodeMetadata,
+};
+use crate::models::novel::LocalNovelDataEpisodesSummary;
+use crate::storage::{episode_io, index_manager, item_index_manager, novel_io};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use tauri::{command, AppHandle};
 use uuid::Uuid;
 
-use crate::models::{
-    Block, CreateLocalEpisodeOptions as RustCreateLocalEpisodeOptions, DeltaBlockActionRust,
-    EpisodeParentNovelContext, EpisodeType, LocalEpisodeData, LocalEpisodeDataResponse,
-    LocalNovelDataEpisodesSummary, RustDeltaBlock,
-    UpdateLocalEpisodeBlocksData as RustUpdateLocalEpisodeBlocksData,
-    UpdateLocalEpisodeMetadata as RustUpdateLocalEpisodeMetadata,
-};
-use crate::storage::{episode_io, index_manager, item_index_manager, novel_io};
-
 /// 새로운 로컬 에피소드를 생성하고, 부모 소설의 메타데이터(.muvl)도 업데이트하며,
 /// 아이템-소설 ID 맵에도 등록합니다.
-/// `order` 관련 로직이 f32를 사용하도록 수정되었습니다.
 #[command]
 pub fn create_local_episode_command(
     app_handle: AppHandle,
     novel_id: String,
-    options: RustCreateLocalEpisodeOptions, // 이 구조체의 order 필드가 Option<f32>라고 가정
+    options: CreateLocalEpisodeOptions, // 이 구조체의 order 필드가 Option<f32>라고 가정
 ) -> Result<LocalEpisodeDataResponse, String> {
     // 반환 타입을 LocalEpisodeDataResponse로 명시
     let novel_entry = index_manager::get_novel_entry(&app_handle, &novel_id)?
@@ -195,7 +191,7 @@ pub fn get_local_episode_data_command(
 pub fn update_local_episode_blocks_command(
     app_handle: AppHandle,
     episode_id: String,
-    blocks: RustUpdateLocalEpisodeBlocksData,
+    blocks: UpdateLocalEpisodeBlocksData,
 ) -> Result<(), String> {
     let novel_id = item_index_manager::get_novel_id_for_item(&app_handle, &episode_id)?
         .ok_or_else(|| {
@@ -231,7 +227,7 @@ pub fn update_local_episode_blocks_command(
 pub fn update_local_episode_metadata_command(
     app_handle: AppHandle,
     episode_id: String,
-    metadata: RustUpdateLocalEpisodeMetadata, // 이 구조체의 order 필드가 Option<f32>라고 가정
+    metadata: UpdateLocalEpisodeMetadata, // 이 구조체의 order 필드가 Option<f32>라고 가정
 ) -> Result<LocalNovelDataEpisodesSummary, String> {
     let novel_id = item_index_manager::get_novel_id_for_item(&app_handle, &episode_id)?
         .ok_or_else(|| {
@@ -427,7 +423,7 @@ fn calculate_block_text(content: &Vec<serde_json::Value>) -> String {
 pub fn sync_local_delta_blocks_command(
     app_handle: AppHandle,
     episode_id: String,
-    delta_blocks: Vec<RustDeltaBlock>,
+    delta_blocks: Vec<DeltaBlock>,
 ) -> Result<(), String> {
     // 1. 에피소드 및 관련 정보 불러오기
     let novel_id = item_index_manager::get_novel_id_for_item(&app_handle, &episode_id)?
@@ -464,7 +460,7 @@ pub fn sync_local_delta_blocks_command(
     // 2. DeltaBlock 적용
     for delta in delta_blocks {
         match delta.action {
-            DeltaBlockActionRust::Create => {
+            DeltaBlockAction::Create => {
                 let block_content = delta.content.ok_or_else(|| {
                     format!("생성 액션 시 블록 ID {}에 content가 없습니다.", delta.id)
                 })?;
@@ -495,7 +491,7 @@ pub fn sync_local_delta_blocks_command(
                 };
                 current_blocks_map.insert(delta.id, new_block);
             }
-            DeltaBlockActionRust::Update => {
+            DeltaBlockAction::Update => {
                 if let Some(block_to_update) = current_blocks_map.get_mut(&delta.id) {
                     let mut changed = false;
                     if let Some(content_val) = delta.content {
@@ -528,7 +524,7 @@ pub fn sync_local_delta_blocks_command(
                     );
                 }
             }
-            DeltaBlockActionRust::Delete => {
+            DeltaBlockAction::Delete => {
                 current_blocks_map.remove(&delta.id);
             }
         }

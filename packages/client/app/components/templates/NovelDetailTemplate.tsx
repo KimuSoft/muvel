@@ -17,33 +17,36 @@ import {
   EpisodeType,
   type GetNovelResponseDto,
   ShareType,
+  WikiPageCategory,
 } from "muvel-api-types"
 import { TbEdit, TbPencilPlus, TbPlayerPlay, TbShare } from "react-icons/tb"
 import NovelTagList from "../organisms/NovelTagList"
 import { useNavigate, useRevalidator } from "react-router"
-import SortableEpisodeList, {
-  type SortDirection,
-} from "../organisms/SortableEpisodeList"
 import ModifyNovelModal from "~/components/modals/ModifyNovelModal"
-import { FaList } from "react-icons/fa6"
+import { FaList, FaUser } from "react-icons/fa6"
 import BlockLink from "~/components/atoms/BlockLink"
 import type { ReorderedEpisode } from "~/utils/reorderEpisode"
 import { toaster } from "~/components/ui/toaster"
 import SortToggleButton from "~/components/atoms/SortToggleButton"
 import EpisodeListLayoutToggleButton from "~/components/atoms/EpisodeListLayoutToggleButton"
-import type { GetLocalNovelDetailsResponse } from "~/services/tauri/types"
 import { updateNovel, updateNovelEpisodes } from "~/services/novelService"
 import { createNovelEpisode } from "~/services/episodeService"
 import CreateEpisodeMenu from "~/features/novel-editor/components/menus/CreateEpisodeMenu"
 import { getKimuageUrl } from "~/utils/getKimuageUrl"
+import SortableEpisodeList from "../organisms/SortableEpisodeList"
+import CharacterItem from "~/components/molecules/CharacterItem"
 
 const NovelDetailTemplate: React.FC<{
-  novel: GetNovelResponseDto | GetLocalNovelDetailsResponse
+  novel: GetNovelResponseDto
 }> = ({ novel }) => {
   const { revalidate } = useRevalidator()
   const navigate = useNavigate()
   const [isEpisodesLoading, setIsEpisodesLoading] = React.useState(false)
-  const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc")
+
+  // TODO: 로컬판이 구현되면 ? 빼기
+  const characters =
+    novel.wikiPages?.filter((w) => w.category === WikiPageCategory.Character) ||
+    []
 
   const handleCreateEpisode = async (detail: MenuSelectionDetails) => {
     const episode = await createNovelEpisode(novel.id, {
@@ -234,6 +237,18 @@ const NovelDetailTemplate: React.FC<{
 
       <Container w={"100%"} maxW={"4xl"} userSelect={"none"}>
         <HStack gap={3} mb={4} px={1}>
+          <FaUser />
+          <Heading size={"md"} flexShrink={0}>
+            캐릭터 목록
+          </Heading>
+        </HStack>
+        <HStack>
+          {characters.map((character) => (
+            <CharacterItem characterWikiPage={character} />
+          ))}
+        </HStack>
+
+        <HStack gap={3} mb={4} px={1}>
           <FaList />
           <Heading size={"md"} flexShrink={0}>
             에피소드 목록
@@ -273,7 +288,6 @@ const NovelDetailTemplate: React.FC<{
           ) : null}
         </HStack>
         <SortableEpisodeList
-          sortDirection={sortDirection}
           loading={isEpisodesLoading}
           episodes={novel.episodes}
           onEpisodesChange={handleReorderEpisode}

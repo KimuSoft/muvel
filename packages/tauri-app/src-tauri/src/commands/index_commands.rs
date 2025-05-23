@@ -1,19 +1,8 @@
-// src-tauri/src/commands/index_commands.rs
-
-use std::path::{Path, PathBuf};
-// tauri::command 어트리뷰트를 사용하여 함수를 Tauri 커맨드로 만듭니다.
-// AppHandle을 사용하여 애플리케이션의 상태나 설정에 접근합니다.
-use tauri::{command, AppHandle};
-// State와 Runtime은 필요시 사용
-
-// crate::models 모듈의 LocalNovelIndexEntry 구조체를 사용합니다.
-use crate::models::LocalNovelIndexEntry;
-// crate::storage::index_manager 모듈의 함수들을 사용합니다.
+use crate::models::index::LocalNovelIndexEntry;
 use crate::storage::index_manager;
+use std::path::{Path, PathBuf};
+use tauri::{command, AppHandle};
 
-// TypeScript의 `getAllLocalNovelEntries` 함수에 대응하는 Tauri 커맨드입니다.
-// 프론트엔드에서 `invoke("get_all_local_novel_entries_command")` 형태로 호출될 수 있습니다.
-// AppHandle을 인자로 받아 index_manager의 함수에 전달합니다.
 #[command]
 pub fn get_all_local_novel_entries_command(
     app_handle: AppHandle,

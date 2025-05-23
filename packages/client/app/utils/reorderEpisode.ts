@@ -1,7 +1,9 @@
-import { EpisodeType, type Episode } from "muvel-api-types"
+import { EpisodeType, type NovelEpisodeContext } from "muvel-api-types"
 
 // order(편수)를 다시 부여하는 함수
-export const reorderEpisode = (episodes: Episode[]): ReorderedEpisode[] => {
+export const reorderEpisode = (
+  episodes: NovelEpisodeContext[],
+): ReorderedEpisode[] => {
   // 앞 순서부터 시작. 0부터 시작해서 EpisodeType이 Episode면 +1, 아니면 +0.0001
   let order = 0
   return episodes.map((episode) => {
@@ -15,6 +17,6 @@ export const reorderEpisode = (episodes: Episode[]): ReorderedEpisode[] => {
   })
 }
 
-export type ReorderedEpisode = Episode & {
+export type ReorderedEpisode = NovelEpisodeContext & {
   isReordered: boolean
 }

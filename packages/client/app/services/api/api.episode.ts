@@ -1,7 +1,5 @@
 import { api } from "~/utils/api"
 import {
-  type Block,
-  type BlockChange,
   type DeltaBlock,
   type Episode,
   type GetEpisodeBlocksResponse,
@@ -33,17 +31,6 @@ export const updateCloudEpisode = async (
   patch: Partial<UpdateEpisodeBodyDto>,
 ) => {
   const { data } = await api.patch<Episode>(`episodes/${episodeId}`, patch)
-  return data
-}
-
-export const updateCloudEpisodeBlocks = async (
-  episodeId: string,
-  blockChanges: BlockChange[],
-) => {
-  const { data } = await api.patch<Block[]>(
-    `episodes/${episodeId}/blocks`,
-    blockChanges,
-  )
   return data
 }
 

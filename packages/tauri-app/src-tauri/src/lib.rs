@@ -1,24 +1,17 @@
 use crate::file_handler::take_initial_open;
-use crate::models::PendingOpen;
 use commands::*;
-use file_handler::handle_opened_file;
-use tauri::{Emitter, Manager};
+use tauri::Manager;
 use tauri_plugin_deep_link::DeepLinkExt;
-use tauri_plugin_dialog::DialogExt;
 
 #[cfg(not(any(target_os = "android", target_os = "ios")))]
 use tauri_plugin_cli::CliExt;
 
-#[cfg(not(any(target_os = "android", target_os = "ios")))]
-use tauri_plugin_updater::UpdaterExt;
+use crate::models::commons::PendingOpen;
 
 mod commands;
 mod file_handler;
 mod models;
 mod storage;
-
-#[cfg(not(any(target_os = "android", target_os = "ios")))]
-mod update;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -41,15 +34,9 @@ pub fn run() {
         .setup(|app| {
             #[cfg(not(any(target_os = "android", target_os = "ios")))]
             {
-                // Auto Update
-                // let handle = app.handle().clone();
-                // tauri::async_runtime::spawn(async move {
-                //     update::update(handle).await.unwrap();
-                // });
-
                 // Open With
                 let matches = app.cli().matches()?;
-                let pending_state = app.state::<models::PendingOpen>();
+                let pending_state = app.state::<PendingOpen>();
                 if let Some(paths) = matches.args.get("file").and_then(|a| a.value.as_array()) {
                     for p in paths {
                         if let Some(path_str) = p.as_str() {

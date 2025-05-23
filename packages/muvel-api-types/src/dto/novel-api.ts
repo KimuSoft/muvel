@@ -1,8 +1,23 @@
-import { BasePermission, Block, Episode, Novel, WikiPage } from "../core"
+import {
+  BasePermission,
+  Episode,
+  EpisodeBlock,
+  LocalNovel,
+  Novel,
+  WikiPage,
+} from "../core"
+
+export type NovelEpisodeContext = Omit<Episode, "flowDoc" | "authorComment">
 
 export type GetNovelResponseDto = Novel & {
   permissions: BasePermission
-  episodes: Episode[]
+  episodes: NovelEpisodeContext[]
+  wikiPages: WikiPage[]
+}
+
+export type GetLocalNovelResponseDto = LocalNovel & {
+  permissions: BasePermission
+  episodes: NovelEpisodeContext[]
   wikiPages: WikiPage[]
 }
 
@@ -16,5 +31,5 @@ export type UpdateNovelRequestDto = Partial<
 >
 
 export type ExportNovelResponseDto = Novel & {
-  episodes: (Episode & { blocks: Block[] })[]
+  episodes: (Episode & { blocks: EpisodeBlock[] })[]
 }

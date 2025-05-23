@@ -1,23 +1,10 @@
-// src-tauri/src/file_handler.rs
-// (main.rs의 역할 과중을 피하기 위해 이 파일로 분리했다고 가정합니다)
-
-// models.rs에 정의된 구조체 사용
-use crate::models::{LocalNovelData, LocalNovelIndexEntry, OpenedItem, PendingOpen};
-// storage 모듈에 정의된 함수들 사용
+use crate::models::commons::{OpenedItem, PendingOpen};
+use crate::models::index::LocalNovelIndexEntry;
+use crate::models::novel::Novel;
 use crate::storage::{episode_io, index_manager, item_index_manager, novel_io};
-
-use crate::models;
 use chrono::Utc;
 use std::ffi::OsStr;
 use tauri::{AppHandle, State};
-// App 및 Emitter 사용 // 마지막으로 열람한 시간을 기록하기 위해 chrono 사용
-
-/// 에피소드 열림 이벤트 페이로드 구조체
-#[derive(Clone, serde::Serialize)]
-struct EpisodeOpenedPayload {
-    novel_id: String,
-    episode_id: String,
-}
 
 /// 애플리케이션 실행 시 또는 다른 경로로 파일이 열렸을 때 해당 파일을 처리합니다.
 ///
@@ -60,7 +47,7 @@ pub fn handle_opened_file(
                 )
             })?;
 
-            let novel_data: LocalNovelData = novel_io::read_novel_metadata(novel_root_path)
+            let novel_data: Novel = novel_io::read_novel_metadata(novel_root_path)
                 .map_err(|e| format!("소설 메타데이터 읽기 실패 ({:?}): {}", novel_root_path, e))?;
 
             let novel_id = novel_data.id.clone();
@@ -127,8 +114,8 @@ pub fn handle_opened_file(
             })?;
 
             // 부모 소설 메타데이터 읽기
-            let parent_novel_data: LocalNovelData = novel_io::read_novel_metadata(novel_root_path)
-                .map_err(|e| {
+            let parent_novel_data: Novel =
+                novel_io::read_novel_metadata(novel_root_path).map_err(|e| {
                     format!(
                         "에피소드 {}의 부모 소설 메타데이터 읽기 실패: {}",
                         episode_id, e
@@ -199,6 +186,6 @@ pub fn handle_opened_file(
 }
 
 #[tauri::command]
-pub fn take_initial_open(state: State<models::PendingOpen>) -> Vec<models::OpenedItem> {
+pub fn take_initial_open(state: State<PendingOpen>) -> Vec<OpenedItem> {
     state.0.lock().unwrap().drain(..).collect()
 }

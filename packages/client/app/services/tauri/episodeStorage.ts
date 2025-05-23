@@ -1,21 +1,18 @@
 // app/services/tauri/episodeStorage.ts
 import { getCoreApi } from "./tauriApiProvider"
 import {
-  type BlockChange,
   type CreateEpisodeBodyDto,
-  type Episode as ApiEpisode,
-  type UpdateEpisodeBodyDto,
-  masterPermission,
   type DeltaBlock,
+  type Episode as ApiEpisode,
+  type LocalEpisode,
+  masterPermission,
+  type UpdateEpisodeBodyDto,
+  type GetEpisodeResponseDto,
 } from "muvel-api-types"
-import type { GetLocalEpisodeResponse } from "./types"
-
-const RUST_CMD_PREFIX = "storage_plugin:"
 
 // --- 에피소드 CRUD 관련 Rust 커맨드 이름 (예시) ---
 const CMD_CREATE_LOCAL_EPISODE = `create_local_episode_command`
 const CMD_GET_LOCAL_EPISODE_DATA = `get_local_episode_data_command`
-const CMD_UPDATE_LOCAL_EPISODE_BLOCKS = `update_local_episode_blocks_command`
 const CMD_UPDATE_LOCAL_EPISODE_METADATA = `update_local_episode_metadata_command`
 const CMD_DELETE_LOCAL_EPISODE = `delete_local_episode_command`
 const CMD_LIST_LOCAL_EPISODE_SUMMARIES = `list_local_episode_summaries_command` // 소설 내 에피소드 요약 목록
@@ -48,15 +45,12 @@ export const createLocalNovelEpisode = async (
  * @param episodeId 조회할 에피소드의 UUID
  * @returns 에피소드 데이터 (LocalEpisodeData 또는 ApiEpisode + blocks 형태)
  */
-export const getLocalEpisodeById = async (
-  episodeId: string,
-): Promise<GetLocalEpisodeResponse> => {
+export const getLocalEpisodeById = async (episodeId: string) => {
   const { invoke } = await getCoreApi()
   try {
-    const episode = await invoke<GetLocalEpisodeResponse>(
-      CMD_GET_LOCAL_EPISODE_DATA,
-      { episodeId },
-    )
+    const episode = await invoke<
+      Omit<GetEpisodeResponseDto & LocalEpisode, "permission">
+    >(CMD_GET_LOCAL_EPISODE_DATA, { episodeId })
 
     return {
       ...episode,
@@ -64,28 +58,6 @@ export const getLocalEpisodeById = async (
     }
   } catch (error) {
     console.error(`Error fetching local episode data for ${episodeId}:`, error)
-    throw error
-  }
-}
-
-/**
- * 특정 로컬 에피소드의 블록 내용 업데이트를 Rust에 요청합니다.
- * @param episodeId 업데이트할 에피소드의 UUID
- * @param blocks 새로운 블록 데이터 배열
- */
-export const updateLocalEpisodeBlocks = async (
-  episodeId: string,
-  blocks: BlockChange[],
-): Promise<void> => {
-  const { invoke } = await getCoreApi()
-  try {
-    // Rust는 episodeId로 파일 찾아 내용 업데이트 (원자적 쓰기)
-    await invoke(CMD_UPDATE_LOCAL_EPISODE_BLOCKS, { episodeId, blocks })
-  } catch (error) {
-    console.error(
-      `Error updating local episode blocks for ${episodeId}:`,
-      error,
-    )
     throw error
   }
 }

@@ -1,3 +1,5 @@
+import { WikiPageCategory } from "../enums/wiki-page-category"
+
 export interface WikiPage {
   id: string
   title: string
@@ -9,12 +11,4 @@ export interface WikiPage {
 
   createdAt: string
   updatedAt: string
-}
-
-export enum WikiPageCategory {
-  Character = "character",
-  Location = "location",
-  Item = "item",
-  Organization = "organization",
-  Event = "event",
 }

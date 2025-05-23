@@ -16,7 +16,6 @@ import { FaUser } from "react-icons/fa6"
 import { Tooltip } from "~/components/ui/tooltip"
 import { TbFile, TbLink, TbLock, TbWorld } from "react-icons/tb"
 import { useUser } from "~/providers/UserProvider"
-import type { LocalNovelData } from "~/services/tauri/types"
 import Kimuage from "~/components/molecules/Kimuage"
 
 const ShareIcon: React.FC<IconProps & { share: ShareType }> = ({
@@ -45,7 +44,7 @@ const ShareIcon: React.FC<IconProps & { share: ShareType }> = ({
   )
 }
 
-const NovelItem = forwardRef<HTMLDivElement, { novel: Novel | LocalNovelData }>(
+const NovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
   ({ novel, ...props }, ref) => {
     const navigate = useNavigate()
     const user = useUser()

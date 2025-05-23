@@ -18,13 +18,12 @@ import { useUser } from "~/providers/UserProvider"
 import CreateNovelDialog from "~/components/modals/CreateNovelDialog"
 import NovelEmptyState from "~/components/molecules/NovelEmptyState"
 import LoadingOverlay from "~/components/templates/LoadingOverlay"
-import type { LocalNovelData } from "~/services/tauri/types"
 import { usePlatform } from "~/hooks/usePlatform"
 import { TbDownload } from "react-icons/tb"
 
 const MyNovelsTemplate: React.FC<{
   novels: Novel[]
-  localNovels?: LocalNovelData[]
+  localNovels?: Novel[]
 }> = ({ novels, localNovels }) => {
   const user = useUser()
   const { isTauri } = usePlatform()

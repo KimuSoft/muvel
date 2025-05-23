@@ -1,11 +1,7 @@
-// src-tauri/src/storage/episode_io.rs
-
+use crate::models::episode::LocalEpisodeData;
 use std::fs;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
-
-// models.rs에 정의된 LocalEpisodeData 및 Block 구조체를 사용합니다.
-use crate::models::LocalEpisodeData;
 
 // 에피소드 파일들을 저장할 폴더 이름 (novel_io.rs와 일관성 유지)
 pub const EPISODES_DIRNAME: &str = "episodes";

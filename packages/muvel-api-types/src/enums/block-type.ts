@@ -18,7 +18,7 @@ export enum WikiBlockType {
   Callout = "callout",
 }
 
-// @deprecated 호환성 유지 용도
+/** @deprecated 명확성 때문에 EpisodeBlockType 사용을 권장함 */
 export enum BlockType {
   Describe = "describe",
   Quote = "quote",
