@@ -42,3 +42,6 @@ export const CMD_SYNC_LOCAL_WIKI_PAGE_BLOCKS_CMD = "sync_local_wiki_page_blocks"
 
 // OPEN FILE
 export const CMD_TAKE_INITIAL_OPEN = `take_initial_open`
+
+// LOCAL BACKUP
+export const CMD_BACKUP_CLOUD_EPISODE = `backup_cloud_episode_command`

@@ -4,12 +4,14 @@ import {
   type CreateEpisodeBodyDto,
   type DeltaBlock,
   type Episode as ApiEpisode,
+  type EpisodeBlock,
   type GetEpisodeResponseDto,
   type LocalEpisode,
   masterPermission,
   type UpdateEpisodeBodyDto,
 } from "muvel-api-types"
 import {
+  CMD_BACKUP_CLOUD_EPISODE,
   CMD_CREATE_LOCAL_EPISODE,
   CMD_DELETE_LOCAL_EPISODE,
   CMD_GET_LOCAL_EPISODE_DATA,
@@ -19,7 +21,6 @@ import {
 } from "~/services/tauri/constants"
 
 // --- 에피소드 CRUD 관련 Rust 커맨드 이름 (예시) ---
-
 /**
  * 새로운 로컬 에피소드 생성을 Rust에 요청합니다.
  * Rust는 .mvle 파일을 생성하고, 부모 소설의 .muvl 파일 내 에피소드 목록도 업데이트합니다.
@@ -138,6 +139,18 @@ export const syncLocalDeltaBlocks = async (
   const { invoke } = await getCoreApi()
   try {
     return await invoke(CMD_SYNC_LOCAL_DELTA_BLOCKS, { episodeId, deltaBlocks })
+  } catch (error) {
+    console.error(`Error syncing local delta blocks:`, error)
+    throw error
+  }
+}
+
+export const backupCloudEpisodeToLocal = async (
+  fullEpisodeContext: GetEpisodeResponseDto & { blocks: EpisodeBlock[] },
+) => {
+  const { invoke } = await getCoreApi()
+  try {
+    return await invoke(CMD_BACKUP_CLOUD_EPISODE, { data: fullEpisodeContext })
   } catch (error) {
     console.error(`Error syncing local delta blocks:`, error)
     throw error

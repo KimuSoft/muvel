@@ -3,6 +3,7 @@ import {
   type DeltaBlock,
   type EpisodeBlockType,
   type GetEpisodeResponseDto,
+  ShareType,
   SnapshotReason,
 } from "muvel-api-types"
 import {
@@ -16,6 +17,8 @@ import { useInternalBlocksSyncLogic } from "~/hooks/useInternalBlocksSyncLogic"
 import { useDebouncedCallback } from "use-debounce"
 import { saveEpisodeSnapshot } from "~/services/episodeSnapshotService"
 import { useEffect } from "react"
+import { backupCloudEpisodeToLocal } from "~/services/tauri/episodeStorage"
+import { fillPartialBlocks } from "~/features/novel-editor/utils/fillPartialBlock"
 
 // useEpisodeBlocksSync 훅의 Props 타입 정의
 interface UseEpisodeBlocksSyncProps {
@@ -46,11 +49,19 @@ export function useEpisodeBlocksSync({
     documentContext: episodeContext,
     canEdit,
     fetchBlocksFn: (context) => getEpisodeBlocks(context),
-    syncDeltaBlocksFn: (context, deltas) =>
-      syncEpisodeDeltaBlocksService(
+    syncDeltaBlocksFn: async (context, deltas, blocks) => {
+      if (blocks && episodeContext.novel.share !== ShareType.Local) {
+        // 클라우드 소설일 경우 로컬에 백업
+        void backupCloudEpisodeToLocal({
+          ...episodeContext,
+          blocks: fillPartialBlocks<EpisodeBlockType>(blocks),
+        })
+      }
+      await syncEpisodeDeltaBlocksService(
         context,
         deltas as DeltaBlock<EpisodeBlockType>[],
-      ),
+      )
+    },
     onBeforeBackupMerge: async () => {
       await saveEpisodeSnapshot(episodeContext, SnapshotReason.Merge)
     },

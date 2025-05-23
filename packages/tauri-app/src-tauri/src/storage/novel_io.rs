@@ -2,12 +2,14 @@ use crate::models::novel::Novel;
 use std::fs;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
+use tauri::{AppHandle, Manager};
 use uuid::Uuid;
 
 const NOVEL_METADATA_EXTENSION: &str = "muvl";
 pub const EPISODES_DIRNAME: &str = "episodes";
 const RESOURCES_DIRNAME: &str = "resources";
 const IMAGES_SUBDIR_IN_RESOURCES: &str = "images";
+const CLOUD_DIRNAME: &str = "cloud"; // 클라우드 백업 기본 폴더명
 
 /// 주어진 소설 루트 경로에서 메타데이터 파일(*.muvl)의 전체 경로를 찾습니다.
 /// 루트 경로에 .muvl 확장자를 가진 파일이 하나만 있어야 합니다.
@@ -273,4 +275,79 @@ pub fn save_image_to_resources(
                 target_file_path.display()
             )
         })
+}
+
+// --- 클라우드 백업 관련 함수 추가 ---
+
+/// 클라우드 소설 백업을 위한 기본 디렉토리 구조를 확인하고 없으면 생성합니다.
+/// 반환값: app_dir/cloud/NOVEL_ID/ 경로
+pub fn ensure_cloud_novel_directories(
+    app_handle: &AppHandle,
+    novel_id: &str,
+) -> Result<PathBuf, String> {
+    let cloud_novel_root_path = app_handle
+        .path()
+        .app_local_data_dir()
+        .map_err(|e| format!("애플리케이션 로컬 데이터 디렉토리 경로 실패: {:?}", e))?
+        .join(CLOUD_DIRNAME)
+        .join(novel_id); // NOVEL_ID로 된 폴더
+
+    // 루트, episodes 디렉토리 생성 (create_novel_directories와 유사하게)
+    if !cloud_novel_root_path.exists() {
+        fs::create_dir_all(&cloud_novel_root_path).map_err(|e| {
+            format!(
+                "클라우드 소설 루트 디렉토리({:?}) 생성 실패: {}",
+                cloud_novel_root_path, e
+            )
+        })?;
+    }
+
+    let episodes_path = cloud_novel_root_path.join(EPISODES_DIRNAME);
+    if !episodes_path.exists() {
+        fs::create_dir_all(&episodes_path).map_err(|e| {
+            format!(
+                "클라우드 에피소드 디렉토리({:?}) 생성 실패: {}",
+                episodes_path, e
+            )
+        })?;
+    }
+
+    // 필요시 resources 등 다른 하위 폴더도 생성할 수 있습니다.
+    // let resources_path = cloud_novel_root_path.join(RESOURCES_DIRNAME);
+    // fs::create_dir_all(&resources_path).map_err(|e| format!("클라우드 리소스 디렉토리 생성 실패: {}", e))?;
+
+    Ok(cloud_novel_root_path)
+}
+
+/// 클라우드 소설의 Novel 객체를 NOVEL_ID.muvl 파일에 저장합니다. (덮어쓰기)
+pub fn write_cloud_novel_metadata(
+    cloud_novel_root_path: &Path, // 예: app_dir/cloud/NOVEL_ID/
+    novel_id: &str,               // 이 ID가 파일명이 됨
+    data: &Novel,
+) -> Result<(), String> {
+    let metadata_filename = format!("{}.{}", novel_id, NOVEL_METADATA_EXTENSION);
+    let metadata_path = cloud_novel_root_path.join(metadata_filename);
+
+    // 원자적 쓰기를 위해 임시 파일 사용
+    let temp_file_path =
+        cloud_novel_root_path.join(format!("{}.{}.tmp", novel_id, NOVEL_METADATA_EXTENSION));
+
+    let mut temp_file = fs::File::create(&temp_file_path).map_err(|e| {
+        format!(
+            "임시 클라우드 메타데이터 파일 생성 실패 (경로: {:?}): {}",
+            temp_file_path, e
+        )
+    })?;
+    let json_string = serde_json::to_string_pretty(data)
+        .map_err(|e| format!("클라우드 소설 메타데이터 JSON 직렬화 실패: {}", e))?;
+    temp_file
+        .write_all(json_string.as_bytes())
+        .map_err(|e| format!("임시 클라우드 메타데이터 파일 쓰기 실패: {}", e))?;
+    fs::rename(&temp_file_path, &metadata_path).map_err(|e| {
+        format!(
+            "클라우드 메타데이터 파일 원자적 교체 실패 (원본: {:?}, 임시: {:?}): {}",
+            metadata_path, temp_file_path, e
+        )
+    })?;
+    Ok(())
 }

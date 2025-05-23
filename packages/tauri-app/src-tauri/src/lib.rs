@@ -106,6 +106,8 @@ pub fn run() {
             list_wiki_page_summaries_command,
             // 파일 열기 관련 명령어
             take_initial_open,
+            // 클라우드 백업 관련 명령어
+            backup_cloud_episode_command
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
