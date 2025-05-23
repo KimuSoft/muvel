@@ -16,7 +16,7 @@ pub struct ItemEntry {
 
 type ItemToNovelMap = HashMap<String, ItemEntry>;
 
-const ITEM_TO_NOVEL_MAP_FILENAME: &str = "item_to_novel_map.json";
+const ITEM_TO_NOVEL_MAP_FILENAME: &str = "novel_item_index.json";
 
 fn get_item_map_file_path(app_handle: &AppHandle) -> Result<PathBuf, String> {
     // app_local_data_dir() 자체가 Result를 반환하므로, 그 결과에 join을 체이닝하고 최종적으로 Ok로 감쌉니다.
