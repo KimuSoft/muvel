@@ -10,13 +10,13 @@ import {
 } from "muvel-api-types"
 import { getAllLocalNovelEntries as getAllTauriLocalNovelEntries } from "~/services/tauri/indexStorage"
 import type { EpisodeData } from "~/providers/EpisodeProvider"
-
-// --- 소설 CRUD 관련 Rust 커맨드 이름 ---
-const CMD_CREATE_LOCAL_NOVEL = `create_local_novel_command`
-const CMD_GET_LOCAL_NOVEL_DETAILS = `get_local_novel_details_command`
-const CMD_UPDATE_LOCAL_NOVEL_METADATA = `update_local_novel_metadata_command`
-const CMD_UPDATE_LOCAL_NOVEL_EPISODES_METADATA = `update_local_novel_episodes_metadata_command`
-const CMD_OPEN_NOVEL_PROJECT_FOLDER = `open_novel_project_folder_command`
+import {
+  CMD_CREATE_LOCAL_NOVEL,
+  CMD_GET_LOCAL_NOVEL_DETAILS,
+  CMD_OPEN_NOVEL_PROJECT_FOLDER,
+  CMD_UPDATE_LOCAL_NOVEL_EPISODES_METADATA,
+  CMD_UPDATE_LOCAL_NOVEL_METADATA,
+} from "~/services/tauri/constants"
 
 export interface CreateLocalNovelOptions extends CreateNovelRequestDto {
   // null인 경우 기본 경로에 저장

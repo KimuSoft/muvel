@@ -11,7 +11,9 @@ use crate::models::commons::PendingOpen;
 mod commands;
 mod file_handler;
 mod models;
+mod repositories;
 mod storage;
+mod utils;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -72,7 +74,7 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            // 보안 관련 명령어
+            // 인증 관련 명령어
             wait_for_token,
             // 글꼴 관련 명령어
             get_system_font_families,
@@ -81,24 +83,27 @@ pub fn run() {
             get_all_local_novel_entries_command,
             get_local_novel_entry_command,
             register_novel_from_path_command,
-            remove_novel_project_command,
             // 소설 관련 명령어
             create_local_novel_command,
             get_local_novel_details_command,
             update_local_novel_metadata_command,
-            generate_uuid_command,
             update_local_novel_episodes_metadata_command,
+            remove_novel_project_command,
             open_novel_project_folder_command,
+            save_novel_image_command,
             // 에피소드 관련 명령어
             create_local_episode_command,
             get_local_episode_data_command,
-            update_local_episode_blocks_command,
             update_local_episode_metadata_command,
             delete_local_episode_command,
             list_local_episode_summaries_command,
             sync_local_delta_blocks_command,
-            // 이미지 리소스 관련 명령어
-            save_image_to_novel_resources_command,
+            // 위키 관련 명령어
+            create_wiki_page_command,
+            get_wiki_page_command,
+            update_wiki_page_command,
+            delete_wiki_page_command,
+            list_wiki_page_summaries_command,
             // 파일 열기 관련 명령어
             take_initial_open,
         ])

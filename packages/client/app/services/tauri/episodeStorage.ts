@@ -4,19 +4,21 @@ import {
   type CreateEpisodeBodyDto,
   type DeltaBlock,
   type Episode as ApiEpisode,
+  type GetEpisodeResponseDto,
   type LocalEpisode,
   masterPermission,
   type UpdateEpisodeBodyDto,
-  type GetEpisodeResponseDto,
 } from "muvel-api-types"
+import {
+  CMD_CREATE_LOCAL_EPISODE,
+  CMD_DELETE_LOCAL_EPISODE,
+  CMD_GET_LOCAL_EPISODE_DATA,
+  CMD_LIST_LOCAL_EPISODE_SUMMARIES,
+  CMD_SYNC_LOCAL_DELTA_BLOCKS,
+  CMD_UPDATE_LOCAL_EPISODE_METADATA,
+} from "~/services/tauri/constants"
 
 // --- 에피소드 CRUD 관련 Rust 커맨드 이름 (예시) ---
-const CMD_CREATE_LOCAL_EPISODE = `create_local_episode_command`
-const CMD_GET_LOCAL_EPISODE_DATA = `get_local_episode_data_command`
-const CMD_UPDATE_LOCAL_EPISODE_METADATA = `update_local_episode_metadata_command`
-const CMD_DELETE_LOCAL_EPISODE = `delete_local_episode_command`
-const CMD_LIST_LOCAL_EPISODE_SUMMARIES = `list_local_episode_summaries_command` // 소설 내 에피소드 요약 목록
-const CMD_SYNC_LOCAL_DELTA_BLOCKS = `sync_local_delta_blocks_command` // 로컬 델타 블록 동기화
 
 /**
  * 새로운 로컬 에피소드 생성을 Rust에 요청합니다.

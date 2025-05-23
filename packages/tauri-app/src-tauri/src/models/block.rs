@@ -1,18 +1,31 @@
 use serde::{Deserialize, Serialize};
 
+// BlockAttrs: Record<string, string | number>
+// Rust에서는 serde_json::Value를 사용하여 유연하게 처리하거나,
+// 필요시 string과 number를 모두 담을 수 있는 enum을 사용할 수 있습니다.
+// 여기서는 기존처럼 attr: Option<serde_json::Value>를 사용합니다.
+// 만약 BlockAttrs가 항상 HashMap<String, ValueFromStringOrNumber> 형태라면 그렇게 정의할 수도 있습니다.
+// 예: pub type BlockAttrs = HashMap<String, serde_json::Value>;
+
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct Block {
+    // TypeScript의 BaseBlock<BType>에 해당
     pub id: String,
-    pub text: String,
-    pub content: Vec<serde_json::Value>, // PMNodeJSON[]은 JSON Value의 배열로 표현
+    pub text: String,                    // 블록의 순수 텍스트 내용 (검색 등 활용)
+    pub content: Vec<serde_json::Value>, // PMNodeJSON[] ProseMirror 노드 JSON 배열
     #[serde(rename = "blockType")]
-    pub block_type: String, // 실제 BlockType enum을 정의하고 사용할 수도 있습니다.
-    pub attr: Option<serde_json::Value>, // BlockAttrs | null 은 Option<JSON Value>로 표현
-    pub order: i32,                      // order는 정수형으로 가정
+    pub block_type: String, // EpisodeBlockType 또는 WikiBlockType 문자열 값
+
+    // attr: BlockAttrs | null
+    // serde_json::Value는 JSON null, object, string, number 등을 모두 표현 가능
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub attr: Option<serde_json::Value>,
+
+    pub order: i32,
     #[serde(rename = "updatedAt")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    // Option 필드는 serialize 시 none이면 생략
-    pub updated_at: Option<String>, // 날짜는 ISO 8601 문자열로 처리
+    pub updated_at: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -23,17 +36,21 @@ pub enum DeltaBlockAction {
     Delete,
 }
 
+// DeltaBlock은 Partial<Omit<Block, "updatedAt" | "id" | "text">> 와 유사한 역할
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct DeltaBlock {
     pub id: String,
     pub action: DeltaBlockAction,
-    pub date: String, // Delta 생성 시각 (ISO 8601), 블록의 created_at/updated_at에 사용될 수 있음
+    pub date: String,
 
-    // Partial<Omit<Block, "updatedAt" | "id" | "text">>에 해당하는 필드들
-    // 'text' 필드는 DeltaBlock 정의에 따라 포함되지 않음
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub content: Option<Vec<serde_json::Value>>,
+    #[serde(rename = "blockType")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub block_type: Option<String>,
-    pub attr: Option<serde_json::Value>, // Option<serde_json::Value> 사용, serde_json::Value::Null 가능
-    pub order: Option<f32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub attr: Option<serde_json::Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub order: Option<f32>, // 클라이언트에서 순서 변경 시 f32로 올 수 있음
 }

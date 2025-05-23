@@ -11,6 +11,7 @@ export interface Episode {
   novelId: string
   order: number
   episodeType: EpisodeType
+  // React-flow에서 사용하는 JSON 형식
   flowDoc: any
   createdAt: string
   updatedAt: string

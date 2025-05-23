@@ -1,7 +1,8 @@
 import { usePlatform } from "~/hooks/usePlatform"
 import { useCallback } from "react"
 import { getOpenerPlugin, getCoreApi } from "~/services/tauri/tauriApiProvider"
-import { toaster } from "~/components/ui/toaster" // toaster 임포트 추가
+import { toaster } from "~/components/ui/toaster"
+import { CMD_AUTH_LOGIN } from "~/services/tauri/constants" // toaster 임포트 추가
 
 export const useLogin = () => {
   const { isTauri } = usePlatform()
@@ -26,7 +27,7 @@ export const useLogin = () => {
 
         await openUrl(`${apiBaseUrl}/auth/login?state=desktop`)
 
-        const token = await invoke<string>("wait_for_token")
+        const token = await invoke<string>(CMD_AUTH_LOGIN)
 
         localStorage.setItem("auth_token", token)
 
