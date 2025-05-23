@@ -31,6 +31,6 @@ export class EpisodeSnapshotEntity {
   })
   reason: SnapshotReason
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamptz" })
   createdAt: Date
 }

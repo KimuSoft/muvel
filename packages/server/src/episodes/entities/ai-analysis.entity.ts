@@ -29,9 +29,6 @@ export class AiAnalysisEntity {
   @JoinColumn({ name: "episode_id" }) // 외래 키 컬럼 이름 설정
   episode: EpisodeEntity
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: "timestamptz" })
   createdAt: Date
-
-  @UpdateDateColumn()
-  updatedAt: Date
 }
