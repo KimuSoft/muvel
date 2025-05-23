@@ -86,7 +86,7 @@ const EditorTemplate: React.FC<{
     return () => {
       window.removeEventListener("keydown", handleKeyDown)
     }
-  }, [])
+  }, [episode.id, episode.novel.share])
 
   return (
     <VStack

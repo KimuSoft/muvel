@@ -23,7 +23,7 @@ import { TbEdit, TbPencilPlus, TbPlayerPlay, TbShare } from "react-icons/tb"
 import NovelTagList from "../organisms/NovelTagList"
 import { useNavigate, useRevalidator } from "react-router"
 import ModifyNovelModal from "~/components/modals/ModifyNovelModal"
-import { FaList, FaUser } from "react-icons/fa6"
+import { FaList } from "react-icons/fa6"
 import BlockLink from "~/components/atoms/BlockLink"
 import type { ReorderedEpisode } from "~/utils/reorderEpisode"
 import { toaster } from "~/components/ui/toaster"
@@ -34,7 +34,6 @@ import { createNovelEpisode } from "~/services/episodeService"
 import CreateEpisodeMenu from "~/features/novel-editor/components/menus/CreateEpisodeMenu"
 import { getKimuageUrl } from "~/utils/getKimuageUrl"
 import SortableEpisodeList from "../organisms/SortableEpisodeList"
-import CharacterItem from "~/components/molecules/CharacterItem"
 
 const NovelDetailTemplate: React.FC<{
   novel: GetNovelResponseDto
@@ -236,17 +235,17 @@ const NovelDetailTemplate: React.FC<{
       </Center>
 
       <Container w={"100%"} maxW={"4xl"} userSelect={"none"}>
-        <HStack gap={3} mb={4} px={1}>
-          <FaUser />
-          <Heading size={"md"} flexShrink={0}>
-            캐릭터 목록
-          </Heading>
-        </HStack>
-        <HStack>
-          {characters.map((character) => (
-            <CharacterItem characterWikiPage={character} />
-          ))}
-        </HStack>
+        {/*<HStack gap={3} mb={4} px={1}>*/}
+        {/*  <FaUser />*/}
+        {/*  <Heading size={"md"} flexShrink={0}>*/}
+        {/*    캐릭터 목록*/}
+        {/*  </Heading>*/}
+        {/*</HStack>*/}
+        {/*<HStack>*/}
+        {/*  {characters.map((character) => (*/}
+        {/*    <CharacterItem key={character.id} characterWikiPage={character} />*/}
+        {/*  ))}*/}
+        {/*</HStack>*/}
 
         <HStack gap={3} mb={4} px={1}>
           <FaList />
