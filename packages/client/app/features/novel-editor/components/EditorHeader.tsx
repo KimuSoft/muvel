@@ -124,7 +124,6 @@ const EditorHeader: React.FC<
               <IconButton
                 aria-label="소설 검색하기"
                 variant="ghost"
-                disabled={isLocal}
                 onClick={() => searchDialog.setOpen(true)}
               >
                 <BiSearch />
@@ -157,7 +156,6 @@ const EditorHeader: React.FC<
               <IconButton
                 variant="ghost"
                 aria-label="버전 관리하기"
-                disabled={isLocal}
                 onClick={() => snapshotDialog.setOpen(true)}
               >
                 <BiHistory />

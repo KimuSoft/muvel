@@ -16,6 +16,10 @@ import {
 } from "@chakra-ui/react"
 import { useEffect, useMemo, useState } from "react"
 import { usePlatform } from "~/hooks/usePlatform"
+import {
+  CMD_GET_FONTS_BY_FAMILY,
+  CMD_GET_SYSTEM_FONT_FAMILIES,
+} from "~/services/tauri/constants"
 
 const CUSTOM_VALUE = "__custom__"
 
@@ -118,7 +122,7 @@ const FontFamilySelect = ({
       }
 
       const { invoke } = await import("@tauri-apps/api/core")
-      const fonts = await invoke("get_fonts_by_family", { family })
+      const fonts = await invoke(CMD_GET_FONTS_BY_FAMILY, { family })
       const filteredFonts = (fonts as { name: string; postscript: string }[])
         .filter((font) => !!font.name && isNaN(Number(font.name)))
         .map((font) => ({
@@ -155,7 +159,7 @@ const FontFamilySelect = ({
     ;(async () => {
       try {
         const { invoke } = await import("@tauri-apps/api/core")
-        const fonts = await invoke<string[]>("get_system_font_families")
+        const fonts = await invoke<string[]>(CMD_GET_SYSTEM_FONT_FAMILIES)
         const filteredFonts = (fonts as string[])
           .filter((font) => !!font && isNaN(Number(font)))
           .sort((a, b) => a.localeCompare(b, "ko"))

@@ -27,9 +27,7 @@ import CreateEpisodeMenu from "~/features/novel-editor/components/menus/CreateEp
 import DeleteEpisodeDialog from "~/features/novel-editor/components/dialogs/DeleteEpisodeDialog"
 import SortToggleButton from "~/components/atoms/SortToggleButton"
 import EpisodeListLayoutToggleButton from "~/components/atoms/EpisodeListLayoutToggleButton"
-import type { EpisodeItemVariant } from "~/components/molecules/EpisodeItem"
 import { getNovel, updateNovelEpisodes } from "~/services/novelService"
-import type { GetLocalNovelDetailsResponse } from "~/services/tauri/types"
 import { createNovelEpisode } from "~/services/episodeService"
 import { useNavigate } from "react-router"
 import { ImportEpisodesButton } from "~/features/novel-editor/components/ImportEpisodesButton"
@@ -42,9 +40,7 @@ const EpisodeListDrawer: React.FC<
     isLocal?: boolean
   } & PropsWithChildren
 > = ({ novelId, episode, permissions, children }) => {
-  const [novel, setNovel] = React.useState<
-    GetNovelResponseDto | GetLocalNovelDetailsResponse | null
-  >(null)
+  const [novel, setNovel] = React.useState<GetNovelResponseDto | null>(null)
   const [isLoading, setIsLoading] = React.useState(false)
 
   const navigate = useNavigate()

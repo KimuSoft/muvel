@@ -1,28 +1,29 @@
 // app/services/tauri/novelStorage.ts
 import { getCoreApi } from "./tauriApiProvider"
 import {
+  type CreateNovelRequestDto,
+  type Episode,
+  type GetLocalNovelResponseDto,
   masterPermission,
   type Novel as ApiNovel,
   type UpdateNovelRequestDto,
-} from "muvel-api-types" // API DTO 타입
-import type {
-  CreateLocalNovelOptions,
-  GetLocalNovelDetailsResponse,
-  LocalEpisodeData,
-  LocalNovelData,
-} from "./types"
+  type SearchInNovelResponse,
+} from "muvel-api-types"
 import { getAllLocalNovelEntries as getAllTauriLocalNovelEntries } from "~/services/tauri/indexStorage"
-// removeNovelDataAndFromIndex는 indexStorage로 이동했으므로 여기서 직접 사용 안 함
+import type { EpisodeData } from "~/providers/EpisodeProvider"
+import {
+  CMD_CREATE_LOCAL_NOVEL,
+  CMD_GET_LOCAL_NOVEL_DETAILS,
+  CMD_OPEN_NOVEL_PROJECT_FOLDER,
+  CMD_SEARCH_IN_NOVEL,
+  CMD_UPDATE_LOCAL_NOVEL_EPISODES_METADATA,
+  CMD_UPDATE_LOCAL_NOVEL_METADATA,
+} from "~/services/tauri/constants"
 
-// --- 소설 CRUD 관련 Rust 커맨드 이름 (예시) ---
-const CMD_CREATE_LOCAL_NOVEL = `create_local_novel_command`
-const CMD_GET_LOCAL_NOVEL_DETAILS = `get_local_novel_details_command`
-const CMD_UPDATE_LOCAL_NOVEL_METADATA = `update_local_novel_metadata_command`
-const CMD_UPDATE_LOCAL_NOVEL_EPISODES_METADATA = `update_local_novel_episodes_metadata_command`
-const CMD_OPEN_NOVEL_PROJECT_FOLDER = `open_novel_project_folder_command`
-
-// 실제 파일/폴더 삭제는 indexStorage의 removeNovelDataAndFromIndex가 담당 (Rust 내부에서 처리)
-const CMD_GENERATE_UUID = `generate_uuid_command`
+export interface CreateLocalNovelOptions extends CreateNovelRequestDto {
+  // null인 경우 기본 경로에 저장
+  targetDirectoryPath: string | null
+}
 
 /**
  * 새로운 로컬 소설 생성을 Rust에 요청합니다.
@@ -48,12 +49,13 @@ export const createLocalNovel = async (
  */
 export const getLocalNovelDetails = async (
   novelId: string,
-): Promise<GetLocalNovelDetailsResponse> => {
+): Promise<GetLocalNovelResponseDto> => {
   const { invoke } = await getCoreApi()
   try {
-    const novel = await invoke<LocalNovelData>(CMD_GET_LOCAL_NOVEL_DETAILS, {
-      novelId,
-    })
+    const novel = await invoke<Omit<GetLocalNovelResponseDto, "permissions">>(
+      CMD_GET_LOCAL_NOVEL_DETAILS,
+      { novelId },
+    )
 
     return {
       ...novel,
@@ -92,14 +94,14 @@ export const updateLocalNovelMetadata = async (
 
 export const updateLocalNovelEpisodes = async (
   novelId: string,
-  episodeDiffs: ({ id: string } & Partial<LocalEpisodeData>)[],
-): Promise<Omit<LocalEpisodeData, "blocks">[]> => {
+  episodeDiffs: ({ id: string } & Partial<EpisodeData>)[],
+): Promise<Episode[]> => {
   const { invoke } = await getCoreApi()
   try {
     // Rust 커맨드는 novelId와 episodeDiffs를 받고,
     // 업데이트된 에피소드 요약 정보 (Omit<LocalEpisodeData, "blocks">[]와 호환되는) 배열을 반환해야 합니다.
     // Rust 쪽에서는 이 diff를 받아 .muvl 파일 내 episodesSummary (또는 episodes) 배열을 업데이트합니다.
-    return await invoke<Omit<LocalEpisodeData, "blocks">[]>(
+    return await invoke<Episode[]>(
       CMD_UPDATE_LOCAL_NOVEL_EPISODES_METADATA,
       { novelId, episodeDiffs }, // Rust 커맨드에 전달할 인자 객체
     )
@@ -143,6 +145,28 @@ export const openLocalNovelProjectFolder = async (novelId: string) => {
   } catch (error) {
     console.error(
       `Error opening local novel project folder for ${novelId}:`,
+      error,
+    )
+    throw error
+  }
+}
+
+/**
+ * 로컬 소설의 전체 내용에서 검색을 수행합니다.
+ */
+export const searchInLocalNovel = async (
+  novelId: string,
+  query: string,
+): Promise<SearchInNovelResponse> => {
+  const { invoke } = await getCoreApi()
+  try {
+    return await invoke<SearchInNovelResponse>(CMD_SEARCH_IN_NOVEL, {
+      novelId,
+      query,
+    })
+  } catch (error) {
+    console.error(
+      `Error searching local novel ${novelId} for query "${query}":`,
       error,
     )
     throw error

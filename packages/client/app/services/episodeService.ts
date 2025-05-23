@@ -14,10 +14,9 @@ import {
   getCloudEpisodeById,
   syncCloudDeltaBlocks,
   updateCloudEpisode,
-} from "./api/api.episode" // 경로 및 함수 이름은 실제 프로젝트에 맞게
+} from "./api/api.episode"
 import { createCloudNovelEpisode } from "./api/api.novel"
 
-// Tauri 로컬 스토리지 호출 함수 임포트
 import {
   createLocalNovelEpisode as createTauriLocalEpisode,
   deleteLocalEpisode as deleteTauriLocalEpisode,
@@ -25,10 +24,7 @@ import {
   syncLocalDeltaBlocks,
   updateLocalEpisodeMetadata as updateTauriLocalEpisodeMetadata,
 } from "./tauri/episodeStorage"
-
-// Novel 서비스 및 타입 (부모 소설 정보 확인용)
-import { getNovel, type NovelInput } from "./novelService" // getNovel은 NovelInput을 처리할 수 있어야 함
-import type { LocalEpisodeData } from "./tauri/types"
+import { getNovel, type NovelInput } from "./novelService"
 
 const IS_TAURI_APP = import.meta.env.VITE_TAURI === "true"
 
@@ -101,7 +97,7 @@ export const resolveEpisodeContext = async (
 export const createNovelEpisode = async (
   novelInput: NovelInput, // 부모 소설 ID 또는 컨텍스트
   options: CreateEpisodeBodyDto,
-): Promise<ApiEpisode | LocalEpisodeData> => {
+): Promise<ApiEpisode> => {
   const parentNovelId =
     typeof novelInput === "string" ? novelInput : novelInput.id
   // create 시점에는 부모 소설의 shareType을 알아야 함

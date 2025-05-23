@@ -1,11 +1,10 @@
-// src-tauri/src/storage/episode_io.rs
-
+use crate::models::enums::episode_type::EpisodeType; // 기본값을 위해 필요
+use crate::models::episode::LocalEpisodeData;
+use crate::models::novel::EpisodeSummaryData; // EpisodeSummaryData 사용
+use serde::Deserialize; // 부분 역직렬화를 위해 필요
 use std::fs;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
-
-// models.rs에 정의된 LocalEpisodeData 및 Block 구조체를 사용합니다.
-use crate::models::LocalEpisodeData;
 
 // 에피소드 파일들을 저장할 폴더 이름 (novel_io.rs와 일관성 유지)
 pub const EPISODES_DIRNAME: &str = "episodes";
@@ -13,14 +12,6 @@ pub const EPISODES_DIRNAME: &str = "episodes";
 const EPISODE_FILE_EXTENSION: &str = "mvle";
 
 /// 주어진 소설 루트 경로와 에피소드 ID를 사용하여 에피소드 파일의 전체 경로를 구성합니다.
-/// 에피소드 ID가 파일명이 됩니다 (예: novel_root_path/episodes/episode_id.mvle).
-///
-/// # Arguments
-/// * `novel_root_path`: 소설의 루트 디렉토리 경로.
-/// * `episode_id`: 에피소드의 UUID (이것이 파일명이 됨).
-///
-/// # Returns
-/// * `PathBuf`: 에피소드 파일(.mvle)의 전체 경로.
 fn get_episode_file_path(novel_root_path: &Path, episode_id: &str) -> PathBuf {
     novel_root_path
         .join(EPISODES_DIRNAME)
@@ -28,13 +19,7 @@ fn get_episode_file_path(novel_root_path: &Path, episode_id: &str) -> PathBuf {
 }
 
 /// 특정 로컬 에피소드 파일(.mvle)을 읽어 LocalEpisodeData 객체로 반환합니다.
-///
-/// # Arguments
-/// * `novel_root_path`: 읽어올 에피소드가 속한 소설의 루트 디렉토리 경로.
-/// * `episode_id`: 읽어올 에피소드의 UUID (파일명).
-///
-/// # Returns
-/// * `Result<LocalEpisodeData, String>`: 성공 시 `LocalEpisodeData`, 실패 시 에러 메시지.
+/// (이 함수는 전체 에피소드 데이터를 읽습니다.)
 pub fn read_episode_content(
     novel_root_path: &Path,
     episode_id: &str,
@@ -59,30 +44,21 @@ pub fn read_episode_content(
         .read_to_string(&mut file_content)
         .map_err(|e| format!("에피소드 파일 내용을 읽을 수 없습니다: {}", e))?;
 
-    // .mvle 파일은 LocalEpisodeData 구조체 전체를 저장하거나,
-    // 또는 Block 배열만 저장하고 나머지 메타데이터는 .muvl에서 관리할 수도 있습니다.
-    // 여기서는 LocalEpisodeData 전체를 저장한다고 가정합니다.
-    serde_json::from_str(&file_content)
-        .map_err(|e| format!("에피소드 파일 JSON 파싱에 실패했습니다: {}", e))
+    serde_json::from_str(&file_content).map_err(|e| {
+        format!(
+            "에피소드 파일 JSON 파싱에 실패했습니다 (ID: {}): {}",
+            episode_id, e
+        )
+    })
 }
 
-/// LocalEpisodeData 객체 (주로 블록 내용)를 에피소드 파일(.mvle)에 저장(업데이트)합니다.
-/// 원자적 쓰기를 사용하여 데이터 손실을 방지합니다.
-///
-/// # Arguments
-/// * `novel_root_path`: 저장할 에피소드가 속한 소설의 루트 디렉토리 경로.
-/// * `episode_id`: 저장할 에피소드의 UUID (파일명).
-/// * `data`: 저장할 `LocalEpisodeData` 객체의 참조.
-///
-/// # Returns
-/// * `Result<(), String>`: 성공 시 빈 튜플, 실패 시 에러 메시지.
+/// LocalEpisodeData 객체를 에피소드 파일(.mvle)에 저장(업데이트)합니다.
 pub fn write_episode_content(
     novel_root_path: &Path,
     episode_id: &str,
-    data: &LocalEpisodeData, // 또는 blocks: &[Block] 만 받을 수도 있음
+    data: &LocalEpisodeData,
 ) -> Result<(), String> {
     let episode_file_path = get_episode_file_path(novel_root_path, episode_id);
-    // 에피소드 파일이 저장될 부모 디렉토리 (novel_root_path/episodes/)
     let parent_dir = episode_file_path.parent().ok_or_else(|| {
         format!(
             "에피소드 파일의 부모 디렉토리를 찾을 수 없습니다: {:?}",
@@ -90,7 +66,6 @@ pub fn write_episode_content(
         )
     })?;
 
-    // 부모 디렉토리(episodes/)가 존재하지 않으면 생성합니다. novel_io::create_novel_directories에서 이미 생성되었을 수 있습니다.
     if !parent_dir.exists() {
         fs::create_dir_all(parent_dir).map_err(|e| {
             format!(
@@ -132,13 +107,6 @@ pub fn write_episode_content(
 }
 
 /// 특정 로컬 에피소드 파일(.mvle)을 삭제합니다.
-///
-/// # Arguments
-/// * `novel_root_path`: 삭제할 에피소드가 속한 소설의 루트 디렉토리 경로.
-/// * `episode_id`: 삭제할 에피소드의 UUID (파일명).
-///
-/// # Returns
-/// * `Result<(), String>`: 성공 시 빈 튜플, 실패 시 에러 메시지.
 pub fn delete_episode_file(novel_root_path: &Path, episode_id: &str) -> Result<(), String> {
     let episode_file_path = get_episode_file_path(novel_root_path, episode_id);
 
@@ -151,8 +119,7 @@ pub fn delete_episode_file(novel_root_path: &Path, episode_id: &str) -> Result<(
         })?;
         Ok(())
     } else {
-        // 삭제할 파일이 없거나 파일이 아니어도 성공으로 처리하거나,
-        // 경고를 로깅할 수 있습니다. 여기서는 성공으로 간주합니다.
+        // 파일이 없어도 오류는 아님 (이미 삭제되었을 수 있음)
         println!(
             "삭제할 에피소드 파일이 존재하지 않거나 파일이 아닙니다: {:?}",
             episode_file_path
@@ -161,21 +128,31 @@ pub fn delete_episode_file(novel_root_path: &Path, episode_id: &str) -> Result<(
     }
 }
 
-/// 특정 소설의 `episodes` 디렉토리 내 모든 에피소드 파일명(ID) 목록을 가져옵니다.
-/// 이는 소설 메타데이터(.muvl)의 에피소드 목록과 실제 파일 시스템 간의 동기화 확인에 사용될 수 있습니다.
-///
-/// # Arguments
-/// * `novel_root_path`: 에피소드 목록을 조회할 소설의 루트 디렉토리 경로.
-///
-/// # Returns
-/// * `Result<Vec<String>, String>`: 성공 시 에피소드 ID(파일명에서 확장자 제외) 문자열 벡터, 실패 시 에러 메시지.
-pub fn list_episode_ids_from_fs(novel_root_path: &Path) -> Result<Vec<String>, String> {
+/// 에피소드 파일에서 요약 정보만 읽기 위한 임시 구조체 (부분 역직렬화용)
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+struct PartialEpisodeDataForSummary {
+    id: String,
+    title: String,
+    order: f32,
+    episode_type: EpisodeType,
+    #[serde(default)] // contentLength가 파일에 없을 경우 기본값 사용 (0)
+    content_length: Option<i32>, // LocalEpisodeData에서는 필수지만, 요약본 읽을 때는 없을 수도 있음
+    created_at: String,
+    updated_at: String,
+    // blocks, flowDoc 등 용량이 큰 필드는 여기에 포함하지 않음
+}
+
+/// 특정 소설의 `episodes` 디렉토리 내 모든 에피소드 파일에서 요약 정보만 읽어 목록으로 반환합니다.
+/// 용량이 큰 `blocks`, `flowDoc` 필드는 읽지 않습니다 (부분 역직렬화).
+pub fn list_episode_summaries_from_files(
+    novel_root_path: &Path,
+) -> Result<Vec<EpisodeSummaryData>, String> {
     let episodes_dir_path = novel_root_path.join(EPISODES_DIRNAME);
-    let mut episode_ids = Vec::new();
+    let mut episode_summaries = Vec::new();
 
     if !episodes_dir_path.exists() || !episodes_dir_path.is_dir() {
-        // 에피소드 폴더가 없으면 빈 목록 반환 (오류는 아님)
-        return Ok(episode_ids);
+        return Ok(episode_summaries); // 에피소드 폴더가 없으면 빈 목록 반환
     }
 
     for entry in fs::read_dir(&episodes_dir_path).map_err(|e| {
@@ -186,17 +163,48 @@ pub fn list_episode_ids_from_fs(novel_root_path: &Path) -> Result<Vec<String>, S
     })? {
         let entry = entry.map_err(|e| format!("디렉토리 항목 읽기 실패: {}", e))?;
         let path = entry.path();
-        // 파일이고, 올바른 확장자(.mvle)를 가졌는지 확인
+
         if path.is_file()
             && path
                 .extension()
                 .map_or(false, |ext| ext == EPISODE_FILE_EXTENSION)
         {
-            // 파일명에서 확장자를 제외한 부분이 에피소드 ID
-            if let Some(file_stem) = path.file_stem().and_then(|stem| stem.to_str()) {
-                episode_ids.push(file_stem.to_string());
+            let mut file_content = String::new();
+            if fs::File::open(&path)
+                .and_then(|mut f| f.read_to_string(&mut file_content))
+                .is_err()
+            {
+                eprintln!("에피소드 요약 읽기 실패 (파일 열기/읽기 오류): {:?}", path);
+                continue; // 다음 파일로 넘어감
+            }
+
+            match serde_json::from_str::<PartialEpisodeDataForSummary>(&file_content) {
+                Ok(partial_data) => {
+                    episode_summaries.push(EpisodeSummaryData {
+                        id: partial_data.id,
+                        title: partial_data.title,
+                        order: partial_data.order,
+                        episode_type: partial_data.episode_type,
+                        content_length: partial_data.content_length.or(Some(0)), // 파일에 없으면 0으로
+                        created_at: partial_data.created_at,
+                        updated_at: partial_data.updated_at,
+                    });
+                }
+                Err(e) => {
+                    eprintln!(
+                        "에피소드 요약 정보 JSON 파싱 실패 (파일: {:?}): {}. 건너<0xEB><0><0x88>니다.",
+                        path, e
+                    );
+                    // 파싱 실패 시 해당 파일은 건너<0xEB><0><0x88>니다.
+                }
             }
         }
     }
-    Ok(episode_ids)
+    // 순서(order)에 따라 정렬
+    episode_summaries.sort_by(|a, b| {
+        a.order
+            .partial_cmp(&b.order)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
+    Ok(episode_summaries)
 }

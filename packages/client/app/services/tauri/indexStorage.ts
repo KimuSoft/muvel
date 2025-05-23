@@ -1,14 +1,12 @@
-// app/services/tauri/indexStorage.ts
 import { getCoreApi } from "./tauriApiProvider"
-import type { LocalNovelIndexEntry } from "./types" // LocalNovelListSummary 대신 LocalNovelIndexEntry 사용
-
-// Rust invoke 커맨드 이름 (실제 Rust 프로젝트와 일치시켜야 함)
-const CMD_GET_ALL_LOCAL_NOVEL_ENTRIES = `get_all_local_novel_entries_command`
-const CMD_GET_LOCAL_NOVEL_ENTRY = `get_local_novel_entry_command`
-const CMD_REGISTER_NOVEL_FROM_PATH = `register_novel_from_path_command`
-const CMD_REMOVE_NOVEL_PROJECT = `remove_novel_project_command` // 인덱스 및 파일 모두 삭제
-
-const CMD_TAKE_INITIAL_OPEN = `take_initial_open`
+import type { LocalNovelIndexEntry } from "./types"
+import {
+  CMD_GET_ALL_LOCAL_NOVEL_ENTRIES,
+  CMD_GET_LOCAL_NOVEL_ENTRY,
+  CMD_REGISTER_NOVEL_FROM_PATH,
+  CMD_REMOVE_NOVEL_PROJECT,
+  CMD_TAKE_INITIAL_OPEN,
+} from "~/services/tauri/constants"
 
 /**
  * Rust에 인덱싱된 모든 로컬 소설의 요약 정보 목록을 요청합니다.

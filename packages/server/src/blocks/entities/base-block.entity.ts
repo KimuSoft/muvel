@@ -22,6 +22,6 @@ export abstract class BaseBlockEntity<BType>
   @Column()
   order: number
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: "timestamptz" })
   updatedAt: Date
 }

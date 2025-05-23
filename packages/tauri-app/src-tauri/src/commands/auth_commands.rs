@@ -1,7 +1,6 @@
 // src-tauri/src/app_lib/auth.rs
-use tiny_http::{Server, Response, Header};
+use tiny_http::{Header, Response, Server};
 use url::Url;
-
 
 #[tauri::command]
 pub fn wait_for_token() -> Result<String, String> {
@@ -34,9 +33,10 @@ pub fn wait_for_token() -> Result<String, String> {
                 .map(|(_, v)| v.to_string())
                 .ok_or("no token")?;
 
-            let _ = request.respond(    Response::from_string(html).with_header(
-                                            Header::from_bytes("Content-Type", "text/html").unwrap()
-                                        ));
+            let _ = request.respond(
+                Response::from_string(html)
+                    .with_header(Header::from_bytes("Content-Type", "text/html").unwrap()),
+            );
             return Ok(token);
         }
     }

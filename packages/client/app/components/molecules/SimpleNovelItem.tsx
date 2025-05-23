@@ -39,7 +39,7 @@ const SimpleNovelItem = forwardRef<HTMLDivElement, { novel: Novel }>(
         <HStack w={"100%"}>
           <Heading size={"md"}>{novel.title}</Heading>
           <Text fontSize={"xs"} color={"gray.500"} flexShrink={0}>
-            {novel.author.username}
+            {novel.author?.username || "로컬 소설"}
           </Text>
         </HStack>
 

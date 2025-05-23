@@ -67,7 +67,7 @@ const MobileActionMenu: React.FC<{
 
       <Menu.Positioner>
         <Menu.Content>
-          <Menu.Item value="search" disabled={isLocalNovel}>
+          <Menu.Item value="search">
             <BiSearch /> 소설 검색하기
           </Menu.Item>
           <Menu.Item value="review" disabled={isLocalNovel}>
@@ -76,7 +76,7 @@ const MobileActionMenu: React.FC<{
           <Menu.Item value="export">
             <BiExport /> 회차 내보내기
           </Menu.Item>
-          <Menu.Item disabled={isLocalNovel} value="snapshot">
+          <Menu.Item value="snapshot">
             <BiHistory /> 버전 관리하기
           </Menu.Item>
           <Menu.Item value="setting">

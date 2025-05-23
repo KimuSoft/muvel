@@ -1,6 +1,7 @@
 // services/wikiPageService.ts
 import {
   type DeltaBlock,
+  type Novel,
   type PartialWikiBlock,
   ShareType,
   type UpdateWikiPageRequestBody,
@@ -10,7 +11,6 @@ import {
 import * as cloudWikiApi from "./api/api.wiki"
 import * as localWikiStorage from "./tauri/wikiPageStorage"
 import { getNovel } from "./novelService"
-import type { LocalNovelData } from "~/services/tauri/types"
 
 const IS_TAURI_APP = import.meta.env.VITE_TAURI === "true"
 
@@ -28,9 +28,7 @@ async function resolveWikiPageNovelShareType(
   if (explicitShareType) return explicitShareType
   if (IS_TAURI_APP) {
     try {
-      const novel = (await getNovel(novelId)) as
-        | LocalNovelData
-        | { share: ShareType } // getNovel의 반환 타입에 따라 조정
+      const novel = (await getNovel(novelId)) as Novel | { share: ShareType } // getNovel의 반환 타입에 따라 조정
       return novel.share || ShareType.Private // 로컬 우선 조회 후 share 타입 반환
     } catch (e) {
       // 로컬 조회 실패 시 클라우드로 간주 (또는 에러 처리)

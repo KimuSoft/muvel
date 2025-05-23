@@ -3,11 +3,10 @@ import axios from "axios"
 import { getCoreApi } from "~/services/tauri/tauriApiProvider"
 import { toaster } from "~/components/ui/toaster"
 import { usePlatform } from "~/hooks/usePlatform"
+import { CMD_SAVE_NOVEL_IMAGE } from "~/services/tauri/constants"
 
 // 웹 업로드 URL (환경 변수 등으로 관리하는 것이 좋습니다)
 const UPLOAD_URL = "https://image.kimustory.net/images"
-// Tauri 로컬 저장 시 사용할 커맨드 명
-const TAURI_SAVE_IMAGE_COMMAND = "save_image_to_novel_resources_command"
 
 // useImageUpload 훅의 옵션 타입을 정의합니다.
 interface UseImageUploadOptions {
@@ -53,14 +52,11 @@ export const useImageUpload = ({
               const fileBytes = Array.from(new Uint8Array(event.target.result))
 
               // Rust 커맨드 호출하여 이미지 저장 및 절대 경로 받기
-              const absolutePath = await invoke<string>(
-                TAURI_SAVE_IMAGE_COMMAND,
-                {
-                  novelId: storageNovelId, // Rust 커맨드에는 novelId로 전달
-                  originalFileName: file.name,
-                  fileBytes,
-                },
-              )
+              const absolutePath = await invoke<string>(CMD_SAVE_NOVEL_IMAGE, {
+                novelId: storageNovelId, // Rust 커맨드에는 novelId로 전달
+                originalFileName: file.name,
+                fileBytes,
+              })
 
               // 절대 경로를 웹뷰에서 사용 가능한 URL로 변환
               const assetUrl = convertFileSrc(absolutePath)

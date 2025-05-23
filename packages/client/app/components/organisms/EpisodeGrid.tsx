@@ -1,18 +1,22 @@
 import React from "react"
-import { type Episode, EpisodeType } from "muvel-api-types"
+import {
+  type Episode,
+  EpisodeType,
+  type NovelEpisodeContext,
+} from "muvel-api-types"
 import { HStack, SimpleGrid, VStack } from "@chakra-ui/react"
 import EpisodeGridItem from "../molecules/EpisodeGridItem" // 방금 만든 컴포넌트
 import EpisodeItem from "../molecules/EpisodeItem" // 기존 EpisodeItem
 
 interface EpisodeGridProps {
-  episodes: Episode[]
+  episodes: NovelEpisodeContext[]
   loading?: boolean
 }
 
 const EpisodeGrid: React.FC<EpisodeGridProps> = ({ episodes, loading }) => {
   // 에피소드들을 그룹과 일반 에피소드 청크로 분리
-  const groupedEpisodes: (Episode | Episode[])[] = []
-  let currentChunk: Episode[] = []
+  const groupedEpisodes: (NovelEpisodeContext | NovelEpisodeContext[])[] = []
+  let currentChunk: NovelEpisodeContext[] = []
 
   episodes.forEach((episode) => {
     if (episode.episodeType === EpisodeType.EpisodeGroup) {

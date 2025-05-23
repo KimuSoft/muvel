@@ -1,6 +1,6 @@
 {
   "name": "tauri-app",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "scripts": {
     "tauri": "tauri",
     "dev": "tauri dev",

@@ -29,14 +29,6 @@ export interface LocalWikiPageData
 export interface UpdateLocalWikiPageOptions
   extends Partial<Pick<LocalWikiPageData, "title" /* 다른 필드들 */>> {}
 
-// Rust 커맨드 이름 (실제 Rust에서 정의된 이름과 일치해야 함)
-const CREATE_LOCAL_WIKI_PAGE_CMD = "create_local_wiki_page"
-const GET_LOCAL_WIKI_PAGE_CMD = "get_local_wiki_page"
-const UPDATE_LOCAL_WIKI_PAGE_CMD = "update_local_wiki_page"
-const DELETE_LOCAL_WIKI_PAGE_CMD = "delete_local_wiki_page"
-const GET_LOCAL_WIKI_PAGE_BLOCKS_CMD = "get_local_wiki_page_blocks"
-const SYNC_LOCAL_WIKI_PAGE_BLOCKS_CMD = "sync_local_wiki_page_blocks"
-
 export const createLocalWikiPage = async (
   options: CreateWikiPageRequestBody,
 ): Promise<LocalWikiPageData> => {

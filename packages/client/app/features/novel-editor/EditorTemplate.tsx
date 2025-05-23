@@ -1,5 +1,5 @@
-import { type Block, EpisodeType } from "muvel-api-types"
-import React, { useMemo } from "react"
+import { type EpisodeBlock, EpisodeType, SnapshotReason } from "muvel-api-types"
+import React, { useEffect, useMemo, useRef } from "react"
 import NovelEditor from "~/features/novel-editor/components/NovelEditor"
 import {
   Box,
@@ -18,9 +18,11 @@ import EpisodeTypeMenu from "~/features/novel-editor/components/menus/EpisodeTyp
 import { usePlatform } from "~/hooks/usePlatform"
 import { useEpisodeContext } from "~/providers/EpisodeProvider"
 import EpisodeTitleInput from "~/features/novel-editor/components/EpisodeTitleInput"
+import { toaster } from "~/components/ui/toaster"
+import { saveEpisodeSnapshot } from "~/services/episodeSnapshotService"
 
 const EditorTemplate: React.FC<{
-  initialBlocks: Block[]
+  initialBlocks: EpisodeBlock[]
 }> = ({ initialBlocks }) => {
   const { episode, updateEpisodeData } = useEpisodeContext()
   const [editorStyle] = useEditorStyleOptions()
@@ -43,6 +45,48 @@ const EditorTemplate: React.FC<{
       return "특별편"
     }
   }, [episode.episodeType, episode.order])
+
+  const lastSavedRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "s") {
+        e.preventDefault()
+
+        const now = Date.now()
+        if (lastSavedRef.current && now - lastSavedRef.current < 30000) {
+          const elapsed = now - lastSavedRef.current
+          const remaining = Math.ceil((30000 - elapsed) / 1000)
+
+          toaster.warning({
+            title: "너무 급해요!",
+            description: `버전 생성은 30초에 한 번만 가능해요! ${remaining}초 후에 다시 시도해 주세요.`,
+          })
+        } else {
+          lastSavedRef.current = now
+          toaster.promise(saveEpisodeSnapshot(episode, SnapshotReason.Manual), {
+            loading: {
+              title: "버전 생성 중...",
+              description: "잠시만 기다려 주세요.",
+            },
+            success: {
+              title: "버전 생성 완료!",
+              description: "현재 판본이 버전으로 저장되었어요!",
+            },
+            error: {
+              title: "버전 생성 실패...",
+              description: "버전 생성 중 오류가 발생했어요.",
+            },
+          })
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [episode.id, episode.novel.share])
 
   return (
     <VStack

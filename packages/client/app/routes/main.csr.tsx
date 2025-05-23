@@ -11,6 +11,7 @@ export async function clientLoader() {
   // API 서버 연결 이슈 / 버전 호환 이슈 고려
   try {
     user = await getMe()
+
     cloudNovels = user ? await getMyRecentNovels() : []
   } catch (e) {
     console.warn("Error fetching user count:", e)

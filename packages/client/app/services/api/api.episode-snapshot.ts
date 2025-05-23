@@ -1,7 +1,7 @@
 import { type EpisodeSnapshot, SnapshotReason } from "muvel-api-types"
 import { api } from "~/utils/api"
 
-export const getCloudSnapshots = async (episodeId: string) => {
+export const getCloudEpisodeSnapshots = async (episodeId: string) => {
   const { data } = await api.get<EpisodeSnapshot[]>(
     `episodes/${episodeId}/snapshots`,
   )

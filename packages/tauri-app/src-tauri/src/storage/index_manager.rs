@@ -1,18 +1,10 @@
-// src-tauri/src/storage/index_manager.rs
-
+use crate::models::index::LocalNovelIndexEntry;
 use std::collections::HashMap;
 use std::fs;
 use std::io::{Read, Write};
 use std::path::PathBuf;
-
-// AppHandle을 사용하기 위해 tauri 모듈 및 Manager 트레잇을 가져옵니다.
-// Manager 트레잇은 app_handle.path() 같은 메서드를 사용하기 위해 필요합니다.
 use tauri::{AppHandle, Manager};
 
-// models.rs에 정의된 구조체 사용
-use crate::models::LocalNovelIndexEntry;
-
-// LocalNovelIndex 타입 별칭
 type LocalNovelIndex = HashMap<String, LocalNovelIndexEntry>;
 
 const NOVEL_INDEX_FILENAME: &str = "novel_index.json";
@@ -21,17 +13,12 @@ const NOVEL_INDEX_FILENAME: &str = "novel_index.json";
 /// Tauri 2.x 방식: AppHandle의 path() 메서드를 통해 PathResolver를 얻고, app_local_data_dir() 사용
 fn get_novel_index_file_path(app_handle: &AppHandle) -> Result<PathBuf, String> {
     // AppHandle의 path() 메서드를 사용하여 PathResolver 인스턴스를 가져옵니다.
-    let mut path = app_handle
-        .path() // PathResolver 인스턴스를 반환합니다.
-        .app_local_data_dir() // PathResolver의 메서드를 사용하여 경로를 얻습니다.
-        // app_local_data_dir()는 Result<PathBuf, tauri::Error>를 반환할 수 있으므로,
-        // map_err를 사용하여 에러 타입을 String으로 변환합니다.
-        .map_err(|e| {
-            format!(
-                "애플리케이션 로컬 데이터 디렉토리를 찾을 수 없습니다: {:?}",
-                e
-            )
-        })?;
+    let mut path = app_handle.path().app_local_data_dir().map_err(|e| {
+        format!(
+            "애플리케이션 로컬 데이터 디렉토리를 찾을 수 없습니다: {:?}",
+            e
+        )
+    })?;
 
     // 해당 디렉토리 경로에 인덱스 파일 이름을 추가
     path.push(NOVEL_INDEX_FILENAME);
@@ -39,9 +26,7 @@ fn get_novel_index_file_path(app_handle: &AppHandle) -> Result<PathBuf, String> 
 }
 
 /// 로컬 소설 인덱스를 파일에서 읽어옵니다.
-// AppHandle을 인자로 받도록 수정
 pub fn load_index(app_handle: &AppHandle) -> Result<LocalNovelIndex, String> {
-    // AppHandle을 전달하여 내부적으로 경로 해결 함수 호출
     let index_path = get_novel_index_file_path(app_handle)?;
 
     if !index_path.exists() {
@@ -64,7 +49,6 @@ pub fn load_index(app_handle: &AppHandle) -> Result<LocalNovelIndex, String> {
 }
 
 /// 로컬 소설 인덱스 데이터를 파일에 저장합니다. (원자적 쓰기 방식)
-// AppHandle을 인자로 받도록 수정
 pub fn save_index(app_handle: &AppHandle, index_data: &LocalNovelIndex) -> Result<(), String> {
     let index_path = get_novel_index_file_path(app_handle)?;
     let parent_dir = index_path.parent().ok_or_else(|| {
@@ -110,41 +94,37 @@ pub fn save_index(app_handle: &AppHandle, index_data: &LocalNovelIndex) -> Resul
 }
 
 /// 로컬 소설 인덱스에 특정 소설 항목을 추가하거나 기존 항목을 업데이트합니다.
-// AppHandle을 인자로 받도록 수정
 pub fn upsert_novel_entry(
     app_handle: &AppHandle,
     novel_id: String,
     entry: LocalNovelIndexEntry,
 ) -> Result<(), String> {
-    let mut index = load_index(app_handle)?; // AppHandle 전달
+    let mut index = load_index(app_handle)?;
     index.insert(novel_id, entry);
-    save_index(app_handle, &index) // AppHandle 전달
+    save_index(app_handle, &index)
 }
 
 /// 로컬 소설 인덱스에서 특정 소설 항목을 제거합니다.
-// AppHandle을 인자로 받도록 수정
 pub fn remove_novel_entry(app_handle: &AppHandle, novel_id: &str) -> Result<(), String> {
-    let mut index = load_index(app_handle)?; // AppHandle 전달
+    let mut index = load_index(app_handle)?;
     if index.remove(novel_id).is_some() {
-        save_index(app_handle, &index) // AppHandle 전달
+        save_index(app_handle, &index)
     } else {
         Ok(())
     }
 }
 
 /// 로컬 소설 인덱스에서 특정 소설 항목을 조회합니다.
-// AppHandle을 인자로 받도록 수정
 pub fn get_novel_entry(
     app_handle: &AppHandle,
     novel_id: &str,
 ) -> Result<Option<LocalNovelIndexEntry>, String> {
-    let index = load_index(app_handle)?; // AppHandle 전달
+    let index = load_index(app_handle)?;
     Ok(index.get(novel_id).cloned())
 }
 
 /// 로컬 소설 인덱스에 있는 모든 소설 항목의 목록을 반환합니다.
-// AppHandle을 인자로 받도록 수정
 pub fn get_all_novel_entries(app_handle: &AppHandle) -> Result<Vec<LocalNovelIndexEntry>, String> {
-    let index = load_index(app_handle)?; // AppHandle 전달
+    let index = load_index(app_handle)?;
     Ok(index.values().cloned().collect())
 }

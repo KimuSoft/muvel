@@ -42,7 +42,8 @@ interface UseInternalBlocksSyncLogicProps<
   syncDeltaBlocksFn: (
     context: DataType,
     deltas: DeltaBlock<BlockType>[],
-  ) => Promise<void | PartialBlock<BlockType>[]>
+    blocks: PartialBlock<BlockType>[] | null,
+  ) => Promise<unknown>
   /**
    * IndexedDB에 저장된 백업 데이터를 병합하기 직전에 호출되는 선택적 콜백 함수.
    * 예를 들어, 에피소드의 경우 이 시점에서 스냅샷을 생성할 수 있습니다.
@@ -108,6 +109,7 @@ export function useInternalBlocksSyncLogic<
           await syncDeltaBlocksFn(
             documentContext,
             backupDelta as DeltaBlock<BlockType>[],
+            null,
           )
           toaster.success({
             title: "블록 동기화 완료",
@@ -207,7 +209,7 @@ export function useInternalBlocksSyncLogic<
 
       try {
         if (shareType === ShareType.Local) {
-          await syncDeltaBlocksFn(documentContext, changes)
+          await syncDeltaBlocksFn(documentContext, changes, newBlocks)
         } else {
           if (changes.length > 1000) {
             toaster.warning({
@@ -217,7 +219,7 @@ export function useInternalBlocksSyncLogic<
             })
           }
           for (const deltaChunk of chunk(changes, 200)) {
-            await syncDeltaBlocksFn(documentContext, deltaChunk)
+            await syncDeltaBlocksFn(documentContext, deltaChunk, newBlocks)
           }
         }
         originalBlocksRef.current = [...newBlocks]

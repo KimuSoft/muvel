@@ -29,14 +29,13 @@ import ShareSelect from "~/components/molecules/ShareSelect"
 import ImageUploader from "~/components/molecules/ImageUploader"
 import { useRevalidator } from "react-router"
 import ExportNovelMenu from "~/components/modals/ExportNovelMenu"
-import type { LocalNovelData } from "~/services/tauri/types"
 import { updateNovel } from "~/services/novelService"
 import Kimuage from "~/components/molecules/Kimuage"
 import { openLocalNovelProjectFolder } from "~/services/tauri/novelStorage"
 import { FaFolderOpen } from "react-icons/fa6"
 
 const ModifyNovelModal: React.FC<{
-  novel: Novel | LocalNovelData
+  novel: Novel
   onModify?: () => Promise<unknown>
   children: React.ReactNode
 }> = ({ novel, onModify, children }) => {
