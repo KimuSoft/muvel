@@ -98,6 +98,9 @@ pub fn run() {
             delete_local_episode_command,
             list_local_episode_summaries_command,
             sync_local_delta_blocks_command,
+            // 스냅숏 관련 명령어
+            create_episode_snapshot_command,
+            get_episode_snapshots_command,
             // 위키 관련 명령어
             create_wiki_page_command,
             get_wiki_page_command,

@@ -31,6 +31,10 @@ export const CMD_DELETE_LOCAL_EPISODE = `delete_local_episode_command`
 export const CMD_LIST_LOCAL_EPISODE_SUMMARIES = `list_local_episode_summaries_command`
 export const CMD_SYNC_LOCAL_DELTA_BLOCKS = `sync_local_delta_blocks_command`
 
+// SNAPSHOT
+export const CMD_CREATE_LOCAL_EPISODE_SNAPSHOT = `create_episode_snapshot_command`
+export const CMD_GET_LOCAL_EPISODE_SNAPSHOT = `get_episode_snapshots_command`
+
 // WIKI
 export const CMD_CREATE_LOCAL_WIKI_PAGE_CMD = "create_wiki_page_command"
 export const CMD_GET_LOCAL_WIKI_PAGE_CMD = "get_wiki_page_command"

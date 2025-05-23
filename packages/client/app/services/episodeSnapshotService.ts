@@ -2,12 +2,19 @@ import {
   type EpisodeInput,
   resolveEpisodeContext,
 } from "~/services/episodeService"
-import { saveCloudSnapshot } from "~/services/api/api.episode-snapshot"
+import {
+  getCloudEpisodeSnapshots,
+  saveCloudSnapshot,
+} from "~/services/api/api.episode-snapshot"
 import {
   type EpisodeSnapshot,
   ShareType,
   type SnapshotReason,
 } from "muvel-api-types"
+import {
+  createLocalEpisodeSnapshot,
+  getLocalEpisodeSnapshots,
+} from "~/services/tauri/snapshotStorage"
 
 export const saveEpisodeSnapshot = async (
   episodeInput: EpisodeInput,
@@ -17,9 +24,22 @@ export const saveEpisodeSnapshot = async (
     await resolveEpisodeContext(episodeInput)
 
   if (novelShareType === ShareType.Local) {
-    console.warn("로컬 스냅샷 저장은 지원하지 않습니다.")
+    await createLocalEpisodeSnapshot(episodeId, reason)
     return null
   } else {
     return saveCloudSnapshot(episodeId, reason)
+  }
+}
+
+export const getEpisodeSnapshots = async (
+  episodeInput: EpisodeInput,
+): Promise<EpisodeSnapshot[]> => {
+  const { episodeId, novelShareType } =
+    await resolveEpisodeContext(episodeInput)
+
+  if (novelShareType === ShareType.Local) {
+    return getLocalEpisodeSnapshots(episodeId)
+  } else {
+    return getCloudEpisodeSnapshots(episodeId)
   }
 }

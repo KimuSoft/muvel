@@ -157,7 +157,6 @@ const EditorHeader: React.FC<
               <IconButton
                 variant="ghost"
                 aria-label="버전 관리하기"
-                disabled={isLocal}
                 onClick={() => snapshotDialog.setOpen(true)}
               >
                 <BiHistory />

@@ -9,6 +9,7 @@ import {
   DrawerRootProvider,
   DrawerTrigger,
   EmptyState,
+  Field,
   Heading,
   HStack,
   Stack,
@@ -17,12 +18,13 @@ import {
   type UseDialogReturn,
   VStack,
 } from "@chakra-ui/react"
-import React, { useEffect } from "react"
+import React, { useEffect, useMemo } from "react"
 import { type EpisodeSnapshot, SnapshotReason } from "muvel-api-types"
 import { TbHistory, TbSlash } from "react-icons/tb"
 import { toaster } from "~/components/ui/toaster"
 import type { EpisodeData } from "~/providers/EpisodeProvider"
-import { getCloudSnapshots } from "~/services/api/api.episode-snapshot"
+import { getEpisodeSnapshots } from "~/services/episodeSnapshotService"
+import { FaInfoCircle } from "react-icons/fa"
 
 const SnapshotItem: React.FC<{
   snapshot: EpisodeSnapshot
@@ -37,6 +39,29 @@ const SnapshotItem: React.FC<{
         })
       })
   }
+
+  const reasonTag = useMemo(() => {
+    switch (snapshot.reason) {
+      case SnapshotReason.Manual:
+        return (
+          <Tag.Root variant={"outline"} colorPalette={"green"} size={"sm"}>
+            <Tag.Label>수동 생성</Tag.Label>
+          </Tag.Root>
+        )
+      case SnapshotReason.Autosave:
+        return (
+          <Tag.Root variant={"outline"} colorPalette={"purple"} size={"sm"}>
+            <Tag.Label>자동 생성</Tag.Label>
+          </Tag.Root>
+        )
+      case SnapshotReason.Merge:
+        return (
+          <Tag.Root variant={"outline"} colorPalette={"yellow"} size={"sm"}>
+            <Tag.Label>병합 전 백업</Tag.Label>
+          </Tag.Root>
+        )
+    }
+  }, [snapshot.reason])
 
   return (
     <Stack
@@ -59,19 +84,7 @@ const SnapshotItem: React.FC<{
             .reduce((acc, cur) => acc + cur)}
           자
         </Text>
-        <Tag.Root
-          variant={"outline"}
-          colorPalette={
-            snapshot.reason === SnapshotReason.Autosave ? "purple" : "yellow"
-          }
-          size={"sm"}
-        >
-          <Tag.Label>
-            {snapshot.reason === SnapshotReason.Autosave
-              ? "자동 생성"
-              : "병합 전 백업"}
-          </Tag.Label>
-        </Tag.Root>
+        {reasonTag}
       </HStack>
     </Stack>
   )
@@ -87,7 +100,7 @@ const SnapshotDrawer: React.FC<{
 
   const fetchSnapshots = async () => {
     setIsLoading(true)
-    const snapshots = await getCloudSnapshots(episode.id)
+    const snapshots = await getEpisodeSnapshots(episode.id)
 
     // ai 결과를 최신순으로 정렬 ai.createdAt: string
     snapshots.sort((a, b) => {
@@ -123,7 +136,15 @@ const SnapshotDrawer: React.FC<{
             </HStack>
           </DrawerHeader>
 
-          <DrawerBody>
+          <DrawerBody pt={0}>
+            <Field.Root mb={3}>
+              <HStack color={"purple.500"}>
+                <FaInfoCircle />
+                <Field.HelperText>
+                  Ctrl + S 키를 눌러 수동으로 버전을 생성할 수 있어요.
+                </Field.HelperText>
+              </HStack>
+            </Field.Root>
             <Stack gap={3}>
               <Stack mb={5}>
                 {snapshots.length ? (
