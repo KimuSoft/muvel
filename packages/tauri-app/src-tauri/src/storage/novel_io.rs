@@ -1,13 +1,7 @@
-// src-tauri/src/storage/novel_io.rs
-
 use crate::models::novel::Novel;
 use std::fs;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
-// 경로 관련 타입
-
-// 현재 크레이트(프로젝트)의 models 모듈에서 LocalNovelData 구조체를 가져옵니다.
-// 이 구조체는 models.rs 파일에 정의되어 있어야 하며, .muvl 파일의 내용을 나타냅니다.
 
 // 소설 메타데이터 파일의 표준 이름
 pub const NOVEL_METADATA_FILENAME: &str = "novel-metadata.muvl";

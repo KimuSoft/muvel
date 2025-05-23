@@ -1,10 +1,7 @@
-// src-tauri/src/storage/item_index_manager.rs
-
 use std::collections::HashMap;
 use std::fs;
 use std::io::{Read, Write};
 use std::path::PathBuf;
-// AppHandle을 사용하기 위해 tauri 모듈 및 Manager 트레잇을 가져옵니다.
 use tauri::{AppHandle, Manager};
 
 // 아이템 ID(String)를 키로, 부모 소설 ID(String)를 값으로 가지는 해시맵입니다.
