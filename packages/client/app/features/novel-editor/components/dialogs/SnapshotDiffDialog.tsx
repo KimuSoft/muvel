@@ -2,6 +2,7 @@ import {
   Button,
   Dialog,
   HStack,
+  Icon,
   Stack,
   Text,
   type UseDialogReturn,
@@ -14,6 +15,7 @@ import { diff_match_patch as diffMatchPatch } from "diff-match-patch"
 import { blocksToText, pmNodeToText } from "~/services/io/txt/pmNodeToText"
 import { useExportSettingOptions } from "~/hooks/useAppOptions"
 import { useEditorContext } from "~/features/novel-editor/context/EditorContext"
+import { LuGitCompareArrows } from "react-icons/lu"
 
 interface SnapshotDiffDialogProps {
   snapshot: EpisodeSnapshot
@@ -25,12 +27,11 @@ type DiffOperation = [number, string]
 const DiffView: React.FC<{ diffs: DiffOperation[] }> = ({ diffs }) => {
   return (
     <Stack
-      p={4}
+      p={2}
       borderWidth={1}
       borderRadius="md"
       borderColor="gray.200"
       bg="gray.50"
-      fontFamily="mono"
       fontSize="sm"
       whiteSpace="pre-wrap"
       overflow="auto"
@@ -47,6 +48,7 @@ const DiffView: React.FC<{ diffs: DiffOperation[] }> = ({ diffs }) => {
             as="span"
             key={i}
             bg={bg}
+            borderRadius="md"
             color={
               operation === 0
                 ? "gray.800"
@@ -119,11 +121,16 @@ const SnapshotDiffDialog: React.FC<SnapshotDiffDialogProps> = ({
       <Dialog.Positioner>
         <Dialog.Content>
           <Dialog.Header>
-            <Dialog.Title>스냅숏 비교</Dialog.Title>
+            <Dialog.Title>
+              <Icon color={"purple.500"} mr={3}>
+                <LuGitCompareArrows />
+              </Icon>
+              버전 비교
+            </Dialog.Title>
             <Dialog.CloseTrigger />
           </Dialog.Header>
           <Dialog.Body>
-            <Stack gap={4}>
+            <Stack>
               <Text>
                 <strong>스냅숏 시간:</strong>{" "}
                 {new Date(snapshot.createdAt).toLocaleDateString()} (
@@ -136,12 +143,14 @@ const SnapshotDiffDialog: React.FC<SnapshotDiffDialogProps> = ({
                   .reduce((acc, cur) => acc + cur)}
                 자
               </Text>
-              <Text fontWeight="bold">현재 문서와의 차이점:</Text>
+              <Text mt={3} fontWeight="bold">
+                해당 버전부터 현재까지의 변경사항
+              </Text>
               <DiffView diffs={diffs} />
             </Stack>
           </Dialog.Body>
           <Dialog.Footer>
-            <HStack gap={4}>
+            <HStack>
               <Button
                 onClick={handleCopy}
                 variant="outline"

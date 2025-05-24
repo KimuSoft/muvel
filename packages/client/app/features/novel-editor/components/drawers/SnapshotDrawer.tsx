@@ -1,21 +1,13 @@
 import {
   Center,
   CloseButton,
-  DrawerBackdrop,
-  DrawerBody,
-  DrawerCloseTrigger,
-  DrawerContent,
-  DrawerHeader,
-  DrawerPositioner,
-  DrawerRootProvider,
-  DrawerTrigger,
+  Drawer,
   EmptyState,
   Field,
-  Heading,
   HStack,
+  Icon,
   Spinner,
   Stack,
-  Tag,
   useDialog,
   type UseDialogReturn,
   VStack,
@@ -59,30 +51,27 @@ const SnapshotDrawer: React.FC<{
   }, [dialog.open])
 
   return (
-    <DrawerRootProvider value={dialog} placement={"end"} size={"md"}>
-      {children && <DrawerTrigger asChild>{children}</DrawerTrigger>}
-      <DrawerBackdrop />
-      <DrawerPositioner>
-        <DrawerContent>
-          <DrawerCloseTrigger asChild>
+    <Drawer.RootProvider value={dialog} placement={"end"}>
+      {children && <Drawer.Trigger asChild>{children}</Drawer.Trigger>}
+      <Drawer.Backdrop />
+      <Drawer.Positioner>
+        <Drawer.Content>
+          <Drawer.CloseTrigger asChild>
             <CloseButton position="absolute" top="4" right="4" />
-          </DrawerCloseTrigger>
-          <DrawerHeader>
-            <HStack gap={3} mb={3}>
-              <TbHistory size={"24px"} />
-              <Heading size={"lg"}>버전 관리</Heading>
-              <Tag.Root variant={"solid"} colorPalette={"purple"}>
-                <Tag.Label>베타</Tag.Label>
-              </Tag.Root>
-            </HStack>
-          </DrawerHeader>
+          </Drawer.CloseTrigger>
+          <Drawer.Header>
+            <Drawer.Title>
+              <Icon as={TbHistory} color={"purple.500"} mr={3} />
+              버전 관리
+            </Drawer.Title>
+          </Drawer.Header>
 
-          <DrawerBody pt={0}>
+          <Drawer.Body pt={0}>
             <Field.Root mb={3}>
               <HStack color={"purple.500"}>
                 <FaInfoCircle />
                 <Field.HelperText>
-                  Ctrl + S 키를 눌러 수동으로 버전을 생성할 수 있어요.
+                  Ctrl + S로 직접 버전을 생성할 수도 있어요.
                 </Field.HelperText>
               </HStack>
             </Field.Root>
@@ -92,49 +81,47 @@ const SnapshotDrawer: React.FC<{
                 snapshot={currentSnapshot}
               />
             )}
-            <Stack gap={3}>
-              <Stack mb={5}>
-                {isLoading ? (
-                  <Center w={"100%"} h={300}>
-                    <Spinner />
-                  </Center>
-                ) : snapshots.length ? (
-                  snapshots.map((snapshot) => (
-                    <SnapshotItem
-                      key={`snapshot-${snapshot.id}`}
-                      snapshot={snapshot}
-                      onClick={() => {
-                        setCurrentSnapshot(snapshot)
-                        diffDialog.setOpen(true)
-                      }}
-                    />
-                  ))
-                ) : (
-                  <EmptyState.Root>
-                    <EmptyState.Content>
-                      <VStack textAlign="center">
-                        <EmptyState.Indicator>
-                          <TbSlash />
-                        </EmptyState.Indicator>
-                        <VStack mt={3}>
-                          <EmptyState.Title>
-                            아직 만들어진 백업이 없어요!
-                          </EmptyState.Title>
-                          <EmptyState.Description>
-                            수정이 생기고 10분마다 자동으로 생성되니, 걱정하지
-                            마세요.
-                          </EmptyState.Description>
-                        </VStack>
+            <Stack mb={5} gap={1}>
+              {isLoading ? (
+                <Center w={"100%"} h={300}>
+                  <Spinner />
+                </Center>
+              ) : snapshots.length ? (
+                snapshots.map((snapshot) => (
+                  <SnapshotItem
+                    key={`snapshot-${snapshot.id}`}
+                    snapshot={snapshot}
+                    onClick={() => {
+                      setCurrentSnapshot(snapshot)
+                      diffDialog.setOpen(true)
+                    }}
+                  />
+                ))
+              ) : (
+                <EmptyState.Root>
+                  <EmptyState.Content>
+                    <VStack textAlign="center">
+                      <EmptyState.Indicator>
+                        <TbSlash />
+                      </EmptyState.Indicator>
+                      <VStack mt={3}>
+                        <EmptyState.Title>
+                          아직 만들어진 백업이 없어요!
+                        </EmptyState.Title>
+                        <EmptyState.Description>
+                          수정이 생기고 10분마다 자동으로 생성되니, 걱정하지
+                          마세요.
+                        </EmptyState.Description>
                       </VStack>
-                    </EmptyState.Content>
-                  </EmptyState.Root>
-                )}
-              </Stack>
+                    </VStack>
+                  </EmptyState.Content>
+                </EmptyState.Root>
+              )}
             </Stack>
-          </DrawerBody>
-        </DrawerContent>
-      </DrawerPositioner>
-    </DrawerRootProvider>
+          </Drawer.Body>
+        </Drawer.Content>
+      </Drawer.Positioner>
+    </Drawer.RootProvider>
   )
 }
 
