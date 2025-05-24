@@ -1,9 +1,15 @@
-import { Injectable, Logger, NotFoundException } from "@nestjs/common"
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 import { UserEntity } from "./user.entity"
 import { Repository } from "typeorm"
 import { NovelEntity } from "../novels/novel.entity"
 import { Cron, CronExpression } from "@nestjs/schedule"
+import { ShareType } from "muvel-api-types"
 
 @Injectable()
 export class UsersService {
@@ -11,36 +17,36 @@ export class UsersService {
 
   constructor(
     @InjectRepository(UserEntity)
-    private usersRepository: Repository<UserEntity>,
+    private userRepository: Repository<UserEntity>,
     @InjectRepository(NovelEntity)
     private novelsRepository: Repository<NovelEntity>,
   ) {}
 
   async findUserById(id: string): Promise<UserEntity | null> {
-    return this.usersRepository.findOneBy({ id })
+    return this.userRepository.findOneBy({ id })
   }
 
   // Public하게 불러오는 경우
   async findUserByIdPublic(id: string): Promise<UserEntity | null> {
-    return this.usersRepository.findOne({
+    return this.userRepository.findOne({
       where: { id },
       select: ["id", "username", "avatar", "point"],
     })
   }
 
   async getUserCount() {
-    return this.usersRepository.count()
+    return this.userRepository.count()
   }
 
   async getRecentNovels(userId: string): Promise<NovelEntity[]> {
-    const user = await this.usersRepository.findOne({
+    const user = await this.userRepository.findOne({
       where: { id: userId },
       select: ["recentNovelIds"],
     })
 
     if (!user?.recentNovelIds?.length) return []
 
-    const novels = await this.novelsRepository
+    let novels = await this.novelsRepository
       .createQueryBuilder("novel")
       .leftJoinAndSelect("novel.author", "author")
       .select([
@@ -59,6 +65,15 @@ export class UsersService {
       .where("novel.id IN (:...ids)", { ids: user.recentNovelIds })
       .getMany()
 
+    // 내 소설 아닌데 (author.id가 자신이 아니고 비공개인 소설 삭제)
+    novels = novels.filter((novel) => {
+      const isMine = novel.author.id === userId
+      const isPublic = [ShareType.Public, ShareType.Unlisted].includes(
+        novel.share,
+      )
+      return isMine || isPublic
+    })
+
     // 최근 본 순서대로 정렬 (Postgres IN은 순서 보장 안 함)
     return user.recentNovelIds
       .map((id) => novels.find((n) => n.id === id))
@@ -71,7 +86,7 @@ export class UsersService {
     userId: string,
     novelId: string,
   ): Promise<void> {
-    const user = await this.usersRepository.findOne({
+    const user = await this.userRepository.findOne({
       where: { id: userId },
       select: ["id", "recentNovelIds"],
     })
@@ -86,7 +101,7 @@ export class UsersService {
     // (선택) 최대 20개로 자르기
     const limited = updated.slice(0, 20)
 
-    await this.usersRepository.update(userId, {
+    await this.userRepository.update(userId, {
       recentNovelIds: limited,
     })
   }
@@ -94,7 +109,7 @@ export class UsersService {
   @Cron(CronExpression.EVERY_HOUR)
   async handlePointIncrease() {
     try {
-      const result = await this.usersRepository
+      const result = await this.userRepository
         .createQueryBuilder()
         .update(UserEntity)
         .set({
