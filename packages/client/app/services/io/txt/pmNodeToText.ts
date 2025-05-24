@@ -1,6 +1,8 @@
-import { EpisodeBlockType } from "muvel-api-types" // 경로가 정확한지 확인해주세요.
+import { EpisodeBlockType, type EpisodeBlock } from "muvel-api-types" // 경로가 정확한지 확인해주세요.
 import type { Node as ProseMirrorNode } from "prosemirror-model"
-import type { AppExportOptions } from "~/types/options" // 경로가 정확한지 확인해주세요.
+import type { AppExportOptions } from "~/types/options"
+import { blocksToDoc } from "~/features/novel-editor/utils/blockConverter"
+import { baseSchema } from "~/features/novel-editor/schema/baseSchema" // 경로가 정확한지 확인해주세요.
 
 const getNodeTextWithHardBreaks = (node: ProseMirrorNode): string => {
   let text = ""
@@ -142,4 +144,11 @@ export const pmNodeToText = (
   })
 
   return output.trim()
+}
+
+export const blocksToText = (
+  blocks: EpisodeBlock[],
+  options: AppExportOptions,
+): string => {
+  return pmNodeToText(blocksToDoc(blocks, baseSchema), options)
 }
