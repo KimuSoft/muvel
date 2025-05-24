@@ -20,50 +20,10 @@ export class EpisodeAnalysisService {
   constructor(
     @InjectRepository(AiAnalysisEntity)
     private readonly aiAnalysisRepository: Repository<AiAnalysisEntity>,
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
     private readonly episodeRepository: EpisodeRepository,
     private readonly blockRepository: EpisodeBlockRepository,
     private readonly geminiAnalysisRepository: GeminiAnalysisRepository,
   ) {}
-
-  // 포인트를 체크하고 소비시키는 메서드 (TODO: 나중에 유저서비스로 이동)
-  async checkPoints(userId: string, point: number): Promise<void> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    })
-
-    if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found`)
-    }
-
-    if (user.point < point) {
-      throw new BadRequestException(
-        `User with ID ${userId} does not have enough points.`,
-      )
-    }
-  }
-
-  // 포인트를 체크하고 소비시키는 메서드 (TODO: 나중에 유저서비스로 이동)
-  async consumePoints(userId: string, point: number): Promise<void> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    })
-
-    if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found`)
-    }
-
-    if (user.point < point) {
-      throw new BadRequestException(
-        `User with ID ${userId} does not have enough points.`,
-      )
-    }
-
-    user.point -= point
-
-    await this.userRepository.save(user)
-  }
 
   async findAnalysisByEpisodeId(
     episodeId: string,
@@ -79,13 +39,10 @@ export class EpisodeAnalysisService {
     options: CreateAiAnalysisRequestBodyDto,
   ): Promise<AiAnalysisEntity> {
     // 1. 에피소드 내용을 데이터베이스에서 가져오기
-    const episode = await this.episodeRepository.findOne({
+    const episode = await this.episodeRepository.findOneOrFail({
       where: { id: episodeId },
+      relations: ["novel"],
     })
-
-    if (!episode) {
-      throw new NotFoundException(`Episode with ID ${episodeId} not found`)
-    }
 
     // 2. 해당 에피소드의 블록들을 order 순서로 가져오기
     let blocks = await this.blockRepository.findBlocksByEpisodeId(episodeId)
@@ -95,12 +52,9 @@ export class EpisodeAnalysisService {
     )
 
     if (!blocks || blocks.length === 0) {
-      // 블록이 없어도 분석할 내용이 없으므로 에러 또는 특정 처리 필요
       throw new InternalServerErrorException(
         `Episode ${episodeId} has no blocks to analyze.`,
       )
-      // 또는 빈 내용으로 분석을 진행하거나 (AI 응답이 이상할 수 있음), 다른 처리를 할 수 있습니다.
-      // const episodeContent = '';
     }
 
     const episodeContent = blocks.map((block) => block.text).join("\n")
@@ -144,9 +98,9 @@ export class EpisodeAnalysisService {
         .map((e) => `### ${e.order}편\n${e.description}`)
         .join("\n\n")
 
-      console.log(previousEpisodeContent)
-
       analysisContent = `
+    # ${episode.novel.title}
+    * 작품 태그: ${episode.novel.tags.join(", ")}
     ## 지난 줄거리 요약\n${previousEpisodeContent}
     ## 소설 본문\n\`\`\`${episodeContent}\`\`\``
     }

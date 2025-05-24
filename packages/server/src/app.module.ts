@@ -10,6 +10,7 @@ import { WikiPagesModule } from "./wiki-pages/wiki-pages.module"
 import { GoogleDriveModule } from "./google-drive/google-drive.module"
 import { CacheModule } from "@nestjs/cache-manager"
 import { StatisticsModule } from "./statistics/statistics.module"
+import { AiModule } from './ai/ai.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { StatisticsModule } from "./statistics/statistics.module"
     WikiPagesModule,
     GoogleDriveModule,
     StatisticsModule,
+    AiModule,
   ],
 })
 export class AppModule {}

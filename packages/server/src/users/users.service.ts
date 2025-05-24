@@ -106,6 +106,44 @@ export class UsersService {
     })
   }
 
+  // 포인트를 체크하고 소비시키는 메서드 (TODO: 나중에 유저서비스로 이동)
+  async checkPoints(userId: string, point: number): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    })
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`)
+    }
+
+    if (user.point < point) {
+      throw new BadRequestException(
+        `User with ID ${userId} does not have enough points.`,
+      )
+    }
+  }
+
+  // 포인트를 체크하고 소비시키는 메서드 (TODO: 나중에 유저서비스로 이동)
+  async consumePoints(userId: string, point: number): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    })
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`)
+    }
+
+    if (user.point < point) {
+      throw new BadRequestException(
+        `User with ID ${userId} does not have enough points.`,
+      )
+    }
+
+    user.point -= point
+
+    await this.userRepository.save(user)
+  }
+
   @Cron(CronExpression.EVERY_HOUR)
   async handlePointIncrease() {
     try {
