@@ -3,14 +3,17 @@ import { LuFileJson } from "react-icons/lu"
 import React, { type PropsWithChildren } from "react"
 import { TbTxt } from "react-icons/tb"
 import { toaster } from "~/components/ui/toaster"
-import type { Block } from "muvel-api-types"
 import dedent from "dedent"
 import { exportNovel } from "~/services/novelService"
+import { useExportSettingOptions } from "~/hooks/useAppOptions"
+import { blocksToText } from "~/services/io/txt/pmNodeToText"
 
 const ExportNovelMenu: React.FC<PropsWithChildren & { novelId: string }> = ({
   novelId,
   children,
 }) => {
+  const [exportOption] = useExportSettingOptions()
+
   const t = {
     loading: {
       title: "소설을 정리하는 중...",
@@ -41,11 +44,19 @@ const ExportNovelMenu: React.FC<PropsWithChildren & { novelId: string }> = ({
 
   const exportTxtHandler = async () => {
     const data = await exportNovel(novelId)
+
+    // 에피소드 정렬
+    data.episodes.sort((a, b) => a.order - b.order)
+    data.episodes.forEach((episode) => {
+      episode.blocks.sort((a, b) => a.order - b.order)
+    })
+
     let txt = dedent`
     # ${data.title}
     ## 개요
     작가: ${data.author?.username || "로컬 소설"}
     설명: ${data.description}
+    태그: ${data.tags.map((tag) => `#${tag}`).join(", ")}
     
     ## 에피소드 리스트\n
     `
@@ -56,8 +67,8 @@ const ExportNovelMenu: React.FC<PropsWithChildren & { novelId: string }> = ({
       \`\`\`
       ${episode.description}
       \`\`\`
-     
-      ${episode.blocks.map((block: Block) => block.text).join("\n\n")}
+      
+      ${blocksToText(episode.blocks, exportOption)}
       `
     })
 

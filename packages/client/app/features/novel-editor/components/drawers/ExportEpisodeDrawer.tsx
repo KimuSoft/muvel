@@ -46,7 +46,7 @@ export const ExportEpisodeDrawer: React.FC<{
   children?: ReactNode
   dialog: UseDialogReturn
 }> = ({ episode, children, dialog }) => {
-  const { view } = useEditorContext() // 에디터 컨텍스트에서 view 가져오기
+  const { view } = useEditorContext()
 
   // 내보내기 옵션 상태 (새로운 옵션 및 기본값 추가)
   const [exportOptions, setExportOptions] = useExportSettingOptions()
@@ -117,6 +117,7 @@ export const ExportEpisodeDrawer: React.FC<{
                     ExportFormat.Clipboard,
                     ExportFormat.PlainText,
                     ExportFormat.Hangul,
+                    ExportFormat.MSWord,
                   ].includes(exportOptions.format) && (
                     <HStack color={"purple.500"}>
                       <FaInfoCircle />

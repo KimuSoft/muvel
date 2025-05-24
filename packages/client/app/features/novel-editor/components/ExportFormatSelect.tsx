@@ -26,6 +26,7 @@ import {
   TbTxt,
 } from "react-icons/tb"
 import { RiQuillPenFill } from "react-icons/ri"
+import { PiMicrosoftWordLogo } from "react-icons/pi"
 
 const formats = [
   {
@@ -45,18 +46,19 @@ const formats = [
     icon: <TbMarkdown />,
     ext: ".md",
   },
-  // {
-  //   label: "MS Word 문서",
-  //   value: ExportFormat.MSWord,
-  //   icon: <PiMicrosoftWordLogo />,
-  //   ext: ".docx",
-  // },
-  // {
-  //   label: "한글과컴퓨터 문서",
-  //   value: ExportFormat.Hangul,
-  //   icon: <TbAlphabetKorean />,
-  //   ext: ".hwpx",
-  // },
+  {
+    label: "MS Word 문서",
+    value: ExportFormat.MSWord,
+    icon: <PiMicrosoftWordLogo />,
+    ext: ".docx",
+    platforms: ["BETA"],
+  },
+  {
+    label: "한글과컴퓨터 문서",
+    value: ExportFormat.Hangul,
+    icon: <TbAlphabetKorean />,
+    ext: ".hwpx",
+  },
   // {
   //   label: "PDF 문서",
   //   value: ExportFormat.PDF,
