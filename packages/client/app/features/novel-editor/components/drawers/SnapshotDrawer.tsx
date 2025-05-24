@@ -1,4 +1,5 @@
 import {
+  Center,
   CloseButton,
   DrawerBackdrop,
   DrawerBody,
@@ -12,83 +13,21 @@ import {
   Field,
   Heading,
   HStack,
+  Spinner,
   Stack,
   Tag,
-  Text,
+  useDialog,
   type UseDialogReturn,
   VStack,
 } from "@chakra-ui/react"
-import React, { useEffect, useMemo } from "react"
-import { type EpisodeSnapshot, SnapshotReason } from "muvel-api-types"
+import React, { useEffect } from "react"
+import { type EpisodeSnapshot } from "muvel-api-types"
 import { TbHistory, TbSlash } from "react-icons/tb"
-import { toaster } from "~/components/ui/toaster"
 import type { EpisodeData } from "~/providers/EpisodeProvider"
 import { getEpisodeSnapshots } from "~/services/episodeSnapshotService"
 import { FaInfoCircle } from "react-icons/fa"
-
-const SnapshotItem: React.FC<{
-  snapshot: EpisodeSnapshot
-}> = ({ snapshot }) => {
-  const handleCopy = () => {
-    navigator.clipboard
-      .writeText(snapshot.blocks.map((e) => e.text).join("\n\n"))
-      .then(() => {
-        toaster.success({
-          title: "해당 버전의 내용이 클립보드에 복사되었어요!",
-          description: "이 기능은 임시이고, 추후 개선될 예정이에요.",
-        })
-      })
-  }
-
-  const reasonTag = useMemo(() => {
-    switch (snapshot.reason) {
-      case SnapshotReason.Manual:
-        return (
-          <Tag.Root variant={"outline"} colorPalette={"green"} size={"sm"}>
-            <Tag.Label>수동 생성</Tag.Label>
-          </Tag.Root>
-        )
-      case SnapshotReason.Autosave:
-        return (
-          <Tag.Root variant={"outline"} colorPalette={"purple"} size={"sm"}>
-            <Tag.Label>자동 생성</Tag.Label>
-          </Tag.Root>
-        )
-      case SnapshotReason.Merge:
-        return (
-          <Tag.Root variant={"outline"} colorPalette={"yellow"} size={"sm"}>
-            <Tag.Label>병합 전 백업</Tag.Label>
-          </Tag.Root>
-        )
-    }
-  }, [snapshot.reason])
-
-  return (
-    <Stack
-      gap={2}
-      borderWidth={1}
-      borderColor={"gray.500"}
-      cursor={"pointer"}
-      borderRadius={"md"}
-      onClick={handleCopy}
-      p={3}
-    >
-      <HStack>
-        <Text fontWeight={"bold"}>
-          {new Date(snapshot.createdAt).toLocaleDateString()} (
-          {new Date(snapshot.createdAt).toLocaleTimeString()})
-        </Text>
-        <Text color={"gray.500"} fontSize={"sm"}>
-          {snapshot.blocks
-            .map((b) => b.text.length)
-            .reduce((acc, cur) => acc + cur)}
-          자
-        </Text>
-        {reasonTag}
-      </HStack>
-    </Stack>
-  )
-}
+import SnapshotItem from "~/features/novel-editor/components/SnapshotItem"
+import SnapshotDiffDialog from "~/features/novel-editor/components/dialogs/SnapshotDiffDialog"
 
 const SnapshotDrawer: React.FC<{
   episode: EpisodeData
@@ -96,19 +35,21 @@ const SnapshotDrawer: React.FC<{
   dialog: UseDialogReturn
 }> = ({ episode, children, dialog }) => {
   const [snapshots, setSnapshots] = React.useState<EpisodeSnapshot[]>([])
+  const [currentSnapshot, setCurrentSnapshot] =
+    React.useState<EpisodeSnapshot | null>(null)
   const [isLoading, setIsLoading] = React.useState(false)
+
+  const diffDialog = useDialog()
 
   const fetchSnapshots = async () => {
     setIsLoading(true)
     const snapshots = await getEpisodeSnapshots(episode.id)
 
-    // ai 결과를 최신순으로 정렬 ai.createdAt: string
     snapshots.sort((a, b) => {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     })
 
     setSnapshots(snapshots)
-
     setIsLoading(false)
   }
 
@@ -145,13 +86,27 @@ const SnapshotDrawer: React.FC<{
                 </Field.HelperText>
               </HStack>
             </Field.Root>
+            {currentSnapshot && (
+              <SnapshotDiffDialog
+                dialog={diffDialog}
+                snapshot={currentSnapshot}
+              />
+            )}
             <Stack gap={3}>
               <Stack mb={5}>
-                {snapshots.length ? (
+                {isLoading ? (
+                  <Center w={"100%"} h={300}>
+                    <Spinner />
+                  </Center>
+                ) : snapshots.length ? (
                   snapshots.map((snapshot) => (
                     <SnapshotItem
                       key={`snapshot-${snapshot.id}`}
                       snapshot={snapshot}
+                      onClick={() => {
+                        setCurrentSnapshot(snapshot)
+                        diffDialog.setOpen(true)
+                      }}
                     />
                   ))
                 ) : (
