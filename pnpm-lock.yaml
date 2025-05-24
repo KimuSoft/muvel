@@ -58,12 +58,6 @@ importers:
       '@types/diff-match-patch':
         specifier: ^1.0.36
         version: 1.0.36
-      '@types/html-docx-js':
-        specifier: ^0.3.4
-        version: 0.3.4
-      '@types/html-to-docx':
-        specifier: ^1.8.0
-        version: 1.8.0
       '@xyflow/react':
         specifier: ^12.6.0
         version: 12.6.4(@types/react@19.1.4)(immer@10.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -2200,12 +2194,6 @@ packages:
 
   '@types/howler@2.2.12':
     resolution: {integrity: sha512-hy769UICzOSdK0Kn1FBk4gN+lswcj1EKRkmiDtMkUGvFfYJzgaDXmVXkSShS2m89ERAatGIPnTUlp2HhfkVo5g==}
-
-  '@types/html-docx-js@0.3.4':
-    resolution: {integrity: sha512-+t/4SxNnEq+0xbSUG7LrOOfG/y12aTXBjYKtOYtigVRIIOCEmK7jh0pSUeW5ATvI934274hkzdBg57t5RDrZow==}
-
-  '@types/html-to-docx@1.8.0':
-    resolution: {integrity: sha512-z1sP0XmOGfxChBP5s4bzhaAjaOqlQ3hRKol8diGQG3vYvJF231t/xYT43Mo3q/MzKYzhfCEkN8l40dn4qHdjYg==}
 
   '@types/http-errors@2.0.4':
     resolution: {integrity: sha512-D0CFMMtydbJAegzOyHjtiKPLlvnm3iTZyZRSZoLq2mRhDdmLfIWOCYPfQJ4cu2erKghU++QvjcUjp/5h7hESpA==}
@@ -7614,14 +7602,6 @@ snapshots:
       hoist-non-react-statics: 3.3.2
 
   '@types/howler@2.2.12': {}
-
-  '@types/html-docx-js@0.3.4':
-    dependencies:
-      '@types/node': 20.17.47
-
-  '@types/html-to-docx@1.8.0':
-    dependencies:
-      '@types/node': 20.17.47
 
   '@types/http-errors@2.0.4': {}
 
