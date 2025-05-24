@@ -117,6 +117,7 @@ export const ExportEpisodeDrawer: React.FC<{
                     ExportFormat.Clipboard,
                     ExportFormat.PlainText,
                     ExportFormat.Hangul,
+                    ExportFormat.MSWord,
                   ].includes(exportOptions.format) && (
                     <HStack color={"purple.500"}>
                       <FaInfoCircle />

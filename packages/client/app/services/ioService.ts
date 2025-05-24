@@ -8,10 +8,11 @@ import { ExportFormat } from "~/types/exportFormat"
 import { Node as ProseMirrorNode } from "prosemirror-model"
 import { pmNodeToText } from "~/services/io/txt/pmNodeToText"
 import { pmNodeToMarkdown } from "~/services/io/markdown"
-import { pmNodeToHtml } from "~/services/io/html"
+import { pmNodeToHtml } from "~/services/io/html/pmNodeToHtml"
 import { docToBlocks } from "~/features/novel-editor/utils/blockConverter"
 import { getDialogApi, getFsPlugin, getPathApi } from "./tauri/tauriApiProvider"
 import { textToHwpx } from "~/services/io/hwpx/textToHwpx"
+import { pmNodeToDocx, textToDocx } from "~/services/io/docx"
 
 const MAX_BLOCKS_PER_EPISODE = 1000
 const SYNC_CHUNK_SIZE = 300
@@ -148,6 +149,12 @@ export async function exportEpisode(
         // content = await textToHwpx("안녕하세요.")
         mimeType = "application/hwp+zip"
         fileExtension = "hwpx"
+        break
+      case ExportFormat.MSWord:
+        content = await textToDocx(pmNodeToText(pmNode, options))
+        mimeType =
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        fileExtension = "docx"
         break
       default:
         // 타입스크립트에서 이 default는 도달 불가능해야 하지만, 만약을 위해 방어 코드 추가
