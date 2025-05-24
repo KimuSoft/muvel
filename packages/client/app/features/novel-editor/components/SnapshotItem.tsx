@@ -2,7 +2,6 @@ import React, { useMemo } from "react"
 import { HStack, Spacer, Stack, Tag, Text } from "@chakra-ui/react"
 import { type EpisodeSnapshot, SnapshotReason } from "muvel-api-types"
 import { getTimeAgoKo } from "~/utils/getTimeAgoKo"
-import { Tooltip } from "~/components/ui/tooltip"
 
 const SnapshotItem: React.FC<{
   snapshot: EpisodeSnapshot
@@ -33,7 +32,7 @@ const SnapshotItem: React.FC<{
 
   return (
     <Stack
-      gap={2}
+      gap={1}
       borderWidth={1}
       borderColor={"gray.500"}
       cursor={"pointer"}
@@ -42,14 +41,9 @@ const SnapshotItem: React.FC<{
       p={3}
     >
       <HStack>
-        <Tooltip
-          content={`${new Date(snapshot.createdAt).toLocaleDateString()} (${new Date(snapshot.createdAt).toLocaleTimeString()})`}
-          openDelay={200}
-        >
-          <Text fontWeight={"bold"}>
-            {getTimeAgoKo(new Date(snapshot.createdAt))}
-          </Text>
-        </Tooltip>
+        <Text fontWeight={"bold"}>
+          {getTimeAgoKo(new Date(snapshot.createdAt))}
+        </Text>
         <Text color={"gray.500"} fontSize={"sm"}>
           {snapshot.blocks
             .map((b) => b.text.length)
@@ -60,6 +54,10 @@ const SnapshotItem: React.FC<{
         <Spacer />
         {reasonTag}
       </HStack>
+      <Text fontSize={"xs"} color={"gray.500"}>
+        {new Date(snapshot.createdAt).toLocaleDateString()}{" "}
+        {new Date(snapshot.createdAt).toLocaleTimeString()}
+      </Text>
     </Stack>
   )
 }

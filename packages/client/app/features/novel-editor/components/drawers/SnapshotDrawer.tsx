@@ -75,7 +75,7 @@ const SnapshotDrawer: React.FC<{
                 </Field.HelperText>
               </HStack>
             </Field.Root>
-            {currentSnapshot && (
+            {currentSnapshot && dialog.open && (
               <SnapshotDiffDialog
                 dialog={diffDialog}
                 snapshot={currentSnapshot}
